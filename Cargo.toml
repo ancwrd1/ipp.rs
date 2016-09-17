@@ -1,0 +1,16 @@
+[package]
+name = "ipp"
+version = "0.0.1"
+authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+description = "IPP print protocol implementation for Rust"
+license = "MIT"
+repository = "https://github.com/dremon/ipp.rs"
+readme = "README.md"
+keywords = ["ipp", "printing", "protocol"]
+
+[dependencies]
+byteorder = "0.5.3"
+hyper = "0.9.10"
+mime = "0.2.2"
+log = "0.3.6"
+env_logger = "0.3.5"
