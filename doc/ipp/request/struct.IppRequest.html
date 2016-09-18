@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `IppRequest` struct in crate `ipp`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, IppRequest">
+
+    <title>ipp::request::IppRequest - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>request</a></p><script>window.sidebarCurrent = {name: 'IppRequest', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>request</a>::<wbr><a class='struct' href=''>IppRequest</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-720' class='srclink' href='../../src/ipp/src/request.rs.html#14-23' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct IppRequest&lt;'a&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>IPP request struct</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-726' class='srclink' href='../../src/ipp/src/request.rs.html#25-93' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(operation: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Create new IPP request for the operation and uri</p>
+</div><h4 id='method.uri' class='method'><code>fn <a href='#method.uri' class='fnname'>uri</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>Get uri</p>
+</div><h4 id='method.set_payload' class='method'><code>fn <a href='#method.set_payload' class='fnname'>set_payload</a>(&amp;mut self, payload: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>)</code></h4>
+<div class='docblock'><p>Set payload</p>
+</div><h4 id='method.set_attribute' class='method'><code>fn <a href='#method.set_attribute' class='fnname'>set_attribute</a>(&amp;mut self, group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>, attribute: <a class='struct' href='../../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>)</code></h4>
+<div class='docblock'><p>Set attribute</p>
+</div><h4 id='method.write' class='method'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;'a mut self, writer: &amp;mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h4>
+<div class='docblock'><p>Serialize request into the binary stream (TCP)</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ipp";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>
