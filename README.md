@@ -19,5 +19,4 @@ pub fn main() {
 
 ## License
 
-Licensed under either of
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+Licensed under MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
