@@ -28,13 +28,11 @@ const IPP_VERSION: u16 = 0x0101;
 /// IPP value
 #[derive(Debug)]
 pub enum IppError {
-    AttributeError,
     HttpError(hyper::Error),
     IOError(::std::io::Error),
     RequestError,
     StatusError(u16),
-    TagError(u8),
-    ValueError
+    TagError(u8)
 }
 
 impl From<io::Error> for IppError {
