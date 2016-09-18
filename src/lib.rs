@@ -3,9 +3,8 @@
 //!
 //! Usage example:
 //!
-//!```
-//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES,
-//!     "http://localhost:631/printers/test-printer");
+//!```rust
+//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES, "http://localhost:631/printers/test-printer");
 //! let client = IppClient::new();
 //! let attrs = client.send(&mut req).unwrap();
 //! for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
@@ -85,10 +84,3 @@ pub mod response;
 pub mod attribute;
 pub mod client;
 pub mod server;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
-}

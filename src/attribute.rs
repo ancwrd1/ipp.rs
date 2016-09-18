@@ -119,17 +119,16 @@ impl IppAttributeList {
         }
 
         // now the rest
-        for group in vec![OPERATION_ATTRIBUTES_TAG,
-                          JOB_ATTRIBUTES_TAG,
-                          PRINTER_ATTRIBUTES_TAG] {
+        for hdr in [OPERATION_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG].into_iter() {
+            let group = *hdr;
             match self.get_group(group) {
                 Some(attrs) => {
                     if group != OPERATION_ATTRIBUTES_TAG {
                         try!(writer.write_u8(group));
                         retval += 1;
                     }
-                    for (_, attr) in attrs.iter()
-                                    .filter(|&(_, v)| group != OPERATION_ATTRIBUTES_TAG || !is_header_attr(v.name())) {
+                    for (_, attr) in attrs.iter().filter(
+                        |&(_, v)| group != OPERATION_ATTRIBUTES_TAG || !is_header_attr(v.name())) {
                         retval += try!(attr.write(writer));
                     }
                 },
