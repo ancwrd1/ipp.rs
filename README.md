@@ -1,4 +1,8 @@
+# ipp.rs
+
 IPP protocol implementation for Rust
+
+[Documentation](https://dremon.github.io/ipp.rs/doc/ipp)
 
 Usage example:
 
@@ -12,3 +16,8 @@ pub fn main() {
 	}
 }
 ```
+
+## License
+
+Licensed under either of
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
