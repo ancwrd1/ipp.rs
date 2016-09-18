@@ -69,7 +69,7 @@ impl<'a> IppRequest<'a> {
         retval += 2;
 
         try!(writer.write_u16::<BigEndian>(self.operation));
-        retval += 4;
+        retval += 2;
 
         // request id
         try!(writer.write_u32::<BigEndian>(1));
