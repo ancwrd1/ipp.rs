@@ -28,6 +28,7 @@ pub const JOB_NAME: &'static str = "job-name";
 pub const JOB_STATE: &'static str = "job-state";
 pub const JOB_STATE_REASONS: &'static str = "job-state-reasons";
 pub const JOB_URI: &'static str = "job-uri";
+pub const LAST_DOCUMENT: &'static str = "last-document";
 pub const REQUESTING_USER_NAME: &'static str = "requesting-user-name";
 pub const STATUS_MESSAGE: &'static str = "status-message";
 pub const REQUESTED_ATTRIBUTES: &'static str = "requested-attributes";
