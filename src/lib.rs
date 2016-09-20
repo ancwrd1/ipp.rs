@@ -38,7 +38,7 @@ const IPP_VERSION: u16 = 0x0101;
 pub enum IppError {
     HttpError(hyper::Error),
     IOError(::std::io::Error),
-    RequestError,
+    RequestError(String),
     StatusError(u16),
     TagError(u8)
 }

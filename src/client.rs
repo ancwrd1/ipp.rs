@@ -30,7 +30,7 @@ impl IppClient {
             Ok(url) => {
                 // create request and set headers
                 let mut http_req_fresh = try!(Request::new(Method::Post, url));
-                http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/app".to_vec()]);
+                http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
                 // connect and send headers
                 let mut http_req_stream = try!(http_req_fresh.start());
@@ -50,12 +50,16 @@ impl IppClient {
                     Ok(resp)
                 } else {
                     error!("HTTP error: {}", http_resp.status);
-                    Err(IppError::RequestError)
+                    Err(IppError::RequestError(
+                        match http_resp.status.canonical_reason() {
+                            Some(reason) => reason.to_string(),
+                            None => format!("{}", http_resp.status)
+                        }))
                 }
             }
-            Err(_) => {
+            Err(err) => {
                 error!("Invalid URI: {}", request.uri());
-                Err(IppError::RequestError)
+                Err(IppError::RequestError(err.to_string()))
             }
         }
     }

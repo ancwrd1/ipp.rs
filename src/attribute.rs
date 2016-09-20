@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::io::Write;
 use byteorder::{BigEndian, WriteBytesExt};
 
-use ::{Result, IppError};
+use ::Result;
 use value::IppValue;
 use consts::tag::*;
 use consts::attribute::*;
@@ -111,10 +111,7 @@ impl IppAttributeList {
         for hdr in HEADER_ATTRS.into_iter() {
             match self.get(OPERATION_ATTRIBUTES_TAG, hdr) {
                 Some(attr) => retval += try!(attr.write(writer)),
-                None => {
-                    error!("Missing required operation attribute: {}", hdr);
-                    return Err(IppError::RequestError);
-                }
+                None => {}
             }
         }
 
