@@ -39,6 +39,7 @@ pub enum IppError {
     HttpError(hyper::Error),
     IOError(::std::io::Error),
     RequestError(String),
+    AttributeError(String),
     StatusError(u16),
     TagError(u8)
 }

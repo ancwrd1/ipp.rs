@@ -6,8 +6,6 @@ use std::process::exit;
 use std::fs::File;
 
 use ipp::consts::tag::JOB_ATTRIBUTES_TAG;
-use ipp::consts::attribute::JOB_ID;
-use ipp::value::IppValue;
 
 use ipp::operation::{IppOperation, CreateJob, SendDocument};
 
@@ -23,23 +21,18 @@ pub fn main() {
 
     let mut create_op = CreateJob::new(&args[1], Some("multi-doc"));
 
-    let create_attrs = create_op.execute().unwrap();
+    let job_id = create_op.execute_and_get_job_id().unwrap();
+    println!("job id: {}", job_id);
 
-    if let &IppValue::Integer(id) = create_attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID).unwrap().value() {
-        println!("job id: {}", id);
+    for i in 2..args.len() {
+        let last = i >= (args.len() - 1);
+        println!("Sending {}, last: {}", args[i], last);
+        let mut f = File::open(&args[i]).unwrap();
 
-        for i in 2..args.len() {
-            let last = i >= (args.len() - 1);
-            println!("Sending {}, last: {}", args[i], last);
-            let mut f = File::open(&args[i]).unwrap();
-
-            let mut send_op = SendDocument::new(&args[1], id, &mut f, &env::var("USER").unwrap(), last);
-            let send_attrs = send_op.execute().unwrap();
-            for (_, v) in send_attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
-                println!("{}: {}", v.name(), v.value());
-            }
+        let mut send_op = SendDocument::new(&args[1], job_id, &mut f, &env::var("USER").unwrap(), last);
+        let send_attrs = send_op.execute().unwrap();
+        for (_, v) in send_attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
+            println!("{}: {}", v.name(), v.value());
         }
-    } else {
-        panic!("Invalid job id");
     }
 }

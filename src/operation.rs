@@ -10,7 +10,7 @@ use consts::tag::*;
 use consts::operation::*;
 use consts::attribute::*;
 use client::IppClient;
-use ::Result;
+use ::{Result, IppError};
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
@@ -54,6 +54,24 @@ impl<'a> PrintJob<'a> {
     /// Set extra job attribute for this operation, for example colormodel=grayscale
     pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
+    }
+
+    pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
+        let attrs = try!(self.execute());
+        let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
+        match val {
+            Some(attr) => match attr.value() {
+                &IppValue::Integer(id) => Ok(id),
+                _ => {
+                    error!("Invalid job-id attribute in the response");
+                    Err(IppError::AttributeError(JOB_ID.to_string()))
+                }
+            },
+            None => {
+                error!("No job-id attribute in the response");
+                Err(IppError::AttributeError(JOB_ID.to_string()))
+            }
+        }
     }
 }
 
@@ -138,6 +156,25 @@ impl CreateJob {
     /// Set extra job attribute for this operation, for example colormodel=grayscale
     pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
+    }
+
+    /// Convenience method to execute the request and return the job-id
+    pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
+        let attrs = try!(self.execute());
+        let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
+        match val {
+            Some(attr) => match attr.value() {
+                &IppValue::Integer(id) => Ok(id),
+                _ => {
+                    error!("Invalid job-id attribute in the response");
+                    Err(IppError::AttributeError(JOB_ID.to_string()))
+                }
+            },
+            None => {
+                error!("No job-id attribute in the response");
+                Err(IppError::AttributeError(JOB_ID.to_string()))
+            }
+        }
     }
 }
 
