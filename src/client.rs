@@ -5,8 +5,6 @@ use hyper::client::request::Request;
 use hyper::method::Method;
 use hyper::Url;
 use hyper::status::StatusCode;
-use hyper::header::{ContentType};
-use mime::Mime;
 use std::io::BufWriter;
 
 use request::IppRequest;
@@ -30,15 +28,22 @@ impl IppClient {
     pub fn send_raw<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
         match Url::parse(request.uri()) {
             Ok(url) => {
+                // create request and set headers
                 let mut http_req_fresh = try!(Request::new(Method::Post, url));
-                let mime: Mime = "application/ipp".parse().unwrap();
-                http_req_fresh.headers_mut().set(ContentType(mime));
+                http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/app".to_vec()]);
+
+                // connect and send headers
                 let mut http_req_stream = try!(http_req_fresh.start());
+
+                // send IPP request using buffered writer.
+                // NOTE: unbuffered output will cause issues on many IPP implementations including CUPS
                 try!(request.write(&mut BufWriter::new(&mut http_req_stream)));
 
+                // get the response
                 let mut http_resp = try!(http_req_stream.send());
-                debug!("HTTP reply headers: {}", http_resp.headers);
+
                 if http_resp.status == StatusCode::Ok {
+                    // HTTP 200 assumes we have IPP response to parse
                     let mut parser = IppParser::new(&mut http_resp);
                     let resp = try!(IppResponse::from_parser(&mut parser));
 

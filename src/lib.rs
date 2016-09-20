@@ -23,7 +23,6 @@
 
 extern crate byteorder;
 extern crate hyper;
-extern crate mime;
 
 #[macro_use]
 extern crate log;
