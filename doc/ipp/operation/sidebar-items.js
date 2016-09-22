@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CreateJob","IPP operation Create-Job"],["GetPrinterAttributes","IPP operation Get-Printer-Attributes"],["PrintJob","IPP operation Print-Job"],["SendDocument","IPP operation Print-Job"]],"trait":[["IppOperation","Trait which represents a single IPP operation"]]});

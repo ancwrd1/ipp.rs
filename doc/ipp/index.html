@@ -47,15 +47,23 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/ipp/src/lib.rs.html#1-84' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/ipp/src/lib.rs.html#1-94' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>IPP protocol implementation for Rust</p>
 
-<p>Usage example:</p>
+<p>Usage examples:</p>
 
 <pre class='rust rust-example-rendered'>
+ <span class='comment'>// using raw API</span>
  <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>GET_PRINTER_ATTRIBUTES</span>, <span class='string'>&quot;http://localhost:631/printers/test-printer&quot;</span>);
  <span class='kw'>let</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>IppClient</span>::<span class='ident'>new</span>();
  <span class='kw'>let</span> <span class='ident'>attrs</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>send</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>req</span>).<span class='ident'>unwrap</span>();
+ <span class='kw'>for</span> (_, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>attrs</span>.<span class='ident'>get_group</span>(<span class='ident'>PRINTER_ATTRIBUTES_TAG</span>).<span class='ident'>unwrap</span>() {
+     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}: {}&quot;</span>, <span class='ident'>v</span>.<span class='ident'>name</span>(), <span class='ident'>v</span>.<span class='ident'>value</span>());
+ }
+
+ <span class='comment'>// using operation API</span>
+ <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>operation</span> <span class='op'>=</span> <span class='ident'>GetPrinterAttributes</span>::<span class='ident'>new</span>(<span class='string'>&quot;http://localhost:631/printers/test-printer&quot;</span>);
+ <span class='kw'>let</span> <span class='ident'>attrs</span> <span class='op'>=</span> <span class='ident'>operation</span>.<span class='ident'>execute</span>().<span class='ident'>unwrap</span>();
  <span class='kw'>for</span> (_, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>attrs</span>.<span class='ident'>get_group</span>(<span class='ident'>PRINTER_ATTRIBUTES_TAG</span>).<span class='ident'>unwrap</span>() {
      <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}: {}&quot;</span>, <span class='ident'>v</span>.<span class='ident'>name</span>(), <span class='ident'>v</span>.<span class='ident'>value</span>());
  }</pre>
@@ -80,6 +88,13 @@
                                   title='ipp::consts'>consts</a></td>
                            <td class='docblock short'>
                                 <p>This module holds IPP constants such as attribute names, operations and tags</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='operation/index.html'
+                                  title='ipp::operation'>operation</a></td>
+                           <td class='docblock short'>
+                                <p>High-level IPP operation abstractions</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>

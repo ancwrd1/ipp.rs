@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `IppOperation` trait in crate `ipp`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, IppOperation">
+
+    <title>ipp::operation::IppOperation - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a></p><script>window.sidebarCurrent = {name: 'IppOperation', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a>::<wbr><a class='trait' href=''>IppOperation</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-954' class='srclink' href='../../src/ipp/src/operation.rs.html#16-25' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait IppOperation {
+    fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>;
+
+    fn <a href='#method.execute' class='fnname'>execute</a>(&amp;mut self) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt; { ... }
+}</pre><div class='docblock'><p>Trait which represents a single IPP operation</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.to_ipp_request' class='method stab '><code>fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></h3><div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.execute' class='method stab '><code>fn <a href='#method.execute' class='fnname'>execute</a>(&amp;mut self) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt;</code></h3><div class='docblock'><p>Execute this operation (send it to IPP server)</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl&lt;'a&gt; IppOperation for <a class='struct' href='../../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>&lt;'a&gt;</code></li>
+<li><code>impl IppOperation for <a class='struct' href='../../ipp/operation/struct.GetPrinterAttributes.html' title='ipp::operation::GetPrinterAttributes'>GetPrinterAttributes</a></code></li>
+<li><code>impl IppOperation for <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></li>
+<li><code>impl&lt;'a&gt; IppOperation for <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></li>
+</ul><script type="text/javascript" async
+                         src="../../implementors/ipp/operation/trait.IppOperation.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ipp";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

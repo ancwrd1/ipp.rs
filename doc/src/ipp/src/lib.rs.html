@@ -126,24 +126,42 @@
 <span id="82">82</span>
 <span id="83">83</span>
 <span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! IPP protocol implementation for Rust</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Usage example:</span>
+<span class='doccomment'>//! Usage examples:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!```rust</span>
+<span class='doccomment'>//! // using raw API</span>
 <span class='doccomment'>//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES, &quot;http://localhost:631/printers/test-printer&quot;);</span>
 <span class='doccomment'>//! let client = IppClient::new();</span>
 <span class='doccomment'>//! let attrs = client.send(&amp;mut req).unwrap();</span>
 <span class='doccomment'>//! for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {</span>
 <span class='doccomment'>//!     println!(&quot;{}: {}&quot;, v.name(), v.value());</span>
 <span class='doccomment'>//! }</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! // using operation API</span>
+<span class='doccomment'>//! let mut operation = GetPrinterAttributes::new(&quot;http://localhost:631/printers/test-printer&quot;);</span>
+<span class='doccomment'>//! let attrs = operation.execute().unwrap();</span>
+<span class='doccomment'>//! for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {</span>
+<span class='doccomment'>//!     println!(&quot;{}: {}&quot;, v.name(), v.value());</span>
+<span class='doccomment'>//! }</span>
+
 <span class='doccomment'>//!```</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>byteorder</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mime</span>;
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
@@ -159,7 +177,8 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>IppError</span> {
     <span class='ident'>HttpError</span>(<span class='ident'>hyper</span>::<span class='ident'>Error</span>),
     <span class='ident'>IOError</span>(::<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='ident'>RequestError</span>,
+    <span class='ident'>RequestError</span>(<span class='ident'>String</span>),
+    <span class='ident'>AttributeError</span>(<span class='ident'>String</span>),
     <span class='ident'>StatusError</span>(<span class='ident'>u16</span>),
     <span class='ident'>TagError</span>(<span class='ident'>u8</span>)
 }
@@ -211,6 +230,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>attribute</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>client</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>server</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>operation</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
