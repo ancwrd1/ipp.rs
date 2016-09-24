@@ -5,7 +5,7 @@ use hyper::client::request::Request;
 use hyper::method::Method;
 use hyper::Url;
 use hyper::status::StatusCode;
-use std::io::BufWriter;
+use std::io::{BufWriter, BufReader};
 
 use request::IppRequest;
 use response::IppResponse;
@@ -40,11 +40,12 @@ impl IppClient {
                 try!(request.write(&mut BufWriter::new(&mut http_req_stream)));
 
                 // get the response
-                let mut http_resp = try!(http_req_stream.send());
+                let http_resp = try!(http_req_stream.send());
 
                 if http_resp.status == StatusCode::Ok {
                     // HTTP 200 assumes we have IPP response to parse
-                    let mut parser = IppParser::new(&mut http_resp);
+                    let mut reader = BufReader::new(http_resp);
+                    let mut parser = IppParser::new(&mut reader);
                     let resp = try!(IppResponse::from_parser(&mut parser));
 
                     Ok(resp)

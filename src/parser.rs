@@ -1,28 +1,13 @@
 //!
 //! IPP stream parser
 //!
-use std::io::{Read};
+use std::io::Read;
 use byteorder::{BigEndian, ReadBytesExt};
 
-use ::{Result, IppError, ReadIppExt};
+use ::{Result, IppError, IppHeader, ReadIppExt};
 use attribute::{IppAttribute, IppAttributeList};
 use value::IppValue;
 use consts::tag::*;
-
-/// IPP request and response header
-#[derive(Clone, Debug)]
-pub struct IppHeader {
-    pub version: u16,
-    pub status: u16,
-    pub request_id: u32
-}
-
-impl IppHeader {
-    /// Create IPP header
-    pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
-        IppHeader {version: version, status: status, request_id: request_id}
-    }
-}
 
 /// IPP parsing result
 pub struct IppParseResult {
@@ -65,11 +50,7 @@ impl<'a> IppParser<'a> {
         let mut retval: IppAttributeList = IppAttributeList::new();
         let mut prev = (0, String::new());
 
-        let header = IppHeader::new(
-            try!(self.reader.read_u16::<BigEndian>()),
-            try!(self.reader.read_u16::<BigEndian>()),
-            try!(self.reader.read_u32::<BigEndian>()));
-
+        let header = try!(IppHeader::from_reader(self.reader));
         debug!("IPP reply header: {:?}", header);
 
         stack.push(Vec::new());

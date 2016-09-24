@@ -2,8 +2,8 @@
 //! IPP response
 //!
 
-use ::{Result};
-use parser::{IppHeader, IppParser};
+use ::{Result, IppHeader};
+use parser::IppParser;
 use attribute::{IppAttributeList};
 
 /// IPP response is returned by IppClient

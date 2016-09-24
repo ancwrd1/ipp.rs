@@ -29,7 +29,8 @@ extern crate log;
 
 use std::result;
 use std::convert::From;
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 const IPP_VERSION: u16 = 0x0101;
 
@@ -57,6 +58,37 @@ impl From<hyper::Error> for IppError {
 }
 
 pub type Result<T> = result::Result<T, IppError>;
+
+/// IPP request and response header
+#[derive(Clone, Debug)]
+pub struct IppHeader {
+    pub version: u16,
+    pub status: u16,
+    pub request_id: u32
+}
+
+impl IppHeader {
+    pub fn from_reader(reader: &mut Read) -> Result<IppHeader> {
+        let retval = IppHeader::new(
+            try!(reader.read_u16::<BigEndian>()),
+            try!(reader.read_u16::<BigEndian>()),
+            try!(reader.read_u32::<BigEndian>()));
+        Ok(retval)
+    }
+
+    /// Create IPP header
+    pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
+        IppHeader {version: version, status: status, request_id: request_id}
+    }
+
+    pub fn write(&self, writer: &mut Write) -> Result<usize> {
+        try!(writer.write_u16::<BigEndian>(self.version));
+        try!(writer.write_u16::<BigEndian>(self.status));
+        try!(writer.write_u32::<BigEndian>(self.request_id));
+
+        Ok(8)
+    }
+}
 
 /// Trait which adds two methods to Read implementations: read_string and read_vec
 pub trait ReadIppExt: Read {

@@ -2,10 +2,9 @@
 //! IPP request
 //!
 use std::io::{self, Read, Write};
-use byteorder::{BigEndian, WriteBytesExt};
 
 use attribute::{IppAttribute, IppAttributeList};
-use ::{Result, IPP_VERSION};
+use ::{Result, IPP_VERSION, IppHeader};
 use consts::tag::*;
 use consts::attribute::*;
 use value::IppValue;
@@ -64,16 +63,8 @@ impl<'a> IppRequest<'a> {
 
     /// Serialize request into the binary stream (TCP)
     pub fn write(&'a mut self, writer: &mut Write) -> Result<usize> {
-        let mut retval = 0;
-        try!(writer.write_u16::<BigEndian>(IPP_VERSION));
-        retval += 2;
-
-        try!(writer.write_u16::<BigEndian>(self.operation));
-        retval += 2;
-
-        // request id
-        try!(writer.write_u32::<BigEndian>(1));
-        retval += 4;
+        let hdr = IppHeader::new(IPP_VERSION, self.operation, 1);
+        let mut retval = try!(hdr.write(writer));
 
         retval += try!(self.attributes.write(writer));
 
