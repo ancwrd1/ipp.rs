@@ -31,7 +31,7 @@ use std::result;
 use std::io::{self, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-const IPP_VERSION: u16 = 0x0101;
+pub const IPP_VERSION: u16 = 0x0101;
 
 /// IPP value
 #[derive(Debug)]
