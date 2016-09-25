@@ -83,10 +83,11 @@ impl<'a> IppOperation for PrintJob<'a> {
             IppAttribute::new(REQUESTING_USER_NAME,
                 IppValue::NameWithoutLanguage(self.user_name.clone())));
 
-        if self.job_name.is_some() {
-            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
-                IppAttribute::new(JOB_NAME,
-                    IppValue::NameWithoutLanguage(self.job_name.clone().unwrap())));
+        match self.job_name {
+            Some(ref job_name) => retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+                                IppAttribute::new(JOB_NAME,
+                                IppValue::NameWithoutLanguage(job_name.clone()))),
+            None => {}
         }
 
         for attr in &self.attributes {
@@ -182,10 +183,11 @@ impl IppOperation for CreateJob {
     fn to_ipp_request(&mut self) -> IppRequest {
         let mut retval = IppRequest::new(CREATE_JOB, &self.uri);
 
-        if self.job_name.is_some() {
-            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
-                IppAttribute::new(JOB_NAME,
-                    IppValue::NameWithoutLanguage(self.job_name.clone().unwrap())));
+        match self.job_name {
+            Some(ref job_name) => retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+                                IppAttribute::new(JOB_NAME,
+                                IppValue::NameWithoutLanguage(job_name.clone()))),
+            None => {}
         }
 
         for attr in &self.attributes {
