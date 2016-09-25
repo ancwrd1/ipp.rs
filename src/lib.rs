@@ -28,7 +28,6 @@ extern crate hyper;
 extern crate log;
 
 use std::result;
-use std::convert::From;
 use std::io::{self, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
