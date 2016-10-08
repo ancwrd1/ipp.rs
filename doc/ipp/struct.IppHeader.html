@@ -7,10 +7,10 @@
     <meta name="description" content="API documentation for the Rust `IppHeader` struct in crate `ipp`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, IppHeader">
 
-    <title>ipp::parser::IppHeader - Rust</title>
+    <title>ipp::IppHeader - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
     
 
     
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>parser</a></p><script>window.sidebarCurrent = {name: 'IppHeader', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>ipp</a></p><script>window.sidebarCurrent = {name: 'IppHeader', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,11 +43,11 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>parser</a>::<wbr><a class='struct' href=''>IppHeader</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>ipp</a>::<wbr><a class='struct' href=''>IppHeader</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-634' class='srclink' href='../../src/ipp/src/parser.rs.html#14-18' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-62' class='srclink' href='../src/ipp/src/lib.rs.html#65-69' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct IppHeader {
     pub version: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>,
     pub status: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>,
@@ -56,14 +56,16 @@
 </div><h2 class='fields'>Fields</h2><span id='structfield.version' class='structfield'><code>version: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
                            </span><span class='stab '></span><span id='structfield.status' class='structfield'><code>status: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code>
                            </span><span class='stab '></span><span id='structfield.request_id' class='structfield'><code>request_id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code>
-                           </span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../ipp/parser/struct.IppHeader.html' title='ipp::parser::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-638' class='srclink' href='../../src/ipp/src/parser.rs.html#20-25' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(version: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, status: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, request_id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../../ipp/parser/struct.IppHeader.html' title='ipp::parser::IppHeader'>IppHeader</a></code></h4>
+                           </span><span class='stab '></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-66' class='srclink' href='../src/ipp/src/lib.rs.html#71-92' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_reader' class='method'><code>fn <a href='#method.from_reader' class='fnname'>from_reader</a>(reader: &amp;mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>) -&gt; <a class='type' href='../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a>&gt;</code></h4>
+<h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(version: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, status: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, request_id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a></code></h4>
 <div class='docblock'><p>Create IPP header</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../ipp/parser/struct.IppHeader.html' title='ipp::parser::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-620' class='srclink' href='../../src/ipp/src/parser.rs.html#13' title='goto source code'>[src]</a></span></h3>
+</div><h4 id='method.write' class='method'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;self, writer: &amp;mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>) -&gt; <a class='type' href='../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-48' class='srclink' href='../src/ipp/src/lib.rs.html#64' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../ipp/parser/struct.IppHeader.html' title='ipp::parser::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-628' class='srclink' href='../../src/ipp/src/parser.rs.html#13' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../ipp/parser/struct.IppHeader.html' title='ipp::parser::IppHeader'>IppHeader</a></code></h4>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-56' class='srclink' href='../src/ipp/src/lib.rs.html#64' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../ipp/struct.IppHeader.html' title='ipp::IppHeader'>IppHeader</a></code></h4>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
 </div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
@@ -121,13 +123,13 @@
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../";
         window.currentCrate = "ipp";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
     
-    <script defer src="../../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

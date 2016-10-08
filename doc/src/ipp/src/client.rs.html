@@ -123,6 +123,7 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
+<span id="82">82</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! IPP client</span>
@@ -131,7 +132,7 @@
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>method</span>::<span class='ident'>Method</span>;
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>Url</span>;
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>status</span>::<span class='ident'>StatusCode</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>BufWriter</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>BufWriter</span>, <span class='ident'>BufReader</span>};
 
 <span class='kw'>use</span> <span class='ident'>request</span>::<span class='ident'>IppRequest</span>;
 <span class='kw'>use</span> <span class='ident'>response</span>::<span class='ident'>IppResponse</span>;
@@ -139,9 +140,9 @@
 <span class='kw'>use</span> <span class='ident'>attribute</span>::{<span class='ident'>IppAttributeList</span>};
 <span class='kw'>use</span> <span class='ident'>parser</span>::<span class='ident'>IppParser</span>;
 
-<span class='doccomment'>/// IPP client</span>
+<span class='doccomment'>/// IPP client.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// IPP client is responsible for sending requests to IPP server</span>
+<span class='doccomment'>/// IPP client is responsible for sending requests to IPP server.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IppClient</span> {}
 
 <span class='kw'>impl</span> <span class='ident'>IppClient</span> {
@@ -166,11 +167,12 @@
                 <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>request</span>.<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>BufWriter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>http_req_stream</span>)));
 
                 <span class='comment'>// get the response</span>
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>http_resp</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>http_req_stream</span>.<span class='ident'>send</span>());
+                <span class='kw'>let</span> <span class='ident'>http_resp</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>http_req_stream</span>.<span class='ident'>send</span>());
 
                 <span class='kw'>if</span> <span class='ident'>http_resp</span>.<span class='ident'>status</span> <span class='op'>==</span> <span class='ident'>StatusCode</span>::<span class='prelude-val'>Ok</span> {
                     <span class='comment'>// HTTP 200 assumes we have IPP response to parse</span>
-                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>parser</span> <span class='op'>=</span> <span class='ident'>IppParser</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>http_resp</span>);
+                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='ident'>BufReader</span>::<span class='ident'>new</span>(<span class='ident'>http_resp</span>);
+                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>parser</span> <span class='op'>=</span> <span class='ident'>IppParser</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>);
                     <span class='kw'>let</span> <span class='ident'>resp</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>IppResponse</span>::<span class='ident'>from_parser</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>parser</span>));
 
                     <span class='prelude-val'>Ok</span>(<span class='ident'>resp</span>)

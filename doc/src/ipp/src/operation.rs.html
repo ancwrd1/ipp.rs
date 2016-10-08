@@ -288,6 +288,9 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! High-level IPP operation abstractions</span>
@@ -326,11 +329,11 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Create Print-Job operation</span>
-    <span class='doccomment'>/// Parameters:</span>
-    <span class='doccomment'>/// * uri - printer URI</span>
-    <span class='doccomment'>/// * reader - std::io::Read reference which points to the data to be printed</span>
-    <span class='doccomment'>/// * user_name - name of the user (requesting-user-name)</span>
-    <span class='doccomment'>/// * job_name - optional job name (job-name)</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// * `uri` - printer URI&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
                <span class='ident'>user_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>PrintJob</span> {
@@ -342,7 +345,7 @@
         }
     }
 
-    <span class='doccomment'>/// Set extra job attribute for this operation, for example colormodel=grayscale</span>
+    <span class='doccomment'>/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_job_attribute</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>attribute</span>: <span class='ident'>IppAttribute</span>) {
         <span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>push</span>(<span class='ident'>attribute</span>);
     }
@@ -374,10 +377,11 @@
             <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>REQUESTING_USER_NAME</span>,
                 <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='self'>self</span>.<span class='ident'>user_name</span>.<span class='ident'>clone</span>())));
 
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>job_name</span>.<span class='ident'>is_some</span>() {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
-                    <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='self'>self</span>.<span class='ident'>job_name</span>.<span class='ident'>clone</span>().<span class='ident'>unwrap</span>())));
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>job_name</span> {
+            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>job_name</span>) <span class='op'>=&gt;</span> <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
+                                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
+                                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='ident'>job_name</span>.<span class='ident'>clone</span>()))),
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {}
         }
 
         <span class='kw'>for</span> <span class='ident'>attr</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>attributes</span> {
@@ -396,8 +400,8 @@
 
 <span class='kw'>impl</span> <span class='ident'>GetPrinterAttributes</span> {
     <span class='doccomment'>/// Create Get-Printer-Attributes operation</span>
-    <span class='doccomment'>/// Parameters:</span>
-    <span class='doccomment'>/// * uri - printer URI</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// * `uri` - printer URI&lt;br/&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>GetPrinterAttributes</span> {
         <span class='ident'>GetPrinterAttributes</span> { <span class='ident'>uri</span>: <span class='ident'>uri</span>.<span class='ident'>to_string</span>(), <span class='ident'>attributes</span>: <span class='ident'>Vec</span>::<span class='ident'>new</span>() }
     }
@@ -433,9 +437,9 @@
 
 <span class='kw'>impl</span> <span class='ident'>CreateJob</span> {
     <span class='doccomment'>/// Create Create-Job operation</span>
-    <span class='doccomment'>/// Parameters:</span>
-    <span class='doccomment'>/// * uri - printer URI</span>
-    <span class='doccomment'>/// * job_name - optional job name (job-name)</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// * `uri` - printer URI&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>CreateJob</span> {
         <span class='ident'>CreateJob</span> {
             <span class='ident'>uri</span>: <span class='ident'>uri</span>.<span class='ident'>to_string</span>(),
@@ -444,10 +448,11 @@
         }
     }
 
-    <span class='doccomment'>/// Set extra job attribute for this operation, for example colormodel=grayscale</span>
+    <span class='doccomment'>/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_job_attribute</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>attribute</span>: <span class='ident'>IppAttribute</span>) {
         <span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>push</span>(<span class='ident'>attribute</span>);
     }
+
 
     <span class='doccomment'>/// Convenience method to execute the request and return the job-id</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_and_get_job_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> {
@@ -473,10 +478,11 @@
     <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>CREATE_JOB</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>uri</span>);
 
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>job_name</span>.<span class='ident'>is_some</span>() {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
-                    <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='self'>self</span>.<span class='ident'>job_name</span>.<span class='ident'>clone</span>().<span class='ident'>unwrap</span>())));
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>job_name</span> {
+            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>job_name</span>) <span class='op'>=&gt;</span> <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
+                                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
+                                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='ident'>job_name</span>.<span class='ident'>clone</span>()))),
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {}
         }
 
         <span class='kw'>for</span> <span class='ident'>attr</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>attributes</span> {
@@ -497,12 +503,12 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Create Send-Document operation</span>
-    <span class='doccomment'>/// Parameters:</span>
-    <span class='doccomment'>/// * uri - printer URI</span>
-    <span class='doccomment'>/// * job_id - job ID returned by Create-Job operation</span>
-    <span class='doccomment'>/// * reader - std::io::Read reference which points to the data to be printed</span>
-    <span class='doccomment'>/// * user_name - name of the user (requesting-user-name)</span>
-    <span class='doccomment'>/// * last - whether this document is a last one</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// * `uri` - printer URI&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `job_id` - job ID returned by Create-Job operation&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
+    <span class='doccomment'>/// * `last` - whether this document is a last one&lt;br/&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>job_id</span>: <span class='ident'>i32</span>, <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
                <span class='ident'>user_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>last</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>SendDocument</span> {

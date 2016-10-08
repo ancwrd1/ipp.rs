@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IppClient","IPP client"]]});
+initSidebarItems({"struct":[["IppClient","IPP client."]]});

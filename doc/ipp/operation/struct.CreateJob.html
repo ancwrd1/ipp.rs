@@ -47,21 +47,23 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1017' class='srclink' href='../../src/ipp/src/operation.rs.html#137-141' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1030' class='srclink' href='../../src/ipp/src/operation.rs.html#138-142' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct CreateJob {
     // some fields omitted
 }</pre><div class='docblock'><p>IPP operation Create-Job</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1021' class='srclink' href='../../src/ipp/src/operation.rs.html#143-179' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1034' class='srclink' href='../../src/ipp/src/operation.rs.html#144-181' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, job_name: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;) -&gt; <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></h4>
-<div class='docblock'><p>Create Create-Job operation
-Parameters:
-* uri - printer URI
-* job_name - optional job name (job-name)</p>
+<div class='docblock'><p>Create Create-Job operation</p>
+
+<ul>
+<li><code>uri</code> - printer URI<br/></li>
+<li><code>job_name</code> - optional job name (job-name)<br/></li>
+</ul>
 </div><h4 id='method.set_job_attribute' class='method'><code>fn <a href='#method.set_job_attribute' class='fnname'>set_job_attribute</a>(&amp;mut self, attribute: <a class='struct' href='../../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>)</code></h4>
-<div class='docblock'><p>Set extra job attribute for this operation, for example colormodel=grayscale</p>
+<div class='docblock'><p>Set extra job attribute for this operation, for example <code>colormodel=grayscale</code></p>
 </div><h4 id='method.execute_and_get_job_id' class='method'><code>fn <a href='#method.execute_and_get_job_id' class='fnname'>execute_and_get_job_id</a>(&amp;mut self) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt;</code></h4>
 <div class='docblock'><p>Convenience method to execute the request and return the job-id</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a> for <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1045' class='srclink' href='../../src/ipp/src/operation.rs.html#181-196' title='goto source code'>[src]</a></span></h3>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a> for <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1058' class='srclink' href='../../src/ipp/src/operation.rs.html#183-199' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.to_ipp_request' class='method'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></h4>
 <div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
 </div><h4 id='method.execute' class='method'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#method.execute' class='fnname'>execute</a>(&amp;mut self) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt;</code></h4>
