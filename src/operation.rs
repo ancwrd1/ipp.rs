@@ -35,11 +35,11 @@ pub struct PrintJob<'a> {
 
 impl<'a> PrintJob<'a> {
     /// Create Print-Job operation
-    /// Parameters:
-    /// * uri - printer URI
-    /// * reader - std::io::Read reference which points to the data to be printed
-    /// * user_name - name of the user (requesting-user-name)
-    /// * job_name - optional job name (job-name)
+    ///
+    /// * `uri` - printer URI<br/>
+    /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
+    /// * `user_name` - name of the user (requesting-user-name)<br/>
+    /// * `job_name` - optional job name (job-name)<br/>
     pub fn new(uri: &str, reader: &'a mut Read,
                user_name: &str, job_name: Option<&str>) -> PrintJob<'a> {
         PrintJob {
@@ -51,7 +51,7 @@ impl<'a> PrintJob<'a> {
         }
     }
 
-    /// Set extra job attribute for this operation, for example colormodel=grayscale
+    /// Set extra job attribute for this operation, for example `colormodel=grayscale`
     pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
@@ -106,8 +106,8 @@ pub struct GetPrinterAttributes {
 
 impl GetPrinterAttributes {
     /// Create Get-Printer-Attributes operation
-    /// Parameters:
-    /// * uri - printer URI
+    ///
+    /// * `uri` - printer URI<br/>
     pub fn new(uri: &str) -> GetPrinterAttributes {
         GetPrinterAttributes { uri: uri.to_string(), attributes: Vec::new() }
     }
@@ -143,9 +143,9 @@ pub struct CreateJob {
 
 impl CreateJob {
     /// Create Create-Job operation
-    /// Parameters:
-    /// * uri - printer URI
-    /// * job_name - optional job name (job-name)
+    ///
+    /// * `uri` - printer URI<br/>
+    /// * `job_name` - optional job name (job-name)<br/>
     pub fn new(uri: &str, job_name: Option<&str>) -> CreateJob {
         CreateJob {
             uri: uri.to_string(),
@@ -154,10 +154,11 @@ impl CreateJob {
         }
     }
 
-    /// Set extra job attribute for this operation, for example colormodel=grayscale
+    /// Set extra job attribute for this operation, for example `colormodel=grayscale`
     pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
+
 
     /// Convenience method to execute the request and return the job-id
     pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
@@ -208,12 +209,12 @@ pub struct SendDocument<'a> {
 
 impl<'a> SendDocument<'a> {
     /// Create Send-Document operation
-    /// Parameters:
-    /// * uri - printer URI
-    /// * job_id - job ID returned by Create-Job operation
-    /// * reader - std::io::Read reference which points to the data to be printed
-    /// * user_name - name of the user (requesting-user-name)
-    /// * last - whether this document is a last one
+    ///
+    /// * `uri` - printer URI<br/>
+    /// * `job_id` - job ID returned by Create-Job operation<br/>
+    /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
+    /// * `user_name` - name of the user (requesting-user-name)<br/>
+    /// * `last` - whether this document is a last one<br/>
     pub fn new(uri: &str, job_id: i32, reader: &'a mut Read,
                user_name: &str, last: bool) -> SendDocument<'a> {
         SendDocument {

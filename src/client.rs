@@ -13,9 +13,9 @@ use ::{IppError, Result};
 use attribute::{IppAttributeList};
 use parser::IppParser;
 
-/// IPP client
+/// IPP client.
 ///
-/// IPP client is responsible for sending requests to IPP server
+/// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {}
 
 impl IppClient {

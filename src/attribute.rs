@@ -30,8 +30,9 @@ pub struct IppAttribute {
 
 impl IppAttribute {
     /// Create new instance of the attribute
-    /// * name - Attribute name
-    /// * value - Attribute value
+    ///
+    /// * `name` - Attribute name<br/>
+    /// * `value` - Attribute value<br/>
     pub fn new(name: &str, value: IppValue) -> IppAttribute {
         IppAttribute {name: name.to_string(), value: value}
     }
@@ -78,8 +79,9 @@ impl IppAttributeList {
     }
 
     /// Add attribute to the list
-    /// * group - delimiter group
-    /// * attribute - attribute to add
+    ///
+    /// * `group` - delimiter group<br/>
+    /// * `attribute` - attribute to add<br/>
     pub fn add(&mut self, group: u8, attribute: IppAttribute) {
         if !self.attributes.contains_key(&group) {
             self.attributes.insert(group, BTreeMap::new());
