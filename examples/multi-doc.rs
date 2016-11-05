@@ -5,9 +5,11 @@ use std::env;
 use std::process::exit;
 use std::fs::File;
 
-use ipp::consts::tag::JOB_ATTRIBUTES_TAG;
-
-use ipp::operation::{IppOperation, CreateJob, SendDocument};
+use ipp::consts::tag::{PRINTER_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG};
+use ipp::consts::attribute::OPERATIONS_SUPPORTED;
+use ipp::consts::operation::{CREATE_JOB, SEND_DOCUMENT};
+use ipp::operation::{IppOperation, GetPrinterAttributes, CreateJob, SendDocument};
+use ipp::value::IppValue;
 
 pub fn main() {
     env_logger::init().unwrap();
@@ -17,6 +19,32 @@ pub fn main() {
     if args.len() < 3 {
         println!("Usage: {} uri filename [filename...]", args[0]);
         exit(1);
+    }
+
+    // check if printer supports create/send operations
+    let mut get_op = GetPrinterAttributes::new(&args[1]);
+    let printer_attrs = get_op.execute().unwrap();
+    let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
+
+    match ops_attr.value() {
+        &IppValue::ListOf(ref list) => {
+            match list.into_iter().find(|&e| {
+                match e {
+                    &IppValue::Enum(v) | &IppValue::Integer(v) =>
+                        v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT,
+                    _ => false
+                }
+            }) {
+                Some(_) => {}
+                None => {
+                    println!("Target printer does not support create/send operations");
+                    exit(2);
+                }
+            }
+        }
+        _ => {
+            println!("Unknown operations-supported attribute type");
+        }
     }
 
     let mut create_op = CreateJob::new(&args[1], Some("multi-doc"));
