@@ -26,24 +26,13 @@ pub fn main() {
     let printer_attrs = get_op.execute().unwrap();
     let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
 
-    match ops_attr.value() {
-        &IppValue::ListOf(ref list) => {
-            match list.into_iter().find(|&e| {
-                match e {
-                    &IppValue::Enum(v) | &IppValue::Integer(v) =>
-                        v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT,
-                    _ => false
-                }
-            }) {
-                Some(_) => {}
-                None => {
-                    println!("Target printer does not support create/send operations");
-                    exit(2);
-                }
-            }
-        }
-        _ => {
-            println!("Unknown operations-supported attribute type");
+    if let &IppValue::ListOf(ref list) = ops_attr.value() {
+        if let None = list.into_iter().find(|&e| {
+            if let &IppValue::Enum(v) = e { v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT }
+            else { false }
+        }) {
+            println!("ERROR: target printer does not support create/send operations");
+            exit(2);
         }
     }
 
