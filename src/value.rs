@@ -258,3 +258,27 @@ impl fmt::Display for IppValue {
         }
     }
 }
+
+impl IntoIterator for IppValue {
+    type Item = IppValue;
+    type IntoIter = IppValueIntoIterator;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IppValueIntoIterator { value: self, index: 0 }
+    }
+}
+
+pub struct IppValueIntoIterator {
+    value: IppValue,
+    index: usize
+}
+
+impl Iterator for IppValueIntoIterator {
+    type Item = IppValue;
+    fn next(&mut self) -> Option<IppValue> {
+        match &self.value {
+            &IppValue::ListOf(ref list) => if self.index < list.len() { self.index += 1; Some(list[self.index].clone()) } else { None },
+            _ => if self.index == 0 { self.index += 1; Some(self.value.clone()) } else { None }
+        }
+    }
+}
