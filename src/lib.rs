@@ -71,9 +71,9 @@ pub struct IppHeader {
 impl IppHeader {
     pub fn from_reader(reader: &mut Read) -> Result<IppHeader> {
         let retval = IppHeader::new(
-            try!(reader.read_u16::<BigEndian>()),
-            try!(reader.read_u16::<BigEndian>()),
-            try!(reader.read_u32::<BigEndian>()));
+            reader.read_u16::<BigEndian>()?,
+            reader.read_u16::<BigEndian>()?,
+            reader.read_u32::<BigEndian>()?);
         Ok(retval)
     }
 
@@ -83,9 +83,9 @@ impl IppHeader {
     }
 
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
-        try!(writer.write_u16::<BigEndian>(self.version));
-        try!(writer.write_u16::<BigEndian>(self.status));
-        try!(writer.write_u32::<BigEndian>(self.request_id));
+        writer.write_u16::<BigEndian>(self.version)?;
+        writer.write_u16::<BigEndian>(self.status)?;
+        writer.write_u32::<BigEndian>(self.request_id)?;
 
         Ok(8)
     }
@@ -94,14 +94,14 @@ impl IppHeader {
 /// Trait which adds two methods to Read implementations: read_string and read_vec
 pub trait ReadIppExt: Read {
     fn read_string(&mut self, len: usize) -> std::io::Result<String> {
-        Ok(String::from_utf8_lossy(&try!(self.read_vec(len))).to_string())
+        Ok(String::from_utf8_lossy(&self.read_vec(len)?).to_string())
     }
 
     fn read_vec(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
         let mut namebuf: Vec<u8> = Vec::with_capacity(len);
         unsafe { namebuf.set_len(len) };
 
-        try!(self.read_exact(&mut namebuf[..]));
+        self.read_exact(&mut namebuf[..])?;
 
         Ok(namebuf)
     }

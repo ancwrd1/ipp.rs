@@ -58,74 +58,74 @@ impl IppValue {
 
     /// Read value from binary stream
     pub fn read(vtag: u8, reader: &mut Read) -> Result<IppValue> {
-        let vsize = try!(reader.read_u16::<BigEndian>());
+        let vsize = reader.read_u16::<BigEndian>()?;
 
         match vtag {
             INTEGER => {
                 debug_assert_eq!(vsize, 4);
-                Ok(IppValue::Integer(try!(reader.read_i32::<BigEndian>())))
+                Ok(IppValue::Integer(reader.read_i32::<BigEndian>()?))
             }
             ENUM => {
                 debug_assert_eq!(vsize, 4);
-                Ok(IppValue::Enum(try!(reader.read_i32::<BigEndian>())))
+                Ok(IppValue::Enum(reader.read_i32::<BigEndian>()?))
             }
             OCTECTSTRING_UNSPECIFIED => {
-                Ok(IppValue::OctetString(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::OctetString(reader.read_string(vsize as usize)?))
             }
             TEXT_WITHOUT_LANGUAGE => {
-                Ok(IppValue::TextWithoutLanguage(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::TextWithoutLanguage(reader.read_string(vsize as usize)?))
             }
             NAME_WITHOUT_LANGUAGE => {
-                Ok(IppValue::NameWithoutLanguage(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::NameWithoutLanguage(reader.read_string(vsize as usize)?))
             }
             CHARSET => {
-                Ok(IppValue::Charset(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::Charset(reader.read_string(vsize as usize)?))
             }
             NATURAL_LANGUAGE => {
-                Ok(IppValue::NaturalLanguage(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::NaturalLanguage(reader.read_string(vsize as usize)?))
             }
             URI => {
-                Ok(IppValue::Uri(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::Uri(reader.read_string(vsize as usize)?))
             }
             RANGEOFINTEGER => {
                 debug_assert_eq!(vsize, 8);
-                Ok(IppValue::RangeOfInteger(try!(reader.read_i32::<BigEndian>()),
-                                             try!(reader.read_i32::<BigEndian>())))
+                Ok(IppValue::RangeOfInteger(reader.read_i32::<BigEndian>()?,
+                                             reader.read_i32::<BigEndian>()?))
             }
             BOOLEAN => {
                 debug_assert_eq!(vsize, 1);
-                Ok(IppValue::Boolean(try!(reader.read_u8()) != 0))
+                Ok(IppValue::Boolean(reader.read_u8()? != 0))
             }
             KEYWORD => {
-                Ok(IppValue::Keyword(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::Keyword(reader.read_string(vsize as usize)?))
             }
             MIME_MEDIA_TYPE => {
-                Ok(IppValue::MimeMediaType(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?))
             }
             DATETIME => {
                 Ok(IppValue::DateTime(
-                    try!(reader.read_u16::<BigEndian>()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8()) as char,
-                    try!(reader.read_u8()),
-                    try!(reader.read_u8())))
+                    reader.read_u16::<BigEndian>()?,
+                    reader.read_u8()?,
+                    reader.read_u8()?,
+                    reader.read_u8()?,
+                    reader.read_u8()?,
+                    reader.read_u8()?,
+                    reader.read_u8()?,
+                    reader.read_u8()? as char,
+                    reader.read_u8()?,
+                    reader.read_u8()?))
             }
             MEMBER_ATTR_NAME => {
-                Ok(IppValue::MemberAttrName(try!(reader.read_string(vsize as usize))))
+                Ok(IppValue::MemberAttrName(reader.read_string(vsize as usize)?))
             }
             RESOLUTION => {
                 Ok(IppValue::Resolution(
-                    try!(reader.read_i32::<BigEndian>()),
-                    try!(reader.read_i32::<BigEndian>()),
-                    try!(reader.read_i8())))
+                    reader.read_i32::<BigEndian>()?,
+                    reader.read_i32::<BigEndian>()?,
+                    reader.read_i8()?))
             }
             _ => {
-                Ok(IppValue::Other(vtag, try!(reader.read_vec(vsize as usize))))
+                Ok(IppValue::Other(vtag, reader.read_vec(vsize as usize)?))
             }
         }
     }
@@ -134,19 +134,19 @@ impl IppValue {
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
-                try!(writer.write_u16::<BigEndian>(4));
-                try!(writer.write_i32::<BigEndian>(i));
+                writer.write_u16::<BigEndian>(4)?;
+                writer.write_i32::<BigEndian>(i)?;
                 Ok(6)
             }
             IppValue::RangeOfInteger(min, max) => {
-                try!(writer.write_u16::<BigEndian>(8));
-                try!(writer.write_i32::<BigEndian>(min));
-                try!(writer.write_i32::<BigEndian>(max));
+                writer.write_u16::<BigEndian>(8)?;
+                writer.write_i32::<BigEndian>(min)?;
+                writer.write_i32::<BigEndian>(max)?;
                 Ok(10)
             }
             IppValue::Boolean(b) => {
-                try!(writer.write_u16::<BigEndian>(1));
-                try!(writer.write_u8(if b {1} else {0}));
+                writer.write_u16::<BigEndian>(1)?;
+                writer.write_u8(if b {1} else {0})?;
                 Ok(3)
             }
             IppValue::Keyword(ref s) | IppValue::OctetString(ref s) |
@@ -154,17 +154,17 @@ impl IppValue {
             IppValue::Charset(ref s) | IppValue::NaturalLanguage(ref s) |
             IppValue::Uri(ref s) | IppValue::MimeMediaType(ref s) |
             IppValue::MemberAttrName(ref s) => {
-                try!(writer.write_u16::<BigEndian>(s.len() as u16));
-                try!(writer.write_all(s.as_bytes()));
+                writer.write_u16::<BigEndian>(s.len() as u16)?;
+                writer.write_all(s.as_bytes())?;
                 Ok(2 + s.len())
             }
             IppValue::ListOf(ref list) => {
                 let mut retval = 0;
                 for i in 0..list.len() {
-                    retval += try!(list[i].write(writer));
+                    retval += list[i].write(writer)?;
                     if i < list.len() - 1 {
-                        try!(writer.write_u8(self.to_tag()));
-                        try!(writer.write_u16::<BigEndian>(0));
+                        writer.write_u8(self.to_tag())?;
+                        writer.write_u16::<BigEndian>(0)?;
                         retval += 3;
                     }
                 }
@@ -173,43 +173,43 @@ impl IppValue {
             IppValue::Collection(ref list) => {
                 let mut retval = 0;
                 for i in 0..list.len() {
-                    retval += try!(list[i].write(writer));
+                    retval += list[i].write(writer)?;
                     if i < list.len() - 1 {
-                        try!(writer.write_u8(self.to_tag()));
-                        try!(writer.write_u16::<BigEndian>(0));
+                        writer.write_u8(self.to_tag())?;
+                        writer.write_u16::<BigEndian>(0)?;
                         retval += 3;
                     }
                 }
-                try!(writer.write_u8(END_COLLECTION));
+                writer.write_u8(END_COLLECTION)?;
                 retval += 1;
                 Ok(retval)
             }
             IppValue::DateTime(year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, utcmins) => {
-                try!(writer.write_u16::<BigEndian>(11));
+                writer.write_u16::<BigEndian>(11)?;
 
-                try!(writer.write_u16::<BigEndian>(year));
-                try!(writer.write_u8(month));
-                try!(writer.write_u8(day));
-                try!(writer.write_u8(hour));
-                try!(writer.write_u8(minutes));
-                try!(writer.write_u8(seconds));
-                try!(writer.write_u8(deciseconds));
-                try!(writer.write_u8(utcdir as u8));
-                try!(writer.write_u8(utchours));
-                try!(writer.write_u8(utcmins));
+                writer.write_u16::<BigEndian>(year)?;
+                writer.write_u8(month)?;
+                writer.write_u8(day)?;
+                writer.write_u8(hour)?;
+                writer.write_u8(minutes)?;
+                writer.write_u8(seconds)?;
+                writer.write_u8(deciseconds)?;
+                writer.write_u8(utcdir as u8)?;
+                writer.write_u8(utchours)?;
+                writer.write_u8(utcmins)?;
 
                 Ok(13)
             }
             IppValue::Resolution(crossfeed, feed, units) => {
-                try!(writer.write_u16::<BigEndian>(9));
-                try!(writer.write_i32::<BigEndian>(crossfeed));
-                try!(writer.write_i32::<BigEndian>(feed));
-                try!(writer.write_i8(units));
+                writer.write_u16::<BigEndian>(9)?;
+                writer.write_i32::<BigEndian>(crossfeed)?;
+                writer.write_i32::<BigEndian>(feed)?;
+                writer.write_i8(units)?;
                 Ok(9)
             }
             IppValue::Other(_, ref vec) => {
-                try!(writer.write_u16::<BigEndian>(vec.len() as u16));
-                try!(writer.write_all(&vec[..]));
+                writer.write_u16::<BigEndian>(vec.len() as u16)?;
+                writer.write_all(&vec[..])?;
                 Ok(2 + vec.len())
             }
         }

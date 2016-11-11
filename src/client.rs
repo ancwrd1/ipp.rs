@@ -29,24 +29,24 @@ impl IppClient {
         match Url::parse(request.uri()) {
             Ok(url) => {
                 // create request and set headers
-                let mut http_req_fresh = try!(Request::new(Method::Post, url));
+                let mut http_req_fresh = Request::new(Method::Post, url)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
                 // connect and send headers
-                let mut http_req_stream = try!(http_req_fresh.start());
+                let mut http_req_stream = http_req_fresh.start()?;
 
                 // send IPP request using buffered writer.
                 // NOTE: unbuffered output will cause issues on many IPP implementations including CUPS
-                try!(request.write(&mut BufWriter::new(&mut http_req_stream)));
+                request.write(&mut BufWriter::new(&mut http_req_stream))?;
 
                 // get the response
-                let http_resp = try!(http_req_stream.send());
+                let http_resp = http_req_stream.send()?;
 
                 if http_resp.status == StatusCode::Ok {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
-                    let resp = try!(IppResponse::from_parser(&mut parser));
+                    let resp = IppResponse::from_parser(&mut parser)?;
 
                     Ok(resp)
                 } else {

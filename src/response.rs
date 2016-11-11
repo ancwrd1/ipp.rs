@@ -17,7 +17,7 @@ pub struct IppResponse {
 impl IppResponse {
     /// Create IppResponse from the parser
     pub fn from_parser(parser: &mut IppParser) -> Result<IppResponse> {
-        let res = try!(parser.parse());
+        let res = parser.parse()?;
 
         Ok(IppResponse { header: res.header().clone(), attributes: res.attributes().clone() })
     }

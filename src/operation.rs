@@ -57,7 +57,7 @@ impl<'a> PrintJob<'a> {
     }
 
     pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
-        let attrs = try!(self.execute());
+        let attrs = self.execute()?;
         let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
         match val {
             Some(attr) => match attr.value() {
@@ -162,7 +162,7 @@ impl CreateJob {
 
     /// Convenience method to execute the request and return the job-id
     pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
-        let attrs = try!(self.execute());
+        let attrs = self.execute()?;
         let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
         match val {
             Some(attr) => match attr.value() {

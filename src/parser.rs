@@ -50,13 +50,13 @@ impl<'a> IppParser<'a> {
         let mut retval: IppAttributeList = IppAttributeList::new();
         let mut prev = (0, String::new());
 
-        let header = try!(IppHeader::from_reader(self.reader));
+        let header = IppHeader::from_reader(self.reader)?;
         debug!("IPP reply header: {:?}", header);
 
         stack.push(Vec::new());
 
         loop {
-            let tag = try!(self.reader.read_u8());
+            let tag = self.reader.read_u8()?;
             if is_delimiter_tag(tag) {
                 debug!("Delimiter tag: {:0x}", tag);
                 if tag == END_OF_ATTRIBUTES_TAG {
@@ -70,9 +70,9 @@ impl<'a> IppParser<'a> {
                 }
             } else if is_value_tag(tag) {
                 // value tag
-                let namelen = try!(self.reader.read_u16::<BigEndian>());
-                let name = try!(self.reader.read_string(namelen as usize));
-                let value = try!(IppValue::read(tag, &mut self.reader));
+                let namelen = self.reader.read_u16::<BigEndian>()?;
+                let name = self.reader.read_string(namelen as usize)?;
+                let value = IppValue::read(tag, &mut self.reader)?;
 
                 debug!("Value tag: {:0x}: {}: {}", tag, name, value);
 

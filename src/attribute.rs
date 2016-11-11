@@ -51,16 +51,16 @@ impl IppAttribute {
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         let mut retval = 0;
 
-        try!(writer.write_u8(self.value.to_tag()));
+        writer.write_u8(self.value.to_tag())?;
         retval += 1;
 
-        try!(writer.write_u16::<BigEndian>(self.name.len() as u16));
+        writer.write_u16::<BigEndian>(self.name.len() as u16)?;
         retval += 2;
 
-        try!(writer.write_all(self.name.as_bytes()));
+        writer.write_all(self.name.as_bytes())?;
         retval += self.name.len();
 
-        retval += try!(self.value.write(writer));
+        retval += self.value.write(writer)?;
 
         Ok(retval)
     }
@@ -106,13 +106,13 @@ impl IppAttributeList {
     /// Serialize attribute list into binary stream
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         // first send the header attributes
-        try!(writer.write_u8(OPERATION_ATTRIBUTES_TAG));
+        writer.write_u8(OPERATION_ATTRIBUTES_TAG)?;
 
         let mut retval = 1;
 
         for hdr in HEADER_ATTRS.into_iter() {
             match self.get(OPERATION_ATTRIBUTES_TAG, hdr) {
-                Some(attr) => retval += try!(attr.write(writer)),
+                Some(attr) => retval += attr.write(writer)?,
                 None => {}
             }
         }
@@ -123,18 +123,18 @@ impl IppAttributeList {
             match self.get_group(group) {
                 Some(attrs) => {
                     if group != OPERATION_ATTRIBUTES_TAG {
-                        try!(writer.write_u8(group));
+                        writer.write_u8(group)?;
                         retval += 1;
                     }
                     for (_, attr) in attrs.iter().filter(
                         |&(_, v)| group != OPERATION_ATTRIBUTES_TAG || !is_header_attr(v.name())) {
-                        retval += try!(attr.write(writer));
+                        retval += attr.write(writer)?;
                     }
                 },
                 None => {}
             }
         }
-        try!(writer.write_u8(END_OF_ATTRIBUTES_TAG));
+        writer.write_u8(END_OF_ATTRIBUTES_TAG)?;
         retval += 1;
 
         Ok(retval)

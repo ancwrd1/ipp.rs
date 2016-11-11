@@ -64,15 +64,15 @@ impl<'a> IppRequest<'a> {
     /// Serialize request into the binary stream (TCP)
     pub fn write(&'a mut self, writer: &mut Write) -> Result<usize> {
         let hdr = IppHeader::new(IPP_VERSION, self.operation, 1);
-        let mut retval = try!(hdr.write(writer));
+        let mut retval = hdr.write(writer)?;
 
-        retval += try!(self.attributes.write(writer));
+        retval += self.attributes.write(writer)?;
 
         debug!("Wrote {} bytes IPP stream", retval);
 
         match self.payload {
             Some(ref mut payload) => {
-                let size = try!(io::copy(payload, writer)) as usize;
+                let size = io::copy(payload, writer)? as usize;
                 debug!("Wrote {} bytes payload", size);
                 retval += size;
             }
