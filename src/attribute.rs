@@ -92,9 +92,10 @@ impl IppAttributeList {
 
     /// Get attribute from the list
     pub fn get<'a>(&'a self, group: u8, name: &str) -> Option<&IppAttribute> {
-        match self.attributes.get(&group) {
-            Some(attrs) => attrs.get(name),
-            None => None
+        if let Some(attrs) = self.attributes.get(&group) {
+            attrs.get(name)
+        } else {
+            None
         }
     }
 
@@ -111,27 +112,23 @@ impl IppAttributeList {
         let mut retval = 1;
 
         for hdr in HEADER_ATTRS.into_iter() {
-            match self.get(OPERATION_ATTRIBUTES_TAG, hdr) {
-                Some(attr) => retval += attr.write(writer)?,
-                None => {}
+            if let Some(attr) = self.get(OPERATION_ATTRIBUTES_TAG, hdr) {
+                retval += attr.write(writer)?
             }
         }
 
         // now the rest
         for hdr in [OPERATION_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG].into_iter() {
             let group = *hdr;
-            match self.get_group(group) {
-                Some(attrs) => {
-                    if group != OPERATION_ATTRIBUTES_TAG {
-                        writer.write_u8(group)?;
-                        retval += 1;
-                    }
-                    for (_, attr) in attrs.iter().filter(
-                        |&(_, v)| group != OPERATION_ATTRIBUTES_TAG || !is_header_attr(v.name())) {
-                        retval += attr.write(writer)?;
-                    }
-                },
-                None => {}
+            if let Some(attrs) = self.get_group(group) {
+                if group != OPERATION_ATTRIBUTES_TAG {
+                    writer.write_u8(group)?;
+                    retval += 1;
+                }
+                for (_, attr) in attrs.iter().filter(
+                    |&(_, v)| group != OPERATION_ATTRIBUTES_TAG || !is_header_attr(v.name())) {
+                    retval += attr.write(writer)?;
+                }
             }
         }
         writer.write_u8(END_OF_ATTRIBUTES_TAG)?;

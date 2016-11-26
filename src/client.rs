@@ -52,9 +52,10 @@ impl IppClient {
                 } else {
                     error!("HTTP error: {}", http_resp.status);
                     Err(IppError::RequestError(
-                        match http_resp.status.canonical_reason() {
-                            Some(reason) => reason.to_string(),
-                            None => format!("{}", http_resp.status)
+                        if let Some(reason) = http_resp.status.canonical_reason() {
+                            reason.to_string()
+                        } else {
+                            format!("{}", http_resp.status)
                         }))
                 }
             }

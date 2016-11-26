@@ -70,13 +70,10 @@ impl<'a> IppRequest<'a> {
 
         debug!("Wrote {} bytes IPP stream", retval);
 
-        match self.payload {
-            Some(ref mut payload) => {
-                let size = io::copy(payload, writer)? as usize;
-                debug!("Wrote {} bytes payload", size);
-                retval += size;
-            }
-            None => {}
+        if let Some(ref mut payload) = self.payload {
+            let size = io::copy(payload, writer)? as usize;
+            debug!("Wrote {} bytes payload", size);
+            retval += size;
         }
 
         Ok(retval)

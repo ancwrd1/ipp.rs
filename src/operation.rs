@@ -46,7 +46,7 @@ impl<'a> PrintJob<'a> {
             uri: uri.to_string(),
             reader: reader,
             user_name: user_name.to_string(),
-            job_name: match job_name { Some(name) => Some(name.to_string()), None => None },
+            job_name: if let Some(name) = job_name { Some(name.to_string()) } else { None },
             attributes: Vec::new()
         }
     }
@@ -58,19 +58,16 @@ impl<'a> PrintJob<'a> {
 
     pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
         let attrs = self.execute()?;
-        let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
-        match val {
-            Some(attr) => match attr.value() {
-                &IppValue::Integer(id) => Ok(id),
-                _ => {
-                    error!("Invalid job-id attribute in the response");
-                    Err(IppError::AttributeError(JOB_ID.to_string()))
-                }
-            },
-            None => {
-                error!("No job-id attribute in the response");
+        if let Some(attr) = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID) {
+            if let &IppValue::Integer(id) = attr.value() {
+                Ok(id)
+            } else {
+                error!("Invalid job-id attribute in the response");
                 Err(IppError::AttributeError(JOB_ID.to_string()))
             }
+        } else {
+            error!("No job-id attribute in the response");
+            Err(IppError::AttributeError(JOB_ID.to_string()))
         }
     }
 }
@@ -83,11 +80,10 @@ impl<'a> IppOperation for PrintJob<'a> {
             IppAttribute::new(REQUESTING_USER_NAME,
                 IppValue::NameWithoutLanguage(self.user_name.clone())));
 
-        match self.job_name {
-            Some(ref job_name) => retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        if let Some(ref job_name) = self.job_name {
+            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
                                 IppAttribute::new(JOB_NAME,
-                                IppValue::NameWithoutLanguage(job_name.clone()))),
-            None => {}
+                                IppValue::NameWithoutLanguage(job_name.clone())))
         }
 
         for attr in &self.attributes {
@@ -149,7 +145,7 @@ impl CreateJob {
     pub fn new(uri: &str, job_name: Option<&str>) -> CreateJob {
         CreateJob {
             uri: uri.to_string(),
-            job_name: match job_name { Some(name) => Some(name.to_string()), None => None },
+            job_name: if let Some(name) = job_name { Some(name.to_string()) } else { None },
             attributes: Vec::new()
         }
     }
@@ -163,19 +159,17 @@ impl CreateJob {
     /// Convenience method to execute the request and return the job-id
     pub fn execute_and_get_job_id(&mut self) -> Result<i32> {
         let attrs = self.execute()?;
-        let val = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID);
-        match val {
-            Some(attr) => match attr.value() {
-                &IppValue::Integer(id) => Ok(id),
-                _ => {
-                    error!("Invalid job-id attribute in the response");
-                    Err(IppError::AttributeError(JOB_ID.to_string()))
-                }
-            },
-            None => {
-                error!("No job-id attribute in the response");
+
+        if let Some(attr) = attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID) {
+            if let &IppValue::Integer(id) = attr.value() {
+                Ok(id)
+            } else {
+                error!("Invalid job-id attribute in the response");
                 Err(IppError::AttributeError(JOB_ID.to_string()))
             }
+        } else {
+            error!("No job-id attribute in the response");
+            Err(IppError::AttributeError(JOB_ID.to_string()))
         }
     }
 }
@@ -184,11 +178,10 @@ impl IppOperation for CreateJob {
     fn to_ipp_request(&mut self) -> IppRequest {
         let mut retval = IppRequest::new(CREATE_JOB, &self.uri);
 
-        match self.job_name {
-            Some(ref job_name) => retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        if let Some(ref job_name) = self.job_name {
+            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
                                 IppAttribute::new(JOB_NAME,
-                                IppValue::NameWithoutLanguage(job_name.clone()))),
-            None => {}
+                                IppValue::NameWithoutLanguage(job_name.clone())))
         }
 
         for attr in &self.attributes {
