@@ -92,11 +92,7 @@ impl IppAttributeList {
 
     /// Get attribute from the list
     pub fn get<'a>(&'a self, group: u8, name: &str) -> Option<&IppAttribute> {
-        if let Some(attrs) = self.attributes.get(&group) {
-            attrs.get(name)
-        } else {
-            None
-        }
+        self.attributes.get(&group).map_or(None, |attrs| attrs.get(name))
     }
 
     /// Get attribute list for a group
