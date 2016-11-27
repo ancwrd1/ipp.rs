@@ -39,7 +39,7 @@ pub fn main() {
             IppValue::Keyword(v.to_string())
         };
 
-        operation.set_job_attribute(IppAttribute::new(k, value));
+        operation.add_attribute(IppAttribute::new(k, value));
     }
 
     let attrs = operation.execute().unwrap();

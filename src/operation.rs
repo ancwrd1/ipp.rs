@@ -52,7 +52,7 @@ impl<'a> PrintJob<'a> {
     }
 
     /// Set extra job attribute for this operation, for example `colormodel=grayscale`
-    pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
+    pub fn add_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
 
@@ -109,10 +109,10 @@ impl GetPrinterAttributes {
     }
 
     /// Set attributes to request from the printer
-    pub fn set_attributes(&mut self, attributes: &[String]) {
-        for a in attributes {
-            self.attributes.push(a.to_string())
-        }
+    pub fn with_attributes(uri: &str, attributes: &[String]) -> GetPrinterAttributes {
+        let mut attrs = Vec::<String>::new();
+        for a in attributes { attrs.push(a.to_string()) }
+        GetPrinterAttributes { uri: uri.to_string(), attributes: attrs }
     }
 }
 
@@ -151,7 +151,7 @@ impl CreateJob {
     }
 
     /// Set extra job attribute for this operation, for example `colormodel=grayscale`
-    pub fn set_job_attribute(&mut self, attribute: IppAttribute) {
+    pub fn add_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
 

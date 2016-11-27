@@ -17,9 +17,7 @@ pub fn main() {
         exit(1);
     }
 
-    let mut operation = GetPrinterAttributes::new(&args[1]);
-    operation.set_attributes(&args[2..]);
-
+    let mut operation = GetPrinterAttributes::with_attributes(&args[1], &args[2..]);
     let attrs = operation.execute().unwrap();
 
     for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
