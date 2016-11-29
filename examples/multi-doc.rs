@@ -22,7 +22,7 @@ pub fn main() {
     }
 
     // check if printer supports create/send operations
-    let mut get_op = GetPrinterAttributes::new(&args[1]);
+    let mut get_op = GetPrinterAttributes::with_attributes(&args[1], &[OPERATIONS_SUPPORTED.to_string()]);
     let printer_attrs = get_op.execute().unwrap();
     let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
 

@@ -110,9 +110,7 @@ impl GetPrinterAttributes {
 
     /// Set attributes to request from the printer
     pub fn with_attributes(uri: &str, attributes: &[String]) -> GetPrinterAttributes {
-        let mut attrs = Vec::<String>::new();
-        for a in attributes { attrs.push(a.to_string()) }
-        GetPrinterAttributes { uri: uri.to_string(), attributes: attrs }
+        GetPrinterAttributes { uri: uri.to_string(), attributes: attributes.to_vec() }
     }
 }
 
