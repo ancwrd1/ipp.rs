@@ -1,7 +1,7 @@
 //!
 //! Attribute-related structs
 //!
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::io::Write;
 use byteorder::{BigEndian, WriteBytesExt};
 
@@ -69,13 +69,13 @@ impl IppAttribute {
 /// Attribute list indexed by group and name
 #[derive(Clone)]
 pub struct IppAttributeList {
-    attributes: BTreeMap<u8, BTreeMap<String, IppAttribute>>
+    attributes: HashMap<u8, HashMap<String, IppAttribute>>
 }
 
 impl IppAttributeList {
     /// Create attribute list
     pub fn new() -> IppAttributeList {
-        IppAttributeList { attributes: BTreeMap::new() }
+        IppAttributeList { attributes: HashMap::new() }
     }
 
     /// Add attribute to the list
@@ -84,7 +84,7 @@ impl IppAttributeList {
     /// * `attribute` - attribute to add<br/>
     pub fn add(&mut self, group: u8, attribute: IppAttribute) {
         if !self.attributes.contains_key(&group) {
-            self.attributes.insert(group, BTreeMap::new());
+            self.attributes.insert(group, HashMap::new());
         }
         let mut opt = self.attributes.get_mut(&group).unwrap();
         opt.insert(attribute.name().to_string(), attribute);
@@ -96,7 +96,7 @@ impl IppAttributeList {
     }
 
     /// Get attribute list for a group
-    pub fn get_group<'a>(&'a self, group: u8) -> Option<&BTreeMap<String, IppAttribute>> {
+    pub fn get_group<'a>(&'a self, group: u8) -> Option<&HashMap<String, IppAttribute>> {
         self.attributes.get(&group)
     }
 
