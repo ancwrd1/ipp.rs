@@ -101,7 +101,7 @@ pub trait ReadIppExt: Read {
         let mut namebuf: Vec<u8> = Vec::with_capacity(len);
         unsafe { namebuf.set_len(len) };
 
-        self.read_exact(&mut namebuf[..])?;
+        self.read_exact(&mut namebuf)?;
 
         Ok(namebuf)
     }

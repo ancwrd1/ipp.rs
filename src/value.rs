@@ -209,7 +209,7 @@ impl IppValue {
             }
             IppValue::Other(_, ref vec) => {
                 writer.write_u16::<BigEndian>(vec.len() as u16)?;
-                writer.write_all(&vec[..])?;
+                writer.write_all(&vec)?;
                 Ok(2 + vec.len())
             }
         }
