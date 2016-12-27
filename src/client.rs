@@ -7,7 +7,7 @@ use hyper::client::request::Request;
 use hyper::method::Method;
 use hyper::{self, Url};
 use hyper::status::StatusCode;
-use hyper::net::{SslClient, NetworkStream, HttpsConnector};
+use hyper::net::{SslClient, NetworkStream, HttpsConnector, Fresh};
 use openssl::ssl::{Ssl, SslContext, SslStream, SslMethod};
 
 use request::IppRequest;
@@ -16,8 +16,8 @@ use ::{IppError, Result};
 use attribute::{IppAttributeList};
 use parser::IppParser;
 
+// Insecure SSL taken from:
 // https://github.com/maximih/hyper_insecure_https_connector
-
 #[derive(Debug, Clone)]
 struct InsecureOpensslClient(SslContext);
 
@@ -37,8 +37,14 @@ impl<T: NetworkStream + Send + Clone> SslClient<T> for InsecureOpensslClient {
     }
 }
 
-fn insecure_https_connector() -> HttpsConnector<InsecureOpensslClient> {
-    hyper::net::HttpsConnector::new(InsecureOpensslClient::default())
+#[cfg(target_os = "macos")]
+fn make_request(method: Method, url: Url) -> hyper::Result<Request<Fresh>> {
+    Request::new(method, url)
+}
+
+#[cfg(not(target_os = "macos"))]
+fn make_request(method: Method, url: Url) -> hyper::Result<Request<Fresh>> {
+    Request::with_connector(method, url, &HttpsConnector::new(InsecureOpensslClient::default()))
 }
 
 /// IPP client.
@@ -57,7 +63,7 @@ impl IppClient {
         match Url::parse(request.uri()) {
             Ok(url) => {
                 // create request and set headers
-                let mut http_req_fresh = Request::with_connector(Method::Post, url, &insecure_https_connector())?;
+                let mut http_req_fresh = make_request(Method::Post, url)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
                 // connect and send headers
