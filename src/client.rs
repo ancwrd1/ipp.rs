@@ -1,17 +1,45 @@
 //!
 //! IPP client
 //!
+use std::io::{BufWriter, BufReader};
+
 use hyper::client::request::Request;
 use hyper::method::Method;
-use hyper::Url;
+use hyper::{self, Url};
 use hyper::status::StatusCode;
-use std::io::{BufWriter, BufReader};
+use hyper::net::{SslClient, NetworkStream, HttpsConnector};
+use openssl::ssl::{Ssl, SslContext, SslStream, SslMethod};
 
 use request::IppRequest;
 use response::IppResponse;
 use ::{IppError, Result};
 use attribute::{IppAttributeList};
 use parser::IppParser;
+
+// https://github.com/maximih/hyper_insecure_https_connector
+
+#[derive(Debug, Clone)]
+struct InsecureOpensslClient(SslContext);
+
+impl Default for InsecureOpensslClient {
+    fn default() -> InsecureOpensslClient {
+        InsecureOpensslClient(SslContext::new(SslMethod::Sslv23).unwrap())
+    }
+}
+
+impl<T: NetworkStream + Send + Clone> SslClient<T> for InsecureOpensslClient {
+    type Stream = SslStream<T>;
+
+    fn wrap_client(&self, stream: T, host: &str) -> hyper::Result<Self::Stream> {
+        let ssl = Ssl::new(&self.0)?;
+        ssl.set_hostname(host)?;
+        SslStream::connect(ssl, stream).map_err(From::from)
+    }
+}
+
+fn insecure_https_connector() -> HttpsConnector<InsecureOpensslClient> {
+    hyper::net::HttpsConnector::new(InsecureOpensslClient::default())
+}
 
 /// IPP client.
 ///
@@ -29,7 +57,7 @@ impl IppClient {
         match Url::parse(request.uri()) {
             Ok(url) => {
                 // create request and set headers
-                let mut http_req_fresh = Request::new(Method::Post, url)?;
+                let mut http_req_fresh = Request::with_connector(Method::Post, url, &insecure_https_connector())?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
                 // connect and send headers
