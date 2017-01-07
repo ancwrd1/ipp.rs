@@ -13,7 +13,7 @@ use consts::attribute::*;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn to_ipp_request(&mut self) -> IppRequest;
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequest;
 }
 
 /// IPP operation Print-Job
@@ -47,8 +47,8 @@ impl<'a> PrintJob<'a> {
 }
 
 impl<'a> IppOperation for PrintJob<'a> {
-    fn to_ipp_request(&mut self) -> IppRequest {
-        let mut retval = IppRequest::new(PRINT_JOB);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
+        let mut retval = IppRequest::new(PRINT_JOB, uri);
 
         retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
             IppAttribute::new(REQUESTING_USER_NAME,
@@ -87,8 +87,8 @@ impl GetPrinterAttributes {
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn to_ipp_request(&mut self) -> IppRequest {
-        let mut retval = IppRequest::new(GET_PRINTER_ATTRIBUTES);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
+        let mut retval = IppRequest::new(GET_PRINTER_ATTRIBUTES, uri);
 
         if self.attributes.len() > 0 {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
@@ -126,8 +126,8 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn to_ipp_request(&mut self) -> IppRequest {
-        let mut retval = IppRequest::new(CREATE_JOB);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
+        let mut retval = IppRequest::new(CREATE_JOB, uri);
 
         if let Some(ref job_name) = self.job_name {
             retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
@@ -169,8 +169,8 @@ impl<'a> SendDocument<'a> {
 }
 
 impl<'a> IppOperation for SendDocument<'a> {
-    fn to_ipp_request(&mut self) -> IppRequest {
-        let mut retval = IppRequest::new(SEND_DOCUMENT);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
+        let mut retval = IppRequest::new(SEND_DOCUMENT, uri);
 
         retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
             IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)));

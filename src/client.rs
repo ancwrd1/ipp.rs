@@ -11,13 +11,10 @@ use hyper::net::{SslClient, NetworkStream, HttpsConnector, Fresh};
 use openssl::ssl::{Ssl, SslContext, SslStream, SslMethod};
 
 use ::{IppError, Result};
-use consts::tag::OPERATION_ATTRIBUTES_TAG;
-use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use request::IppRequest;
 use response::IppResponse;
 use operation::IppOperation;
-use value::IppValue;
-use attribute::{IppAttribute, IppAttributeList};
+use attribute::IppAttributeList;
 use parser::IppParser;
 
 // Insecure SSL taken from:
@@ -68,7 +65,7 @@ impl IppClient {
 
     /// send IPP operation
     pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
-        match self.post(&mut operation.to_ipp_request()) {
+        match self.post(&mut operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().status > 3 {
                     // IPP error
@@ -86,20 +83,6 @@ impl IppClient {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
-                request.set_attribute(
-                    OPERATION_ATTRIBUTES_TAG,
-                    IppAttribute::new(ATTRIBUTES_CHARSET,
-                                      IppValue::Charset("utf-8".to_string())));
-                request.set_attribute(
-                    OPERATION_ATTRIBUTES_TAG,
-                    IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
-                                      IppValue::NaturalLanguage("en".to_string())));
-
-                request.set_attribute(
-                    OPERATION_ATTRIBUTES_TAG,
-                    IppAttribute::new(PRINTER_URI,
-                                      IppValue::Uri(self.uri.replace("http", "ipp").to_string())));
-
 
                 let mut http_req_fresh = make_request(Method::Post, url)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);

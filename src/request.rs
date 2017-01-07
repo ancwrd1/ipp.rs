@@ -5,6 +5,9 @@ use std::io::{self, Read, Write};
 
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
+use consts::tag::OPERATION_ATTRIBUTES_TAG;
+use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
+use value::IppValue;
 
 /// IPP request struct
 pub struct IppRequest<'a> {
@@ -18,11 +21,29 @@ pub struct IppRequest<'a> {
 
 impl<'a> IppRequest<'a> {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: u16) -> IppRequest<'a> {
-        IppRequest {
+    pub fn new(operation: u16, uri: &str) -> IppRequest<'a> {
+
+        let mut retval = IppRequest {
             operation: operation,
             attributes: IppAttributeList::new(),
-            payload: None }
+            payload: None };
+
+        retval.set_attribute(
+            OPERATION_ATTRIBUTES_TAG,
+            IppAttribute::new(ATTRIBUTES_CHARSET,
+                              IppValue::Charset("utf-8".to_string())));
+        retval.set_attribute(
+            OPERATION_ATTRIBUTES_TAG,
+            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
+                              IppValue::NaturalLanguage("en".to_string())));
+
+        retval.set_attribute(
+            OPERATION_ATTRIBUTES_TAG,
+            IppAttribute::new(PRINTER_URI,
+                              IppValue::Uri(uri.replace("http", "ipp").to_string())));
+
+        retval
+
     }
 
     /// Set payload
@@ -30,8 +51,8 @@ impl<'a> IppRequest<'a> {
         self.payload = Some(payload)
     }
 
-    /// Set attribute
     pub fn set_attribute(&mut self, group: u8, attribute: IppAttribute) {
+        /// Set attribute
         self.attributes.add(group, attribute);
     }
 
