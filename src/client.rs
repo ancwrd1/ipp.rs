@@ -10,10 +10,14 @@ use hyper::status::StatusCode;
 use hyper::net::{SslClient, NetworkStream, HttpsConnector, Fresh};
 use openssl::ssl::{Ssl, SslContext, SslStream, SslMethod};
 
+use ::{IppError, Result};
+use consts::tag::OPERATION_ATTRIBUTES_TAG;
+use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use request::IppRequest;
 use response::IppResponse;
-use ::{IppError, Result};
-use attribute::{IppAttributeList};
+use operation::IppOperation;
+use value::IppValue;
+use attribute::{IppAttribute, IppAttributeList};
 use parser::IppParser;
 
 // Insecure SSL taken from:
@@ -50,19 +54,53 @@ fn make_request(method: Method, url: Url) -> hyper::Result<Request<Fresh>> {
 /// IPP client.
 ///
 /// IPP client is responsible for sending requests to IPP server.
-pub struct IppClient {}
+pub struct IppClient {
+    uri: String
+}
 
 impl IppClient {
     /// Create new instance of the client
-    pub fn new() -> IppClient {
-        IppClient {}
+    pub fn new(uri: &str) -> IppClient {
+        IppClient {
+            uri: uri.to_string()
+        }
+    }
+
+    /// send IPP operation
+    pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
+        match self.post(&mut operation.to_ipp_request()) {
+            Ok(resp) => {
+                if resp.header().status > 3 {
+                    // IPP error
+                    Err(IppError::StatusError(resp.header().status))
+                } else {
+                    Ok(resp.attributes().clone())
+                }
+            }
+            Err(err) => Err(err)
+        }
     }
 
     /// Send request and return response
-    pub fn send_raw<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
-        match Url::parse(request.uri()) {
+    pub fn post<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
+        match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
+                request.set_attribute(
+                    OPERATION_ATTRIBUTES_TAG,
+                    IppAttribute::new(ATTRIBUTES_CHARSET,
+                                      IppValue::Charset("utf-8".to_string())));
+                request.set_attribute(
+                    OPERATION_ATTRIBUTES_TAG,
+                    IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
+                                      IppValue::NaturalLanguage("en".to_string())));
+
+                request.set_attribute(
+                    OPERATION_ATTRIBUTES_TAG,
+                    IppAttribute::new(PRINTER_URI,
+                                      IppValue::Uri(self.uri.replace("http", "ipp").to_string())));
+
+
                 let mut http_req_fresh = make_request(Method::Post, url)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
@@ -94,24 +132,9 @@ impl IppClient {
                 }
             }
             Err(err) => {
-                error!("Invalid URI: {}", request.uri());
+                error!("Invalid URI: {}", self.uri);
                 Err(IppError::RequestError(err.to_string()))
             }
-        }
-    }
-
-    /// Send request and return list of attributes if it succeeds
-    pub fn send<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppAttributeList> {
-        match self.send_raw(request) {
-            Ok(resp) => {
-                if resp.header().status > 3 {
-                    // IPP error
-                    Err(IppError::StatusError(resp.header().status))
-                } else {
-                    Ok(resp.attributes().clone())
-                }
-            }
-            Err(err) => Err(err)
         }
     }
 }

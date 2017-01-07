@@ -5,9 +5,10 @@ use std::env;
 use std::process::exit;
 use std::fs::File;
 
+use ipp::client::IppClient;
 use ipp::attribute::IppAttribute;
 use ipp::value::IppValue;
-use ipp::operation::{PrintJob, IppOperation};
+use ipp::operation::PrintJob;
 use ipp::consts::tag::JOB_ATTRIBUTES_TAG;
 
 pub fn main() {
@@ -20,11 +21,12 @@ pub fn main() {
         exit(1);
     }
 
+    let client = IppClient::new(&args[1]);
     let mut f = File::open(&args[2]).unwrap();
-
     let mut operation = PrintJob::new(
-        &args[1],
-        &mut f, &env::var("USER").unwrap(), Some(&args[1])
+        &mut f,
+        &env::var("USER").unwrap(),
+        Some(&args[1])
     );
 
     for arg in &args[3..] {
@@ -42,7 +44,7 @@ pub fn main() {
         operation.add_attribute(IppAttribute::new(k, value));
     }
 
-    let attrs = operation.execute().unwrap();
+    let attrs = client.send(&mut operation).unwrap();
 
     for (_, v) in attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
         println!("{}: {}", v.name(), v.value());

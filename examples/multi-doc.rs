@@ -5,10 +5,11 @@ use std::env;
 use std::process::exit;
 use std::fs::File;
 
+use ipp::client::IppClient;
 use ipp::consts::tag::{PRINTER_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG};
-use ipp::consts::attribute::OPERATIONS_SUPPORTED;
+use ipp::consts::attribute::{OPERATIONS_SUPPORTED, JOB_ID};
 use ipp::consts::operation::{CREATE_JOB, SEND_DOCUMENT};
-use ipp::operation::{IppOperation, GetPrinterAttributes, CreateJob, SendDocument};
+use ipp::operation::{GetPrinterAttributes, CreateJob, SendDocument};
 use ipp::value::IppValue;
 
 pub fn main() {
@@ -21,9 +22,11 @@ pub fn main() {
         exit(1);
     }
 
+    let client = IppClient::new(&args[1]);
+
     // check if printer supports create/send operations
-    let mut get_op = GetPrinterAttributes::with_attributes(&args[1], &[OPERATIONS_SUPPORTED.to_string()]);
-    let printer_attrs = get_op.execute().unwrap();
+    let mut get_op = GetPrinterAttributes::with_attributes(&[OPERATIONS_SUPPORTED.to_string()]);
+    let printer_attrs = client.send(&mut get_op).unwrap();
     let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
 
     if let None = ops_attr.value().clone().into_iter().find(|e| {
@@ -34,9 +37,12 @@ pub fn main() {
         exit(2);
     }
 
-    let mut create_op = CreateJob::new(&args[1], Some("multi-doc"));
-
-    let job_id = create_op.execute_and_get_job_id().unwrap();
+    let mut create_op = CreateJob::new(Some("multi-doc"));
+    let attrs = client.send(&mut create_op).unwrap();
+    let job_id = match attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID).unwrap().value() {
+        &IppValue::Integer(id) => id,
+        _ => panic!("invalid value")
+    };
     println!("job id: {}", job_id);
 
     for i in 2..args.len() {
@@ -44,8 +50,8 @@ pub fn main() {
         println!("Sending {}, last: {}", args[i], last);
         let mut f = File::open(&args[i]).unwrap();
 
-        let mut send_op = SendDocument::new(&args[1], job_id, &mut f, &env::var("USER").unwrap(), last);
-        let send_attrs = send_op.execute().unwrap();
+        let mut send_op = SendDocument::new(job_id, &mut f, &env::var("USER").unwrap(), last);
+        let send_attrs = client.send(&mut send_op).unwrap();
         for (_, v) in send_attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
             println!("{}: {}", v.name(), v.value());
         }

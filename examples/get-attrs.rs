@@ -5,7 +5,8 @@ use std::env;
 use std::process::exit;
 
 use ipp::consts::tag::PRINTER_ATTRIBUTES_TAG;
-use ipp::operation::{IppOperation, GetPrinterAttributes};
+use ipp::operation::GetPrinterAttributes;
+use ipp::client::IppClient;
 
 pub fn main() {
     env_logger::init().unwrap();
@@ -17,8 +18,10 @@ pub fn main() {
         exit(1);
     }
 
-    let mut operation = GetPrinterAttributes::with_attributes(&args[1], &args[2..]);
-    let attrs = operation.execute().unwrap();
+    let client = IppClient::new(&args[1]);
+    let mut operation = GetPrinterAttributes::with_attributes(&args[2..]);
+
+    let attrs = client.send(&mut operation).unwrap();
 
     for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
         println!("{}: {}", v.name(), v.value());

@@ -5,16 +5,11 @@ use std::io::{self, Read, Write};
 
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
-use consts::tag::*;
-use consts::attribute::*;
-use value::IppValue;
 
 /// IPP request struct
 pub struct IppRequest<'a> {
     /// Operation ID
     operation: u16,
-    /// IPP server URI
-    uri: String,
     /// IPP attributes
     attributes: IppAttributeList,
     /// Optional payload to send after IPP-encoded stream (for example Print-Job operation)
@@ -23,32 +18,11 @@ pub struct IppRequest<'a> {
 
 impl<'a> IppRequest<'a> {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: u16, uri: &str) -> IppRequest<'a> {
-        let mut retval = IppRequest {
+    pub fn new(operation: u16) -> IppRequest<'a> {
+        IppRequest {
             operation: operation,
-            uri: uri.to_string(),
             attributes: IppAttributeList::new(),
-            payload: None };
-
-        retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
-            IppAttribute::new(ATTRIBUTES_CHARSET,
-                              IppValue::Charset("utf-8".to_string())));
-        retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
-            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
-                              IppValue::NaturalLanguage("en".to_string())));
-
-        retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
-            IppAttribute::new(PRINTER_URI,
-                              IppValue::Uri(uri.replace("http", "ipp").to_string())));
-        retval
-    }
-
-    /// Get uri
-    pub fn uri(&self) -> &String {
-        &self.uri
+            payload: None }
     }
 
     /// Set payload
