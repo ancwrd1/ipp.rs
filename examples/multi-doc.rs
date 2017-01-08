@@ -5,12 +5,10 @@ use std::env;
 use std::process::exit;
 use std::fs::File;
 
-use ipp::client::IppClient;
+use ipp::{IppClient, IppValue, GetPrinterAttributes, CreateJob, SendDocument};
 use ipp::consts::tag::{PRINTER_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG};
 use ipp::consts::attribute::{OPERATIONS_SUPPORTED, JOB_ID};
 use ipp::consts::operation::{CREATE_JOB, SEND_DOCUMENT};
-use ipp::operation::{GetPrinterAttributes, CreateJob, SendDocument};
-use ipp::value::IppValue;
 
 pub fn main() {
     env_logger::init().unwrap();

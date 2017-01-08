@@ -126,3 +126,10 @@ pub mod attribute;
 pub mod client;
 pub mod server;
 pub mod operation;
+
+pub use attribute::{IppAttribute, IppAttributeList};
+pub use client::IppClient;
+pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
+pub use request::IppRequest;
+pub use response::IppResponse;
+pub use value::IppValue;

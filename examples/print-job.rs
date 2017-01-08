@@ -5,10 +5,7 @@ use std::env;
 use std::process::exit;
 use std::fs::File;
 
-use ipp::client::IppClient;
-use ipp::attribute::IppAttribute;
-use ipp::value::IppValue;
-use ipp::operation::PrintJob;
+use ipp::{IppClient, IppAttribute, IppValue, PrintJob};
 use ipp::consts::tag::JOB_ATTRIBUTES_TAG;
 
 pub fn main() {

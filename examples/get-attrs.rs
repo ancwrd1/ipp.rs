@@ -5,8 +5,7 @@ use std::env;
 use std::process::exit;
 
 use ipp::consts::tag::PRINTER_ATTRIBUTES_TAG;
-use ipp::operation::GetPrinterAttributes;
-use ipp::client::IppClient;
+use ipp::{GetPrinterAttributes, IppClient};
 
 pub fn main() {
     env_logger::init().unwrap();
