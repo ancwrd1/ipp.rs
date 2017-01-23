@@ -276,8 +276,8 @@ pub struct IppValueIntoIterator {
 impl Iterator for IppValueIntoIterator {
     type Item = IppValue;
     fn next(&mut self) -> Option<IppValue> {
-        match &self.value {
-            &IppValue::ListOf(ref list) | &IppValue::Collection(ref list) =>
+        match self.value {
+            IppValue::ListOf(ref list) | IppValue::Collection(ref list) =>
                 if self.index < list.len() { self.index += 1; Some(list[self.index - 1].clone()) } else { None },
             _ =>
                 if self.index == 0 { self.index += 1; Some(self.value.clone()) } else { None }
