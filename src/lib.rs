@@ -25,7 +25,6 @@
 
 extern crate byteorder;
 extern crate hyper;
-extern crate openssl;
 
 #[macro_use]
 extern crate log;
