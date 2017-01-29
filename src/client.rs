@@ -32,7 +32,7 @@ impl IppClient {
 
     /// send IPP operation
     pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
-        match self.post(&mut operation.to_ipp_request(&self.uri)) {
+        match self.send_request(&mut operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().status > 3 {
                     // IPP error
@@ -46,7 +46,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn post<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
+    pub fn send_request<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
