@@ -6,7 +6,7 @@ use ::{Result, IppHeader};
 use parser::IppParser;
 use attribute::{IppAttributeList};
 
-/// IPP response is returned by IppClient
+/// IPP response is returned by `IppClient`
 pub struct IppResponse {
     /// Response header
     header: IppHeader,
@@ -23,12 +23,12 @@ impl IppResponse {
     }
 
     /// Get header
-    pub fn header<'a>(&'a self) -> &'a IppHeader {
+    pub fn header(&self) -> &IppHeader {
         &self.header
     }
 
     /// Get attributes
-    pub fn attributes<'a>(&'a self) -> &'a IppAttributeList {
+    pub fn attributes(&self) -> &IppAttributeList {
         &self.attributes
     }
 }

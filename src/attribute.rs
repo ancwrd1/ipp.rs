@@ -16,10 +16,10 @@ const HEADER_ATTRS: [&'static str; 3] = [
     PRINTER_URI];
 
 fn is_header_attr(attr: &str) -> bool {
-    HEADER_ATTRS.into_iter().find(|&&at| at == attr).is_some()
+    HEADER_ATTRS.into_iter().any(|&at| at == attr)
 }
 
-/// IppAttribute represents an IPP attribute
+/// `IppAttribute` represents an IPP attribute
 #[derive(Clone, Debug)]
 pub struct IppAttribute {
     /// Attribute name
@@ -38,12 +38,12 @@ impl IppAttribute {
     }
 
     /// Return attribute name
-    pub fn name<'a>(&'a self) -> &str {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Return attribute value
-    pub fn value<'a>(&'a self) -> &IppValue {
+    pub fn value(&self) -> &IppValue {
         &self.value
     }
 
@@ -83,9 +83,7 @@ impl IppAttributeList {
     /// * `group` - delimiter group<br/>
     /// * `attribute` - attribute to add<br/>
     pub fn add(&mut self, group: u8, attribute: IppAttribute) {
-        if !self.attributes.contains_key(&group) {
-            self.attributes.insert(group, HashMap::new());
-        }
+        self.attributes.entry(group).or_insert_with(HashMap::new);
         let mut opt = self.attributes.get_mut(&group).unwrap();
         opt.insert(attribute.name().to_string(), attribute);
     }
@@ -96,7 +94,7 @@ impl IppAttributeList {
     }
 
     /// Get attribute list for a group
-    pub fn get_group<'a>(&'a self, group: u8) -> Option<&HashMap<String, IppAttribute>> {
+    pub fn get_group(&self, group: u8) -> Option<&HashMap<String, IppAttribute>> {
         self.attributes.get(&group)
     }
 
@@ -107,14 +105,14 @@ impl IppAttributeList {
 
         let mut retval = 1;
 
-        for hdr in HEADER_ATTRS.into_iter() {
+        for hdr in &HEADER_ATTRS {
             if let Some(attr) = self.get(OPERATION_ATTRIBUTES_TAG, hdr) {
                 retval += attr.write(writer)?
             }
         }
 
         // now the rest
-        for hdr in [OPERATION_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG].into_iter() {
+        for hdr in &[OPERATION_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG] {
             let group = *hdr;
             if let Some(attrs) = self.get_group(group) {
                 if group != OPERATION_ATTRIBUTES_TAG {

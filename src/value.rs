@@ -160,8 +160,8 @@ impl IppValue {
             }
             IppValue::ListOf(ref list) => {
                 let mut retval = 0;
-                for i in 0..list.len() {
-                    retval += list[i].write(writer)?;
+                for (i, item) in list.iter().enumerate() {
+                    retval += item.write(writer)?;
                     if i < list.len() - 1 {
                         writer.write_u8(self.to_tag())?;
                         writer.write_u16::<BigEndian>(0)?;
@@ -172,8 +172,8 @@ impl IppValue {
             }
             IppValue::Collection(ref list) => {
                 let mut retval = 0;
-                for i in 0..list.len() {
-                    retval += list[i].write(writer)?;
+                for (i, item) in list.iter().enumerate() {
+                    retval += item.write(writer)?;
                     if i < list.len() - 1 {
                         writer.write_u8(self.to_tag())?;
                         writer.write_u16::<BigEndian>(0)?;
@@ -209,7 +209,7 @@ impl IppValue {
             }
             IppValue::Other(_, ref vec) => {
                 writer.write_u16::<BigEndian>(vec.len() as u16)?;
-                writer.write_all(&vec)?;
+                writer.write_all(vec)?;
                 Ok(2 + vec.len())
             }
         }

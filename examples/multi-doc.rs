@@ -27,8 +27,8 @@ pub fn main() {
     let printer_attrs = client.send(&mut get_op).unwrap();
     let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
 
-    if let None = ops_attr.value().clone().into_iter().find(|e| {
-        if let &IppValue::Enum(v) = e { v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT }
+    if !ops_attr.value().clone().into_iter().any(|e| {
+        if let IppValue::Enum(v) = e { v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT }
         else { false }
     }) {
         println!("ERROR: target printer does not support create/send operations");
@@ -37,20 +37,20 @@ pub fn main() {
 
     let mut create_op = CreateJob::new(Some("multi-doc"));
     let attrs = client.send(&mut create_op).unwrap();
-    let job_id = match attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID).unwrap().value() {
-        &IppValue::Integer(id) => id,
+    let job_id = match *attrs.get(JOB_ATTRIBUTES_TAG, JOB_ID).unwrap().value() {
+        IppValue::Integer(id) => id,
         _ => panic!("invalid value")
     };
     println!("job id: {}", job_id);
 
-    for i in 2..args.len() {
+    for (i, item) in args.iter().enumerate().skip(2) {
         let last = i >= (args.len() - 1);
-        println!("Sending {}, last: {}", args[i], last);
-        let mut f = File::open(&args[i]).unwrap();
+        println!("Sending {}, last: {}", item, last);
+        let mut f = File::open(&item).unwrap();
 
         let mut send_op = SendDocument::new(job_id, &mut f, &env::var("USER").unwrap(), last);
         let send_attrs = client.send(&mut send_op).unwrap();
-        for (_, v) in send_attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
+        for v in send_attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap().values() {
             println!("{}: {}", v.name(), v.value());
         }
     }

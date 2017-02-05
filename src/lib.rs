@@ -91,7 +91,7 @@ impl IppHeader {
     }
 }
 
-/// Trait which adds two methods to Read implementations: read_string and read_vec
+/// Trait which adds two methods to Read implementations: `read_string` and `read_vec`
 pub trait ReadIppExt: Read {
     fn read_string(&mut self, len: usize) -> std::io::Result<String> {
         Ok(String::from_utf8_lossy(&self.read_vec(len)?).to_string())

@@ -22,12 +22,12 @@ impl IppParseResult {
     }
 
     /// Get parsed header
-    pub fn header<'a>(&'a self) -> &'a IppHeader {
+    pub fn header(& self) -> &IppHeader {
         &self.header
     }
 
     /// Get parsed attributes
-    pub fn attributes<'a>(&'a self) -> &'a IppAttributeList {
+    pub fn attributes(&self) -> &IppAttributeList {
         &self.attributes
     }
 }

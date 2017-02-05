@@ -90,7 +90,7 @@ impl IppOperation for GetPrinterAttributes {
     fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
         let mut retval = IppRequest::new(GET_PRINTER_ATTRIBUTES, uri);
 
-        if self.attributes.len() > 0 {
+        if !self.attributes.is_empty() {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
             retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
                 IppAttribute::new(REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)));

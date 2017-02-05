@@ -22,7 +22,7 @@ pub fn main() {
 
     let attrs = client.send(&mut operation).unwrap();
 
-    for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
+    for v in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

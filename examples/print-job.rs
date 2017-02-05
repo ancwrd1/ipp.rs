@@ -27,7 +27,7 @@ pub fn main() {
     );
 
     for arg in &args[3..] {
-        let mut kv = arg.split("=");
+        let mut kv = arg.split('=');
         let (k, v) = (kv.next().unwrap(), kv.next().unwrap());
 
         let value = if let Ok(iv) = v.parse::<i32>() {
@@ -43,7 +43,7 @@ pub fn main() {
 
     let attrs = client.send(&mut operation).unwrap();
 
-    for (_, v) in attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap() {
+    for v in attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }
