@@ -69,6 +69,7 @@ impl<'a> IppOperation for PrintJob<'a> {
 }
 
 /// IPP operation Get-Printer-Attributes
+#[derive(Default)]
 pub struct GetPrinterAttributes {
     attributes: Vec<String>
 }
@@ -77,7 +78,7 @@ impl GetPrinterAttributes {
     /// Create Get-Printer-Attributes operation
     ///
     pub fn new() -> GetPrinterAttributes {
-        GetPrinterAttributes { attributes: Vec::new() }
+        GetPrinterAttributes::default()
     }
 
     /// Set attributes to request from the printer

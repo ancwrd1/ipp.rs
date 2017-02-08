@@ -67,7 +67,7 @@ impl IppAttribute {
 }
 
 /// Attribute list indexed by group and name
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct IppAttributeList {
     attributes: HashMap<u8, HashMap<String, IppAttribute>>
 }
@@ -75,7 +75,7 @@ pub struct IppAttributeList {
 impl IppAttributeList {
     /// Create attribute list
     pub fn new() -> IppAttributeList {
-        IppAttributeList { attributes: HashMap::new() }
+        IppAttributeList::default()
     }
 
     /// Add attribute to the list
