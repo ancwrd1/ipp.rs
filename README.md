@@ -7,10 +7,16 @@ IPP protocol implementation for Rust
 Usage example:
 
 ```rust
+extern crate ipp;
+use ipp::consts::tag::PRINTER_ATTRIBUTES_TAG;
+use ipp::{GetPrinterAttributes, IppClient};
 pub fn main() {
-    let mut operation = GetPrinterAttributes::new("http://localhost:631/printers/test-printer");
-    let attrs = operation.execute().unwrap();
-    for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
+    let client = IppClient::new("http://localhost:631/printers/test-printer");
+    let mut operation = GetPrinterAttributes::new();
+
+    let attrs = client.send(&mut operation).unwrap();
+
+    for v in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }
@@ -18,4 +24,4 @@ pub fn main() {
 
 ## License
 
-Licensed under MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+Licensed under MIT or Apache license ([LICENSE-MIT](LICENSE-MIT) or [LICENSE-APACHE](LICENSE-APACHE))
