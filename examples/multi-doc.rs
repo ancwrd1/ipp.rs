@@ -10,8 +10,8 @@ use ipp::consts::tag::{PRINTER_ATTRIBUTES_TAG, JOB_ATTRIBUTES_TAG};
 use ipp::consts::attribute::{OPERATIONS_SUPPORTED, JOB_ID};
 use ipp::consts::operation::{CREATE_JOB, SEND_DOCUMENT};
 
-fn supports_multi_doc(v: IppValue) -> bool {
-    if let IppValue::Enum(v) = v { v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT }
+fn supports_multi_doc(v: &IppValue) -> bool {
+    if let IppValue::Enum(v) = *v { v as u16 == CREATE_JOB || v as u16 == SEND_DOCUMENT }
     else { false }
 }
 
@@ -32,7 +32,7 @@ fn main() {
     let printer_attrs = client.send(&mut get_op).unwrap();
     let ops_attr = printer_attrs.get(PRINTER_ATTRIBUTES_TAG, OPERATIONS_SUPPORTED).unwrap();
 
-    if !ops_attr.value().clone().into_iter().any(supports_multi_doc) {
+    if !ops_attr.value().into_iter().any(supports_multi_doc) {
         println!("ERROR: target printer does not support create/send operations");
         exit(2);
     }
