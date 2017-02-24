@@ -32,22 +32,22 @@ fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
     Ok(())
 }
 
-const PJL_STATUS: &'static [u8] = b"\x1b%-12345X@PJL INFO STATUS\n\x1b%-12345X@PJL EOJ\nx1b%-12345X";
+const PJL_PREFIX: &'static str = "\x1b%-12345X@PJL INFO ";
 
-fn do_socket_status(addr: &str) -> Result<(), IppError> {
+fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
-    stream.write(PJL_STATUS)?;
-    let mut buf = [0u8; 4096];
-    loop {
-        match stream.read(&mut buf) {
-            Ok(size) if size > 0 => {
-                let s = String::from_utf8_lossy(&buf[0..size]).to_string();
-                if !s.starts_with("@PJL") {
+    for pjl in attrs {
+        stream.write((PJL_PREFIX.to_string() + pjl + "\n").as_bytes())?;
+        let mut buf = [0u8; 4096];
+        loop {
+            match stream.read(&mut buf) {
+                Ok(size) if size > 0 => {
+                    let s = String::from_utf8_lossy(&buf[0..size]).to_string();
                     println!("{}", s.trim());
+                    if s.ends_with('\x0c') { break }
                 }
-                if s.ends_with('\x0c') { break }
+                _ =>  break
             }
-            _ =>  break
         }
     }
     Ok(())
@@ -97,7 +97,7 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 
 fn do_status(args: &[String]) -> Result<(), IppError> {
     if args[2].starts_with("socket://") {
-        return do_socket_status(&args[2][9..]);
+        return do_socket_status(&args[2][9..], &args[3..]);
     }
 
     let client = IppClient::new(&args[2]);
