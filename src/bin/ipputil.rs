@@ -4,14 +4,64 @@ extern crate env_logger;
 use std::env;
 use std::process::exit;
 use std::fs::File;
+use std::net::{TcpStream, Shutdown};
+use std::thread;
+use std::io::{Read, Write, copy};
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
 use ipp::consts::tag::{JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG};
 
+fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
+    let mut stream = TcpStream::connect(addr)?;
+    let mut reader = stream.try_clone()?;
+    
+    let handle = thread::spawn(move || {
+        let mut buf = [0u8; 4096];
+        loop {
+            match reader.read(&mut buf) {
+                Ok(size) if size > 0 =>  println!("{}", String::from_utf8_lossy(&buf[0..size])),
+                _ =>  break
+            }
+        }
+        let _ = reader.shutdown(Shutdown::Read);
+    });
+
+    copy(file, &mut stream)?;
+    let _ = stream.shutdown(Shutdown::Write);
+    let _ = handle.join();
+    Ok(())
+}
+
+const PJL_STATUS: &'static [u8] = b"\x1b%-12345X@PJL INFO STATUS\n\x1b%-12345X@PJL EOJ\nx1b%-12345X";
+
+fn do_socket_status(addr: &str) -> Result<(), IppError> {
+    let mut stream = TcpStream::connect(addr)?;
+    stream.write(PJL_STATUS)?;
+    let mut buf = [0u8; 4096];
+    loop {
+        match stream.read(&mut buf) {
+            Ok(size) if size > 0 => {
+                let s = String::from_utf8_lossy(&buf[0..size]).to_string();
+                if !s.starts_with("@PJL") {
+                    println!("{}", s.trim());
+                }
+                if s.ends_with('\x0c') { break }
+            }
+            _ =>  break
+        }
+    }
+    Ok(())
+}
+
 fn do_print(args: &[String]) -> Result<(), IppError> {
+    let mut f = File::open(&args[3])?;
+
+    if args[2].starts_with("socket://") {
+        return do_socket_print(&args[2][9..], &mut f);
+    }
+
     let client = IppClient::new(&args[2]);
 
-    let mut f = File::open(&args[3])?;
     let mut operation = PrintJob::new(
         &mut f,
         &env::var("USER").unwrap_or_else(|_| String::new()),
@@ -45,7 +95,11 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
     Ok(())
 }
 
-fn do_info(args: &[String]) -> Result<(), IppError> {
+fn do_status(args: &[String]) -> Result<(), IppError> {
+    if args[2].starts_with("socket://") {
+        return do_socket_status(&args[2][9..]);
+    }
+
     let client = IppClient::new(&args[2]);
     let mut operation = GetPrinterAttributes::with_attributes(&args[3..]);
 
@@ -65,14 +119,14 @@ pub fn main() {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
-        println!("Usage: {} info uri [attr...]", args[0]);
+        println!("Usage: {} status uri [attr...]", args[0]);
         println!("       {} print uri filename [attr=value]", args[0]);
         exit(1);
     }
 
     match &args[1][..] {
-        "info" => {
-            if let Err(err) = do_info(&args) {
+        "status" => {
+            if let Err(err) = do_status(&args) {
                 println!("{:?}", err);
                 exit(2);
             }
@@ -85,7 +139,7 @@ pub fn main() {
             }
         }
         _ => {
-            println!("ERROR: invalid operation, expected one of 'info' or 'print");
+            println!("ERROR: invalid operation, expected one of 'status' or 'print");
             exit(1);
         }
     }
