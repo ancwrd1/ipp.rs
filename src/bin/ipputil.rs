@@ -43,7 +43,7 @@ fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
     let def_attrs = [String::from("ID"), String::from("STATUS")];
 
     for pjl in if attrs.len() > 0 { attrs } else { &def_attrs[..] } {
-        stream.write((PJL_PREFIX.to_string() + pjl + "\n").as_bytes())?;
+        stream.write((PJL_PREFIX.to_string() + pjl + "\n\x1b%-12345X").as_bytes())?;
         loop {
             match stream.read(&mut buf) {
                 Ok(size) if size > 0 => {
@@ -62,7 +62,9 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
     let mut f = File::open(&args[3])?;
 
     if args[2].starts_with("socket://") {
-        return do_socket_print(&args[2][9..], &mut f);
+        let mut addr = args[2][9..].to_string();
+        if !addr.contains(':') { addr += ":9100" }
+        return do_socket_print(&addr, &mut f);
     }
 
     let client = IppClient::new(&args[2]);
@@ -102,7 +104,9 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 
 fn do_status(args: &[String]) -> Result<(), IppError> {
     if args[2].starts_with("socket://") {
-        return do_socket_status(&args[2][9..], &args[3..]);
+        let mut addr = args[2][9..].to_string();
+        if !addr.contains(':') { addr += ":9100" }
+        return do_socket_status(&addr, &args[3..]);
     }
 
     let client = IppClient::new(&args[2]);
