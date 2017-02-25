@@ -36,12 +36,12 @@ const PJL_PREFIX: &'static str = "\x1b%-12345X@PJL INFO ";
 
 fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
+    let mut buf = [0u8; 4096];
 
-    let def_attrs = vec![String::from("ID"), String::from("STATUS")];
+    let def_attrs = [String::from("ID"), String::from("STATUS")];
 
-    for pjl in if attrs.len() > 0 { attrs } else { &def_attrs } {
+    for pjl in if attrs.len() > 0 { attrs } else { &def_attrs[..] } {
         stream.write((PJL_PREFIX.to_string() + pjl + "\n").as_bytes())?;
-        let mut buf = [0u8; 4096];
         loop {
             match stream.read(&mut buf) {
                 Ok(size) if size > 0 => {
