@@ -118,14 +118,19 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
     Ok(())
 }
 
+fn usage(prog: &str) {
+    println!("Usage: {} status uri [attr...]", prog);
+    println!("       {} print uri filename [attr=value]", prog);
+    println!("\nSupported uri schemes: http, socket");
+}
+
 pub fn main() {
     env_logger::init().unwrap();
 
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
-        println!("Usage: {} status uri [attr...]", args[0]);
-        println!("       {} print uri filename [attr=value]", args[0]);
+        usage(&args[0]);
         exit(1);
     }
 
@@ -138,6 +143,10 @@ pub fn main() {
             
         }
         "print" => {
+            if args.len() < 4 {
+                usage(&args[0]);
+                exit(1);
+            }
             if let Err(err) = do_print(&args) {
                 println!("{:?}", err);
                 exit(2);
