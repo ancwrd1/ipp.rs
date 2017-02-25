@@ -7,6 +7,7 @@ use std::fs::File;
 use std::net::{TcpStream, Shutdown};
 use std::thread;
 use std::io::{Read, Write, copy};
+use std::time::Duration;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
 use ipp::consts::tag::{JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG};
@@ -36,6 +37,7 @@ const PJL_PREFIX: &'static str = "\x1b%-12345X@PJL INFO ";
 
 fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
+    let _ = stream.set_read_timeout(Some(Duration::from_millis(10000)));
     let mut buf = [0u8; 4096];
 
     let def_attrs = [String::from("ID"), String::from("STATUS")];
