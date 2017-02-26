@@ -27,7 +27,7 @@ fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
         let _ = reader.shutdown(Shutdown::Read);
     });
 
-    copy(file, &mut stream)?;
+    let _ = copy(file, &mut stream)?;
     let _ = stream.shutdown(Shutdown::Write);
     let _ = handle.join();
     Ok(())
@@ -37,19 +37,23 @@ const PJL_PREFIX: &'static str = "\x1b%-12345X@PJL INFO ";
 
 fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
-    let _ = stream.set_read_timeout(Some(Duration::from_millis(10000)));
+    let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
+
+    let mut attrs = Vec::from(attrs);
+    if attrs.is_empty() {
+        attrs.push(String::from("ID"));
+        attrs.push(String::from("STATUS"));
+    }
+
     let mut buf = [0u8; 4096];
-
-    let def_attrs = [String::from("ID"), String::from("STATUS")];
-
-    for pjl in if attrs.len() > 0 { attrs } else { &def_attrs[..] } {
-        stream.write((PJL_PREFIX.to_string() + pjl + "\n\x1b%-12345X").as_bytes())?;
+    for pjl in &attrs {
+        stream.write_all((PJL_PREFIX.to_string() + pjl + "\n\x1b%-12345X").as_bytes())?;
         loop {
             match stream.read(&mut buf) {
                 Ok(size) if size > 0 => {
-                    let s = String::from_utf8_lossy(&buf[0..size]).to_string();
-                    println!("{}", s.trim());
-                    if s.ends_with('\x0c') { break }
+                    let reply = String::from_utf8_lossy(&buf[0..size]);
+                    println!("{}", reply.trim());
+                    if reply.ends_with('\x0c') { break }
                 }
                 _ =>  break
             }
