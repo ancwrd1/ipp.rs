@@ -47,20 +47,15 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-739' class='srclink' href='../../src/ipp/src/request.rs.html#13-22' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct IppRequest&lt;'a&gt; {
-    // some fields omitted
-}</pre><div class='docblock'><p>IPP request struct</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-745' class='srclink' href='../../src/ipp/src/request.rs.html#24-84' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(operation: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></h4>
+               </span><a class='srclink' href='../../src/ipp/request.rs.html#13-20' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct IppRequest&lt;'a&gt; { /* fields omitted */ }</pre><div class='docblock'><p>IPP request struct</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#22-76' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(operation: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;</code></span></h4>
 <div class='docblock'><p>Create new IPP request for the operation and uri</p>
-</div><h4 id='method.uri' class='method'><code>fn <a href='#method.uri' class='fnname'>uri</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
-<div class='docblock'><p>Get uri</p>
-</div><h4 id='method.set_payload' class='method'><code>fn <a href='#method.set_payload' class='fnname'>set_payload</a>(&amp;mut self, payload: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>)</code></h4>
+</div><h4 id='method.set_payload' class='method'><span id='set_payload.v' class='invisible'><code>fn <a href='#method.set_payload' class='fnname'>set_payload</a>(&amp;mut self, payload: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>)</code></span></h4>
 <div class='docblock'><p>Set payload</p>
-</div><h4 id='method.set_attribute' class='method'><code>fn <a href='#method.set_attribute' class='fnname'>set_attribute</a>(&amp;mut self, group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>, attribute: <a class='struct' href='../../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>)</code></h4>
-<div class='docblock'><p>Set attribute</p>
-</div><h4 id='method.write' class='method'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;'a mut self, writer: &amp;mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h4>
+</div><h4 id='method.set_attribute' class='method'><span id='set_attribute.v' class='invisible'><code>fn <a href='#method.set_attribute' class='fnname'>set_attribute</a>(&amp;mut self, group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>, attribute: <a class='struct' href='../../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>)</code></span></h4>
+<h4 id='method.write' class='method'><span id='write.v' class='invisible'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;'a mut self, writer: &amp;mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></span></h4>
 <div class='docblock'><p>Serialize request into the binary stream (TCP)</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -118,11 +113,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "ipp";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

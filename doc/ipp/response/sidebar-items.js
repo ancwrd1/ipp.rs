@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IppResponse","IPP response is returned by IppClient"]]});
+initSidebarItems({"struct":[["IppResponse","IPP response is returned by `IppClient`"]]});

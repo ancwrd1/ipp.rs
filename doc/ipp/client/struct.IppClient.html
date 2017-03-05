@@ -47,18 +47,17 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-911' class='srclink' href='../../src/ipp/src/client.rs.html#19' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct IppClient {
-}</pre><div class='docblock'><p>IPP client.</p>
+               </span><a class='srclink' href='../../src/ipp/client.rs.html#21-23' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct IppClient { /* fields omitted */ }</pre><div class='docblock'><p>IPP client.</p>
 
 <p>IPP client is responsible for sending requests to IPP server.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../ipp/client/struct.IppClient.html' title='ipp::client::IppClient'>IppClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-912' class='srclink' href='../../src/ipp/src/client.rs.html#21-82' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../ipp/client/struct.IppClient.html' title='ipp::client::IppClient'>IppClient</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../ipp/client/struct.IppClient.html' title='ipp::client::IppClient'>IppClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#25-89' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/client/struct.IppClient.html' title='ipp::client::IppClient'>IppClient</a></code></span></h4>
 <div class='docblock'><p>Create new instance of the client</p>
-</div><h4 id='method.send_raw' class='method'><code>fn <a href='#method.send_raw' class='fnname'>send_raw</a>&lt;'a&gt;(&amp;self, request: &amp;'a mut <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/response/struct.IppResponse.html' title='ipp::response::IppResponse'>IppResponse</a>&gt;</code></h4>
+</div><h4 id='method.send' class='method'><span id='send.v' class='invisible'><code>fn <a href='#method.send' class='fnname'>send</a>&lt;T:&nbsp;<a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a>&gt;(&amp;self, operation: &amp;mut T) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt;</code></span></h4>
+<div class='docblock'><p>send IPP operation</p>
+</div><h4 id='method.send_request' class='method'><span id='send_request.v' class='invisible'><code>fn <a href='#method.send_request' class='fnname'>send_request</a>&lt;'a&gt;(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; request: &amp;'a mut <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/response/struct.IppResponse.html' title='ipp::response::IppResponse'>IppResponse</a>&gt;</code></span></h4>
 <div class='docblock'><p>Send request and return response</p>
-</div><h4 id='method.send' class='method'><code>fn <a href='#method.send' class='fnname'>send</a>&lt;'a&gt;(&amp;self, request: &amp;'a mut <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>&lt;'a&gt;) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt;</code></h4>
-<div class='docblock'><p>Send request and return list of attributes if it succeeds</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
@@ -115,11 +114,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "ipp";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

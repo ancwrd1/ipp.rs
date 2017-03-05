@@ -47,26 +47,21 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1065' class='srclink' href='../../src/ipp/src/operation.rs.html#202-208' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct SendDocument&lt;'a&gt; {
-    // some fields omitted
-}</pre><div class='docblock'><p>IPP operation Print-Job</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1072' class='srclink' href='../../src/ipp/src/operation.rs.html#210-228' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, job_id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, reader: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>, user_name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, last: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></h4>
+               </span><a class='srclink' href='../../src/ipp/operation.rs.html#147-152' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SendDocument&lt;'a&gt; { /* fields omitted */ }</pre><div class='docblock'><p>IPP operation Print-Job</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#154-170' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(job_id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reader: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; user_name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; last: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></span></h4>
 <div class='docblock'><p>Create Send-Document operation</p>
 
 <ul>
-<li><code>uri</code> - printer URI<br/></li>
 <li><code>job_id</code> - job ID returned by Create-Job operation<br/></li>
 <li><code>reader</code> - <a href="https://doc.rust-lang.org/stable/std/io/trait.Read.html">std::io::Read</a> reference which points to the data to be printed<br/></li>
 <li><code>user_name</code> - name of the user (requesting-user-name)<br/></li>
 <li><code>last</code> - whether this document is a last one<br/></li>
 </ul>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a> for <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1080' class='srclink' href='../../src/ipp/src/operation.rs.html#230-249' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.to_ipp_request' class='method'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a> for <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#172-191' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_ipp_request' class='method'><span id='to_ipp_request.v' class='invisible'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></span></h4>
 <div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
-</div><h4 id='method.execute' class='method'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#method.execute' class='fnname'>execute</a>(&amp;mut self) -&gt; <a class='type' href='../../ipp/type.Result.html' title='ipp::Result'>Result</a>&lt;<a class='struct' href='../../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>&gt;</code></h4>
-<div class='docblock'><p>Execute this operation (send it to IPP server)</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
@@ -123,11 +118,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "ipp";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

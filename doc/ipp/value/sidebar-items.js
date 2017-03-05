@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["IppValue","Currently supported IPP values"]]});
+initSidebarItems({"enum":[["IppValue","Currently supported IPP values"]],"struct":[["IppValueIntoIterator",""]]});
