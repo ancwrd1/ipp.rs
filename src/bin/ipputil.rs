@@ -20,10 +20,11 @@ fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
         let mut buf = [0u8; 4096];
         loop {
             match reader.read(&mut buf) {
-                Ok(size) if size > 0 =>  println!("{}", String::from_utf8_lossy(&buf[0..size])),
+                Ok(size) if size > 0 =>  print!("{}", String::from_utf8_lossy(&buf[0..size])),
                 _ =>  break
             }
         }
+        println!("");
         let _ = reader.shutdown(Shutdown::Read);
     });
 
@@ -52,12 +53,13 @@ fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
             match stream.read(&mut buf) {
                 Ok(size) if size > 0 => {
                     let reply = String::from_utf8_lossy(&buf[0..size]);
-                    println!("{}", reply.trim());
+                    print!("{}", reply.trim());
                     if reply.ends_with('\x0c') { break }
                 }
                 _ =>  break
             }
         }
+        println!("");
     }
     Ok(())
 }
