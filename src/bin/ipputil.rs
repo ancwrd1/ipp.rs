@@ -121,7 +121,9 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
     let attrs = client.send(&mut operation)?;
 
     if let Some(group) = attrs.get_group(PRINTER_ATTRIBUTES_TAG) {
-        for v in group.values() {
+        let mut values: Vec<_> = group.values().collect();
+        values.sort_by(|&a, &b| a.name().cmp(b.name()));
+        for v in &values {
             println!("{}: {}", v.name(), v.value());
         }
     }
