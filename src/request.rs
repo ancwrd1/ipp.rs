@@ -12,7 +12,7 @@ use value::IppValue;
 /// IPP request struct
 pub struct IppRequest<'a> {
     /// Operation ID
-    operation: u16,
+    header: IppHeader,
     /// IPP attributes
     attributes: IppAttributeList,
     /// Optional payload to send after IPP-encoded stream (for example Print-Job operation)
@@ -23,8 +23,9 @@ impl<'a> IppRequest<'a> {
     /// Create new IPP request for the operation and uri
     pub fn new(operation: u16, uri: &str) -> IppRequest<'a> {
 
+        let hdr = IppHeader::new(IPP_VERSION, operation, 1);
         let mut retval = IppRequest {
-            operation: operation,
+            header: hdr,
             attributes: IppAttributeList::new(),
             payload: None };
 
@@ -58,8 +59,7 @@ impl<'a> IppRequest<'a> {
 
     /// Serialize request into the binary stream (TCP)
     pub fn write(&'a mut self, writer: &mut Write) -> Result<usize> {
-        let hdr = IppHeader::new(IPP_VERSION, self.operation, 1);
-        let mut retval = hdr.write(writer)?;
+        let mut retval = self.header.write(writer)?;
 
         retval += self.attributes.write(writer)?;
 
