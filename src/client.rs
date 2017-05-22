@@ -9,7 +9,7 @@ use hyper::Url;
 use hyper::status::StatusCode;
 
 use ::{IppError, Result};
-use request::IppRequest;
+use request::IppRequestResponse;
 use response::IppResponse;
 use operation::IppOperation;
 use attribute::IppAttributeList;
@@ -46,7 +46,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
+    pub fn send_request<'a>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppResponse> {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers

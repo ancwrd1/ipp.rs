@@ -10,7 +10,7 @@ use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANG
 use value::IppValue;
 
 /// IPP request struct
-pub struct IppRequest<'a> {
+pub struct IppRequestResponse<'a> {
     /// Operation ID
     header: IppHeader,
     /// IPP attributes
@@ -19,12 +19,12 @@ pub struct IppRequest<'a> {
     payload: Option<&'a mut Read>
 }
 
-impl<'a> IppRequest<'a> {
+impl<'a> IppRequestResponse<'a> {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: u16, uri: &str) -> IppRequest<'a> {
+    pub fn new(operation: u16, uri: &str) -> IppRequestResponse<'a> {
 
         let hdr = IppHeader::new(IPP_VERSION, operation, 1);
-        let mut retval = IppRequest {
+        let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
             payload: None };

@@ -5,7 +5,7 @@
 //!
 //!```rust
 //! // using raw API
-//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES);
+//! let mut req = IppRequestResponse::new(GET_PRINTER_ATTRIBUTES);
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! let resp = client.send_request(&mut req).unwrap();
 //! if resp.header().operation_status <= 3 {
@@ -128,6 +128,6 @@ pub mod operation;
 pub use attribute::{IppAttribute, IppAttributeList};
 pub use client::IppClient;
 pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
-pub use request::IppRequest;
+pub use request::IppRequestResponse;
 pub use response::IppResponse;
 pub use value::IppValue;
