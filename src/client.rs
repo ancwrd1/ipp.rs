@@ -34,9 +34,9 @@ impl IppClient {
     pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
         match self.send_request(&mut operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
-                if resp.header().status > 3 {
+                if resp.header().operation_status > 3 {
                     // IPP error
-                    Err(IppError::StatusError(resp.header().status))
+                    Err(IppError::StatusError(resp.header().operation_status))
                 } else {
                     Ok(resp.attributes().clone())
                 }

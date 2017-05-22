@@ -8,7 +8,7 @@
 //! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES);
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! let resp = client.send_request(&mut req).unwrap();
-//! if resp.header().status <= 3 {
+//! if resp.header().operation_status <= 3 {
 //!     println!("result: {:?}", resp.attributes());
 //! }
 //!
@@ -63,7 +63,7 @@ pub type Result<T> = result::Result<T, IppError>;
 #[derive(Clone, Debug)]
 pub struct IppHeader {
     pub version: u16,
-    pub status: u16,
+    pub operation_status: u16,
     pub request_id: u32
 }
 
@@ -78,12 +78,12 @@ impl IppHeader {
 
     /// Create IPP header
     pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
-        IppHeader {version: version, status: status, request_id: request_id}
+        IppHeader {version: version, operation_status: status, request_id: request_id}
     }
 
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         writer.write_u16::<BigEndian>(self.version)?;
-        writer.write_u16::<BigEndian>(self.status)?;
+        writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;
 
         Ok(8)
