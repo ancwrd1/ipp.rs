@@ -98,7 +98,7 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
         operation.add_attribute(IppAttribute::new(k, value));
     }
 
-    let attrs = client.send(&mut operation)?;
+    let attrs = client.send(operation)?;
 
     if let Some(group) = attrs.get_group(JOB_ATTRIBUTES_TAG) {
         for v in group.values() {
@@ -116,9 +116,9 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
     }
 
     let client = IppClient::new(&args[2]);
-    let mut operation = GetPrinterAttributes::with_attributes(&args[3..]);
+    let operation = GetPrinterAttributes::with_attributes(&args[3..]);
 
-    let attrs = client.send(&mut operation)?;
+    let attrs = client.send(operation)?;
 
     if let Some(group) = attrs.get_group(PRINTER_ATTRIBUTES_TAG) {
         let mut values: Vec<_> = group.values().collect();

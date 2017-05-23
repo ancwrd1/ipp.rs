@@ -31,7 +31,7 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
+    pub fn send<T: IppOperation>(&self, mut operation: T) -> Result<IppAttributeList> {
         match self.send_request(&mut operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
