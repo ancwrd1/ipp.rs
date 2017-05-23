@@ -48,6 +48,25 @@ impl<'a> IppRequestResponse<'a> {
 
     }
 
+    pub fn new_response(status: u16, id: u32) -> IppRequestResponse<'a> {
+        let hdr = IppHeader::new(IPP_VERSION, status, id);
+        let mut retval = IppRequestResponse {
+            header: hdr,
+            attributes: IppAttributeList::new(),
+            payload: None };
+
+        retval.set_attribute(
+            OPERATION_ATTRIBUTES_TAG,
+            IppAttribute::new(ATTRIBUTES_CHARSET,
+                              IppValue::Charset("utf-8".to_string())));
+        retval.set_attribute(
+            OPERATION_ATTRIBUTES_TAG,
+            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
+                              IppValue::NaturalLanguage("en".to_string())));
+
+        retval
+    }
+
     /// Create IppRequestResponse from the parser
     pub fn from_parser<'b>(parser: &mut IppParser) -> Result<IppRequestResponse<'b>> {
         let res = parser.parse()?;
