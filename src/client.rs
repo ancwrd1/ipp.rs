@@ -10,7 +10,6 @@ use hyper::status::StatusCode;
 
 use ::{IppError, Result};
 use request::IppRequestResponse;
-use response::IppResponse;
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;
@@ -46,7 +45,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request<'a>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppResponse> {
+    pub fn send_request<'a, 'b>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppRequestResponse<'b>> {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
@@ -67,7 +66,7 @@ impl IppClient {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
-                    let resp = IppResponse::from_parser(&mut parser)?;
+                    let resp = IppRequestResponse::from_parser(&mut parser)?;
 
                     Ok(resp)
                 } else {

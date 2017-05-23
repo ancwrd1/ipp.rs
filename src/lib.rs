@@ -119,7 +119,6 @@ pub mod consts {
 pub mod value;
 pub mod parser;
 pub mod request;
-pub mod response;
 pub mod attribute;
 pub mod client;
 pub mod server;
@@ -129,5 +128,4 @@ pub use attribute::{IppAttribute, IppAttributeList};
 pub use client::IppClient;
 pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
 pub use request::IppRequestResponse;
-pub use response::IppResponse;
 pub use value::IppValue;

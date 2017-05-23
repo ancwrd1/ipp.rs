@@ -8,6 +8,7 @@ use ::{Result, IPP_VERSION, IppHeader};
 use consts::tag::OPERATION_ATTRIBUTES_TAG;
 use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use value::IppValue;
+use parser::IppParser;
 
 /// IPP request struct
 pub struct IppRequestResponse<'a> {
@@ -45,6 +46,27 @@ impl<'a> IppRequestResponse<'a> {
 
         retval
 
+    }
+
+    /// Create IppRequestResponse from the parser
+    pub fn from_parser<'b>(parser: &mut IppParser) -> Result<IppRequestResponse<'b>> {
+        let res = parser.parse()?;
+
+        Ok(IppRequestResponse {
+            header: res.header().clone(),
+            attributes: res.attributes().clone(),
+            payload: None,
+        })
+    }
+
+    /// Get header
+    pub fn header(&self) -> &IppHeader {
+        &self.header
+    }
+
+    /// Get attributes
+    pub fn attributes(&self) -> &IppAttributeList {
+        &self.attributes
     }
 
     /// Set payload
