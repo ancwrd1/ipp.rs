@@ -24,6 +24,7 @@
 
 extern crate byteorder;
 extern crate hyper;
+#[macro_use] extern crate enum_primitive;
 
 #[macro_use]
 extern crate log;
@@ -32,6 +33,27 @@ use std::result;
 use std::io::{self, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
+pub mod consts {
+    //! This module holds IPP constants such as attribute names, operations and tags
+    pub mod tag;
+    pub mod statuscode;
+    pub mod operation;
+    pub mod attribute;
+}
+
+pub mod value;
+pub mod parser;
+pub mod request;
+pub mod attribute;
+pub mod client;
+pub mod server;
+pub mod operation;
+
+pub use attribute::{IppAttribute, IppAttributeList};
+pub use client::IppClient;
+pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
+pub use request::IppRequestResponse;
+pub use value::IppValue;
 pub const IPP_VERSION: u16 = 0x0101;
 
 /// IPP value
@@ -41,7 +63,7 @@ pub enum IppError {
     IOError(::std::io::Error),
     RequestError(String),
     AttributeError(String),
-    StatusError(u16),
+    StatusError(consts::statuscode::StatusCode),
     TagError(u8)
 }
 
@@ -108,24 +130,3 @@ pub trait ReadIppExt: Read {
 
 impl<R: io::Read + ?Sized> ReadIppExt for R {}
 
-pub mod consts {
-    //! This module holds IPP constants such as attribute names, operations and tags
-    pub mod tag;
-    pub mod statuscode;
-    pub mod operation;
-    pub mod attribute;
-}
-
-pub mod value;
-pub mod parser;
-pub mod request;
-pub mod attribute;
-pub mod client;
-pub mod server;
-pub mod operation;
-
-pub use attribute::{IppAttribute, IppAttributeList};
-pub use client::IppClient;
-pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
-pub use request::IppRequestResponse;
-pub use value::IppValue;

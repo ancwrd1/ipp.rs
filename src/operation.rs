@@ -48,7 +48,7 @@ impl<'a> PrintJob<'a> {
 
 impl<'a> IppOperation for PrintJob<'a> {
     fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(PRINT_JOB, uri);
+        let mut retval = IppRequestResponse::new(Operation::PrintJob as u16, uri);
 
         retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
             IppAttribute::new(REQUESTING_USER_NAME,
@@ -89,7 +89,7 @@ impl GetPrinterAttributes {
 
 impl IppOperation for GetPrinterAttributes {
     fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(GET_PRINTER_ATTRIBUTES, uri);
+        let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes as u16, uri);
 
         if !self.attributes.is_empty() {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
@@ -128,7 +128,7 @@ impl CreateJob {
 
 impl IppOperation for CreateJob {
     fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(CREATE_JOB, uri);
+        let mut retval = IppRequestResponse::new(Operation::CreateJob as u16, uri);
 
         if let Some(ref job_name) = self.job_name {
             retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
@@ -171,7 +171,7 @@ impl<'a> SendDocument<'a> {
 
 impl<'a> IppOperation for SendDocument<'a> {
     fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(SEND_DOCUMENT, uri);
+        let mut retval = IppRequestResponse::new(Operation::SendDocument as u16, uri);
 
         retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
             IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)));

@@ -2,6 +2,7 @@
 //! IPP client
 //!
 use std::io::{BufWriter, BufReader};
+use enum_primitive::FromPrimitive;
 
 use hyper::client::request::Request;
 use hyper::method::Method;
@@ -35,7 +36,7 @@ impl IppClient {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
                     // IPP error
-                    Err(IppError::StatusError(resp.header().operation_status))
+                    Err(IppError::StatusError(::consts::statuscode::StatusCode::from_u16(resp.header().operation_status).unwrap_or(::consts::statuscode::StatusCode::ServerErrorInternalError)))
                 } else {
                     Ok(resp.attributes().clone())
                 }
