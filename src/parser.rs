@@ -9,6 +9,10 @@ use attribute::{IppAttribute, IppAttributeList};
 use value::IppValue;
 use consts::tag::*;
 
+fn value_or_list(mut list: Vec<IppValue>) -> IppValue {
+    if list.len() == 1 { list.remove(0) } else { IppValue::ListOf(list) }
+}
+
 /// IPP parsing result
 pub struct IppParseResult {
     header: IppHeader,
@@ -22,7 +26,7 @@ impl IppParseResult {
     }
 
     /// Get parsed header
-    pub fn header(& self) -> &IppHeader {
+    pub fn header(&self) -> &IppHeader {
         &self.header
     }
 
@@ -49,20 +53,17 @@ impl<'a> IppParser<'a> {
         let mut delimiter = 0;
 
         // stack of current attributes context. Used with lists and collections
-        let mut stack: Vec<Vec<IppValue>> = Vec::new();
+        let mut stack: Vec<Vec<IppValue>> = vec![vec![]];
 
         // holds the result of parsing
         let mut retval: IppAttributeList = IppAttributeList::new();
 
-        // tuple of previous attribute (tag, name)
-        let mut prev = (0, String::new());
+        // name of previous attribute name
+        let mut last_name: Option<String> = None;
 
         // parse IPP header
         let header = IppHeader::from_reader(self.reader)?;
         debug!("IPP reply header: {:?}", header);
-
-        // start with new collection
-        stack.push(Vec::new());
 
         loop {
             let tag = self.reader.read_u8()?;
@@ -70,14 +71,14 @@ impl<'a> IppParser<'a> {
                 debug!("Delimiter tag: {:0x}", tag);
                 if tag == END_OF_ATTRIBUTES_TAG {
                     // end of stream, get last saved collection
-                    let mut val_list = stack.pop().unwrap();
-                    let v = if val_list.len() == 1 {val_list.remove(0)} else {IppValue::ListOf(val_list)};
-                    retval.add(delimiter, IppAttribute::new(&prev.1, v));
+                    if let Some(last_name) = last_name {
+                        let val_list = stack.pop().unwrap();
+                        retval.add(delimiter, IppAttribute::new(&last_name, value_or_list(val_list)));
+                    }
                     break;
                 } else {
                     // remember delimiter tag
                     delimiter = tag;
-                    continue;
                 }
             } else if is_value_tag(tag) {
                 // value tag
@@ -89,21 +90,20 @@ impl<'a> IppParser<'a> {
 
                 if namelen > 0 {
                     // single attribute or begin of array
-                    if prev.0 != 0 {
+                    if let Some(last_name) = last_name {
                         // put the previous attribute into the retval
-                        let mut val_list = stack.pop().unwrap();
-                        let v = if val_list.len() == 1 {val_list.remove(0)} else {IppValue::ListOf(val_list)};
-                        retval.add(delimiter, IppAttribute::new(&prev.1, v));
-                        stack.push(Vec::new());
+                        let val_list = stack.pop().unwrap();
+                        retval.add(delimiter, IppAttribute::new(&last_name, value_or_list(val_list)));
+                        stack.push(vec![]);
                     }
                     // store it as a previous attribute
-                    prev = (tag, name);
+                    last_name = Some(name);
                 }
                 match tag {
                     BEG_COLLECTION => {
                         // start new collection in the stack
                         debug!("Begin collection");
-                        stack.push(Vec::new())
+                        stack.push(vec![])
                     }
                     END_COLLECTION => {
                         // get collection from the stack and add it to the previous element
