@@ -9,7 +9,7 @@ use attribute::{IppAttribute, IppAttributeList};
 use value::IppValue;
 use consts::tag::*;
 
-fn value_or_list(mut list: Vec<IppValue>) -> IppValue {
+fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 { list.remove(0) } else { IppValue::ListOf(list) }
 }
 
@@ -53,10 +53,10 @@ impl<'a> IppParser<'a> {
         let mut delimiter = 0;
 
         // stack of current attributes context. Used with lists and collections
-        let mut stack: Vec<Vec<IppValue>> = vec![vec![]];
+        let mut stack = vec![vec![]];
 
         // holds the result of parsing
-        let mut retval: IppAttributeList = IppAttributeList::new();
+        let mut retval = IppAttributeList::new();
 
         // name of previous attribute name
         let mut last_name: Option<String> = None;
@@ -72,8 +72,9 @@ impl<'a> IppParser<'a> {
                 if tag == END_OF_ATTRIBUTES_TAG {
                     // end of stream, get last saved collection
                     if let Some(last_name) = last_name {
-                        let val_list = stack.pop().unwrap();
-                        retval.add(delimiter, IppAttribute::new(&last_name, value_or_list(val_list)));
+                        if let Some(val_list) = stack.pop() {
+                            retval.add(delimiter, IppAttribute::new(&last_name, list_to_value(val_list)));
+                        }
                     }
                     break;
                 } else {
@@ -92,8 +93,9 @@ impl<'a> IppParser<'a> {
                     // single attribute or begin of array
                     if let Some(last_name) = last_name {
                         // put the previous attribute into the retval
-                        let val_list = stack.pop().unwrap();
-                        retval.add(delimiter, IppAttribute::new(&last_name, value_or_list(val_list)));
+                        if let Some(val_list) = stack.pop() {
+                            retval.add(delimiter, IppAttribute::new(&last_name, list_to_value(val_list)));
+                        }
                         stack.push(vec![]);
                     }
                     // store it as a previous attribute
@@ -108,13 +110,17 @@ impl<'a> IppParser<'a> {
                     END_COLLECTION => {
                         // get collection from the stack and add it to the previous element
                         debug!("End collection");
-                        let arr = stack.pop().unwrap();
-                        let mut val_list = stack.last_mut().unwrap();
-                        val_list.push(IppValue::Collection(arr));
+                        if let Some(arr) = stack.pop() {
+                            if let Some(val_list) = stack.last_mut() {
+                                val_list.push(IppValue::Collection(arr));
+                            }
+                        }
                     }
                     _ => {
                         // add attribute to the current collection
-                        stack.last_mut().unwrap().push(value);
+                        if let Some(val_list) = stack.last_mut() {
+                            val_list.push(value);
+                        }
                     }
                 }
             } else {
