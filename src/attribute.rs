@@ -67,7 +67,7 @@ impl IppAttribute {
 }
 
 /// Attribute list indexed by group and name
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct IppAttributeList {
     attributes: HashMap<u8, HashMap<String, IppAttribute>>
 }
