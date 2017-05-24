@@ -46,8 +46,11 @@ pub trait IppServer {
     }
 
     fn ipp_handle_request<'a>(&self, req: &IppRequestResponse) -> IppServerResult<'a> {
+        if req.header().version != 0x0101 {
+            return Err(StatusCode::ServerErrorVersionNotSupported);
+        }
         let operation = Operation::from_u16(req.header().operation_status)
-            .ok_or(StatusCode::ClientErrorBadRequest)?;
+            .ok_or(StatusCode::ServerErrorOperationNotSupported)?;
 
         match operation {
             Operation::PrintJob => self.print_job(req),
