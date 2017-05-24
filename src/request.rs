@@ -6,6 +6,7 @@ use std::io::{self, Read, Write};
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
 use consts::tag::Tag;
+use consts::operation::Operation;
 use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use value::IppValue;
 use parser::IppParser;
@@ -22,9 +23,9 @@ pub struct IppRequestResponse<'a> {
 
 impl<'a> IppRequestResponse<'a> {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: u16, uri: &str) -> IppRequestResponse<'a> {
+    pub fn new(operation: Operation, uri: &str) -> IppRequestResponse<'a> {
 
-        let hdr = IppHeader::new(IPP_VERSION, operation, 1);
+        let hdr = IppHeader::new(IPP_VERSION, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
