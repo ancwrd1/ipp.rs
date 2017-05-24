@@ -8,6 +8,9 @@ use hyper::method::Method;
 use hyper::Url;
 use hyper::status::StatusCode;
 
+use hyper::net::HttpsConnector;
+use hyper_openssl::OpensslClient;
+
 use ::{IppError, Result};
 use request::IppRequest;
 use response::IppResponse;
@@ -50,7 +53,9 @@ impl IppClient {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
-                let mut http_req_fresh = Request::new(Method::Post, url)?;
+                let ssl = OpensslClient::new().unwrap();
+                let connector = HttpsConnector::new(ssl);
+                let mut http_req_fresh = Request::with_connector(Method::Post, url, &connector)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
 
                 // connect and send headers

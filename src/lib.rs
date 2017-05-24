@@ -24,6 +24,7 @@
 
 extern crate byteorder;
 extern crate hyper;
+extern crate hyper_openssl;
 
 #[macro_use]
 extern crate log;
