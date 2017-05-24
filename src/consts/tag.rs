@@ -1,35 +1,40 @@
 //!
 //! IPP tags
-//!
-pub const OPERATION_ATTRIBUTES_TAG: u8 = 0x01;
-pub const JOB_ATTRIBUTES_TAG: u8 = 0x02;
-pub const END_OF_ATTRIBUTES_TAG: u8 = 0x03;
-pub const PRINTER_ATTRIBUTES_TAG: u8 = 0x04;
-pub const UNSUPPORTED_ATTRIBUTES_TAG: u8 = 0x05;
 
-pub const UNSUPPORTED: u8 = 0x10;
-pub const UNKNOWN: u8 = 0x12;
-pub const NO_VALUE: u8 = 0x13;
-pub const INTEGER: u8 = 0x21;
-pub const BOOLEAN: u8 = 0x22;
-pub const ENUM: u8 = 0x23;
-pub const OCTECTSTRING_UNSPECIFIED: u8 = 0x30;
-pub const DATETIME: u8 = 0x31;
-pub const RESOLUTION: u8 = 0x32;
-pub const RANGEOFINTEGER: u8 = 0x33;
-pub const BEG_COLLECTION: u8 = 0x34;
-pub const TEXT_WITH_LANGUAGE: u8 = 0x35;
-pub const NAME_WITH_LANGUAGE: u8 = 0x36;
-pub const END_COLLECTION: u8 = 0x37;
-pub const TEXT_WITHOUT_LANGUAGE: u8 = 0x41;
-pub const NAME_WITHOUT_LANGUAGE: u8 = 0x42;
-pub const KEYWORD: u8 = 0x44;
-pub const URI: u8 = 0x45;
-pub const URI_SCHEME: u8 = 0x46;
-pub const CHARSET: u8 = 0x47;
-pub const NATURAL_LANGUAGE: u8 = 0x48;
-pub const MIME_MEDIA_TYPE: u8 = 0x49;
-pub const MEMBER_ATTR_NAME: u8 = 0x4a;
+enum_from_primitive! {
+#[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
+pub enum Tag {
+    OperationAttributesTag = 0x01,
+    JobAttributesTag = 0x02,
+    EndOfAttributesTag = 0x03,
+    PrinterAttributesTag = 0x04,
+    UnsupportedAttributesTag = 0x05,
+
+    Unsupported = 0x10,
+    Unknown = 0x12,
+    NoValue = 0x13,
+    Integer = 0x21,
+    Boolean = 0x22,
+    Enum = 0x23,
+    OctectStringUnspecified = 0x30,
+    DateTime = 0x31,
+    Resolution = 0x32,
+    RangeOfInteger = 0x33,
+    BegCollection = 0x34,
+    TextWithLanguage = 0x35,
+    NameWithLanguage = 0x36,
+    EndCollection = 0x37,
+    TextWithoutLanguage = 0x41,
+    NameWithoutLanguage = 0x42,
+    Keyword = 0x44,
+    Uri = 0x45,
+    UriScheme = 0x46,
+    Charset = 0x47,
+    NaturalLanguage = 0x48,
+    MimeMediaType = 0x49,
+    MemberAttrName = 0x4a,
+}
+}
 
 pub fn is_value_tag(value: u8) -> bool {
     value >= 0x10 && value <= 0x4a

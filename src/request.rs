@@ -5,7 +5,7 @@ use std::io::{self, Read, Write};
 
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
-use consts::tag::OPERATION_ATTRIBUTES_TAG;
+use consts::tag::Tag;
 use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use value::IppValue;
 use parser::IppParser;
@@ -31,16 +31,16 @@ impl<'a> IppRequestResponse<'a> {
             payload: None };
 
         retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
+            Tag::OperationAttributesTag,
             IppAttribute::new(ATTRIBUTES_CHARSET,
                               IppValue::Charset("utf-8".to_string())));
         retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
+            Tag::OperationAttributesTag,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
                               IppValue::NaturalLanguage("en".to_string())));
 
         retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
+            Tag::OperationAttributesTag,
             IppAttribute::new(PRINTER_URI,
                               IppValue::Uri(uri.replace("http", "ipp").to_string())));
 
@@ -56,11 +56,11 @@ impl<'a> IppRequestResponse<'a> {
             payload: None };
 
         retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
+            Tag::OperationAttributesTag,
             IppAttribute::new(ATTRIBUTES_CHARSET,
                               IppValue::Charset("utf-8".to_string())));
         retval.set_attribute(
-            OPERATION_ATTRIBUTES_TAG,
+            Tag::OperationAttributesTag,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
                               IppValue::NaturalLanguage("en".to_string())));
 
@@ -93,7 +93,7 @@ impl<'a> IppRequestResponse<'a> {
         self.payload = Some(payload)
     }
 
-    pub fn set_attribute(&mut self, group: u8, attribute: IppAttribute) {
+    pub fn set_attribute(&mut self, group: Tag, attribute: IppAttribute) {
         /// Set attribute
         self.attributes.add(group, attribute);
     }

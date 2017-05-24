@@ -40,7 +40,7 @@ impl IppServer for DummyServer {
     fn get_printer_attributes<'a>(&self, req: &IppRequestResponse) -> IppServerResult<'a> {
         let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
                                                         req.header().request_id);
-        resp.set_attribute(PRINTER_ATTRIBUTES_TAG,
+        resp.set_attribute(Tag::PrinterAttributesTag,
                            IppAttribute::new(PRINTER_NAME,
                                              IppValue::NameWithoutLanguage(self.name.clone())));
         Ok(resp)

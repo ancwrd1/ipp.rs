@@ -56,6 +56,8 @@ pub use request::IppRequestResponse;
 pub use value::IppValue;
 pub const IPP_VERSION: u16 = 0x0101;
 
+use consts::statuscode::StatusCode;
+
 /// IPP value
 #[derive(Debug)]
 pub enum IppError {
@@ -70,6 +72,12 @@ pub enum IppError {
 impl From<io::Error> for IppError {
     fn from(error: io::Error) -> IppError {
         IppError::IOError(error)
+    }
+}
+
+impl From<StatusCode> for IppError {
+    fn from(code: StatusCode) -> IppError {
+        IppError::StatusError(code)
     }
 }
 
