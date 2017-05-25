@@ -3,13 +3,18 @@
 
 enum_from_primitive! {
 #[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
-pub enum Tag {
-    OperationAttributesTag = 0x01,
-    JobAttributesTag = 0x02,
-    EndOfAttributesTag = 0x03,
-    PrinterAttributesTag = 0x04,
-    UnsupportedAttributesTag = 0x05,
+pub enum DelimiterTag {
+    OperationAttributes = 0x01,
+    JobAttributes = 0x02,
+    EndOfAttributes = 0x03,
+    PrinterAttributes = 0x04,
+    UnsupportedAttributes = 0x05,
+}
+}
 
+enum_from_primitive! {
+#[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
+pub enum ValueTag {
     Unsupported = 0x10,
     Unknown = 0x12,
     NoValue = 0x13,

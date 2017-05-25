@@ -10,7 +10,7 @@ use std::io::{Read, Write, copy};
 use std::time::Duration;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
-use ipp::consts::tag::Tag;
+use ipp::consts::tag::DelimiterTag;
 
 fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
@@ -99,7 +99,7 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(Tag::JobAttributesTag) {
+    if let Some(group) = attrs.get_group(DelimiterTag::JobAttributes) {
         for v in group.values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -119,7 +119,7 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(Tag::PrinterAttributesTag) {
+    if let Some(group) = attrs.get_group(DelimiterTag::PrinterAttributes) {
         let mut values: Vec<_> = group.values().collect();
         values.sort_by(|&a, &b| a.name().cmp(b.name()));
         for v in &values {

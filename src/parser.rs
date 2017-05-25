@@ -53,7 +53,7 @@ impl<'a> IppParser<'a> {
     /// Parse IPP stream
     pub fn parse(&mut self) -> Result<IppParseResult> {
         // last delimiter tag
-        let mut delimiter = Tag::EndOfAttributesTag;
+        let mut delimiter = DelimiterTag::EndOfAttributes;
 
         // stack of current attributes context. Used with lists and collections
         let mut stack = vec![vec![]];
@@ -72,7 +72,7 @@ impl<'a> IppParser<'a> {
             let tag = self.reader.read_u8()?;
             if is_delimiter_tag(tag) {
                 debug!("Delimiter tag: {:0x}", tag);
-                if tag == Tag::EndOfAttributesTag as u8 {
+                if tag == DelimiterTag::EndOfAttributes as u8 {
                     // end of stream, get last saved collection
                     if let Some(last_name) = last_name {
                         if let Some(val_list) = stack.pop() {
@@ -82,7 +82,7 @@ impl<'a> IppParser<'a> {
                     break;
                 } else {
                     // remember delimiter tag
-                    delimiter = Tag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
+                    delimiter = DelimiterTag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
                 }
             } else if is_value_tag(tag) {
                 // value tag
@@ -104,11 +104,11 @@ impl<'a> IppParser<'a> {
                     // store it as a previous attribute
                     last_name = Some(name);
                 }
-                if tag == Tag::BegCollection as u8 {
+                if tag == ValueTag::BegCollection as u8 {
                     // start new collection in the stack
                     debug!("Begin collection");
                     stack.push(vec![])
-                } else if tag == Tag::EndCollection as u8 {
+                } else if tag == ValueTag::EndCollection as u8 {
                     // get collection from the stack and add it to the previous element
                     debug!("End collection");
                     if let Some(arr) = stack.pop() {

@@ -8,7 +8,7 @@ use byteorder::{WriteBytesExt, ReadBytesExt, BigEndian};
 use enum_primitive::FromPrimitive;
 
 use ::{Result, ReadIppExt};
-use consts::tag::Tag;
+use consts::tag::ValueTag;
 
 /// Currently supported IPP values
 #[derive(Clone, Debug)]
@@ -35,26 +35,26 @@ pub enum IppValue {
 
 impl IppValue {
     /// Convert to binary tag
-    pub fn to_tag(&self) -> Tag {
+    pub fn to_tag(&self) -> ValueTag {
         match *self {
-            IppValue::Integer(_) => Tag::Integer,
-            IppValue::Enum(_) => Tag::Enum,
-            IppValue::RangeOfInteger(_, _) => Tag::RangeOfInteger,
-            IppValue::Boolean(_) => Tag::Boolean,
-            IppValue::Keyword(_) => Tag::Keyword,
-            IppValue::OctetString(_) => Tag::OctectStringUnspecified,
-            IppValue::TextWithoutLanguage(_) => Tag::TextWithoutLanguage,
-            IppValue::NameWithoutLanguage(_) => Tag::NameWithoutLanguage,
-            IppValue::Charset(_) => Tag::Charset,
-            IppValue::NaturalLanguage(_) => Tag::NaturalLanguage,
-            IppValue::Uri(_) => Tag::Uri,
-            IppValue::MimeMediaType(_) => Tag::MimeMediaType,
+            IppValue::Integer(_) => ValueTag::Integer,
+            IppValue::Enum(_) => ValueTag::Enum,
+            IppValue::RangeOfInteger(_, _) => ValueTag::RangeOfInteger,
+            IppValue::Boolean(_) => ValueTag::Boolean,
+            IppValue::Keyword(_) => ValueTag::Keyword,
+            IppValue::OctetString(_) => ValueTag::OctectStringUnspecified,
+            IppValue::TextWithoutLanguage(_) => ValueTag::TextWithoutLanguage,
+            IppValue::NameWithoutLanguage(_) => ValueTag::NameWithoutLanguage,
+            IppValue::Charset(_) => ValueTag::Charset,
+            IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage,
+            IppValue::Uri(_) => ValueTag::Uri,
+            IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
             IppValue::ListOf(ref list) => list[0].to_tag(),
-            IppValue::Collection(_) => Tag::BegCollection,
-            IppValue::DateTime(_,_,_,_,_,_,_,_,_,_) => Tag::DateTime,
-            IppValue::MemberAttrName(_) => Tag::MemberAttrName,
-            IppValue::Resolution(_, _, _) => Tag::Resolution,
-            IppValue::Other(_, _) => Tag::Unknown,
+            IppValue::Collection(_) => ValueTag::BegCollection,
+            IppValue::DateTime(_,_,_,_,_,_,_,_,_,_) => ValueTag::DateTime,
+            IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
+            IppValue::Resolution(_, _, _) => ValueTag::Resolution,
+            IppValue::Other(_, _) => ValueTag::Unknown,
         }
     }
 
@@ -62,7 +62,7 @@ impl IppValue {
     pub fn read(vtag: u8, reader: &mut Read) -> Result<IppValue> {
         let vsize = reader.read_u16::<BigEndian>()?;
 
-        let ipptag = match Tag::from_u8(vtag) {
+        let ipptag = match ValueTag::from_u8(vtag) {
             Some(x) => x,
             None => {
                 return Ok(IppValue::Other(vtag, reader.read_vec(vsize as usize)?));
@@ -70,48 +70,48 @@ impl IppValue {
         };
 
         match ipptag {
-            Tag::Integer => {
+            ValueTag::Integer => {
                 debug_assert_eq!(vsize, 4);
                 Ok(IppValue::Integer(reader.read_i32::<BigEndian>()?))
             }
-            Tag::Enum => {
+            ValueTag::Enum => {
                 debug_assert_eq!(vsize, 4);
                 Ok(IppValue::Enum(reader.read_i32::<BigEndian>()?))
             }
-            Tag::OctectStringUnspecified => {
+            ValueTag::OctectStringUnspecified => {
                 Ok(IppValue::OctetString(reader.read_string(vsize as usize)?))
             }
-            Tag::TextWithoutLanguage => {
+            ValueTag::TextWithoutLanguage => {
                 Ok(IppValue::TextWithoutLanguage(reader.read_string(vsize as usize)?))
             }
-            Tag::NameWithoutLanguage => {
+            ValueTag::NameWithoutLanguage => {
                 Ok(IppValue::NameWithoutLanguage(reader.read_string(vsize as usize)?))
             }
-            Tag::Charset => {
+            ValueTag::Charset => {
                 Ok(IppValue::Charset(reader.read_string(vsize as usize)?))
             }
-            Tag::NaturalLanguage => {
+            ValueTag::NaturalLanguage => {
                 Ok(IppValue::NaturalLanguage(reader.read_string(vsize as usize)?))
             }
-            Tag::Uri => {
+            ValueTag::Uri => {
                 Ok(IppValue::Uri(reader.read_string(vsize as usize)?))
             }
-            Tag::RangeOfInteger => {
+            ValueTag::RangeOfInteger => {
                 debug_assert_eq!(vsize, 8);
                 Ok(IppValue::RangeOfInteger(reader.read_i32::<BigEndian>()?,
                                              reader.read_i32::<BigEndian>()?))
             }
-            Tag::Boolean => {
+            ValueTag::Boolean => {
                 debug_assert_eq!(vsize, 1);
                 Ok(IppValue::Boolean(reader.read_u8()? != 0))
             }
-            Tag::Keyword => {
+            ValueTag::Keyword => {
                 Ok(IppValue::Keyword(reader.read_string(vsize as usize)?))
             }
-            Tag::MimeMediaType => {
+            ValueTag::MimeMediaType => {
                 Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?))
             }
-            Tag::DateTime => {
+            ValueTag::DateTime => {
                 Ok(IppValue::DateTime(
                     reader.read_u16::<BigEndian>()?,
                     reader.read_u8()?,
@@ -124,10 +124,10 @@ impl IppValue {
                     reader.read_u8()?,
                     reader.read_u8()?))
             }
-            Tag::MemberAttrName => {
+            ValueTag::MemberAttrName => {
                 Ok(IppValue::MemberAttrName(reader.read_string(vsize as usize)?))
             }
-            Tag::Resolution => {
+            ValueTag::Resolution => {
                 Ok(IppValue::Resolution(
                     reader.read_i32::<BigEndian>()?,
                     reader.read_i32::<BigEndian>()?,
@@ -189,7 +189,7 @@ impl IppValue {
                         retval += 3;
                     }
                 }
-                writer.write_u8(Tag::EndCollection as u8)?;
+                writer.write_u8(ValueTag::EndCollection as u8)?;
                 retval += 1;
                 Ok(retval)
             }

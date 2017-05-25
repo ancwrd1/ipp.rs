@@ -6,7 +6,7 @@ use std::process::exit;
 use std::fs::File;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob};
-use ipp::consts::tag::Tag;
+use ipp::consts::tag::DelimiterTag;
 
 pub fn main() {
     env_logger::init().unwrap();
@@ -43,7 +43,7 @@ pub fn main() {
 
     let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_group(Tag::JobAttributesTag).unwrap().values() {
+    for v in attrs.get_group(DelimiterTag::JobAttributes).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

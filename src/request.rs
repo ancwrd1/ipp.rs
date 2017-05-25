@@ -5,7 +5,7 @@ use std::io::{self, Read, Write};
 
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
-use consts::tag::Tag;
+use consts::tag::DelimiterTag;
 use consts::operation::Operation;
 use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
 use value::IppValue;
@@ -32,16 +32,16 @@ impl<'a> IppRequestResponse<'a> {
             payload: None };
 
         retval.set_attribute(
-            Tag::OperationAttributesTag,
+            DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_CHARSET,
                               IppValue::Charset("utf-8".to_string())));
         retval.set_attribute(
-            Tag::OperationAttributesTag,
+            DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
                               IppValue::NaturalLanguage("en".to_string())));
 
         retval.set_attribute(
-            Tag::OperationAttributesTag,
+            DelimiterTag::OperationAttributes,
             IppAttribute::new(PRINTER_URI,
                               IppValue::Uri(uri.replace("http", "ipp").to_string())));
 
@@ -57,11 +57,11 @@ impl<'a> IppRequestResponse<'a> {
             payload: None };
 
         retval.set_attribute(
-            Tag::OperationAttributesTag,
+            DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_CHARSET,
                               IppValue::Charset("utf-8".to_string())));
         retval.set_attribute(
-            Tag::OperationAttributesTag,
+            DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
                               IppValue::NaturalLanguage("en".to_string())));
 
@@ -94,7 +94,7 @@ impl<'a> IppRequestResponse<'a> {
         self.payload = Some(payload)
     }
 
-    pub fn set_attribute(&mut self, group: Tag, attribute: IppAttribute) {
+    pub fn set_attribute(&mut self, group: DelimiterTag, attribute: IppAttribute) {
         /// Set attribute
         self.attributes.add(group, attribute);
     }
