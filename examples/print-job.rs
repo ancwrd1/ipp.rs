@@ -6,7 +6,7 @@ use std::process::exit;
 use std::fs::File;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob};
-use ipp::consts::tag::JOB_ATTRIBUTES_TAG;
+use ipp::consts::tag::Tag;
 
 pub fn main() {
     env_logger::init().unwrap();
@@ -41,9 +41,9 @@ pub fn main() {
         operation.add_attribute(IppAttribute::new(k, value));
     }
 
-    let attrs = client.send(&mut operation).unwrap();
+    let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_group(JOB_ATTRIBUTES_TAG).unwrap().values() {
+    for v in attrs.get_group(Tag::JobAttributesTag).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

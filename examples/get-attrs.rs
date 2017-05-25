@@ -4,7 +4,7 @@ extern crate env_logger;
 use std::env;
 use std::process::exit;
 
-use ipp::consts::tag::PRINTER_ATTRIBUTES_TAG;
+use ipp::consts::tag::Tag;
 use ipp::{GetPrinterAttributes, IppClient};
 
 pub fn main() {
@@ -18,11 +18,11 @@ pub fn main() {
     }
 
     let client = IppClient::new(&args[1]);
-    let mut operation = GetPrinterAttributes::with_attributes(&args[2..]);
+    let operation = GetPrinterAttributes::with_attributes(&args[2..]);
 
-    let attrs = client.send(&mut operation).unwrap();
+    let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap().values() {
+    for v in attrs.get_group(Tag::PrinterAttributesTag).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }
