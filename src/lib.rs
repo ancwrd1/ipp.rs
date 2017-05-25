@@ -5,7 +5,7 @@
 //!
 //!```rust
 //! // using raw API
-//! let mut req = IppRequestResponse::new(GET_PRINTER_ATTRIBUTES);
+//! let mut req = IppRequestResponse::new(Operation::GetPrinterAttributes);
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! let resp = client.send_request(&mut req).unwrap();
 //! if resp.header().operation_status <= 3 {
@@ -13,10 +13,10 @@
 //! }
 //!
 //! // using operation API
-//! let mut operation = GetPrinterAttributes::new();
+//! let operation = GetPrinterAttributes::new();
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
-//! let attrs = client.send(&mut operation).unwrap();
-//! for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {
+//! let attrs = client.send(operation).unwrap();
+//! for (_, v) in attrs.get_group(DelimiterTag::PrinterAttributes).unwrap() {
 //!     println!("{}: {}", v.name(), v.value());
 //! }
 

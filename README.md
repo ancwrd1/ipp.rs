@@ -8,7 +8,7 @@ Usage example:
 
 ```rust
 extern crate ipp;
-use ipp::consts::tag::PRINTER_ATTRIBUTES_TAG;
+use ipp::consts::tag::DelimiterTag;
 use ipp::{GetPrinterAttributes, IppClient};
 pub fn main() {
     let client = IppClient::new("http://localhost:631/printers/test-printer");
@@ -16,7 +16,7 @@ pub fn main() {
 
     let attrs = client.send(&mut operation).unwrap();
 
-    for v in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap().values() {
+    for v in attrs.get_group(DelimiterTag::PrinterAttributes).unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }
