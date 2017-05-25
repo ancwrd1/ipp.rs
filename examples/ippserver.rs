@@ -17,28 +17,34 @@ struct DummyServer {
     name: String,
 }
 
-impl IppServer for DummyServer {
-    fn print_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+impl<'b, 'c> IppServer<'b, 'c> for DummyServer {
+    type IppRequest = IppRequestResponse<'b>;
+
+    fn print_job<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn create_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn validate_job<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn cancel_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn create_job<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_job_attributes<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn cancel_job<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_jobs<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn get_job_attributes<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_printer_attributes<'a>(&self, req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn get_jobs<'a>(&self, _req: &mut IppRequestResponse) -> IppServerResult<'a> {
+        Err(StatusCode::ServerErrorOperationNotSupported)
+    }
+
+    fn get_printer_attributes<'a>(&self, req: &mut IppRequestResponse) -> IppServerResult<'a> {
         let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
                                                         req.header().request_id);
         resp.set_attribute(DelimiterTag::PrinterAttributes,
@@ -51,11 +57,11 @@ impl IppServer for DummyServer {
 impl Handler for DummyServer {
     fn handle(&self, mut req: Request, res: Response) {
         let mut parser = IppParser::new(&mut req);
-        let ippreq = IppRequestResponse::from_parser(&mut parser).unwrap();
+        let mut ippreq = IppRequestResponse::from_parser(&mut parser).unwrap();
         println!("{:?}", ippreq.header());
         println!("{:?}", ippreq.attributes());
 
-        match self.ipp_handle_request(&ippreq) {
+        match self.ipp_handle_request(&mut ippreq) {
             Ok(mut response) => {
                 let mut res_streaming = res.start().unwrap();
                 response.write(&mut res_streaming).expect("Failed to write response");

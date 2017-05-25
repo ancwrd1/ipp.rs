@@ -7,46 +7,50 @@ use consts::operation::Operation;
 
 pub type IppServerResult<'a> = Result<IppRequestResponse<'a>, StatusCode>;
 
-pub trait IppServer {
-    fn print_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn print_uri<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+pub trait IppServer<'b, 'c> {
+    type IppRequest : IppRequestTrait;
+
+    fn print_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn print_uri<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn validate_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn validate_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn create_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn send_document<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn create_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn send_document<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn send_uri<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn send_uri<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn cancel_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn get_job_attributes<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn get_jobs<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn get_printer_attributes<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a>;
+    fn hold_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn cancel_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn get_job_attributes<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn get_jobs<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn get_printer_attributes<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a>;
-    fn hold_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn release_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn release_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn restart_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn restart_job<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn pause_printer<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn pause_printer<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn resume_printer<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
-    fn resume_printer<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-    fn purge_jobs<'a>(&self, _req: &IppRequestResponse) -> IppServerResult<'a> {
+    fn purge_jobs<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn ipp_handle_request<'a>(&self, req: &IppRequestResponse) -> IppServerResult<'a> {
-        if req.header().version != 0x0101 {
+    fn get_version(&self) -> u16 {
+        0x0101
+    }
+
+    fn ipp_handle_request<'a>(&self, req: &mut Self::IppRequest) -> IppServerResult<'a> {
+        if req.header().version != self.get_version() {
             return Err(StatusCode::ServerErrorVersionNotSupported);
         }
         let operation = Operation::from_u16(req.header().operation_status)
