@@ -9,6 +9,7 @@
 
     <title>operation.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -233,196 +234,196 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! High-level IPP operation abstractions</span>
-<span class='doccomment'>//!</span>
+</pre><pre class="rust ">
+<span class="doccomment">//!</span>
+<span class="doccomment">//! High-level IPP operation abstractions</span>
+<span class="doccomment">//!</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Read</span>;
-<span class='kw'>use</span> <span class='ident'>attribute</span>::<span class='ident'>IppAttribute</span>;
-<span class='kw'>use</span> <span class='ident'>request</span>::<span class='ident'>IppRequest</span>;
-<span class='kw'>use</span> <span class='ident'>value</span>::<span class='ident'>IppValue</span>;
-<span class='kw'>use</span> <span class='ident'>consts</span>::<span class='ident'>tag</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>consts</span>::<span class='ident'>operation</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>consts</span>::<span class='ident'>attribute</span>::<span class='op'>*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
+<span class="kw">use</span> <span class="ident">attribute</span>::<span class="ident">IppAttribute</span>;
+<span class="kw">use</span> <span class="ident">request</span>::<span class="ident">IppRequestResponse</span>;
+<span class="kw">use</span> <span class="ident">value</span>::<span class="ident">IppValue</span>;
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">tag</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">operation</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">attribute</span>::<span class="kw-2">*</span>;
 
-<span class='doccomment'>/// Trait which represents a single IPP operation</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>IppOperation</span> {
-    <span class='doccomment'>/// Convert this operation to IPP request which is ready for sending</span>
-    <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span>;
+<span class="doccomment">/// Trait which represents a single IPP operation</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IppOperation</span> {
+    <span class="doccomment">/// Convert this operation to IPP request which is ready for sending</span>
+    <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span>;
 }
 
-<span class='doccomment'>/// IPP operation Print-Job</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
-    <span class='ident'>user_name</span>: <span class='ident'>String</span>,
-    <span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
-    <span class='ident'>attributes</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>IppAttribute</span><span class='op'>&gt;</span>
+<span class="doccomment">/// IPP operation Print-Job</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrintJob</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span>,
+    <span class="ident">user_name</span>: <span class="ident">String</span>,
+    <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Create Print-Job operation</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
-    <span class='doccomment'>/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
-    <span class='doccomment'>/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
-               <span class='ident'>user_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>PrintJob</span> {
-            <span class='ident'>reader</span>: <span class='ident'>reader</span>,
-            <span class='ident'>user_name</span>: <span class='ident'>user_name</span>.<span class='ident'>to_string</span>(),
-            <span class='ident'>job_name</span>: <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>) <span class='op'>=</span> <span class='ident'>job_name</span> { <span class='prelude-val'>Some</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>()) } <span class='kw'>else</span> { <span class='prelude-val'>None</span> },
-            <span class='ident'>attributes</span>: <span class='ident'>Vec</span>::<span class='ident'>new</span>()
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PrintJob</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Create Print-Job operation</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
+    <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
+    <span class="doccomment">/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span>,
+               <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PrintJob</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+        <span class="ident">PrintJob</span> {
+            <span class="ident">reader</span>: <span class="ident">reader</span>,
+            <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">to_string</span>(),
+            <span class="ident">job_name</span>: <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">job_name</span> { <span class="prelude-val">Some</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()) } <span class="kw">else</span> { <span class="prelude-val">None</span> },
+            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>()
         }
     }
 
-    <span class='doccomment'>/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_attribute</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>attribute</span>: <span class='ident'>IppAttribute</span>) {
-        <span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>push</span>(<span class='ident'>attribute</span>);
+    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_attribute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
+        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IppOperation</span> <span class='kw'>for</span> <span class='ident'>PrintJob</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>PRINT_JOB</span>, <span class='ident'>uri</span>);
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">PrintJob</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">PrintJob</span>, <span class="ident">uri</span>);
 
-        <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-            <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>REQUESTING_USER_NAME</span>,
-                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='self'>self</span>.<span class='ident'>user_name</span>.<span class='ident'>clone</span>())));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTING_USER_NAME</span>,
+                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>())));
 
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>job_name</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>job_name</span> {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-                                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
-                                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='ident'>job_name</span>.<span class='ident'>clone</span>())))
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>,
+                                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())))
         }
 
-        <span class='kw'>for</span> <span class='ident'>attr</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>attributes</span> {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>JOB_ATTRIBUTES_TAG</span>, <span class='ident'>attr</span>.<span class='ident'>clone</span>());
+        <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span> {
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">JobAttributes</span>, <span class="ident">attr</span>.<span class="ident">clone</span>());
         }
-        <span class='ident'>retval</span>.<span class='ident'>set_payload</span>(<span class='self'>self</span>.<span class='ident'>reader</span>);
-        <span class='ident'>retval</span>
+        <span class="ident">retval</span>.<span class="ident">set_payload</span>(<span class="self">self</span>.<span class="ident">reader</span>);
+        <span class="ident">retval</span>
     }
 }
 
-<span class='doccomment'>/// IPP operation Get-Printer-Attributes</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GetPrinterAttributes</span> {
-    <span class='ident'>attributes</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>
+<span class="doccomment">/// IPP operation Get-Printer-Attributes</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetPrinterAttributes</span> {
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
 }
 
-<span class='kw'>impl</span> <span class='ident'>GetPrinterAttributes</span> {
-    <span class='doccomment'>/// Create Get-Printer-Attributes operation</span>
-    <span class='doccomment'>///</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>GetPrinterAttributes</span> {
-        <span class='ident'>GetPrinterAttributes</span>::<span class='ident'>default</span>()
+<span class="kw">impl</span> <span class="ident">GetPrinterAttributes</span> {
+    <span class="doccomment">/// Create Get-Printer-Attributes operation</span>
+    <span class="doccomment">///</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">GetPrinterAttributes</span> {
+        <span class="ident">GetPrinterAttributes</span>::<span class="ident">default</span>()
     }
 
-    <span class='doccomment'>/// Set attributes to request from the printer</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_attributes</span>(<span class='ident'>attributes</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>String</span>]) <span class='op'>-&gt;</span> <span class='ident'>GetPrinterAttributes</span> {
-        <span class='ident'>GetPrinterAttributes</span> { <span class='ident'>attributes</span>: <span class='ident'>attributes</span>.<span class='ident'>to_vec</span>() }
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>IppOperation</span> <span class='kw'>for</span> <span class='ident'>GetPrinterAttributes</span> {
-    <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>GET_PRINTER_ATTRIBUTES</span>, <span class='ident'>uri</span>);
-
-        <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>is_empty</span>() {
-            <span class='kw'>let</span> <span class='ident'>vals</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>IppValue</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>a</span><span class='op'>|</span> <span class='ident'>IppValue</span>::<span class='ident'>Keyword</span>(<span class='ident'>a</span>.<span class='ident'>clone</span>())).<span class='ident'>collect</span>();
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>REQUESTED_ATTRIBUTES</span>, <span class='ident'>IppValue</span>::<span class='ident'>ListOf</span>(<span class='ident'>vals</span>)));
-        }
-
-        <span class='ident'>retval</span>
+    <span class="doccomment">/// Set attributes to request from the printer</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_attributes</span>(<span class="ident">attributes</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>]) <span class="op">-&gt;</span> <span class="ident">GetPrinterAttributes</span> {
+        <span class="ident">GetPrinterAttributes</span> { <span class="ident">attributes</span>: <span class="ident">attributes</span>.<span class="ident">to_vec</span>() }
     }
 }
 
-<span class='doccomment'>/// IPP operation Create-Job</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>CreateJob</span> {
-    <span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
-    <span class='ident'>attributes</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>IppAttribute</span><span class='op'>&gt;</span>
-}
+<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">GetPrinterAttributes</span> {
+    <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">GetPrinterAttributes</span>, <span class="ident">uri</span>);
 
-<span class='kw'>impl</span> <span class='ident'>CreateJob</span> {
-    <span class='doccomment'>/// Create Create-Job operation</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>job_name</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>CreateJob</span> {
-        <span class='ident'>CreateJob</span> {
-            <span class='ident'>job_name</span>: <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>) <span class='op'>=</span> <span class='ident'>job_name</span> { <span class='prelude-val'>Some</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>()) } <span class='kw'>else</span> { <span class='prelude-val'>None</span> },
-            <span class='ident'>attributes</span>: <span class='ident'>Vec</span>::<span class='ident'>new</span>()
-        }
-    }
-
-    <span class='doccomment'>/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_attribute</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>attribute</span>: <span class='ident'>IppAttribute</span>) {
-        <span class='self'>self</span>.<span class='ident'>attributes</span>.<span class='ident'>push</span>(<span class='ident'>attribute</span>);
-    }
-
-
-}
-
-<span class='kw'>impl</span> <span class='ident'>IppOperation</span> <span class='kw'>for</span> <span class='ident'>CreateJob</span> {
-    <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>CREATE_JOB</span>, <span class='ident'>uri</span>);
-
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>job_name</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>job_name</span> {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-                                <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_NAME</span>,
-                                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='ident'>job_name</span>.<span class='ident'>clone</span>())))
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">let</span> <span class="ident">vals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="ident">a</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>();
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTED_ATTRIBUTES</span>, <span class="ident">IppValue</span>::<span class="ident">ListOf</span>(<span class="ident">vals</span>)));
         }
 
-        <span class='kw'>for</span> <span class='ident'>attr</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>attributes</span> {
-            <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>JOB_ATTRIBUTES_TAG</span>, <span class='ident'>attr</span>.<span class='ident'>clone</span>());
-        }
-        <span class='ident'>retval</span>
+        <span class="ident">retval</span>
     }
 }
 
-<span class='doccomment'>/// IPP operation Print-Job</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>job_id</span>: <span class='ident'>i32</span>,
-    <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
-    <span class='ident'>user_name</span>: <span class='ident'>String</span>,
-    <span class='ident'>last</span>: <span class='ident'>bool</span>
+<span class="doccomment">/// IPP operation Create-Job</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CreateJob</span> {
+    <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Create Send-Document operation</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// * `job_id` - job ID returned by Create-Job operation&lt;br/&gt;</span>
-    <span class='doccomment'>/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
-    <span class='doccomment'>/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
-    <span class='doccomment'>/// * `last` - whether this document is a last one&lt;br/&gt;</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>job_id</span>: <span class='ident'>i32</span>, <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
-               <span class='ident'>user_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>last</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>SendDocument</span> {
-            <span class='ident'>job_id</span>: <span class='ident'>job_id</span>,
-            <span class='ident'>reader</span>: <span class='ident'>reader</span>,
-            <span class='ident'>user_name</span>: <span class='ident'>user_name</span>.<span class='ident'>to_string</span>(),
-            <span class='ident'>last</span>: <span class='ident'>last</span>
+<span class="kw">impl</span> <span class="ident">CreateJob</span> {
+    <span class="doccomment">/// Create Create-Job operation</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CreateJob</span> {
+        <span class="ident">CreateJob</span> {
+            <span class="ident">job_name</span>: <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">job_name</span> { <span class="prelude-val">Some</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()) } <span class="kw">else</span> { <span class="prelude-val">None</span> },
+            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>()
+        }
+    }
+
+    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_attribute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
+        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
+    }
+
+
+}
+
+<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">CreateJob</span> {
+    <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">CreateJob</span>, <span class="ident">uri</span>);
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>,
+                                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())))
+        }
+
+        <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span> {
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">JobAttributes</span>, <span class="ident">attr</span>.<span class="ident">clone</span>());
+        }
+        <span class="ident">retval</span>
+    }
+}
+
+<span class="doccomment">/// IPP operation Print-Job</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SendDocument</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">job_id</span>: <span class="ident">i32</span>,
+    <span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span>,
+    <span class="ident">user_name</span>: <span class="ident">String</span>,
+    <span class="ident">last</span>: <span class="ident">bool</span>
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">SendDocument</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Create Send-Document operation</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `job_id` - job ID returned by Create-Job operation&lt;br/&gt;</span>
+    <span class="doccomment">/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
+    <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
+    <span class="doccomment">/// * `last` - whether this document is a last one&lt;br/&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span>,
+               <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">last</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">SendDocument</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+        <span class="ident">SendDocument</span> {
+            <span class="ident">job_id</span>: <span class="ident">job_id</span>,
+            <span class="ident">reader</span>: <span class="ident">reader</span>,
+            <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">to_string</span>(),
+            <span class="ident">last</span>: <span class="ident">last</span>
         }
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IppOperation</span> <span class='kw'>for</span> <span class='ident'>SendDocument</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>to_ipp_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>uri</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IppRequest</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>SEND_DOCUMENT</span>, <span class='ident'>uri</span>);
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">SendDocument</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">SendDocument</span>, <span class="ident">uri</span>);
 
-        <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-            <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>JOB_ID</span>, <span class='ident'>IppValue</span>::<span class='ident'>Integer</span>(<span class='self'>self</span>.<span class='ident'>job_id</span>)));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_ID</span>, <span class="ident">IppValue</span>::<span class="ident">Integer</span>(<span class="self">self</span>.<span class="ident">job_id</span>)));
 
-        <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-            <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>REQUESTING_USER_NAME</span>,
-                <span class='ident'>IppValue</span>::<span class='ident'>NameWithoutLanguage</span>(<span class='self'>self</span>.<span class='ident'>user_name</span>.<span class='ident'>clone</span>())));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTING_USER_NAME</span>,
+                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>())));
 
-        <span class='ident'>retval</span>.<span class='ident'>set_attribute</span>(<span class='ident'>OPERATION_ATTRIBUTES_TAG</span>,
-            <span class='ident'>IppAttribute</span>::<span class='ident'>new</span>(<span class='ident'>LAST_DOCUMENT</span>,
-                <span class='ident'>IppValue</span>::<span class='ident'>Boolean</span>(<span class='self'>self</span>.<span class='ident'>last</span>)));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">LAST_DOCUMENT</span>,
+                <span class="ident">IppValue</span>::<span class="ident">Boolean</span>(<span class="self">self</span>.<span class="ident">last</span>)));
 
-        <span class='ident'>retval</span>.<span class='ident'>set_payload</span>(<span class='self'>self</span>.<span class='ident'>reader</span>);
+        <span class="ident">retval</span>.<span class="ident">set_payload</span>(<span class="self">self</span>.<span class="ident">reader</span>);
 
-        <span class='ident'>retval</span>
+        <span class="ident">retval</span>
     }
 }
 </pre>

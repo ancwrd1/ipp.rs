@@ -9,6 +9,7 @@
 
     <title>ipp::operation::IppOperation - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,26 +43,26 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a>::<wbr><a class='trait' href=''>IppOperation</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a>::<wbr><a class="trait" href=''>IppOperation</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a class='srclink' href='../../src/ipp/operation.rs.html#14-17' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait IppOperation {
-    fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>;
+    fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>;
 }</pre><div class='docblock'><p>Trait which represents a single IPP operation</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.to_ipp_request' class='method stab '><span id='to_ipp_request.v' class='invisible'><code>fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></span></h3><div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
+        <h3 id='tymethod.to_ipp_request' class='method'><span id='to_ipp_request.v' class='invisible'><code>fn <a href='#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code></span></h3><div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;'a&gt; IppOperation for <a class='struct' href='../../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>&lt;'a&gt;</code></li>
-<li><code>impl IppOperation for <a class='struct' href='../../ipp/operation/struct.GetPrinterAttributes.html' title='ipp::operation::GetPrinterAttributes'>GetPrinterAttributes</a></code></li>
-<li><code>impl IppOperation for <a class='struct' href='../../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a></code></li>
-<li><code>impl&lt;'a&gt; IppOperation for <a class='struct' href='../../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>&lt;'a&gt;</code></li>
+    <li><code>impl&lt;'a&gt; IppOperation for <a class="struct" href="../../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>&lt;'a&gt;</code></li>
+<li><code>impl IppOperation for <a class="struct" href="../../ipp/operation/struct.GetPrinterAttributes.html" title="struct ipp::operation::GetPrinterAttributes">GetPrinterAttributes</a></code></li>
+<li><code>impl IppOperation for <a class="struct" href="../../ipp/operation/struct.CreateJob.html" title="struct ipp::operation::CreateJob">CreateJob</a></code></li>
+<li><code>impl&lt;'a&gt; IppOperation for <a class="struct" href="../../ipp/operation/struct.SendDocument.html" title="struct ipp::operation::SendDocument">SendDocument</a>&lt;'a&gt;</code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/ipp/operation/trait.IppOperation.js">
                  </script></section>

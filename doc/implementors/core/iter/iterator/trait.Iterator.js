@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["ipp"] = ["impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a> for <a class='struct' href='ipp/value/struct.IppValueIntoIterator.html' title='ipp::value::IppValueIntoIterator'>IppValueIntoIterator</a>&lt;'a&gt;",];
+implementors["ipp"] = ["impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html\" title=\"trait core::iter::iterator::Iterator\">Iterator</a> for <a class=\"struct\" href=\"ipp/value/struct.IppValueIntoIterator.html\" title=\"struct ipp::value::IppValueIntoIterator\">IppValueIntoIterator</a>&lt;'a&gt;",];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -9,6 +9,7 @@
 
     <title>ipp - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc mod">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,127 +43,127 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>ipp</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>ipp</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/ipp/lib.rs.html#1-133' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/ipp/lib.rs.html#1-139' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>IPP protocol implementation for Rust</p>
 
 <p>Usage examples:</p>
 
-<pre class='rust rust-example-rendered'>
- <span class='comment'>// using raw API</span>
- <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='ident'>IppRequest</span>::<span class='ident'>new</span>(<span class='ident'>GET_PRINTER_ATTRIBUTES</span>);
- <span class='kw'>let</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>IppClient</span>::<span class='ident'>new</span>(<span class='string'>&quot;http://localhost:631/printers/test-printer&quot;</span>);
- <span class='kw'>let</span> <span class='ident'>resp</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>send_request</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>req</span>).<span class='ident'>unwrap</span>();
- <span class='kw'>if</span> <span class='ident'>resp</span>.<span class='ident'>header</span>().<span class='ident'>status</span> <span class='op'>&lt;=</span> <span class='number'>3</span> {
-     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;result: {:?}&quot;</span>, <span class='ident'>resp</span>.<span class='ident'>attributes</span>());
+<pre class="rust rust-example-rendered">
+<span class="comment">// using raw API</span>
+ <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">GetPrinterAttributes</span>);
+ <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">new</span>(<span class="string">&quot;http://localhost:631/printers/test-printer&quot;</span>);
+ <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">req</span>).<span class="ident">unwrap</span>();
+ <span class="kw">if</span> <span class="ident">resp</span>.<span class="ident">header</span>().<span class="ident">operation_status</span> <span class="op">&lt;=</span> <span class="number">3</span> {
+     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;result: {:?}&quot;</span>, <span class="ident">resp</span>.<span class="ident">attributes</span>());
  }
 
- <span class='comment'>// using operation API</span>
- <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>operation</span> <span class='op'>=</span> <span class='ident'>GetPrinterAttributes</span>::<span class='ident'>new</span>();
- <span class='kw'>let</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>IppClient</span>::<span class='ident'>new</span>(<span class='string'>&quot;http://localhost:631/printers/test-printer&quot;</span>);
- <span class='kw'>let</span> <span class='ident'>attrs</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>send</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>operation</span>).<span class='ident'>unwrap</span>();
- <span class='kw'>for</span> (_, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>attrs</span>.<span class='ident'>get_group</span>(<span class='ident'>PRINTER_ATTRIBUTES_TAG</span>).<span class='ident'>unwrap</span>() {
-     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}: {}&quot;</span>, <span class='ident'>v</span>.<span class='ident'>name</span>(), <span class='ident'>v</span>.<span class='ident'>value</span>());
+ <span class="comment">// using operation API</span>
+ <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">GetPrinterAttributes</span>::<span class="ident">new</span>();
+ <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">new</span>(<span class="string">&quot;http://localhost:631/printers/test-printer&quot;</span>);
+ <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="ident">unwrap</span>();
+ <span class="kw">for</span> (_, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">attrs</span>.<span class="ident">get_group</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>).<span class="ident">unwrap</span>() {
+     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
  }</pre>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub use attribute::<a class='struct' href='../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>;</code></td></tr><tr><td><code>pub use attribute::<a class='struct' href='../ipp/attribute/struct.IppAttributeList.html' title='ipp::attribute::IppAttributeList'>IppAttributeList</a>;</code></td></tr><tr><td><code>pub use client::<a class='struct' href='../ipp/client/struct.IppClient.html' title='ipp::client::IppClient'>IppClient</a>;</code></td></tr><tr><td><code>pub use operation::<a class='trait' href='../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a>;</code></td></tr><tr><td><code>pub use operation::<a class='struct' href='../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class='struct' href='../ipp/operation/struct.GetPrinterAttributes.html' title='ipp::operation::GetPrinterAttributes'>GetPrinterAttributes</a>;</code></td></tr><tr><td><code>pub use operation::<a class='struct' href='../ipp/operation/struct.CreateJob.html' title='ipp::operation::CreateJob'>CreateJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class='struct' href='../ipp/operation/struct.SendDocument.html' title='ipp::operation::SendDocument'>SendDocument</a>;</code></td></tr><tr><td><code>pub use request::<a class='struct' href='../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a>;</code></td></tr><tr><td><code>pub use response::<a class='struct' href='../ipp/response/struct.IppResponse.html' title='ipp::response::IppResponse'>IppResponse</a>;</code></td></tr><tr><td><code>pub use value::<a class='enum' href='../ipp/value/enum.IppValue.html' title='ipp::value::IppValue'>IppValue</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr><td><code>pub use attribute::<a class="struct" href="../ipp/attribute/struct.IppAttribute.html" title="struct ipp::attribute::IppAttribute">IppAttribute</a>;</code></td></tr><tr><td><code>pub use attribute::<a class="struct" href="../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>;</code></td></tr><tr><td><code>pub use client::<a class="struct" href="../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a>;</code></td></tr><tr><td><code>pub use operation::<a class="trait" href="../ipp/operation/trait.IppOperation.html" title="trait ipp::operation::IppOperation">IppOperation</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.GetPrinterAttributes.html" title="struct ipp::operation::GetPrinterAttributes">GetPrinterAttributes</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.CreateJob.html" title="struct ipp::operation::CreateJob">CreateJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.SendDocument.html" title="struct ipp::operation::SendDocument">SendDocument</a>;</code></td></tr><tr><td><code>pub use request::<a class="struct" href="../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>;</code></td></tr><tr><td><code>pub use value::<a class="enum" href="../ipp/value/enum.IppValue.html" title="enum ipp::value::IppValue">IppValue</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='attribute/index.html'
-                                  title='ipp::attribute'>attribute</a></td>
+                           <td><a class="mod" href="attribute/index.html"
+                                  title='mod ipp::attribute'>attribute</a></td>
                            <td class='docblock-short'>
                                 <p>Attribute-related structs</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='client/index.html'
-                                  title='ipp::client'>client</a></td>
+                           <td><a class="mod" href="client/index.html"
+                                  title='mod ipp::client'>client</a></td>
                            <td class='docblock-short'>
                                 <p>IPP client</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='consts/index.html'
-                                  title='ipp::consts'>consts</a></td>
+                           <td><a class="mod" href="consts/index.html"
+                                  title='mod ipp::consts'>consts</a></td>
                            <td class='docblock-short'>
                                 <p>This module holds IPP constants such as attribute names, operations and tags</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='operation/index.html'
-                                  title='ipp::operation'>operation</a></td>
+                           <td><a class="mod" href="operation/index.html"
+                                  title='mod ipp::operation'>operation</a></td>
                            <td class='docblock-short'>
                                 <p>High-level IPP operation abstractions</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='parser/index.html'
-                                  title='ipp::parser'>parser</a></td>
+                           <td><a class="mod" href="parser/index.html"
+                                  title='mod ipp::parser'>parser</a></td>
                            <td class='docblock-short'>
                                 <p>IPP stream parser</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='request/index.html'
-                                  title='ipp::request'>request</a></td>
+                           <td><a class="mod" href="request/index.html"
+                                  title='mod ipp::request'>request</a></td>
                            <td class='docblock-short'>
                                 <p>IPP request</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='response/index.html'
-                                  title='ipp::response'>response</a></td>
+                           <td><a class="mod" href="server/index.html"
+                                  title='mod ipp::server'>server</a></td>
                            <td class='docblock-short'>
-                                <p>IPP response</p>
+                                
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='value/index.html'
-                                  title='ipp::value'>value</a></td>
+                           <td><a class="mod" href="value/index.html"
+                                  title='mod ipp::value'>value</a></td>
                            <td class='docblock-short'>
                                 <p>IPP value</p>
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.IppHeader.html'
-                                  title='ipp::IppHeader'>IppHeader</a></td>
+                           <td><a class="struct" href="struct.IppHeader.html"
+                                  title='struct ipp::IppHeader'>IppHeader</a></td>
                            <td class='docblock-short'>
                                 <p>IPP request and response header</p>
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='enum' href='enum.IppError.html'
-                                  title='ipp::IppError'>IppError</a></td>
+                           <td><a class="enum" href="enum.IppError.html"
+                                  title='enum ipp::IppError'>IppError</a></td>
                            <td class='docblock-short'>
                                 <p>IPP value</p>
                            </td>
                        </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='constant' href='constant.IPP_VERSION.html'
-                                  title='ipp::IPP_VERSION'>IPP_VERSION</a></td>
+                           <td><a class="constant" href="constant.IPP_VERSION.html"
+                                  title='constant ipp::IPP_VERSION'>IPP_VERSION</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='trait' href='trait.ReadIppExt.html'
-                                  title='ipp::ReadIppExt'>ReadIppExt</a></td>
+                           <td><a class="trait" href="trait.ReadIppExt.html"
+                                  title='trait ipp::ReadIppExt'>ReadIppExt</a></td>
                            <td class='docblock-short'>
                                 <p>Trait which adds two methods to Read implementations: <code>read_string</code> and <code>read_vec</code></p>
                            </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.Result.html'
-                                  title='ipp::Result'>Result</a></td>
+                           <td><a class="type" href="type.Result.html"
+                                  title='type ipp::Result'>Result</a></td>
                            <td class='docblock-short'>
                                 
                            </td>

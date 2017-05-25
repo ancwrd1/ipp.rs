@@ -9,6 +9,7 @@
 
     <title>tag.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -82,46 +83,66 @@
 <span id="38">38</span>
 <span id="39">39</span>
 <span id="40">40</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! IPP tags</span>
-<span class='doccomment'>//!</span>
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>OPERATION_ATTRIBUTES_TAG</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x01</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>JOB_ATTRIBUTES_TAG</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x02</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>END_OF_ATTRIBUTES_TAG</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x03</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PRINTER_ATTRIBUTES_TAG</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x04</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>UNSUPPORTED_ATTRIBUTES_TAG</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x05</span>;
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+</pre><pre class="rust ">
+<span class="doccomment">//!</span>
+<span class="doccomment">//! IPP tags</span>
 
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>UNSUPPORTED</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x10</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>UNKNOWN</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x12</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NO_VALUE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x13</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>INTEGER</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x21</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>BOOLEAN</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x22</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENUM</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x23</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>OCTECTSTRING_UNSPECIFIED</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x30</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>DATETIME</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x31</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RESOLUTION</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x32</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RANGEOFINTEGER</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x33</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>BEG_COLLECTION</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x34</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TEXT_WITH_LANGUAGE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x35</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NAME_WITH_LANGUAGE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x36</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>END_COLLECTION</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x37</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TEXT_WITHOUT_LANGUAGE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x41</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NAME_WITHOUT_LANGUAGE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x42</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>KEYWORD</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x44</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>URI</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x45</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>URI_SCHEME</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x46</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CHARSET</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x47</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NATURAL_LANGUAGE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x48</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MIME_MEDIA_TYPE</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x49</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MEMBER_ATTR_NAME</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='number'>0x4a</span>;
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_value_tag</span>(<span class='ident'>value</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-    <span class='ident'>value</span> <span class='op'>&gt;=</span> <span class='number'>0x10</span> <span class='op'>&amp;&amp;</span> <span class='ident'>value</span> <span class='op'>&lt;=</span> <span class='number'>0x4a</span>
+<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>,<span class="ident">PartialEq</span>,<span class="ident">Eq</span>,<span class="ident">Hash</span>,<span class="ident">Clone</span>,<span class="ident">Copy</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DelimiterTag</span> {
+    <span class="ident">OperationAttributes</span> <span class="op">=</span> <span class="number">0x01</span>,
+    <span class="ident">JobAttributes</span> <span class="op">=</span> <span class="number">0x02</span>,
+    <span class="ident">EndOfAttributes</span> <span class="op">=</span> <span class="number">0x03</span>,
+    <span class="ident">PrinterAttributes</span> <span class="op">=</span> <span class="number">0x04</span>,
+    <span class="ident">UnsupportedAttributes</span> <span class="op">=</span> <span class="number">0x05</span>,
+}
 }
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_delimiter_tag</span>(<span class='ident'>value</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-    <span class='ident'>value</span> <span class='op'>&gt;=</span> <span class='number'>0x01</span> <span class='op'>&amp;&amp;</span> <span class='ident'>value</span> <span class='op'>&lt;=</span> <span class='number'>0x05</span>
+<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>,<span class="ident">PartialEq</span>,<span class="ident">Eq</span>,<span class="ident">Hash</span>,<span class="ident">Clone</span>,<span class="ident">Copy</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ValueTag</span> {
+    <span class="ident">Unsupported</span> <span class="op">=</span> <span class="number">0x10</span>,
+    <span class="ident">Unknown</span> <span class="op">=</span> <span class="number">0x12</span>,
+    <span class="ident">NoValue</span> <span class="op">=</span> <span class="number">0x13</span>,
+    <span class="ident">Integer</span> <span class="op">=</span> <span class="number">0x21</span>,
+    <span class="ident">Boolean</span> <span class="op">=</span> <span class="number">0x22</span>,
+    <span class="ident">Enum</span> <span class="op">=</span> <span class="number">0x23</span>,
+    <span class="ident">OctectStringUnspecified</span> <span class="op">=</span> <span class="number">0x30</span>,
+    <span class="ident">DateTime</span> <span class="op">=</span> <span class="number">0x31</span>,
+    <span class="ident">Resolution</span> <span class="op">=</span> <span class="number">0x32</span>,
+    <span class="ident">RangeOfInteger</span> <span class="op">=</span> <span class="number">0x33</span>,
+    <span class="ident">BegCollection</span> <span class="op">=</span> <span class="number">0x34</span>,
+    <span class="ident">TextWithLanguage</span> <span class="op">=</span> <span class="number">0x35</span>,
+    <span class="ident">NameWithLanguage</span> <span class="op">=</span> <span class="number">0x36</span>,
+    <span class="ident">EndCollection</span> <span class="op">=</span> <span class="number">0x37</span>,
+    <span class="ident">TextWithoutLanguage</span> <span class="op">=</span> <span class="number">0x41</span>,
+    <span class="ident">NameWithoutLanguage</span> <span class="op">=</span> <span class="number">0x42</span>,
+    <span class="ident">Keyword</span> <span class="op">=</span> <span class="number">0x44</span>,
+    <span class="ident">Uri</span> <span class="op">=</span> <span class="number">0x45</span>,
+    <span class="ident">UriScheme</span> <span class="op">=</span> <span class="number">0x46</span>,
+    <span class="ident">Charset</span> <span class="op">=</span> <span class="number">0x47</span>,
+    <span class="ident">NaturalLanguage</span> <span class="op">=</span> <span class="number">0x48</span>,
+    <span class="ident">MimeMediaType</span> <span class="op">=</span> <span class="number">0x49</span>,
+    <span class="ident">MemberAttrName</span> <span class="op">=</span> <span class="number">0x4a</span>,
+}
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_value_tag</span>(<span class="ident">value</span>: <span class="ident">u8</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="ident">value</span> <span class="op">&gt;=</span> <span class="number">0x10</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span> <span class="op">&lt;=</span> <span class="number">0x4a</span>
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_delimiter_tag</span>(<span class="ident">value</span>: <span class="ident">u8</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="ident">value</span> <span class="op">&gt;=</span> <span class="number">0x01</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span> <span class="op">&lt;=</span> <span class="number">0x05</span>
 }
 </pre>
 </section>

@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["CANCEL_JOB",""],["CREATE_JOB",""],["GET_JOBS",""],["GET_JOB_ATTRIBUTES",""],["GET_PRINTER_ATTRIBUTES",""],["HOLD_JOB",""],["PAUSE_PRINTER",""],["PRINT_JOB",""],["PRINT_URI",""],["PURGE_JOBS",""],["RELEASE_JOB",""],["RESTART_JOB",""],["RESUME_PRINTER",""],["SEND_DOCUMENT",""],["SEND_URI",""],["VALIDATE_JOB",""]],"fn":[["is_operation",""]]});
+initSidebarItems({"enum":[["Operation",""]]});

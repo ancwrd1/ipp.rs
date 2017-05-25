@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IppRequest","IPP request struct"]]});
+initSidebarItems({"struct":[["IppRequestResponse","IPP request struct"]]});

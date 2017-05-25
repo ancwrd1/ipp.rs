@@ -9,6 +9,7 @@
 
     <title>statuscode.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -77,42 +78,52 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! IPP status codes</span>
-<span class='doccomment'>//!</span>
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SUCCESSFUL_OK</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0000</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SUCCESSFUL_OK_IGNORED_OR_SUBSTITUED_ATTRIBUTES</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0001</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SUCCESSFUL_OK_CONFLICTING_ATTRIBUTES</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0002</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_BAD_REQUEST</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0400</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_FORBIDDEN</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0401</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_NOT_AUTHENTICATED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0402</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_NOT_AUTHORIZED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0403</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_NOT_POSSIBLE</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0404</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_TIMEOUT</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0405</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_NOT_FOUND</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0406</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_GONE</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0407</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_REQUEST_ENTITY_TOO_LONG</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0408</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_REQUEST_VALUE_TOO_LONG</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0409</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_DOCUMENT_FORMAT_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040A</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_ATTRIBUTES_OR_VALUES_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040B</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_URI_SCHEME_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040C</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_CHARSET_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040D</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_CONFLICTING_ATTRIBUTES</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040E</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_COMPRESSION_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x040F</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_COMPRESSION_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0410</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_DOCUMENT_FORMAT_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0411</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLIENT_ERROR_DOCUMENT_ACCESS_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0412</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_INTERNAL_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0500</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_OPERATION_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0501</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_SERVICE_UNAVAILABLE</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0502</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_VERSION_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0503</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_DEVICE_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0504</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_TEMPORARY_ERROR</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0505</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_NOT_ACCEPTING_JOBS</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0506</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_BUSY</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0507</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_JOB_CANCELED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0508</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SERVER_ERROR_MULTIPLE_DOCUMENT_JOBS_NOT_SUPPORTED</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0509</span>;
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+</pre><pre class="rust ">
+<span class="doccomment">//!</span>
+<span class="doccomment">//! IPP status codes</span>
+<span class="doccomment">//!</span>
+<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusCode</span> {
+    <span class="ident">SuccessfulOK</span> <span class="op">=</span> <span class="number">0x0000</span>,
+    <span class="ident">SuccessfulOKIgnoredOrSubstitutedAttributes</span> <span class="op">=</span> <span class="number">0x0001</span>,
+    <span class="ident">SuccessfulOKConflictingAttributes</span> <span class="op">=</span> <span class="number">0x0002</span>,
+    <span class="ident">ClientErrorBadRequest</span> <span class="op">=</span> <span class="number">0x0400</span>,
+    <span class="ident">ClientErrorForbidden</span> <span class="op">=</span> <span class="number">0x0401</span>,
+    <span class="ident">ClientErrorNotAuthenticated</span> <span class="op">=</span> <span class="number">0x0402</span>,
+    <span class="ident">ClientErrorNotAuthorized</span> <span class="op">=</span> <span class="number">0x0403</span>,
+    <span class="ident">ClientErrorNotPossible</span> <span class="op">=</span> <span class="number">0x0404</span>,
+    <span class="ident">ClientErrorTimeout</span> <span class="op">=</span> <span class="number">0x0405</span>,
+    <span class="ident">ClientErrorNotFound</span> <span class="op">=</span> <span class="number">0x0406</span>,
+    <span class="ident">ClientErrorGone</span> <span class="op">=</span> <span class="number">0x0407</span>,
+    <span class="ident">ClientErrorRequestEntityTooLong</span> <span class="op">=</span> <span class="number">0x0408</span>,
+    <span class="ident">ClientErrorRequestValueTooLong</span> <span class="op">=</span> <span class="number">0x0409</span>,
+    <span class="ident">ClientErrorDocumentFormatNotSupported</span> <span class="op">=</span> <span class="number">0x040A</span>,
+    <span class="ident">ClientErrorAttributesOrValuesNotSupported</span> <span class="op">=</span> <span class="number">0x040B</span>,
+    <span class="ident">ClientErrorUriSchemeNotSupported</span> <span class="op">=</span> <span class="number">0x040C</span>,
+    <span class="ident">ClientErrorCharsetNotSupported</span> <span class="op">=</span> <span class="number">0x040D</span>,
+    <span class="ident">ClientErrorConflictingAttributes</span> <span class="op">=</span> <span class="number">0x040E</span>,
+    <span class="ident">ClientErrorCompressionNotSupported</span> <span class="op">=</span> <span class="number">0x040F</span>,
+    <span class="ident">ClientErrorCompressionError</span> <span class="op">=</span> <span class="number">0x0410</span>,
+    <span class="ident">ClientErrorDocumentFormatError</span> <span class="op">=</span> <span class="number">0x0411</span>,
+    <span class="ident">ClientErrorDocumentAccessError</span> <span class="op">=</span> <span class="number">0x0412</span>,
+    <span class="ident">ServerErrorInternalError</span> <span class="op">=</span> <span class="number">0x0500</span>,
+    <span class="ident">ServerErrorOperationNotSupported</span> <span class="op">=</span> <span class="number">0x0501</span>,
+    <span class="ident">ServerErrorServiceUnavailable</span> <span class="op">=</span> <span class="number">0x0502</span>,
+    <span class="ident">ServerErrorVersionNotSupported</span> <span class="op">=</span> <span class="number">0x0503</span>,
+    <span class="ident">ServerErrorDeviceError</span> <span class="op">=</span> <span class="number">0x0504</span>,
+    <span class="ident">ServerErrorTemporaryError</span> <span class="op">=</span> <span class="number">0x0505</span>,
+    <span class="ident">ServerErrorNotAcceptingJobs</span> <span class="op">=</span> <span class="number">0x0506</span>,
+    <span class="ident">ServerErrorBusy</span> <span class="op">=</span> <span class="number">0x0507</span>,
+    <span class="ident">ServerErrorJobCanceled</span> <span class="op">=</span> <span class="number">0x0508</span>,
+    <span class="ident">ServerErrorMultipleDocumentJobsNotSupported</span> <span class="op">=</span> <span class="number">0x0509</span>,
+}
+}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

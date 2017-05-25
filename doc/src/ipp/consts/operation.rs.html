@@ -9,6 +9,7 @@
 
     <title>operation.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -65,29 +66,31 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! IPP operations</span>
-<span class='doccomment'>//!</span>
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PRINT_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0002</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PRINT_URI</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0003</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>VALIDATE_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0004</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CREATE_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0005</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SEND_DOCUMENT</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0006</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SEND_URI</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0007</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CANCEL_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0008</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>GET_JOB_ATTRIBUTES</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0009</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>GET_JOBS</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x000A</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>GET_PRINTER_ATTRIBUTES</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x000B</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>HOLD_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x000C</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RELEASE_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x000D</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RESTART_JOB</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x000E</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PAUSE_PRINTER</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0010</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RESUME_PRINTER</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0011</span>;
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PURGE_JOBS</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0012</span>;
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_operation</span>(<span class='ident'>value</span>: <span class='ident'>u16</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-    <span class='ident'>value</span> <span class='op'>&lt;=</span> <span class='number'>0x12</span>
+<span id="24">24</span>
+</pre><pre class="rust ">
+<span class="doccomment">//!</span>
+<span class="doccomment">//! IPP operations</span>
+<span class="doccomment">//!</span>
+<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Operation</span> {
+    <span class="ident">PrintJob</span> <span class="op">=</span> <span class="number">0x0002</span>,
+    <span class="ident">PrintUri</span> <span class="op">=</span> <span class="number">0x0003</span>,
+    <span class="ident">ValidateJob</span> <span class="op">=</span> <span class="number">0x0004</span>,
+    <span class="ident">CreateJob</span> <span class="op">=</span> <span class="number">0x0005</span>,
+    <span class="ident">SendDocument</span> <span class="op">=</span> <span class="number">0x0006</span>,
+    <span class="ident">SendUri</span> <span class="op">=</span> <span class="number">0x0007</span>,
+    <span class="ident">CancelJob</span> <span class="op">=</span> <span class="number">0x0008</span>,
+    <span class="ident">GetJobAttributes</span> <span class="op">=</span> <span class="number">0x0009</span>,
+    <span class="ident">GetJobs</span> <span class="op">=</span> <span class="number">0x000A</span>,
+    <span class="ident">GetPrinterAttributes</span> <span class="op">=</span> <span class="number">0x000B</span>,
+    <span class="ident">HoldJob</span> <span class="op">=</span> <span class="number">0x000C</span>,
+    <span class="ident">ReleaseJob</span> <span class="op">=</span> <span class="number">0x000D</span>,
+    <span class="ident">RestartJob</span> <span class="op">=</span> <span class="number">0x000E</span>,
+    <span class="ident">PausePrinter</span> <span class="op">=</span> <span class="number">0x0010</span>,
+    <span class="ident">ResumePrinter</span> <span class="op">=</span> <span class="number">0x0011</span>,
+    <span class="ident">PurgeJobs</span> <span class="op">=</span> <span class="number">0x0012</span>,
+}
 }
 </pre>
 </section>

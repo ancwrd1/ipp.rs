@@ -9,6 +9,7 @@
 
     <title>ipp::operation::PrintJob - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc struct">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,15 +43,15 @@
         </form>
     </nav>
 
-    <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a>::<wbr><a class='struct' href=''>PrintJob</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>ipp</a>::<wbr><a href='index.html'>operation</a>::<wbr><a class="struct" href=''>PrintJob</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a class='srclink' href='../../src/ipp/operation.rs.html#20-25' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct PrintJob&lt;'a&gt; { /* fields omitted */ }</pre><div class='docblock'><p>IPP operation Print-Job</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#27-47' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(reader: &amp;'a mut <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; user_name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; job_name: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>&lt;'a&gt;</code></span></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class="struct" href="../../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#27-47' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(reader: &amp;'a mut <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; user_name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; job_name: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="struct" href="../../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>&lt;'a&gt;</code></span></h4>
 <div class='docblock'><p>Create Print-Job operation</p>
 
 <ul>
@@ -58,10 +59,10 @@
 <li><code>user_name</code> - name of the user (requesting-user-name)<br/></li>
 <li><code>job_name</code> - optional job name (job-name)<br/></li>
 </ul>
-</div><h4 id='method.add_attribute' class='method'><span id='add_attribute.v' class='invisible'><code>fn <a href='#method.add_attribute' class='fnname'>add_attribute</a>(&amp;mut self, attribute: <a class='struct' href='../../ipp/attribute/struct.IppAttribute.html' title='ipp::attribute::IppAttribute'>IppAttribute</a>)</code></span></h4>
+</div><h4 id='method.add_attribute' class="method"><span id='add_attribute.v' class='invisible'><code>fn <a href='#method.add_attribute' class='fnname'>add_attribute</a>(&amp;mut self, attribute: <a class="struct" href="../../ipp/attribute/struct.IppAttribute.html" title="struct ipp::attribute::IppAttribute">IppAttribute</a>)</code></span></h4>
 <div class='docblock'><p>Set extra job attribute for this operation, for example <code>colormodel=grayscale</code></p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='../../ipp/operation/trait.IppOperation.html' title='ipp::operation::IppOperation'>IppOperation</a> for <a class='struct' href='../../ipp/operation/struct.PrintJob.html' title='ipp::operation::PrintJob'>PrintJob</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#49-69' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.to_ipp_request' class='method'><span id='to_ipp_request.v' class='invisible'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../ipp/request/struct.IppRequest.html' title='ipp::request::IppRequest'>IppRequest</a></code></span></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class="trait" href="../../ipp/operation/trait.IppOperation.html" title="trait ipp::operation::IppOperation">IppOperation</a> for <a class="struct" href="../../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/operation.rs.html#49-69' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_ipp_request' class="method"><span id='to_ipp_request.v' class='invisible'><code>fn <a href='../../ipp/operation/trait.IppOperation.html#tymethod.to_ipp_request' class='fnname'>to_ipp_request</a>(&amp;mut self, uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code></span></h4>
 <div class='docblock'><p>Convert this operation to IPP request which is ready for sending</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>

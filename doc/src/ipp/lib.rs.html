@@ -9,6 +9,7 @@
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -175,140 +176,154 @@
 <span id="131">131</span>
 <span id="132">132</span>
 <span id="133">133</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! IPP protocol implementation for Rust</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Usage examples:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!```rust</span>
-<span class='doccomment'>//! // using raw API</span>
-<span class='doccomment'>//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES);</span>
-<span class='doccomment'>//! let client = IppClient::new(&quot;http://localhost:631/printers/test-printer&quot;);</span>
-<span class='doccomment'>//! let resp = client.send_request(&amp;mut req).unwrap();</span>
-<span class='doccomment'>//! if resp.header().status &lt;= 3 {</span>
-<span class='doccomment'>//!     println!(&quot;result: {:?}&quot;, resp.attributes());</span>
-<span class='doccomment'>//! }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! // using operation API</span>
-<span class='doccomment'>//! let mut operation = GetPrinterAttributes::new();</span>
-<span class='doccomment'>//! let client = IppClient::new(&quot;http://localhost:631/printers/test-printer&quot;);</span>
-<span class='doccomment'>//! let attrs = client.send(&amp;mut operation).unwrap();</span>
-<span class='doccomment'>//! for (_, v) in attrs.get_group(PRINTER_ATTRIBUTES_TAG).unwrap() {</span>
-<span class='doccomment'>//!     println!(&quot;{}: {}&quot;, v.name(), v.value());</span>
-<span class='doccomment'>//! }</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+</pre><pre class="rust ">
+<span class="doccomment">//!</span>
+<span class="doccomment">//! IPP protocol implementation for Rust</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Usage examples:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!```rust</span>
+<span class="doccomment">//! // using raw API</span>
+<span class="doccomment">//! let mut req = IppRequestResponse::new(Operation::GetPrinterAttributes);</span>
+<span class="doccomment">//! let client = IppClient::new(&quot;http://localhost:631/printers/test-printer&quot;);</span>
+<span class="doccomment">//! let resp = client.send_request(&amp;mut req).unwrap();</span>
+<span class="doccomment">//! if resp.header().operation_status &lt;= 3 {</span>
+<span class="doccomment">//!     println!(&quot;result: {:?}&quot;, resp.attributes());</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! // using operation API</span>
+<span class="doccomment">//! let operation = GetPrinterAttributes::new();</span>
+<span class="doccomment">//! let client = IppClient::new(&quot;http://localhost:631/printers/test-printer&quot;);</span>
+<span class="doccomment">//! let attrs = client.send(operation).unwrap();</span>
+<span class="doccomment">//! for (_, v) in attrs.get_group(DelimiterTag::PrinterAttributes).unwrap() {</span>
+<span class="doccomment">//!     println!(&quot;{}: {}&quot;, v.name(), v.value());</span>
+<span class="doccomment">//! }</span>
 
-<span class='doccomment'>//!```</span>
+<span class="doccomment">//!```</span>
 
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>byteorder</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">byteorder</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">hyper</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">enum_primitive</span>;
 
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Read</span>, <span class='ident'>Write</span>};
-<span class='kw'>use</span> <span class='ident'>byteorder</span>::{<span class='ident'>BigEndian</span>, <span class='ident'>ReadBytesExt</span>, <span class='ident'>WriteBytesExt</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">result</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Read</span>, <span class="ident">Write</span>};
+<span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">ReadBytesExt</span>, <span class="ident">WriteBytesExt</span>};
 
-<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>IPP_VERSION</span>: <span class='ident'>u16</span> <span class='op'>=</span> <span class='number'>0x0101</span>;
-
-<span class='doccomment'>/// IPP value</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>IppError</span> {
-    <span class='ident'>HttpError</span>(<span class='ident'>hyper</span>::<span class='ident'>Error</span>),
-    <span class='ident'>IOError</span>(::<span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='ident'>RequestError</span>(<span class='ident'>String</span>),
-    <span class='ident'>AttributeError</span>(<span class='ident'>String</span>),
-    <span class='ident'>StatusError</span>(<span class='ident'>u16</span>),
-    <span class='ident'>TagError</span>(<span class='ident'>u8</span>)
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">consts</span> {
+    <span class="doccomment">//! This module holds IPP constants such as attribute names, operations and tags</span>
+    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tag</span>;
+    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">statuscode</span>;
+    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">operation</span>;
+    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">attribute</span>;
 }
 
-<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IppError</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>error</span>: <span class='ident'>io</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>IppError</span> {
-        <span class='ident'>IppError</span>::<span class='ident'>IOError</span>(<span class='ident'>error</span>)
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">value</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">parser</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">request</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">attribute</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">client</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">server</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">operation</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">attribute</span>::{<span class="ident">IppAttribute</span>, <span class="ident">IppAttributeList</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">client</span>::<span class="ident">IppClient</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">operation</span>::{<span class="ident">IppOperation</span>, <span class="ident">PrintJob</span>, <span class="ident">GetPrinterAttributes</span>, <span class="ident">CreateJob</span>, <span class="ident">SendDocument</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">request</span>::<span class="ident">IppRequestResponse</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">value</span>::<span class="ident">IppValue</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IPP_VERSION</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">0x0101</span>;
+
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">statuscode</span>::<span class="ident">StatusCode</span>;
+
+<span class="doccomment">/// IPP value</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IppError</span> {
+    <span class="ident">HttpError</span>(<span class="ident">hyper</span>::<span class="ident">Error</span>),
+    <span class="ident">IOError</span>(::<span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Error</span>),
+    <span class="ident">RequestError</span>(<span class="ident">String</span>),
+    <span class="ident">AttributeError</span>(<span class="ident">String</span>),
+    <span class="ident">StatusError</span>(<span class="ident">consts</span>::<span class="ident">statuscode</span>::<span class="ident">StatusCode</span>),
+    <span class="ident">TagError</span>(<span class="ident">u8</span>)
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IppError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">io</span>::<span class="ident">Error</span>) <span class="op">-&gt;</span> <span class="ident">IppError</span> {
+        <span class="ident">IppError</span>::<span class="ident">IOError</span>(<span class="ident">error</span>)
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>hyper</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IppError</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>error</span>: <span class='ident'>hyper</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='ident'>IppError</span> {
-        <span class='ident'>IppError</span>::<span class='ident'>HttpError</span>(<span class='ident'>error</span>)
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StatusCode</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IppError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">code</span>: <span class="ident">StatusCode</span>) <span class="op">-&gt;</span> <span class="ident">IppError</span> {
+        <span class="ident">IppError</span>::<span class="ident">StatusError</span>(<span class="ident">code</span>)
     }
 }
 
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>result</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>IppError</span><span class='op'>&gt;</span>;
-
-<span class='doccomment'>/// IPP request and response header</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IppHeader</span> {
-    <span class='kw'>pub</span> <span class='ident'>version</span>: <span class='ident'>u16</span>,
-    <span class='kw'>pub</span> <span class='ident'>status</span>: <span class='ident'>u16</span>,
-    <span class='kw'>pub</span> <span class='ident'>request_id</span>: <span class='ident'>u32</span>
-}
-
-<span class='kw'>impl</span> <span class='ident'>IppHeader</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_reader</span>(<span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Read</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>IppHeader</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>retval</span> <span class='op'>=</span> <span class='ident'>IppHeader</span>::<span class='ident'>new</span>(
-            <span class='ident'>reader</span>.<span class='ident'>read_u16</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>()<span class='question-mark'>?</span>,
-            <span class='ident'>reader</span>.<span class='ident'>read_u16</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>()<span class='question-mark'>?</span>,
-            <span class='ident'>reader</span>.<span class='ident'>read_u32</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>()<span class='question-mark'>?</span>);
-        <span class='prelude-val'>Ok</span>(<span class='ident'>retval</span>)
-    }
-
-    <span class='doccomment'>/// Create IPP header</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>version</span>: <span class='ident'>u16</span>, <span class='ident'>status</span>: <span class='ident'>u16</span>, <span class='ident'>request_id</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>IppHeader</span> {
-        <span class='ident'>IppHeader</span> {<span class='ident'>version</span>: <span class='ident'>version</span>, <span class='ident'>status</span>: <span class='ident'>status</span>, <span class='ident'>request_id</span>: <span class='ident'>request_id</span>}
-    }
-
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>writer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
-        <span class='ident'>writer</span>.<span class='ident'>write_u16</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>(<span class='self'>self</span>.<span class='ident'>version</span>)<span class='question-mark'>?</span>;
-        <span class='ident'>writer</span>.<span class='ident'>write_u16</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>(<span class='self'>self</span>.<span class='ident'>status</span>)<span class='question-mark'>?</span>;
-        <span class='ident'>writer</span>.<span class='ident'>write_u32</span>::<span class='op'>&lt;</span><span class='ident'>BigEndian</span><span class='op'>&gt;</span>(<span class='self'>self</span>.<span class='ident'>request_id</span>)<span class='question-mark'>?</span>;
-
-        <span class='prelude-val'>Ok</span>(<span class='number'>8</span>)
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">hyper</span>::<span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IppError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">hyper</span>::<span class="ident">Error</span>) <span class="op">-&gt;</span> <span class="ident">IppError</span> {
+        <span class="ident">IppError</span>::<span class="ident">HttpError</span>(<span class="ident">error</span>)
     }
 }
 
-<span class='doccomment'>/// Trait which adds two methods to Read implementations: `read_string` and `read_vec`</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ReadIppExt</span>: <span class='ident'>Read</span> {
-    <span class='kw'>fn</span> <span class='ident'>read_string</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
-        <span class='prelude-val'>Ok</span>(<span class='ident'>String</span>::<span class='ident'>from_utf8_lossy</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>read_vec</span>(<span class='ident'>len</span>)<span class='question-mark'>?</span>).<span class='ident'>to_string</span>())
+<span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">IppError</span><span class="op">&gt;</span>;
+
+<span class="doccomment">/// IPP request and response header</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppHeader</span> {
+    <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">u16</span>,
+    <span class="kw">pub</span> <span class="ident">operation_status</span>: <span class="ident">u16</span>,
+    <span class="kw">pub</span> <span class="ident">request_id</span>: <span class="ident">u32</span>
+}
+
+<span class="kw">impl</span> <span class="ident">IppHeader</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_reader</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppHeader</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppHeader</span>::<span class="ident">new</span>(
+            <span class="ident">reader</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="ident">reader</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="ident">reader</span>.<span class="ident">read_u32</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>);
+        <span class="prelude-val">Ok</span>(<span class="ident">retval</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>read_vec</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>namebuf</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>len</span>);
-        <span class='kw'>unsafe</span> { <span class='ident'>namebuf</span>.<span class='ident'>set_len</span>(<span class='ident'>len</span>) };
+    <span class="doccomment">/// Create IPP header</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">version</span>: <span class="ident">u16</span>, <span class="ident">status</span>: <span class="ident">u16</span>, <span class="ident">request_id</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">IppHeader</span> {
+        <span class="ident">IppHeader</span> {<span class="ident">version</span>: <span class="ident">version</span>, <span class="ident">operation_status</span>: <span class="ident">status</span>, <span class="ident">request_id</span>: <span class="ident">request_id</span>}
+    }
 
-        <span class='self'>self</span>.<span class='ident'>read_exact</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>namebuf</span>)<span class='question-mark'>?</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="ident">writer</span>.<span class="ident">write_u16</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>(<span class="self">self</span>.<span class="ident">version</span>)<span class="question-mark">?</span>;
+        <span class="ident">writer</span>.<span class="ident">write_u16</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>(<span class="self">self</span>.<span class="ident">operation_status</span>)<span class="question-mark">?</span>;
+        <span class="ident">writer</span>.<span class="ident">write_u32</span>::<span class="op">&lt;</span><span class="ident">BigEndian</span><span class="op">&gt;</span>(<span class="self">self</span>.<span class="ident">request_id</span>)<span class="question-mark">?</span>;
 
-        <span class='prelude-val'>Ok</span>(<span class='ident'>namebuf</span>)
+        <span class="prelude-val">Ok</span>(<span class="number">8</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>io</span>::<span class='ident'>Read</span> <span class='op'>+</span> <span class='question-mark'>?</span><span class='ident'>Sized</span><span class='op'>&gt;</span> <span class='ident'>ReadIppExt</span> <span class='kw'>for</span> <span class='ident'>R</span> {}
+<span class="doccomment">/// Trait which adds two methods to Read implementations: `read_string` and `read_vec`</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ReadIppExt</span>: <span class="ident">Read</span> {
+    <span class="kw">fn</span> <span class="ident">read_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">String</span>::<span class="ident">from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">read_vec</span>(<span class="ident">len</span>)<span class="question-mark">?</span>).<span class="ident">to_string</span>())
+    }
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>consts</span> {
-    <span class='doccomment'>//! This module holds IPP constants such as attribute names, operations and tags</span>
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>tag</span>;
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>statuscode</span>;
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>operation</span>;
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>attribute</span>;
+    <span class="kw">fn</span> <span class="ident">read_vec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">namebuf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">len</span>);
+        <span class="kw">unsafe</span> { <span class="ident">namebuf</span>.<span class="ident">set_len</span>(<span class="ident">len</span>) };
+
+        <span class="self">self</span>.<span class="ident">read_exact</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">namebuf</span>)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(<span class="ident">namebuf</span>)
+    }
 }
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>value</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>parser</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>request</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>response</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>attribute</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>client</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>server</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>operation</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">io</span>::<span class="ident">Read</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">ReadIppExt</span> <span class="kw">for</span> <span class="ident">R</span> {}
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>attribute</span>::{<span class='ident'>IppAttribute</span>, <span class='ident'>IppAttributeList</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>client</span>::<span class='ident'>IppClient</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>operation</span>::{<span class='ident'>IppOperation</span>, <span class='ident'>PrintJob</span>, <span class='ident'>GetPrinterAttributes</span>, <span class='ident'>CreateJob</span>, <span class='ident'>SendDocument</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>request</span>::<span class='ident'>IppRequest</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>response</span>::<span class='ident'>IppResponse</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>value</span>::<span class='ident'>IppValue</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
