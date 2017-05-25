@@ -61,3 +61,52 @@ pub const MEDIA_SUPPORTED: &'static str = "media-supported";
 pub const PAGES_PER_MINUTE: &'static str = "pages-per-minute";
 pub const COLOR_MODE_SUPPORTED: &'static str = "color-mode-supported";
 pub const PRINT_COLOR_MODE_SUPPORTED: &'static str = "print-color-mode-supported";
+
+enum_from_primitive! {
+pub enum PrinterState {
+    Idle = 3,
+    Processing = 4,
+    Stopped = 5,
+}
+}
+
+enum_from_primitive! {
+pub enum Orientation {
+    Portrait = 3,
+    Landscape = 4,
+    ReverseLandscape = 5,
+    ReversePortrait = 6,
+}
+}
+
+enum_from_primitive! {
+pub enum PrintQuality {
+    Draft = 3,
+    Normal = 4,
+    High = 5,
+}
+}
+
+enum_from_primitive! {
+pub enum Finishings {
+    None = 3,
+    Staple = 4,
+    Punch = 5,
+    Cover = 6,
+    Bind = 7,
+    SaddleStitch = 8,
+    EdgeStitch = 9,
+}
+}
+
+enum_from_primitive! {
+pub enum JobState {
+    Pending = 3,
+    PendingHeld = 4,
+    Processing = 5,
+    ProcessingStopped = 6,
+    Canceled = 7,
+    Aborted = 8,
+    Completed = 9,
+}
+}
