@@ -90,9 +90,8 @@ impl<'a> IppRequestResponse<'a> {
         })
     }
 
-    /// Get header
-    pub fn header(&self) -> &IppHeader {
-        &self.header
+    pub fn header_mut(&mut self) -> &mut IppHeader {
+        &mut self.header
     }
 
     /// Get attributes
