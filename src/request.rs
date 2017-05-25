@@ -21,6 +21,17 @@ pub struct IppRequestResponse<'a> {
     payload: Option<&'a mut Read>
 }
 
+pub trait IppRequestTrait {
+    fn header(&self) -> &IppHeader;
+}
+
+impl<'a> IppRequestTrait for IppRequestResponse<'a> {
+    /// Get header
+    fn header(&self) -> &IppHeader {
+        &self.header
+    }
+}
+
 impl<'a> IppRequestResponse<'a> {
     /// Create new IPP request for the operation and uri
     pub fn new(operation: Operation, uri: &str) -> IppRequestResponse<'a> {

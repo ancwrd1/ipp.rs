@@ -1,7 +1,7 @@
 // IPP server
 use enum_primitive::FromPrimitive;
 
-use request::IppRequestResponse;
+use request::{IppRequestResponse,IppRequestTrait};
 use consts::statuscode::StatusCode;
 use consts::operation::Operation;
 

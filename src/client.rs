@@ -10,7 +10,7 @@ use hyper::Url;
 use hyper::status::StatusCode;
 
 use ::{IppError, Result};
-use request::IppRequestResponse;
+use request::{IppRequestResponse,IppRequestTrait};
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;
