@@ -4,7 +4,7 @@
 
 use std::io::Read;
 use attribute::IppAttribute;
-use request::IppRequest;
+use request::IppRequestResponse;
 use value::IppValue;
 use consts::tag::*;
 use consts::operation::*;
@@ -13,7 +13,7 @@ use consts::attribute::*;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequest;
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse;
 }
 
 /// IPP operation Print-Job
@@ -47,21 +47,21 @@ impl<'a> PrintJob<'a> {
 }
 
 impl<'a> IppOperation for PrintJob<'a> {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
-        let mut retval = IppRequest::new(PRINT_JOB, uri);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
 
-        retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        retval.set_attribute(Tag::OperationAttributesTag,
             IppAttribute::new(REQUESTING_USER_NAME,
                 IppValue::NameWithoutLanguage(self.user_name.clone())));
 
         if let Some(ref job_name) = self.job_name {
-            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+            retval.set_attribute(Tag::OperationAttributesTag,
                                 IppAttribute::new(JOB_NAME,
                                 IppValue::NameWithoutLanguage(job_name.clone())))
         }
 
         for attr in &self.attributes {
-            retval.set_attribute(JOB_ATTRIBUTES_TAG, attr.clone());
+            retval.set_attribute(Tag::JobAttributesTag, attr.clone());
         }
         retval.set_payload(self.reader);
         retval
@@ -88,12 +88,12 @@ impl GetPrinterAttributes {
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
-        let mut retval = IppRequest::new(GET_PRINTER_ATTRIBUTES, uri);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 
         if !self.attributes.is_empty() {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
-            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+            retval.set_attribute(Tag::OperationAttributesTag,
                 IppAttribute::new(REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)));
         }
 
@@ -127,17 +127,17 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
-        let mut retval = IppRequest::new(CREATE_JOB, uri);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(Operation::CreateJob, uri);
 
         if let Some(ref job_name) = self.job_name {
-            retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+            retval.set_attribute(Tag::OperationAttributesTag,
                                 IppAttribute::new(JOB_NAME,
                                 IppValue::NameWithoutLanguage(job_name.clone())))
         }
 
         for attr in &self.attributes {
-            retval.set_attribute(JOB_ATTRIBUTES_TAG, attr.clone());
+            retval.set_attribute(Tag::JobAttributesTag, attr.clone());
         }
         retval
     }
@@ -170,17 +170,17 @@ impl<'a> SendDocument<'a> {
 }
 
 impl<'a> IppOperation for SendDocument<'a> {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequest {
-        let mut retval = IppRequest::new(SEND_DOCUMENT, uri);
+    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(Operation::SendDocument, uri);
 
-        retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        retval.set_attribute(Tag::OperationAttributesTag,
             IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)));
 
-        retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        retval.set_attribute(Tag::OperationAttributesTag,
             IppAttribute::new(REQUESTING_USER_NAME,
                 IppValue::NameWithoutLanguage(self.user_name.clone())));
 
-        retval.set_attribute(OPERATION_ATTRIBUTES_TAG,
+        retval.set_attribute(Tag::OperationAttributesTag,
             IppAttribute::new(LAST_DOCUMENT,
                 IppValue::Boolean(self.last)));
 

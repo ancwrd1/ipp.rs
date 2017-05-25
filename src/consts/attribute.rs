@@ -1,6 +1,9 @@
 //!
 //! IPP attribute names
 //!
+
+// enum_primitive only works with integer values, so these will have to remain as constants
+
 pub const ATTRIBUTES_CHARSET: &'static str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &'static str = "attributes-natural-language";
 pub const CHARSET_CONFIGURED: &'static str = "charset-configured";

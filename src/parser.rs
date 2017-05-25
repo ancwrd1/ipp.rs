@@ -4,10 +4,13 @@
 use std::io::Read;
 use byteorder::{BigEndian, ReadBytesExt};
 
+use enum_primitive::FromPrimitive;
+
 use ::{Result, IppError, IppHeader, ReadIppExt};
 use attribute::{IppAttribute, IppAttributeList};
 use value::IppValue;
 use consts::tag::*;
+use consts::statuscode::StatusCode;
 
 fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 { list.remove(0) } else { IppValue::ListOf(list) }
@@ -50,7 +53,7 @@ impl<'a> IppParser<'a> {
     /// Parse IPP stream
     pub fn parse(&mut self) -> Result<IppParseResult> {
         // last delimiter tag
-        let mut delimiter = 0;
+        let mut delimiter = Tag::EndOfAttributesTag;
 
         // stack of current attributes context. Used with lists and collections
         let mut stack = vec![vec![]];
@@ -69,7 +72,7 @@ impl<'a> IppParser<'a> {
             let tag = self.reader.read_u8()?;
             if is_delimiter_tag(tag) {
                 debug!("Delimiter tag: {:0x}", tag);
-                if tag == END_OF_ATTRIBUTES_TAG {
+                if tag == Tag::EndOfAttributesTag as u8 {
                     // end of stream, get last saved collection
                     if let Some(last_name) = last_name {
                         if let Some(val_list) = stack.pop() {
@@ -79,7 +82,7 @@ impl<'a> IppParser<'a> {
                     break;
                 } else {
                     // remember delimiter tag
-                    delimiter = tag;
+                    delimiter = Tag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
                 }
             } else if is_value_tag(tag) {
                 // value tag
@@ -101,27 +104,21 @@ impl<'a> IppParser<'a> {
                     // store it as a previous attribute
                     last_name = Some(name);
                 }
-                match tag {
-                    BEG_COLLECTION => {
-                        // start new collection in the stack
-                        debug!("Begin collection");
-                        stack.push(vec![])
-                    }
-                    END_COLLECTION => {
-                        // get collection from the stack and add it to the previous element
-                        debug!("End collection");
-                        if let Some(arr) = stack.pop() {
-                            if let Some(val_list) = stack.last_mut() {
-                                val_list.push(IppValue::Collection(arr));
-                            }
-                        }
-                    }
-                    _ => {
-                        // add attribute to the current collection
+                if tag == Tag::BegCollection as u8 {
+                    // start new collection in the stack
+                    debug!("Begin collection");
+                    stack.push(vec![])
+                } else if tag == Tag::EndCollection as u8 {
+                    // get collection from the stack and add it to the previous element
+                    debug!("End collection");
+                    if let Some(arr) = stack.pop() {
                         if let Some(val_list) = stack.last_mut() {
-                            val_list.push(value);
+                            val_list.push(IppValue::Collection(arr));
                         }
                     }
+                } else {
+                    // add attribute to the current collection
+                    stack.last_mut().unwrap().push(value);
                 }
             } else {
                 return Err(IppError::TagError(tag))
