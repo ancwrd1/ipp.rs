@@ -51,10 +51,10 @@ impl IppValue {
             IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
             IppValue::ListOf(ref list) => list[0].to_tag(),
             IppValue::Collection(_) => ValueTag::BegCollection,
-            IppValue::DateTime(_,_,_,_,_,_,_,_,_,_) => ValueTag::DateTime,
+            IppValue::DateTime(..) => ValueTag::DateTime,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
-            IppValue::Resolution(_, _, _) => ValueTag::Resolution,
-            IppValue::Other(_, _) => ValueTag::Unknown,
+            IppValue::Resolution(..) => ValueTag::Resolution,
+            IppValue::Other(..) => ValueTag::Unknown,
         }
     }
 
