@@ -14,6 +14,7 @@ use request::IppRequestResponse;
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;
+use consts::statuscode;
 
 /// IPP client.
 ///
@@ -36,7 +37,9 @@ impl IppClient {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
                     // IPP error
-                    Err(IppError::StatusError(::consts::statuscode::StatusCode::from_u16(resp.header().operation_status).unwrap_or(::consts::statuscode::StatusCode::ServerErrorInternalError)))
+                    Err(IppError::StatusError(
+                        statuscode::StatusCode::from_u16(resp.header().operation_status)
+                            .unwrap_or(statuscode::StatusCode::ServerErrorInternalError)))
                 } else {
                     Ok(resp.attributes().clone())
                 }
