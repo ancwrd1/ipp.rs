@@ -83,19 +83,18 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 
     for arg in &args[4..] {
         let mut kv = arg.split('=');
-        let (k, v) = (kv.next().unwrap_or_else(|| ""), kv.next().unwrap_or_else(|| ""));
-
-        if k.is_empty() || v.is_empty() { continue }
-
-        let value = if let Ok(iv) = v.parse::<i32>() {
-            IppValue::Integer(iv)
-        } else if v == "true" || v == "false" {
-            IppValue::Boolean(v == "true")
-        } else {
-            IppValue::Keyword(v.to_string())
-        };
-
-        operation.add_attribute(IppAttribute::new(k, value));
+        if let Some(k) = kv.next() {
+            if let Some(v) = kv.next() {
+                let value = if let Ok(iv) = v.parse::<i32>() {
+                    IppValue::Integer(iv)
+                } else if v == "true" || v == "false" {
+                    IppValue::Boolean(v == "true")
+                } else {
+                    IppValue::Keyword(v.to_string())
+                };
+                operation.add_attribute(IppAttribute::new(k, value));
+            }
+        }
     }
 
     let attrs = client.send(&mut operation)?;
