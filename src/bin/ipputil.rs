@@ -10,7 +10,7 @@ use std::io::{Read, Write, copy};
 use std::time::Duration;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
-use ipp::consts::tag::{JOB_ATTRIBUTES_TAG, PRINTER_ATTRIBUTES_TAG};
+use ipp::consts::tag::Tag;
 
 fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
     let mut stream = TcpStream::connect(addr)?;
@@ -98,9 +98,9 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
         operation.add_attribute(IppAttribute::new(k, value));
     }
 
-    let attrs = client.send(&mut operation)?;
+    let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(JOB_ATTRIBUTES_TAG) {
+    if let Some(group) = attrs.get_group(Tag::JobAttributesTag) {
         for v in group.values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -116,11 +116,11 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
     }
 
     let client = IppClient::new(&args[2]);
-    let mut operation = GetPrinterAttributes::with_attributes(&args[3..]);
+    let operation = GetPrinterAttributes::with_attributes(&args[3..]);
 
-    let attrs = client.send(&mut operation)?;
+    let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(PRINTER_ATTRIBUTES_TAG) {
+    if let Some(group) = attrs.get_group(Tag::PrinterAttributesTag) {
         let mut values: Vec<_> = group.values().collect();
         values.sort_by(|&a, &b| a.name().cmp(b.name()));
         for v in &values {

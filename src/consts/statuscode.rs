@@ -1,35 +1,40 @@
 //!
 //! IPP status codes
 //!
-pub const SUCCESSFUL_OK: u16 = 0x0000;
-pub const SUCCESSFUL_OK_IGNORED_OR_SUBSTITUED_ATTRIBUTES: u16 = 0x0001;
-pub const SUCCESSFUL_OK_CONFLICTING_ATTRIBUTES: u16 = 0x0002;
-pub const CLIENT_ERROR_BAD_REQUEST: u16 = 0x0400;
-pub const CLIENT_ERROR_FORBIDDEN: u16 = 0x0401;
-pub const CLIENT_ERROR_NOT_AUTHENTICATED: u16 = 0x0402;
-pub const CLIENT_ERROR_NOT_AUTHORIZED: u16 = 0x0403;
-pub const CLIENT_ERROR_NOT_POSSIBLE: u16 = 0x0404;
-pub const CLIENT_ERROR_TIMEOUT: u16 = 0x0405;
-pub const CLIENT_ERROR_NOT_FOUND: u16 = 0x0406;
-pub const CLIENT_ERROR_GONE: u16 = 0x0407;
-pub const CLIENT_ERROR_REQUEST_ENTITY_TOO_LONG: u16 = 0x0408;
-pub const CLIENT_ERROR_REQUEST_VALUE_TOO_LONG: u16 = 0x0409;
-pub const CLIENT_ERROR_DOCUMENT_FORMAT_NOT_SUPPORTED: u16 = 0x040A;
-pub const CLIENT_ERROR_ATTRIBUTES_OR_VALUES_NOT_SUPPORTED: u16 = 0x040B;
-pub const CLIENT_ERROR_URI_SCHEME_NOT_SUPPORTED: u16 = 0x040C;
-pub const CLIENT_ERROR_CHARSET_NOT_SUPPORTED: u16 = 0x040D;
-pub const CLIENT_ERROR_CONFLICTING_ATTRIBUTES: u16 = 0x040E;
-pub const CLIENT_ERROR_COMPRESSION_NOT_SUPPORTED: u16 = 0x040F;
-pub const CLIENT_ERROR_COMPRESSION_ERROR: u16 = 0x0410;
-pub const CLIENT_ERROR_DOCUMENT_FORMAT_ERROR: u16 = 0x0411;
-pub const CLIENT_ERROR_DOCUMENT_ACCESS_ERROR: u16 = 0x0412;
-pub const SERVER_ERROR_INTERNAL_ERROR: u16 = 0x0500;
-pub const SERVER_ERROR_OPERATION_NOT_SUPPORTED: u16 = 0x0501;
-pub const SERVER_ERROR_SERVICE_UNAVAILABLE: u16 = 0x0502;
-pub const SERVER_ERROR_VERSION_NOT_SUPPORTED: u16 = 0x0503;
-pub const SERVER_ERROR_DEVICE_ERROR: u16 = 0x0504;
-pub const SERVER_ERROR_TEMPORARY_ERROR: u16 = 0x0505;
-pub const SERVER_ERROR_NOT_ACCEPTING_JOBS: u16 = 0x0506;
-pub const SERVER_ERROR_BUSY: u16 = 0x0507;
-pub const SERVER_ERROR_JOB_CANCELED: u16 = 0x0508;
-pub const SERVER_ERROR_MULTIPLE_DOCUMENT_JOBS_NOT_SUPPORTED: u16 = 0x0509;
+enum_from_primitive! {
+#[derive(Debug)]
+pub enum StatusCode {
+    SuccessfulOK = 0x0000,
+    SuccessfulOKIgnoredOrSubstitutedAttributes = 0x0001,
+    SuccessfulOKConflictingAttributes = 0x0002,
+    ClientErrorBadRequest = 0x0400,
+    ClientErrorForbidden = 0x0401,
+    ClientErrorNotAuthenticated = 0x0402,
+    ClientErrorNotAuthorized = 0x0403,
+    ClientErrorNotPossible = 0x0404,
+    ClientErrorTimeout = 0x0405,
+    ClientErrorNotFound = 0x0406,
+    ClientErrorGone = 0x0407,
+    ClientErrorRequestEntityTooLong = 0x0408,
+    ClientErrorRequestValueTooLong = 0x0409,
+    ClientErrorDocumentFormatNotSupported = 0x040A,
+    ClientErrorAttributesOrValuesNotSupported = 0x040B,
+    ClientErrorUriSchemeNotSupported = 0x040C,
+    ClientErrorCharsetNotSupported = 0x040D,
+    ClientErrorConflictingAttributes = 0x040E,
+    ClientErrorCompressionNotSupported = 0x040F,
+    ClientErrorCompressionError = 0x0410,
+    ClientErrorDocumentFormatError = 0x0411,
+    ClientErrorDocumentAccessError = 0x0412,
+    ServerErrorInternalError = 0x0500,
+    ServerErrorOperationNotSupported = 0x0501,
+    ServerErrorServiceUnavailable = 0x0502,
+    ServerErrorVersionNotSupported = 0x0503,
+    ServerErrorDeviceError = 0x0504,
+    ServerErrorTemporaryError = 0x0505,
+    ServerErrorNotAcceptingJobs = 0x0506,
+    ServerErrorBusy = 0x0507,
+    ServerErrorJobCanceled = 0x0508,
+    ServerErrorMultipleDocumentJobsNotSupported = 0x0509,
+}
+}

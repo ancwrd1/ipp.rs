@@ -5,10 +5,10 @@
 //!
 //!```rust
 //! // using raw API
-//! let mut req = IppRequest::new(GET_PRINTER_ATTRIBUTES);
+//! let mut req = IppRequestResponse::new(GET_PRINTER_ATTRIBUTES);
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! let resp = client.send_request(&mut req).unwrap();
-//! if resp.header().status <= 3 {
+//! if resp.header().operation_status <= 3 {
 //!     println!("result: {:?}", resp.attributes());
 //! }
 //!
@@ -24,6 +24,7 @@
 
 extern crate byteorder;
 extern crate hyper;
+#[macro_use] extern crate enum_primitive;
 
 #[macro_use]
 extern crate log;
@@ -32,7 +33,30 @@ use std::result;
 use std::io::{self, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
+pub mod consts {
+    //! This module holds IPP constants such as attribute names, operations and tags
+    pub mod tag;
+    pub mod statuscode;
+    pub mod operation;
+    pub mod attribute;
+}
+
+pub mod value;
+pub mod parser;
+pub mod request;
+pub mod attribute;
+pub mod client;
+pub mod server;
+pub mod operation;
+
+pub use attribute::{IppAttribute, IppAttributeList};
+pub use client::IppClient;
+pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
+pub use request::IppRequestResponse;
+pub use value::IppValue;
 pub const IPP_VERSION: u16 = 0x0101;
+
+use consts::statuscode::StatusCode;
 
 /// IPP value
 #[derive(Debug)]
@@ -41,13 +65,19 @@ pub enum IppError {
     IOError(::std::io::Error),
     RequestError(String),
     AttributeError(String),
-    StatusError(u16),
+    StatusError(consts::statuscode::StatusCode),
     TagError(u8)
 }
 
 impl From<io::Error> for IppError {
     fn from(error: io::Error) -> IppError {
         IppError::IOError(error)
+    }
+}
+
+impl From<StatusCode> for IppError {
+    fn from(code: StatusCode) -> IppError {
+        IppError::StatusError(code)
     }
 }
 
@@ -63,7 +93,7 @@ pub type Result<T> = result::Result<T, IppError>;
 #[derive(Clone, Debug)]
 pub struct IppHeader {
     pub version: u16,
-    pub status: u16,
+    pub operation_status: u16,
     pub request_id: u32
 }
 
@@ -78,12 +108,12 @@ impl IppHeader {
 
     /// Create IPP header
     pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
-        IppHeader {version: version, status: status, request_id: request_id}
+        IppHeader {version: version, operation_status: status, request_id: request_id}
     }
 
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         writer.write_u16::<BigEndian>(self.version)?;
-        writer.write_u16::<BigEndian>(self.status)?;
+        writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;
 
         Ok(8)
@@ -108,26 +138,3 @@ pub trait ReadIppExt: Read {
 
 impl<R: io::Read + ?Sized> ReadIppExt for R {}
 
-pub mod consts {
-    //! This module holds IPP constants such as attribute names, operations and tags
-    pub mod tag;
-    pub mod statuscode;
-    pub mod operation;
-    pub mod attribute;
-}
-
-pub mod value;
-pub mod parser;
-pub mod request;
-pub mod response;
-pub mod attribute;
-pub mod client;
-pub mod server;
-pub mod operation;
-
-pub use attribute::{IppAttribute, IppAttributeList};
-pub use client::IppClient;
-pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
-pub use request::IppRequest;
-pub use response::IppResponse;
-pub use value::IppValue;

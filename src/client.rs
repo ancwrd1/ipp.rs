@@ -2,6 +2,7 @@
 //! IPP client
 //!
 use std::io::{BufWriter, BufReader};
+use enum_primitive::FromPrimitive;
 
 use hyper::client::request::Request;
 use hyper::method::Method;
@@ -9,8 +10,7 @@ use hyper::Url;
 use hyper::status::StatusCode;
 
 use ::{IppError, Result};
-use request::IppRequest;
-use response::IppResponse;
+use request::IppRequestResponse;
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;
@@ -31,12 +31,12 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: &mut T) -> Result<IppAttributeList> {
+    pub fn send<T: IppOperation>(&self, mut operation: T) -> Result<IppAttributeList> {
         match self.send_request(&mut operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
-                if resp.header().status > 3 {
+                if resp.header().operation_status > 3 {
                     // IPP error
-                    Err(IppError::StatusError(resp.header().status))
+                    Err(IppError::StatusError(::consts::statuscode::StatusCode::from_u16(resp.header().operation_status).unwrap_or(::consts::statuscode::StatusCode::ServerErrorInternalError)))
                 } else {
                     Ok(resp.attributes().clone())
                 }
@@ -46,7 +46,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request<'a>(&self, request: &'a mut IppRequest<'a>) -> Result<IppResponse> {
+    pub fn send_request<'a, 'b>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppRequestResponse<'b>> {
         match Url::parse(&self.uri) {
             Ok(url) => {
                 // create request and set headers
@@ -67,7 +67,7 @@ impl IppClient {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
-                    let resp = IppResponse::from_parser(&mut parser)?;
+                    let resp = IppRequestResponse::from_parser(&mut parser)?;
 
                     Ok(resp)
                 } else {
