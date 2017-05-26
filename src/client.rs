@@ -27,7 +27,7 @@ impl IppClient {
     /// Create new instance of the client
     pub fn new(uri: &str) -> IppClient {
         IppClient {
-            uri: uri.replace("ipp://", "http://").to_string()
+            uri: uri.to_string()
         }
     }
 
@@ -51,7 +51,16 @@ impl IppClient {
     /// Send request and return response
     pub fn send_request<'a, 'b>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppRequestResponse<'b>> {
         match Url::parse(&self.uri) {
-            Ok(url) => {
+            Ok(mut url) => {
+                if url.scheme() == "ipp" {
+                    url.set_scheme("http").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;;
+                    if  url.port().is_none() {
+                        url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                    }
+                }
+
+                debug!("Request URI: {}", url);
+
                 // create request and set headers
                 let mut http_req_fresh = Request::new(Method::Post, url)?;
                 http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
