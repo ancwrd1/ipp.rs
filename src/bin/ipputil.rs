@@ -4,74 +4,12 @@ extern crate env_logger;
 use std::env;
 use std::process::exit;
 use std::fs::File;
-use std::net::{TcpStream, Shutdown};
-use std::thread;
-use std::io::{Read, Write, copy};
-use std::time::Duration;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
 use ipp::consts::tag::DelimiterTag;
 
-fn do_socket_print(addr: &str, file: &mut Read) -> Result<(), IppError> {
-    let mut stream = TcpStream::connect(addr)?;
-    let mut reader = stream.try_clone()?;
-    
-    let handle = thread::spawn(move || {
-        let mut buf = [0u8; 4096];
-        loop {
-            match reader.read(&mut buf) {
-                Ok(size) if size > 0 =>  print!("{}", String::from_utf8_lossy(&buf[0..size])),
-                _ =>  break
-            }
-        }
-        println!("");
-        let _ = reader.shutdown(Shutdown::Read);
-    });
-
-    let _ = copy(file, &mut stream)?;
-    let _ = stream.shutdown(Shutdown::Write);
-    let _ = handle.join();
-    Ok(())
-}
-
-const PJL_PREFIX: &'static str = "\x1b%-12345X@PJL INFO ";
-
-fn do_socket_status(addr: &str, attrs: &[String]) -> Result<(), IppError> {
-    let mut stream = TcpStream::connect(addr)?;
-    let _ = stream.set_read_timeout(Some(Duration::from_secs(30)));
-
-    let mut attrs = Vec::from(attrs);
-    if attrs.is_empty() {
-        attrs.push(String::from("ID"));
-        attrs.push(String::from("STATUS"));
-    }
-
-    let mut buf = [0u8; 4096];
-    for pjl in &attrs {
-        stream.write_all((PJL_PREFIX.to_string() + pjl + "\n\x1b%-12345X").as_bytes())?;
-        loop {
-            match stream.read(&mut buf) {
-                Ok(size) if size > 0 => {
-                    let reply = String::from_utf8_lossy(&buf[0..size]);
-                    print!("{}", reply.trim());
-                    if reply.ends_with('\x0c') { break }
-                }
-                _ =>  break
-            }
-        }
-        println!("");
-    }
-    Ok(())
-}
-
 fn do_print(args: &[String]) -> Result<(), IppError> {
     let mut f = File::open(&args[3])?;
-
-    if args[2].starts_with("socket://") {
-        let mut addr = args[2][9..].to_string();
-        if !addr.contains(':') { addr += ":9100" }
-        return do_socket_print(&addr, &mut f);
-    }
 
     let client = IppClient::new(&args[2]);
 
@@ -108,12 +46,6 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 }
 
 fn do_status(args: &[String]) -> Result<(), IppError> {
-    if args[2].starts_with("socket://") {
-        let mut addr = args[2][9..].to_string();
-        if !addr.contains(':') { addr += ":9100" }
-        return do_socket_status(&addr, &args[3..]);
-    }
-
     let client = IppClient::new(&args[2]);
     let operation = GetPrinterAttributes::with_attributes(&args[3..]);
 
