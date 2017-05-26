@@ -6,6 +6,7 @@ use hyper::server::{Server, Request, Response, Handler};
 use ipp::parser::IppParser;
 use ipp::server::*;
 use ipp::IppRequestResponse;
+use ipp::request::IppRequestTrait;
 use ipp::consts::statuscode::*;
 use ipp::consts::tag::*;
 use ipp::consts::attribute::*;
