@@ -64,7 +64,7 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
 fn usage(prog: &str) {
     println!("Usage: {} status uri [attr...]", prog);
     println!("       {} print uri filename [attr=value]", prog);
-    println!("\nSupported uri schemes: http, socket");
+    println!("\nSupported uri schemes: http, ipp");
 }
 
 pub fn main() {
@@ -83,7 +83,7 @@ pub fn main() {
                 println!("{:?}", err);
                 exit(2);
             }
-            
+
         }
         "print" => {
             if args.len() < 4 {

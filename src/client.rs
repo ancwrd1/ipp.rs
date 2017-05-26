@@ -27,7 +27,7 @@ impl IppClient {
     /// Create new instance of the client
     pub fn new(uri: &str) -> IppClient {
         IppClient {
-            uri: uri.to_string()
+            uri: uri.replace("ipp://", "http://").to_string()
         }
     }
 
