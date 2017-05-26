@@ -116,9 +116,9 @@ impl<'a> IppParser<'a> {
                             val_list.push(IppValue::Collection(arr));
                         }
                     }
-                } else {
+                } else if let Some(val_list) = stack.last_mut() {
                     // add attribute to the current collection
-                    stack.last_mut().unwrap().push(value);
+                    val_list.push(value);
                 }
             } else {
                 return Err(IppError::TagError(tag))
