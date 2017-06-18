@@ -251,7 +251,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
             }
         };
 
-        let attribute_list = if requested_attributes.len() == 0 {
+        let attribute_list = if requested_attributes.is_empty() {
             supported_attributes
         } else {
             &requested_attributes[..]
@@ -260,7 +260,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         for attr in attribute_list {
             if supported_attributes.contains(attr) {
                 resp.set_attribute(DelimiterTag::PrinterAttributes,
-                                   self.get_printer_attribute(&attr));
+                                   self.get_printer_attribute(attr));
             } else {
                 println!("Unsupported attribute {}", attr);
             }
