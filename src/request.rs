@@ -104,8 +104,8 @@ impl<'a> IppRequestResponse<'a> {
         self.payload = Some(payload)
     }
 
+    /// Set attribute
     pub fn set_attribute(&mut self, group: DelimiterTag, attribute: IppAttribute) {
-        /// Set attribute
         self.attributes.add(group, attribute);
     }
 
