@@ -1,6 +1,5 @@
 extern crate hyper;
 extern crate ipp;
-extern crate enum_primitive;
 #[macro_use]
 extern crate lazy_static;
 
