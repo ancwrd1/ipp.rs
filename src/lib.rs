@@ -5,9 +5,9 @@
 //!
 //!```rust
 //! // using raw API
-//! let mut req = IppRequestResponse::new(Operation::GetPrinterAttributes);
+//! let req = IppRequestResponse::new(Operation::GetPrinterAttributes);
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
-//! let resp = client.send_request(&mut req).unwrap();
+//! let resp = client.send_request(req).unwrap();
 //! if resp.header().operation_status <= 3 {
 //!     println!("result: {:?}", resp.attributes());
 //! }
@@ -23,7 +23,8 @@
 //!```
 
 extern crate byteorder;
-extern crate hyper;
+extern crate reqwest;
+extern crate url;
 #[macro_use] extern crate enum_primitive;
 
 #[macro_use]
@@ -61,7 +62,7 @@ use consts::statuscode::StatusCode;
 /// IPP value
 #[derive(Debug)]
 pub enum IppError {
-    HttpError(hyper::Error),
+    HttpError(reqwest::Error),
     IOError(::std::io::Error),
     RequestError(String),
     AttributeError(String),
@@ -81,8 +82,8 @@ impl From<StatusCode> for IppError {
     }
 }
 
-impl From<hyper::Error> for IppError {
-    fn from(error: hyper::Error) -> IppError {
+impl From<reqwest::Error> for IppError {
+    fn from(error: reqwest::Error) -> IppError {
         IppError::HttpError(error)
     }
 }

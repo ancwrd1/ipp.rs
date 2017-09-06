@@ -1,16 +1,15 @@
 //!
 //! IPP client
 //!
-use std::io::{BufWriter, BufReader};
+use std::io::BufReader;
+use std::time::Duration;
 use enum_primitive::FromPrimitive;
-
-use hyper::client::request::Request;
-use hyper::method::Method;
-use hyper::Url;
-use hyper::status::StatusCode;
+use reqwest::{Client, Method,  Body, StatusCode};
+use reqwest::header::Headers;
+use url::Url;
 
 use ::{IppError, Result};
-use request::{IppRequestResponse,IppRequestTrait};
+use request::{IppRequestResponse, IppRequestTrait};
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;
@@ -32,8 +31,8 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, mut operation: T) -> Result<IppAttributeList> {
-        match self.send_request(&mut operation.to_ipp_request(&self.uri)) {
+    pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributeList> {
+        match self.send_request(operation.to_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
                     // IPP error
@@ -49,7 +48,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request<'a, 'b>(&self, request: &'a mut IppRequestResponse<'a>) -> Result<IppRequestResponse<'b>> {
+    pub fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse> {
         match Url::parse(&self.uri) {
             Ok(mut url) => {
                 if url.scheme() == "ipp" {
@@ -61,34 +60,27 @@ impl IppClient {
 
                 debug!("Request URI: {}", url);
 
-                // create request and set headers
-                let mut http_req_fresh = Request::new(Method::Post, url)?;
-                http_req_fresh.headers_mut().set_raw("Content-Type", vec![b"application/ipp".to_vec()]);
+                let mut headers = Headers::new();
+                headers.set_raw("Content-Type", "application/ipp");
 
-                // connect and send headers
-                let mut http_req_stream = http_req_fresh.start()?;
+                let client = Client::builder()?.timeout(Duration::new(30, 0)).build()?;
+                let req = client.request(Method::Post, url)?.headers(headers).body(Body::new(request.into_reader())).build();
+                let resp = client.execute(req)?;
 
-                // send IPP request using buffered writer.
-                // NOTE: unbuffered output will cause issues on many IPP implementations including CUPS
-                request.write(&mut BufWriter::new(&mut http_req_stream))?;
-
-                // get the response
-                let http_resp = http_req_stream.send()?;
-
-                if http_resp.status == StatusCode::Ok {
+                if resp.status() == StatusCode::Ok {
                     // HTTP 200 assumes we have IPP response to parse
-                    let mut reader = BufReader::new(http_resp);
+                    let mut reader = BufReader::new(resp);
                     let mut parser = IppParser::new(&mut reader);
                     let resp = IppRequestResponse::from_parser(&mut parser)?;
 
                     Ok(resp)
                 } else {
-                    error!("HTTP error: {}", http_resp.status);
+                    error!("HTTP error: {}", resp.status());
                     Err(IppError::RequestError(
-                        if let Some(reason) = http_resp.status.canonical_reason() {
+                        if let Some(reason) = resp.status().canonical_reason() {
                             reason.to_string()
                         } else {
-                            format!("{}", http_resp.status)
+                            format!("{}", resp.status())
                         }))
                 }
             }

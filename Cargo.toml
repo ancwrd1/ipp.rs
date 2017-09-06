@@ -11,8 +11,12 @@ keywords = ["ipp", "printing", "protocol"]
 
 [dependencies]
 byteorder = "1.0.0"
-hyper = "0.10"
 log = "0.3.6"
 env_logger = "0.4.0"
 enum_primitive = "0.1"
 lazy_static = "0.2"
+reqwest = "0.7.3"
+url = "1.5.1"
+
+[dev-dependencies]
+hyper = "0.10"

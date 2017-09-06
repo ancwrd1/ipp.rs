@@ -9,12 +9,12 @@ use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, Ipp
 use ipp::consts::tag::DelimiterTag;
 
 fn do_print(args: &[String]) -> Result<(), IppError> {
-    let mut f = File::open(&args[3])?;
+    let f = File::open(&args[3])?;
 
     let client = IppClient::new(&args[2]);
 
     let mut operation = PrintJob::new(
-        &mut f,
+        Box::new(f),
         &env::var("USER").unwrap_or_else(|_| String::new()),
         Some(&args[1])
     );

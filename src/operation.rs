@@ -13,25 +13,25 @@ use consts::attribute::*;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse;
+    fn to_ipp_request(self, uri: &str) -> IppRequestResponse;
 }
 
 /// IPP operation Print-Job
-pub struct PrintJob<'a> {
-    reader: &'a mut Read,
+pub struct PrintJob {
+    reader: Box<Read>,
     user_name: String,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>
 }
 
-impl<'a> PrintJob<'a> {
+impl PrintJob {
     /// Create Print-Job operation
     ///
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new(reader: &'a mut Read,
-               user_name: &str, job_name: Option<&str>) -> PrintJob<'a> {
+    pub fn new(reader: Box<Read>,
+               user_name: &str, job_name: Option<&str>) -> PrintJob {
         PrintJob {
             reader: reader,
             user_name: user_name.to_string(),
@@ -46,8 +46,8 @@ impl<'a> PrintJob<'a> {
     }
 }
 
-impl<'a> IppOperation for PrintJob<'a> {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+impl IppOperation for PrintJob {
+    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
 
         retval.set_attribute(DelimiterTag::OperationAttributes,
@@ -88,7 +88,7 @@ impl GetPrinterAttributes {
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 
         if !self.attributes.is_empty() {
@@ -127,7 +127,7 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::CreateJob, uri);
 
         if let Some(ref job_name) = self.job_name {
@@ -144,22 +144,22 @@ impl IppOperation for CreateJob {
 }
 
 /// IPP operation Print-Job
-pub struct SendDocument<'a> {
+pub struct SendDocument {
     job_id: i32,
-    reader: &'a mut Read,
+    reader: Box<Read>,
     user_name: String,
     last: bool
 }
 
-impl<'a> SendDocument<'a> {
+impl SendDocument {
     /// Create Send-Document operation
     ///
     /// * `job_id` - job ID returned by Create-Job operation<br/>
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new(job_id: i32, reader: &'a mut Read,
-               user_name: &str, last: bool) -> SendDocument<'a> {
+    pub fn new(job_id: i32, reader: Box<Read>,
+               user_name: &str, last: bool) -> SendDocument {
         SendDocument {
             job_id: job_id,
             reader: reader,
@@ -169,8 +169,8 @@ impl<'a> SendDocument<'a> {
     }
 }
 
-impl<'a> IppOperation for SendDocument<'a> {
-    fn to_ipp_request(&mut self, uri: &str) -> IppRequestResponse {
+impl IppOperation for SendDocument {
+    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::SendDocument, uri);
 
         retval.set_attribute(DelimiterTag::OperationAttributes,

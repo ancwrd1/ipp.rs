@@ -1,7 +1,7 @@
 //!
 //! IPP request
 //!
-use std::io::{self, Read, Write};
+use std::io::{self, Read, Write, Cursor};
 
 use attribute::{IppAttribute, IppAttributeList};
 use ::{Result, IPP_VERSION, IppHeader};
@@ -12,29 +12,35 @@ use value::IppValue;
 use parser::IppParser;
 
 /// IPP request struct
-pub struct IppRequestResponse<'a> {
+pub struct IppRequestResponse {
     /// Operation ID
     header: IppHeader,
     /// IPP attributes
     attributes: IppAttributeList,
     /// Optional payload to send after IPP-encoded stream (for example Print-Job operation)
-    payload: Option<&'a mut Read>
+    payload: Option<Box<Read>>
+}
+
+pub struct IppReadAdapter {
+    data: Box<Read>,
+    eofdata: bool,
+    payload: Option<Box<Read>>
 }
 
 pub trait IppRequestTrait {
     fn header(&self) -> &IppHeader;
 }
 
-impl<'a> IppRequestTrait for IppRequestResponse<'a> {
+impl IppRequestTrait for IppRequestResponse {
     /// Get header
     fn header(&self) -> &IppHeader {
         &self.header
     }
 }
 
-impl<'a> IppRequestResponse<'a> {
+impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: Operation, uri: &str) -> IppRequestResponse<'a> {
+    pub fn new(operation: Operation, uri: &str) -> IppRequestResponse {
 
         let hdr = IppHeader::new(IPP_VERSION, operation as u16, 1);
         let mut retval = IppRequestResponse {
@@ -60,7 +66,7 @@ impl<'a> IppRequestResponse<'a> {
 
     }
 
-    pub fn new_response(status: u16, id: u32) -> IppRequestResponse<'a> {
+    pub fn new_response(status: u16, id: u32) -> IppRequestResponse {
         let hdr = IppHeader::new(IPP_VERSION, status, id);
         let mut retval = IppRequestResponse {
             header: hdr,
@@ -80,7 +86,7 @@ impl<'a> IppRequestResponse<'a> {
     }
 
     /// Create IppRequestResponse from the parser
-    pub fn from_parser<'b>(parser: &mut IppParser) -> Result<IppRequestResponse<'b>> {
+    pub fn from_parser(parser: &mut IppParser) -> Result<IppRequestResponse> {
         let res = parser.parse()?;
 
         Ok(IppRequestResponse {
@@ -99,8 +105,12 @@ impl<'a> IppRequestResponse<'a> {
         &self.attributes
     }
 
+    pub fn payload(&self) -> &Option<Box<Read>> {
+        &self.payload
+    }
+
     /// Set payload
-    pub fn set_payload(&mut self, payload: &'a mut Read) {
+    pub fn set_payload(&mut self, payload: Box<Read>) {
         self.payload = Some(payload)
     }
 
@@ -110,7 +120,7 @@ impl<'a> IppRequestResponse<'a> {
     }
 
     /// Serialize request into the binary stream (TCP)
-    pub fn write(&'a mut self, writer: &mut Write) -> Result<usize> {
+    pub fn write(&mut self, writer: &mut Write) -> Result<usize> {
         let mut retval = self.header.write(writer)?;
 
         retval += self.attributes.write(writer)?;
@@ -124,5 +134,37 @@ impl<'a> IppRequestResponse<'a> {
         }
 
         Ok(retval)
+    }
+
+    pub fn into_reader(self) -> IppReadAdapter {
+        let store: Vec<u8> = vec![];
+        let mut writer = Cursor::new(store);
+        let _ = self.header.write(&mut writer).unwrap();
+        let _ = self.attributes.write(&mut writer).unwrap();
+
+        writer.set_position(0);
+
+        IppReadAdapter {
+            data: Box::new(writer),
+            eofdata: false,
+            payload: self.payload
+        }
+    }
+}
+
+unsafe impl Send for IppReadAdapter {}
+
+impl Read for IppReadAdapter {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        if !self.eofdata {
+            match self.data.read(buf) {
+                Ok(rc) => if rc != 0 { return Ok(rc) } else { self.eofdata = true },
+                Err(e) => return Err(e)
+            }
+        }
+        if let Some(ref mut payload) = self.payload {
+            return payload.read(buf)
+        }
+        Ok(0)
     }
 }

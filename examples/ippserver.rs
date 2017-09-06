@@ -142,7 +142,7 @@ impl<'a, 'b> IppRequestTrait for DummyRequest<'a, 'b> {
 impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
     type IppRequest = DummyRequest<'b, 'c>;
 
-    fn print_job<'a>(&self, req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn print_job(&self, req: &mut Self::IppRequest) -> IppServerResult {
         println!("Print-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
@@ -169,7 +169,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         Ok(resp)
     }
 
-    fn validate_job<'a>(&self, req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn validate_job(&self, req: &mut Self::IppRequest) -> IppServerResult {
         println!("Validate-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
@@ -180,23 +180,23 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         Ok(resp)
     }
 
-    fn create_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn create_job(&self, _req: &mut Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn cancel_job<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn cancel_job(&self, _req: &mut Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_job_attributes<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn get_job_attributes(&self, _req: &mut Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_jobs<'a>(&self, _req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn get_jobs(&self, _req: &mut Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_printer_attributes<'a>(&self, req: &mut Self::IppRequest) -> IppServerResult<'a> {
+    fn get_printer_attributes(&self, req: &mut Self::IppRequest) -> IppServerResult {
         lazy_static! {
             static ref SUPPORTED_ATTRIBUTES : Vec<&'static str> = vec![
                 PRINTER_URI_SUPPORTED,

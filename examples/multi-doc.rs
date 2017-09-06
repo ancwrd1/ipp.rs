@@ -48,9 +48,9 @@ fn main() {
     for (i, item) in args.iter().enumerate().skip(2) {
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
-        let mut f = File::open(&item).unwrap();
+        let f = File::open(&item).unwrap();
 
-        let send_op = SendDocument::new(job_id, &mut f, &env::var("USER").unwrap(), last);
+        let send_op = SendDocument::new(job_id, Box::new(f), &env::var("USER").unwrap(), last);
         let send_attrs = client.send(send_op).unwrap();
         for v in send_attrs.get_group(DelimiterTag::JobAttributes).unwrap().values() {
             println!("{}: {}", v.name(), v.value());

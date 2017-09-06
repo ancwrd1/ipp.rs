@@ -19,9 +19,9 @@ pub fn main() {
     }
 
     let client = IppClient::new(&args[1]);
-    let mut f = File::open(&args[2]).unwrap();
+    let f = File::open(&args[2]).unwrap();
     let mut operation = PrintJob::new(
-        &mut f,
+        Box::new(f),
         &env::var("USER").unwrap(),
         Some(&args[1])
     );
