@@ -163,8 +163,9 @@ impl Read for IppReadAdapter {
             }
         }
         if let Some(ref mut payload) = self.payload {
-            return payload.read(buf)
+            payload.read(buf)
+        } else {
+            Ok(0)
         }
-        Ok(0)
     }
 }
