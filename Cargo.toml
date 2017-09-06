@@ -10,13 +10,13 @@ readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
 [dependencies]
-byteorder = "1.0.0"
-log = "0.3.6"
-env_logger = "0.4.0"
+byteorder = "1.1"
+log = "0.3"
+env_logger = "0.4"
 enum_primitive = "0.1"
 lazy_static = "0.2"
-reqwest = "0.7.3"
-url = "1.5.1"
+reqwest = "0.7"
+url = "1.5"
 
 [dev-dependencies]
 hyper = "0.10"
