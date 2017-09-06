@@ -6,7 +6,6 @@ use std::process::exit;
 use std::fs::File;
 
 use ipp::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
-use ipp::consts::tag::DelimiterTag;
 
 fn do_print(args: &[String]) -> Result<(), IppError> {
     let f = File::open(&args[3])?;
@@ -37,7 +36,7 @@ fn do_print(args: &[String]) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(DelimiterTag::JobAttributes) {
+    if let Some(group) = attrs.get_job_attributes() {
         for v in group.values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -51,7 +50,7 @@ fn do_status(args: &[String]) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_group(DelimiterTag::PrinterAttributes) {
+    if let Some(group) = attrs.get_printer_attributes() {
         let mut values: Vec<_> = group.values().collect();
         values.sort_by(|&a, &b| a.name().cmp(b.name()));
         for v in &values {

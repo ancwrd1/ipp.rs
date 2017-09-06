@@ -16,7 +16,7 @@
 //! let operation = GetPrinterAttributes::new();
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! let attrs = client.send(operation).unwrap();
-//! for (_, v) in attrs.get_group(DelimiterTag::PrinterAttributes).unwrap() {
+//! for (_, v) in attrs.get_printer_attributes().unwrap() {
 //!     println!("{}: {}", v.name(), v.value());
 //! }
 

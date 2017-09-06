@@ -4,7 +4,6 @@ extern crate env_logger;
 use std::env;
 use std::process::exit;
 
-use ipp::consts::tag::DelimiterTag;
 use ipp::{GetPrinterAttributes, IppClient};
 
 pub fn main() {
@@ -22,7 +21,7 @@ pub fn main() {
 
     let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_group(DelimiterTag::PrinterAttributes).unwrap().values() {
+    for v in attrs.get_printer_attributes().unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

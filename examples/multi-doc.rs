@@ -52,7 +52,7 @@ fn main() {
 
         let send_op = SendDocument::new(job_id, Box::new(f), &env::var("USER").unwrap(), last);
         let send_attrs = client.send(send_op).unwrap();
-        for v in send_attrs.get_group(DelimiterTag::JobAttributes).unwrap().values() {
+        for v in send_attrs.get_job_attributes().unwrap().values() {
             println!("{}: {}", v.name(), v.value());
         }
     }

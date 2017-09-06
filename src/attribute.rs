@@ -98,6 +98,21 @@ impl IppAttributeList {
         self.attributes.get(&group)
     }
 
+    /// Get printer attributes
+    pub fn get_printer_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.get_group(DelimiterTag::PrinterAttributes)
+    }
+
+    /// Get job attributes
+    pub fn get_job_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.get_group(DelimiterTag::JobAttributes)
+    }
+
+    /// Get operation attributes
+    pub fn get_operation_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.get_group(DelimiterTag::OperationAttributes)
+    }
+
     /// Serialize attribute list into binary stream
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         // first send the header attributes
@@ -114,7 +129,7 @@ impl IppAttributeList {
         // now the rest
         for hdr in &[DelimiterTag::OperationAttributes, DelimiterTag::JobAttributes, DelimiterTag::PrinterAttributes] {
             let group = *hdr;
-            if let Some(attrs) = self.get_group(group) {
+            if let Some(attrs) = self.attributes.get(&group) {
                 if group != DelimiterTag::OperationAttributes {
                     writer.write_u8(group as u8)?;
                     retval += 1;
