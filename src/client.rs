@@ -64,23 +64,23 @@ impl IppClient {
                 headers.set_raw("Content-Type", "application/ipp");
 
                 let client = Client::builder()?.gzip(false).timeout(Duration::new(30, 0)).build()?;
-                let req = client.request(Method::Post, url)?.headers(headers).body(Body::new(request.into_reader())).build();
-                let resp = client.execute(req)?;
+                let http_req = client.request(Method::Post, url)?.headers(headers).body(Body::new(request.into_reader())).build();
+                let http_resp = client.execute(http_req)?;
 
-                if resp.status() == StatusCode::Ok {
+                if http_resp.status() == StatusCode::Ok {
                     // HTTP 200 assumes we have IPP response to parse
-                    let mut reader = BufReader::new(resp);
+                    let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
                     let resp = IppRequestResponse::from_parser(&mut parser)?;
 
                     Ok(resp)
                 } else {
-                    error!("HTTP error: {}", resp.status());
+                    error!("HTTP error: {}", http_resp.status());
                     Err(IppError::RequestError(
-                        if let Some(reason) = resp.status().canonical_reason() {
+                        if let Some(reason) = http_resp.status().canonical_reason() {
                             reason.to_string()
                         } else {
-                            format!("{}", resp.status())
+                            format!("{}", http_resp.status())
                         }))
                 }
             }
