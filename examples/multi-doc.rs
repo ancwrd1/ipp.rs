@@ -11,7 +11,7 @@ use ipp::consts::attribute::{OPERATIONS_SUPPORTED, JOB_ID};
 use ipp::consts::operation::Operation;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
-    if let IppValue::Enum(v) = *v { v as u16 == Operation::CreateJob as u16 || v as u16 == Operation::SendDocument as u16 }
+    if let IppValue::Enum(v) = *v { v == Operation::CreateJob as i32 || v == Operation::SendDocument as i32 }
     else { false }
 }
 
