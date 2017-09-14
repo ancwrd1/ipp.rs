@@ -1,0 +1,22 @@
+language: rust
+matrix:
+    fast_finish: true
+    include:
+        - os: linux
+        - os: osx
+
+        - rust: stable
+        - rust: nightly
+
+sudo: false
+dist: trusty
+
+cache:
+  apt: true
+  directories:
+    - target/debug/deps
+    - target/debug/build
+
+script:
+  - cargo build
+  - cargo test

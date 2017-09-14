@@ -9,7 +9,7 @@ use reqwest::header::Headers;
 use url::Url;
 
 use ::{IppError, Result};
-use request::{IppRequestResponse, IppRequestTrait};
+use request::IppRequestResponse;
 use operation::IppOperation;
 use attribute::IppAttributeList;
 use parser::IppParser;

@@ -5,19 +5,28 @@
 //!
 //!```rust
 //! // using raw API
-//! let req = IppRequestResponse::new(Operation::GetPrinterAttributes);
-//! let client = IppClient::new("http://localhost:631/printers/test-printer");
-//! let resp = client.send_request(req).unwrap();
-//! if resp.header().operation_status <= 3 {
-//!     println!("result: {:?}", resp.attributes());
-//! }
+//! use ipp::{IppRequestResponse, IppClient};
+//! use ipp::consts::operation::Operation;
 //!
+//! let uri = "http://localhost:631/printers/test-printer";
+//! let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
+//! let client = IppClient::new(uri);
+//! if let Ok(resp) = client.send_request(req) {
+//!     if resp.header().operation_status <= 3 {
+//!         println!("result: {:?}", resp.attributes());
+//!     }
+//! }
+//!```
+//!```rust
 //! // using operation API
+//! use ipp::{GetPrinterAttributes, IppClient};
+
 //! let operation = GetPrinterAttributes::new();
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
-//! let attrs = client.send(operation).unwrap();
-//! for (_, v) in attrs.get_printer_attributes().unwrap() {
-//!     println!("{}: {}", v.name(), v.value());
+//! if let Ok(attrs) = client.send(operation) {
+//!     for (_, v) in attrs.get_printer_attributes().unwrap() {
+//!         println!("{}: {}", v.name(), v.value());
+//!     }
 //! }
 
 //!```
@@ -139,3 +148,6 @@ pub trait ReadIppExt: Read {
 
 impl<R: io::Read + ?Sized> ReadIppExt for R {}
 
+#[test]
+fn it_works() {
+}
