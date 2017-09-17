@@ -35,7 +35,7 @@ impl PrintJob {
         PrintJob {
             reader: reader,
             user_name: user_name.to_string(),
-            job_name: if let Some(name) = job_name { Some(name.to_string()) } else { None },
+            job_name: job_name.map(|v| v.to_string()),
             attributes: Vec::new()
         }
     }
@@ -113,7 +113,7 @@ impl CreateJob {
     /// * `job_name` - optional job name (job-name)<br/>
     pub fn new(job_name: Option<&str>) -> CreateJob {
         CreateJob {
-            job_name: if let Some(name) = job_name { Some(name.to_string()) } else { None },
+            job_name: job_name.map(|v| v.to_string()),
             attributes: Vec::new()
         }
     }
