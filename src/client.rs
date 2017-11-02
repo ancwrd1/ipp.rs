@@ -63,8 +63,8 @@ impl IppClient {
                 let mut headers = Headers::new();
                 headers.set_raw("Content-Type", "application/ipp");
 
-                let client = Client::builder()?.gzip(false).timeout(Duration::new(30, 0)).build()?;
-                let http_req = client.request(Method::Post, url)?.headers(headers).body(Body::new(request.into_reader())).build();
+                let client = Client::builder().gzip(false).timeout(Duration::new(30, 0)).build()?;
+                let http_req = client.request(Method::Post, url).headers(headers).body(Body::new(request.into_reader())).build()?;
                 let http_resp = client.execute(http_req)?;
 
                 if http_resp.status() == StatusCode::Ok {
