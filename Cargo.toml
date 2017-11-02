@@ -15,7 +15,7 @@ log = "0.3"
 env_logger = "0.4"
 enum_primitive = "0.1"
 lazy_static = "0.2"
-reqwest = "0.7"
+reqwest = "0.8"
 url = "1.5"
 
 [dev-dependencies]

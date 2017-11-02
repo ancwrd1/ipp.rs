@@ -10,7 +10,7 @@ use value::IppValue;
 use consts::tag::*;
 use consts::attribute::*;
 
-const HEADER_ATTRS: [&'static str; 3] = [
+const HEADER_ATTRS: [&str; 3] = [
     ATTRIBUTES_CHARSET,
     ATTRIBUTES_NATURAL_LANGUAGE,
     PRINTER_URI];
@@ -90,7 +90,7 @@ impl IppAttributeList {
 
     /// Get attribute from the list
     pub fn get<'a>(&'a self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
-        self.attributes.get(&group).map_or(None, |attrs| attrs.get(name))
+        self.attributes.get(&group).and_then(|attrs| attrs.get(name))
     }
 
     /// Get attribute list for a group
