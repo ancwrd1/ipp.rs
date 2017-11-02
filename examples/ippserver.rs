@@ -146,7 +146,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         println!("Print-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
-        println!("");
+        println!();
         let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
                                                         req.header().request_id);
 
@@ -173,7 +173,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         println!("Validate-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
-        println!("");
+        println!();
         let resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
                                                         req.header().request_id);
 
