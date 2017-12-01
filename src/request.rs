@@ -23,8 +23,18 @@ pub struct IppRequestResponse {
 
 pub struct IppReadAdapter {
     data: Box<Read>,
-    eofdata: bool,
     payload: Option<Box<Read>>
+}
+
+unsafe impl Send for IppReadAdapter {}
+
+impl Read for IppReadAdapter {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        match self.data.read(buf)? {
+            0 => if let Some(ref mut payload) = self.payload { payload.read(buf) } else { Ok(0) },
+            rc => Ok(rc)
+        }
+    }
 }
 
 pub trait IppRequestTrait {
@@ -141,35 +151,15 @@ impl IppRequestResponse {
     }
 
     pub fn into_reader(self) -> IppReadAdapter {
-        let store: Vec<u8> = vec![];
-        let mut writer = Cursor::new(store);
-        let _ = self.header.write(&mut writer).unwrap();
-        let _ = self.attributes.write(&mut writer).unwrap();
+        let mut cursor = Cursor::new(Vec::with_capacity(1024));
+        let _ = self.header.write(&mut cursor).unwrap();
+        let _ = self.attributes.write(&mut cursor).unwrap();
 
-        writer.set_position(0);
+        cursor.set_position(0);
 
         IppReadAdapter {
-            data: Box::new(writer),
-            eofdata: false,
+            data: Box::new(cursor),
             payload: self.payload
-        }
-    }
-}
-
-unsafe impl Send for IppReadAdapter {}
-
-impl Read for IppReadAdapter {
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        if !self.eofdata {
-            match self.data.read(buf) {
-                Ok(rc) => if rc != 0 { return Ok(rc) } else { self.eofdata = true },
-                Err(e) => return Err(e)
-            }
-        }
-        if let Some(ref mut payload) = self.payload {
-            payload.read(buf)
-        } else {
-            Ok(0)
         }
     }
 }
