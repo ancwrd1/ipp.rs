@@ -16,7 +16,7 @@ fn supports_multi_doc(v: &IppValue) -> bool {
 }
 
 fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
 
     let args: Vec<_> = env::args().collect();
 

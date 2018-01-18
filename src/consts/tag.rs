@@ -1,8 +1,7 @@
 //!
 //! IPP tags
 
-enum_from_primitive! {
-#[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Primitive)]
 pub enum DelimiterTag {
     OperationAttributes = 0x01,
     JobAttributes = 0x02,
@@ -10,10 +9,8 @@ pub enum DelimiterTag {
     PrinterAttributes = 0x04,
     UnsupportedAttributes = 0x05,
 }
-}
 
-enum_from_primitive! {
-#[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Primitive)]
 pub enum ValueTag {
     Unsupported = 0x10,
     Unknown = 0x12,
@@ -38,7 +35,6 @@ pub enum ValueTag {
     NaturalLanguage = 0x48,
     MimeMediaType = 0x49,
     MemberAttrName = 0x4a,
-}
 }
 
 pub fn is_value_tag(value: u8) -> bool {

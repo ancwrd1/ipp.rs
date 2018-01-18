@@ -34,10 +34,9 @@
 extern crate byteorder;
 extern crate reqwest;
 extern crate url;
-#[macro_use] extern crate enum_primitive;
-
-#[macro_use]
-extern crate log;
+extern crate num_traits;
+#[macro_use] extern crate enum_primitive_derive;
+#[macro_use] extern crate log;
 
 use std::result;
 use std::io::{self, Read, Write};

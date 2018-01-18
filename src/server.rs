@@ -1,5 +1,5 @@
 // IPP server
-use enum_primitive::FromPrimitive;
+use num_traits::FromPrimitive;
 
 use request::{IppRequestResponse,IppRequestTrait};
 use consts::statuscode::StatusCode;

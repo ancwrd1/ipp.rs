@@ -4,7 +4,7 @@
 use std::io::Read;
 use byteorder::{BigEndian, ReadBytesExt};
 
-use enum_primitive::FromPrimitive;
+use num_traits::FromPrimitive;
 
 use ::{Result, IppError, IppHeader, ReadIppExt};
 use attribute::{IppAttribute, IppAttributeList};

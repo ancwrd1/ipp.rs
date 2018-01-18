@@ -67,7 +67,7 @@ fn usage(prog: &str) {
 }
 
 pub fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
 
     let args: Vec<_> = env::args().collect();
 

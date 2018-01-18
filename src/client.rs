@@ -3,7 +3,7 @@
 //!
 use std::io::BufReader;
 use std::time::Duration;
-use enum_primitive::FromPrimitive;
+use num_traits::FromPrimitive;
 use reqwest::{Client, Method,  Body, StatusCode};
 use reqwest::header::Headers;
 use url::Url;

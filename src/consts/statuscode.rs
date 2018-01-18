@@ -1,8 +1,7 @@
 //!
 //! IPP status codes
 //!
-enum_from_primitive! {
-#[derive(Debug)]
+#[derive(Debug, Primitive)]
 pub enum StatusCode {
     SuccessfulOK = 0x0000,
     SuccessfulOKIgnoredOrSubstitutedAttributes = 0x0001,
@@ -36,5 +35,4 @@ pub enum StatusCode {
     ServerErrorBusy = 0x0507,
     ServerErrorJobCanceled = 0x0508,
     ServerErrorMultipleDocumentJobsNotSupported = 0x0509,
-}
 }

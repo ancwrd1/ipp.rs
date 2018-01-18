@@ -5,7 +5,7 @@ use std::io::{Read, Write};
 use std::fmt;
 use byteorder::{WriteBytesExt, ReadBytesExt, BigEndian};
 
-use enum_primitive::FromPrimitive;
+use num_traits::FromPrimitive;
 
 use ::{Result, ReadIppExt};
 use consts::tag::ValueTag;
@@ -284,7 +284,7 @@ pub struct IppValueIntoIterator<'a> {
 
 impl<'a> Iterator for IppValueIntoIterator<'a> {
     type Item = &'a IppValue;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         match *self.value {
             IppValue::ListOf(ref list) | IppValue::Collection(ref list) =>

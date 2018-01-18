@@ -1,8 +1,7 @@
 //!
 //! IPP operations
 //!
-enum_from_primitive! {
-#[derive(Debug)]
+#[derive(Debug, Primitive)]
 pub enum Operation {
     PrintJob = 0x0002,
     PrintUri = 0x0003,
@@ -20,5 +19,4 @@ pub enum Operation {
     PausePrinter = 0x0010,
     ResumePrinter = 0x0011,
     PurgeJobs = 0x0012,
-}
 }
