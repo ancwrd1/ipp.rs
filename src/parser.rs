@@ -25,7 +25,7 @@ pub struct IppParseResult {
 impl IppParseResult {
     /// Create instance of the parsing result
     pub fn new(header: IppHeader, attributes: IppAttributeList) -> IppParseResult {
-        IppParseResult {header: header, attributes: attributes}
+        IppParseResult { header, attributes }
     }
 
     /// Get parsed header
@@ -47,7 +47,7 @@ pub struct IppParser<'a> {
 impl<'a> IppParser<'a> {
     /// Create IPP parser using the given Read
     pub fn new(reader: &'a mut Read) -> IppParser<'a> {
-        IppParser { reader: reader }
+        IppParser { reader }
     }
 
     /// Parse IPP stream

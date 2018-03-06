@@ -34,7 +34,7 @@ impl IppAttribute {
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
     pub fn new(name: &str, value: IppValue) -> IppAttribute {
-        IppAttribute {name: name.to_string(), value: value}
+        IppAttribute { name: name.to_string(), value }
     }
 
     /// Return attribute name

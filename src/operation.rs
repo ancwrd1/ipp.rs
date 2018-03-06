@@ -33,7 +33,7 @@ impl PrintJob {
     pub fn new(reader: Box<Read>,
                user_name: &str, job_name: Option<&str>) -> PrintJob {
         PrintJob {
-            reader: reader,
+            reader,
             user_name: user_name.to_string(),
             job_name: job_name.map(|v| v.to_string()),
             attributes: Vec::new()
@@ -161,10 +161,10 @@ impl SendDocument {
     pub fn new(job_id: i32, reader: Box<Read>,
                user_name: &str, last: bool) -> SendDocument {
         SendDocument {
-            job_id: job_id,
-            reader: reader,
+            job_id,
+            reader,
             user_name: user_name.to_string(),
-            last: last
+            last
         }
     }
 }

@@ -117,7 +117,7 @@ impl IppHeader {
 
     /// Create IPP header
     pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
-        IppHeader {version: version, operation_status: status, request_id: request_id}
+        IppHeader { version, operation_status: status, request_id }
     }
 
     pub fn write(&self, writer: &mut Write) -> Result<usize> {

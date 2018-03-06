@@ -278,7 +278,7 @@ impl Handler for DummyServer {
         let mut dummy_req = DummyRequest {
             header: ippreq.header().clone(),
             attributes: ippreq.attributes().clone(),
-            req: req,
+            req,
         };
 
         let mut ippresp = match self.ipp_handle_request(&mut dummy_req) {
