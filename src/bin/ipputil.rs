@@ -10,9 +10,9 @@ fn main() {
         Ok(_) => {}
         Err(e) => match e {
             IppError::ParamError(e) => e.exit(),
-            other => {
-                eprintln!("{}", other);
-                exit(2);
+            _ => {
+                eprintln!("{}", e);
+                exit(e.as_exit_code());
             }
         }
     }

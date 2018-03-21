@@ -83,6 +83,20 @@ pub enum IppError {
     ParamError(clap::Error)
 }
 
+impl IppError {
+    pub fn as_exit_code(&self) -> i32 {
+        match self {
+            &IppError::HttpError(_) => 2,
+            &IppError::IOError(_) => 3,
+            &IppError::RequestError(_) => 4,
+            &IppError::AttributeError(_) => 5,
+            &IppError::StatusError(_) => 6,
+            &IppError::TagError(_) => 7,
+            &IppError::ParamError(_) => 1
+        }
+    }
+}
+
 impl fmt::Display for IppError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

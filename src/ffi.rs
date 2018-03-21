@@ -19,10 +19,10 @@ unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
 }
 
 #[no_mangle]
-pub unsafe extern fn ipp_main(args: *const *const c_char) -> u32 {
+pub unsafe extern fn ipp_main(args: *const *const c_char) -> i32 {
     let args = convert_args(args);
     match util::util_main(args) {
         Ok(_) => 0,
-        Err(_) => 1
+        Err(e) => e.as_exit_code()
     }
 }
