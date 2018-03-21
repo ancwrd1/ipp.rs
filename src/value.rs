@@ -21,16 +21,16 @@ pub enum IppValue {
     Charset(String),
     NaturalLanguage(String),
     Uri(String),
-    RangeOfInteger(i32, i32),
+    RangeOfInteger { min: i32, max: i32 },
     Boolean(bool),
     Keyword(String),
     ListOf(Vec<IppValue>),
     Collection(Vec<IppValue>),
     MimeMediaType(String),
-    DateTime(u16, u8, u8, u8, u8, u8, u8, char, u8, u8),
+    DateTime { year: u16, month: u8, day: u8, hour: u8, minutes: u8, seconds: u8, deciseconds: u8, utcdir: char, utchours: u8, utcmins: u8 },
     MemberAttrName(String),
-    Resolution(i32, i32, i8),
-    Other(u8, Vec<u8>),
+    Resolution { crossfeed: i32, feed: i32, units: i8 },
+    Other { tag: u8, data: Vec<u8> },
 }
 
 impl IppValue {
@@ -39,7 +39,7 @@ impl IppValue {
         match *self {
             IppValue::Integer(_) => ValueTag::Integer,
             IppValue::Enum(_) => ValueTag::Enum,
-            IppValue::RangeOfInteger(_, _) => ValueTag::RangeOfInteger,
+            IppValue::RangeOfInteger{..} => ValueTag::RangeOfInteger,
             IppValue::Boolean(_) => ValueTag::Boolean,
             IppValue::Keyword(_) => ValueTag::Keyword,
             IppValue::OctetString(_) => ValueTag::OctectStringUnspecified,
@@ -51,10 +51,10 @@ impl IppValue {
             IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
             IppValue::ListOf(ref list) => list[0].to_tag(),
             IppValue::Collection(_) => ValueTag::BegCollection,
-            IppValue::DateTime(..) => ValueTag::DateTime,
+            IppValue::DateTime{..} => ValueTag::DateTime,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
-            IppValue::Resolution(..) => ValueTag::Resolution,
-            IppValue::Other(..) => ValueTag::Unknown,
+            IppValue::Resolution{..} => ValueTag::Resolution,
+            IppValue::Other{..} => ValueTag::Unknown,
         }
     }
 
@@ -65,7 +65,7 @@ impl IppValue {
         let ipptag = match ValueTag::from_u8(vtag) {
             Some(x) => x,
             None => {
-                return Ok(IppValue::Other(vtag, reader.read_vec(vsize as usize)?));
+                return Ok(IppValue::Other {tag: vtag, data: reader.read_vec(vsize as usize)? });
             }
         };
 
@@ -98,8 +98,8 @@ impl IppValue {
             }
             ValueTag::RangeOfInteger => {
                 debug_assert_eq!(vsize, 8);
-                Ok(IppValue::RangeOfInteger(reader.read_i32::<BigEndian>()?,
-                                             reader.read_i32::<BigEndian>()?))
+                Ok(IppValue::RangeOfInteger { min: reader.read_i32::<BigEndian>()?,
+                                              max: reader.read_i32::<BigEndian>()? })
             }
             ValueTag::Boolean => {
                 debug_assert_eq!(vsize, 1);
@@ -112,29 +112,29 @@ impl IppValue {
                 Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?))
             }
             ValueTag::DateTime => {
-                Ok(IppValue::DateTime(
-                    reader.read_u16::<BigEndian>()?,
-                    reader.read_u8()?,
-                    reader.read_u8()?,
-                    reader.read_u8()?,
-                    reader.read_u8()?,
-                    reader.read_u8()?,
-                    reader.read_u8()?,
-                    reader.read_u8()? as char,
-                    reader.read_u8()?,
-                    reader.read_u8()?))
+                Ok(IppValue::DateTime {
+                    year: reader.read_u16::<BigEndian>()?,
+                    month: reader.read_u8()?,
+                    day: reader.read_u8()?,
+                    hour: reader.read_u8()?,
+                    minutes: reader.read_u8()?,
+                    seconds: reader.read_u8()?,
+                    deciseconds: reader.read_u8()?,
+                    utcdir: reader.read_u8()? as char,
+                    utchours: reader.read_u8()?,
+                    utcmins: reader.read_u8()? })
             }
             ValueTag::MemberAttrName => {
                 Ok(IppValue::MemberAttrName(reader.read_string(vsize as usize)?))
             }
             ValueTag::Resolution => {
-                Ok(IppValue::Resolution(
-                    reader.read_i32::<BigEndian>()?,
-                    reader.read_i32::<BigEndian>()?,
-                    reader.read_i8()?))
+                Ok(IppValue::Resolution {
+                    crossfeed: reader.read_i32::<BigEndian>()?,
+                    feed: reader.read_i32::<BigEndian>()?,
+                    units: reader.read_i8()? })
             }
             _ => {
-                Ok(IppValue::Other(vtag, reader.read_vec(vsize as usize)?))
+                Ok(IppValue::Other { tag: vtag, data: reader.read_vec(vsize as usize)? })
             }
         }
     }
@@ -147,7 +147,7 @@ impl IppValue {
                 writer.write_i32::<BigEndian>(i)?;
                 Ok(6)
             }
-            IppValue::RangeOfInteger(min, max) => {
+            IppValue::RangeOfInteger { min, max } => {
                 writer.write_u16::<BigEndian>(8)?;
                 writer.write_i32::<BigEndian>(min)?;
                 writer.write_i32::<BigEndian>(max)?;
@@ -193,7 +193,7 @@ impl IppValue {
                 retval += 1;
                 Ok(retval)
             }
-            IppValue::DateTime(year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, utcmins) => {
+            IppValue::DateTime { year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, utcmins } => {
                 writer.write_u16::<BigEndian>(11)?;
 
                 writer.write_u16::<BigEndian>(year)?;
@@ -209,17 +209,17 @@ impl IppValue {
 
                 Ok(13)
             }
-            IppValue::Resolution(crossfeed, feed, units) => {
+            IppValue::Resolution { crossfeed, feed, units } => {
                 writer.write_u16::<BigEndian>(9)?;
                 writer.write_i32::<BigEndian>(crossfeed)?;
                 writer.write_i32::<BigEndian>(feed)?;
                 writer.write_i8(units)?;
                 Ok(9)
             }
-            IppValue::Other(_, ref vec) => {
-                writer.write_u16::<BigEndian>(vec.len() as u16)?;
-                writer.write_all(vec)?;
-                Ok(2 + vec.len())
+            IppValue::Other { tag: _, ref data } => {
+                writer.write_u16::<BigEndian>(data.len() as u16)?;
+                writer.write_all(data)?;
+                Ok(2 + data.len())
             }
         }
     }
@@ -232,7 +232,7 @@ impl fmt::Display for IppValue {
             IppValue::Integer(i) | IppValue::Enum(i) => {
                 write!(f, "{}", i)
             }
-            IppValue::RangeOfInteger(min, max) => {
+            IppValue::RangeOfInteger { min, max } => {
                 write!(f, "{}..{}", min, max)
             }
             IppValue::Boolean(b) => {
@@ -253,16 +253,16 @@ impl fmt::Display for IppValue {
                 let s: Vec<String> = list.iter().map(|v| format!("{}", v)).collect();
                 write!(f, "<{}>", s.join(", "))
             }
-            IppValue::DateTime(year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, _) => {
+            IppValue::DateTime { year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, utcmins: _ } => {
                 write!(f, "{}-{}-{},{}:{}:{}.{},{}{}utc", year, month, day, hour,
                     minutes, seconds, deciseconds, utcdir as char, utchours)
             }
-            IppValue::Resolution(crossfeed, feed, units) => {
+            IppValue::Resolution { crossfeed, feed, units } => {
                 write!(f, "{}x{}{}", crossfeed, feed, if units == 3 {"in"} else {"cm"})
             }
 
-            IppValue::Other(tag, ref vec) => {
-                write!(f, "{:0x}: {:?}", tag, vec)
+            IppValue::Other { tag, ref data } => {
+                write!(f, "{:0x}: {:?}", tag, data)
             }
         }
     }

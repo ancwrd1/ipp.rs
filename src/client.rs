@@ -1,10 +1,11 @@
 //!
 //! IPP client
 //!
-use std::io::BufReader;
+use std::fs::File;
+use std::io::{Read, BufReader};
 use std::time::Duration;
 use num_traits::FromPrimitive;
-use reqwest::{Client, Method,  Body, StatusCode};
+use reqwest::{Certificate, Client, Method,  Body, StatusCode};
 use reqwest::header::Headers;
 use url::Url;
 
@@ -19,14 +20,23 @@ use consts::statuscode;
 ///
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
-    uri: String
+    uri: String,
+    cacerts: Vec<String>
 }
 
 impl IppClient {
     /// Create new instance of the client
     pub fn new(uri: &str) -> IppClient {
         IppClient {
-            uri: uri.to_string()
+            uri: uri.to_string(),
+            cacerts: Vec::new()
+        }
+    }
+
+    pub fn with_root_certificates(uri: &str, certfiles: &Vec<String>) -> IppClient {
+        IppClient {
+            uri: uri.to_string(),
+            cacerts: certfiles.iter().map(|s| s.to_string()).collect::<Vec<String>>()
         }
     }
 
@@ -51,11 +61,20 @@ impl IppClient {
     pub fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse> {
         match Url::parse(&self.uri) {
             Ok(mut url) => {
-                if url.scheme() == "ipp" {
-                    url.set_scheme("http").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;;
-                    if  url.port().is_none() {
-                        url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
-                    }
+                match url.scheme() {
+                    "ipp" => {
+                        url.set_scheme("http").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        if  url.port().is_none() {
+                            url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        }
+                    },
+                    "ipps" => {
+                         url.set_scheme("https").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        if  url.port().is_none() {
+                            url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        }
+                    },
+                    _ => {}
                 }
 
                 debug!("Request URI: {}", url);
@@ -63,7 +82,22 @@ impl IppClient {
                 let mut headers = Headers::new();
                 headers.set_raw("Content-Type", "application/ipp");
 
-                let client = Client::builder().gzip(false).timeout(Duration::new(30, 0)).build()?;
+                let mut builder = Client::builder();
+
+                for certfile in &self.cacerts {
+                    let mut f = File::open(&certfile)?;
+                    let mut buf = Vec::new();
+                    let size = f.read_to_end(&mut buf)?;
+                    let cacert = Certificate::from_der(&buf[0..size])?;
+                    builder.add_root_certificate(cacert);
+                }
+
+                let client = builder
+                    .danger_disable_hostname_verification()
+                    .gzip(false)
+                    .timeout(Duration::new(10, 0))
+                    .build()?;
+
                 let http_req = client.request(Method::Post, url).headers(headers).body(Body::new(request.into_reader())).build()?;
                 let http_resp = client.execute(http_req)?;
 

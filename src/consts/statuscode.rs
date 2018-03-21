@@ -1,7 +1,10 @@
 //!
 //! IPP status codes
 //!
-#[derive(Debug, Primitive)]
+
+use std::fmt;
+
+#[derive(Debug, Copy, Clone, PartialEq, Primitive)]
 pub enum StatusCode {
     SuccessfulOK = 0x0000,
     SuccessfulOKIgnoredOrSubstitutedAttributes = 0x0001,
@@ -35,4 +38,10 @@ pub enum StatusCode {
     ServerErrorBusy = 0x0507,
     ServerErrorJobCanceled = 0x0508,
     ServerErrorMultipleDocumentJobsNotSupported = 0x0509,
+}
+
+impl fmt::Display for StatusCode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:0x}", *self as u16)
+    }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP print protocol implementation for Rust"
 license = "MIT"
@@ -14,10 +14,11 @@ byteorder = "1.1"
 log = "0.4"
 env_logger = "0.5"
 enum-primitive-derive = "0.1"
-num-traits = "0.1"
+num-traits = "0.2"
 lazy_static = "1.0"
 reqwest = "0.8"
 url = "1.5"
+clap = "2"
 
 [dev-dependencies]
 hyper = "0.10"

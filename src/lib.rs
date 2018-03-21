@@ -39,6 +39,7 @@ extern crate num_traits;
 #[macro_use] extern crate log;
 
 use std::result;
+use std::fmt;
 use std::io::{self, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
@@ -76,6 +77,19 @@ pub enum IppError {
     AttributeError(String),
     StatusError(consts::statuscode::StatusCode),
     TagError(u8)
+}
+
+impl fmt::Display for IppError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &IppError::HttpError(ref e) => write!(f, "{}", e),
+            &IppError::IOError(ref e) => write!(f, "{}", e),
+            &IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
+            &IppError::AttributeError(ref e) => write!(f, "IPP attribute error: {}", e),
+            &IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
+            &IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e)
+        }
+    }
 }
 
 impl From<io::Error> for IppError {
