@@ -32,6 +32,7 @@
 //!```
 
 extern crate byteorder;
+extern crate clap;
 extern crate reqwest;
 extern crate url;
 extern crate num_traits;
@@ -58,6 +59,8 @@ pub mod attribute;
 pub mod client;
 pub mod server;
 pub mod operation;
+pub mod util;
+pub mod ffi;
 
 pub use attribute::{IppAttribute, IppAttributeList};
 pub use client::IppClient;
@@ -76,7 +79,8 @@ pub enum IppError {
     RequestError(String),
     AttributeError(String),
     StatusError(consts::statuscode::StatusCode),
-    TagError(u8)
+    TagError(u8),
+    ParamError(clap::Error)
 }
 
 impl fmt::Display for IppError {
@@ -87,7 +91,8 @@ impl fmt::Display for IppError {
             &IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
             &IppError::AttributeError(ref e) => write!(f, "IPP attribute error: {}", e),
             &IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
-            &IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e)
+            &IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e),
+            &IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e)
         }
     }
 }
@@ -107,6 +112,12 @@ impl From<StatusCode> for IppError {
 impl From<reqwest::Error> for IppError {
     fn from(error: reqwest::Error) -> IppError {
         IppError::HttpError(error)
+    }
+}
+
+impl From<clap::Error> for IppError {
+    fn from(error: clap::Error) -> IppError {
+        IppError::ParamError(error)
     }
 }
 
