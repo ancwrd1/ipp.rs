@@ -62,14 +62,14 @@ pub const PAGES_PER_MINUTE: &str = "pages-per-minute";
 pub const COLOR_MODE_SUPPORTED: &str = "color-mode-supported";
 pub const PRINT_COLOR_MODE_SUPPORTED: &str = "print-color-mode-supported";
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum PrinterState {
     Idle = 3,
     Processing = 4,
     Stopped = 5,
 }
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Orientation {
     Portrait = 3,
     Landscape = 4,
@@ -77,14 +77,14 @@ pub enum Orientation {
     ReversePortrait = 6,
 }
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum PrintQuality {
     Draft = 3,
     Normal = 4,
     High = 5,
 }
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Finishings {
     None = 3,
     Staple = 4,

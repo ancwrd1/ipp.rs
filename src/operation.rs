@@ -82,8 +82,8 @@ impl GetPrinterAttributes {
     }
 
     /// Set attributes to request from the printer
-    pub fn with_attributes(attributes: &[String]) -> GetPrinterAttributes {
-        GetPrinterAttributes { attributes: attributes.to_vec() }
+    pub fn with_attributes<T>(attributes: &[T]) -> GetPrinterAttributes where T: AsRef<str> {
+        GetPrinterAttributes { attributes: attributes.iter().map(|a| a.as_ref().to_string()).collect() }
     }
 }
 

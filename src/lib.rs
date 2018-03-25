@@ -80,7 +80,8 @@ pub enum IppError {
     AttributeError(String),
     StatusError(consts::statuscode::StatusCode),
     TagError(u8),
-    ParamError(clap::Error)
+    ParamError(clap::Error),
+    PrinterStateError(Vec<String>)
 }
 
 impl IppError {
@@ -92,7 +93,8 @@ impl IppError {
             &IppError::AttributeError(_) => 5,
             &IppError::StatusError(_) => 6,
             &IppError::TagError(_) => 7,
-            &IppError::ParamError(_) => 1
+            &IppError::ParamError(_) => 1,
+            &IppError::PrinterStateError(_) => 8
         }
     }
 }
@@ -106,7 +108,8 @@ impl fmt::Display for IppError {
             &IppError::AttributeError(ref e) => write!(f, "IPP attribute error: {}", e),
             &IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
             &IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e),
-            &IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e)
+            &IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e),
+            &IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e)
         }
     }
 }

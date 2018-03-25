@@ -33,10 +33,10 @@ impl IppClient {
         }
     }
 
-    pub fn with_root_certificates(uri: &str, certfiles: &Vec<String>) -> IppClient {
+    pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient where T: AsRef<str> {
         IppClient {
             uri: uri.to_string(),
-            cacerts: certfiles.iter().map(|s| s.to_string()).collect::<Vec<String>>()
+            cacerts: certfiles.iter().map(|s| s.as_ref().to_string()).collect::<Vec<String>>()
         }
     }
 

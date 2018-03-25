@@ -1,12 +1,28 @@
-use clap::{Arg, ArgMatches, App, AppSettings, SubCommand, Values};
 use std::env;
 use std::ffi::OsString;
 use std::fs::File;
 use std::io::{stdin, Read};
 
+use num_traits::FromPrimitive;
+use clap::{Arg, ArgMatches, App, AppSettings, SubCommand, Values};
+
 use ::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppError};
+use consts::tag::DelimiterTag;
+use consts::attribute::{PrinterState, PRINTER_STATE, PRINTER_STATE_REASONS};
 
 const GIT_VERSION: &str = env!("GIT_VERSION");
+
+const ERROR_STATES: &[&str] = &[
+    "media-jam",
+    "toner-empty",
+    "spool-area-full",
+    "cover-open",
+    "door-open",
+    "input-tray-missing",
+    "output-tray-missing",
+    "marker-supply-empty",
+    "paused",
+    "shutdown"];
 
 fn unwrap_values(values: Option<Values>) -> Values {
     values.unwrap_or_else(|| Values::default())
@@ -15,7 +31,7 @@ fn unwrap_values(values: Option<Values>) -> Values {
 fn new_client(matches: &ArgMatches) -> IppClient {
     IppClient::with_root_certificates(
         matches.value_of("uri").unwrap(),
-        &unwrap_values(matches.values_of("cacert")).map(|a| a.to_string()).collect::<Vec<_>>())
+        &unwrap_values(matches.values_of("cacert")).collect::<Vec<_>>())
 }
 
 fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
@@ -23,6 +39,38 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         Some(filename) => Box::new(File::open(filename)?),
         None => Box::new(stdin())
     };
+
+    let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
+
+    let client = new_client(matches);
+
+    if !matches.is_present("nocheckstate") {
+        let attrs = client.send(operation)?;
+
+        if let Some(&ref a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
+            if let &IppValue::Enum(ref e) = a.value() {
+                if let Some(state) = PrinterState::from_i32(*e) {
+                    if state == PrinterState::Stopped {
+                        debug!("Printer is stopped");
+                        return Err(IppError::PrinterStateError(vec!["stopped".to_string()]));
+                    }
+                }
+            }
+        }
+
+        if let Some(&ref reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
+            let keywords = match reasons.value() {
+                &IppValue::ListOf(ref v) =>
+                    v.iter().map(|e| if let &IppValue::Keyword(ref k) = e { k.clone() } else { "???".to_string() }).collect(),
+                &IppValue::Keyword(ref v) => vec![v.clone()],
+                _ => Vec::new()
+            };
+            if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
+                debug!("Printer is in error state: {:?}", keywords);
+                return Err(IppError::PrinterStateError(keywords.clone()));
+            }
+        }
+    }
 
     let mut operation = PrintJob::new(
         reader,
@@ -46,8 +94,6 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         }
     }
 
-    let client = new_client(matches);
-
     let attrs = client.send(operation)?;
 
     if let Some(group) = attrs.get_job_attributes() {
@@ -62,7 +108,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
     let client = new_client(matches);
 
     let operation = GetPrinterAttributes::with_attributes(
-        &unwrap_values(matches.values_of("attribute")).map(|a| a.to_string()).collect::<Vec<_>>());
+        &unwrap_values(matches.values_of("attribute")).collect::<Vec<_>>());
 
     let attrs = client.send(operation)?;
 
@@ -93,6 +139,11 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
                 .multiple(true)
                 .number_of_values(1)
                 .help("Additional root certificate in DER format")
+                .required(false))
+            .arg(Arg::with_name("nocheckstate")
+                .short("n")
+                .long("no-check-state")
+                .help("Do not check printer state before printing")
                 .required(false))
             .arg(Arg::with_name("filename")
                 .short("f")
