@@ -61,7 +61,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         if let Some(&ref reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
             let keywords = match reasons.value() {
                 &IppValue::ListOf(ref v) =>
-                    v.iter().map(|e| if let &IppValue::Keyword(ref k) = e { k.clone() } else { "???".to_string() }).collect(),
+                    v.iter().filter_map(|e| if let &IppValue::Keyword(ref k) = e { Some(k.clone()) } else { None }).collect(),
                 &IppValue::Keyword(ref v) => vec![v.clone()],
                 _ => Vec::new()
             };
