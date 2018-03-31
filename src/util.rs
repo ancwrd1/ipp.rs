@@ -40,11 +40,10 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         None => Box::new(stdin())
     };
 
-    let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
-
     let client = new_client(matches);
 
     if !matches.is_present("nocheckstate") {
+        let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
         let attrs = client.send(operation)?;
 
         if let Some(&ref a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
@@ -175,7 +174,7 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
                 .index(1)
                 .value_name("uri")
                 .required(true)
-                .help("URI to print to, supported schemes: ipp, ipps, http, https")))
+                .help("Printer URI, supported schemes: ipp, ipps, http, https")))
         .subcommand(SubCommand::with_name("status")
             .about("Get status of an IPP printer")
             .arg(Arg::with_name("cacert")
@@ -198,7 +197,7 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
                 .index(1)
                 .value_name("uri")
                 .required(true)
-                .help("URI to print to, supported schemes: ipp, ipps, http, https")))
+                .help("Printer URI, supported schemes: ipp, ipps, http, https")))
         .get_matches_from_safe(args)?;
 
     if let Some(printcmd) = args.subcommand_matches("print") {
