@@ -29,9 +29,15 @@ fn unwrap_values(values: Option<Values>) -> Values {
 }
 
 fn new_client(matches: &ArgMatches) -> IppClient {
-    IppClient::with_root_certificates(
+    let mut client = IppClient::with_root_certificates(
         matches.value_of("uri").unwrap(),
-        &unwrap_values(matches.values_of("cacert")).collect::<Vec<_>>())
+        &unwrap_values(matches.values_of("cacert")).collect::<Vec<_>>());
+
+    if matches.is_present("noverifyhostname") {
+        client.set_verify_hostname(false);
+    }
+
+    client
 }
 
 fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
@@ -113,8 +119,8 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 
     if let Some(group) = attrs.get_printer_attributes() {
         let mut values: Vec<_> = group.values().collect();
-        values.sort_by(|&a, &b| a.name().cmp(b.name()));
-        for v in &values {
+        values.sort_by(|a, b| a.name().cmp(b.name()));
+        for v in values {
             println!("{}: {}", v.name(), v.value());
         }
     }
@@ -129,16 +135,23 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
         .version(GIT_VERSION)
         .setting(AppSettings::SubcommandRequired)
         .setting(AppSettings::VersionlessSubcommands)
+        .arg(Arg::with_name("cacert")
+            .short("c")
+            .long("cacert")
+            .value_name("filename")
+            .multiple(true)
+            .number_of_values(1)
+            .help("Additional root certificates in DER format")
+            .global(true)
+            .required(false))
+        .arg(Arg::with_name("noverifyhostname")
+            .short("r")
+            .long("--no-verify-hostname")
+            .help("Disable host name verification for SSL transport")
+            .global(true)
+            .required(false))
         .subcommand(SubCommand::with_name("print")
             .about("Print file to an IPP printer")
-            .arg(Arg::with_name("cacert")
-                .short("c")
-                .long("cacert")
-                .value_name("filename")
-                .multiple(true)
-                .number_of_values(1)
-                .help("Additional root certificate in DER format")
-                .required(false))
             .arg(Arg::with_name("nocheckstate")
                 .short("n")
                 .long("no-check-state")
@@ -177,14 +190,6 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
                 .help("Printer URI, supported schemes: ipp, ipps, http, https")))
         .subcommand(SubCommand::with_name("status")
             .about("Get status of an IPP printer")
-            .arg(Arg::with_name("cacert")
-                .short("c")
-                .long("cacert")
-                .value_name("filename")
-                .multiple(true)
-                .number_of_values(1)
-                .help("Additional root certificate in DER format")
-                .required(false))
             .arg(Arg::with_name("attribute")
                 .short("a")
                 .long("attribute")

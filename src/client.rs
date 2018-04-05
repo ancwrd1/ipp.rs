@@ -21,7 +21,8 @@ use consts::statuscode;
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
     uri: String,
-    cacerts: Vec<String>
+    cacerts: Vec<String>,
+    verify_hostname: bool
 }
 
 impl IppClient {
@@ -29,15 +30,21 @@ impl IppClient {
     pub fn new(uri: &str) -> IppClient {
         IppClient {
             uri: uri.to_string(),
-            cacerts: Vec::new()
+            cacerts: Vec::new(),
+            verify_hostname: true
         }
     }
 
     pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient where T: AsRef<str> {
         IppClient {
             uri: uri.to_string(),
-            cacerts: certfiles.iter().map(|s| s.as_ref().to_string()).collect::<Vec<String>>()
+            cacerts: certfiles.iter().map(|s| s.as_ref().to_string()).collect::<Vec<String>>(),
+            verify_hostname: true
         }
+    }
+
+    pub fn set_verify_hostname(&mut self, verify: bool) {
+        self.verify_hostname = verify;
     }
 
     /// send IPP operation
@@ -92,8 +99,12 @@ impl IppClient {
                     builder.add_root_certificate(cacert);
                 }
 
+                if !self.verify_hostname {
+                    debug!("Disabling hostname verification!");
+                    builder.danger_disable_hostname_verification();
+                }
+
                 let client = builder
-                    .danger_disable_hostname_verification()
                     .gzip(false)
                     .timeout(Duration::new(10, 0))
                     .build()?;
