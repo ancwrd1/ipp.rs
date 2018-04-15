@@ -141,7 +141,7 @@ pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
             .value_name("filename")
             .multiple(true)
             .number_of_values(1)
-            .help("Additional root certificates in DER format")
+            .help("Additional root certificates in PEM or DER format")
             .global(true)
             .required(false))
         .arg(Arg::with_name("noverifyhostname")

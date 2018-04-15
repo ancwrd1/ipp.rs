@@ -95,7 +95,10 @@ impl IppClient {
                     let mut f = File::open(&certfile)?;
                     let mut buf = Vec::new();
                     let size = f.read_to_end(&mut buf)?;
-                    let cacert = Certificate::from_der(&buf[0..size])?;
+                    let cacert = match Certificate::from_der(&buf[0..size]) {
+                        Ok(cacert) => cacert,
+                        Err(_) => Certificate::from_pem(&buf[0..size])?
+                    };
                     builder.add_root_certificate(cacert);
                 }
 
