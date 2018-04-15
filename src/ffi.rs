@@ -4,12 +4,9 @@ use util;
 
 unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
     let mut rc = Vec::new();
-    if args.is_null() {
-        return rc;
-    }
 
     let mut ptr = args;
-    while !(*ptr).is_null() {
+    while !ptr.is_null() && !(*ptr).is_null() {
         let opt = CStr::from_ptr(*ptr).to_string_lossy().to_string();
         rc.push(opt);
         ptr = ptr.offset(1);
