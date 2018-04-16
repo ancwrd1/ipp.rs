@@ -16,6 +16,8 @@ use attribute::IppAttributeList;
 use parser::IppParser;
 use consts::statuscode;
 
+const TIMEOUT: u64 = 30;
+
 /// IPP client.
 ///
 /// IPP client is responsible for sending requests to IPP server.
@@ -96,8 +98,15 @@ impl IppClient {
                     let mut buf = Vec::new();
                     let size = f.read_to_end(&mut buf)?;
                     let cacert = match Certificate::from_der(&buf[0..size]) {
-                        Ok(cacert) => cacert,
-                        Err(_) => Certificate::from_pem(&buf[0..size])?
+                        Ok(cacert) => {
+                            debug!("Read DER certificate from {}", certfile);
+                            cacert
+                        }
+                        Err(_) => {
+                            let cacert = Certificate::from_pem(&buf[0..size])?;
+                            debug!("Read PEM certificate from {}", certfile);
+                            cacert
+                        }
                     };
                     builder.add_root_certificate(cacert);
                 }
@@ -109,7 +118,7 @@ impl IppClient {
 
                 let client = builder
                     .gzip(false)
-                    .timeout(Duration::new(10, 0))
+                    .timeout(Duration::from_secs(TIMEOUT))
                     .build()?;
 
                 let http_req = client.request(Method::Post, url).headers(headers).body(Body::new(request.into_reader())).build()?;
