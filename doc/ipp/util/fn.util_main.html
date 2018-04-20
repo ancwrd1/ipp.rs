@@ -65,38 +65,36 @@
 <li><code>args</code> - a list of arguments to pass to <code>clap</code> argument parser</li>
 </ul>
 <p>Command line usage for getting printer status (will print list of printer attributes on stdout)</p>
-
-<pre class="rust rust-example-rendered">
-<span class="ident">USAGE</span>:
-    <span class="ident">ipputil</span> <span class="ident">status</span> [<span class="ident">FLAGS</span>] [<span class="ident">OPTIONS</span>] <span class="op">&lt;</span><span class="ident">uri</span><span class="op">&gt;</span>
-<span class="ident">FLAGS</span>:
-    <span class="op">-</span><span class="ident">h</span>, <span class="op">-</span><span class="op">-</span><span class="ident">help</span>                  <span class="ident">Prints</span> <span class="ident">help</span> <span class="ident">information</span>
-    <span class="op">-</span><span class="ident">r</span>, <span class="op">-</span><span class="op">-</span><span class="ident">no</span><span class="op">-</span><span class="ident">verify</span><span class="op">-</span><span class="ident">hostname</span>    <span class="ident">Disable</span> <span class="ident">host</span> <span class="ident">name</span> <span class="ident">verification</span> <span class="kw">for</span> <span class="ident">SSL</span> <span class="ident">transport</span>
-<span class="ident">OPTIONS</span>:
-    <span class="op">-</span><span class="ident">a</span>, <span class="op">-</span><span class="op">-</span><span class="ident">attribute</span> <span class="op">&lt;</span><span class="ident">attribute</span><span class="op">&gt;</span>...    <span class="ident">IPP</span> <span class="ident">attribute</span> <span class="ident">to</span> <span class="ident">query</span>, <span class="ident">default</span> <span class="ident">is</span> <span class="ident">get</span> <span class="ident">all</span>
-    <span class="op">-</span><span class="ident">c</span>, <span class="op">-</span><span class="op">-</span><span class="ident">cacert</span> <span class="op">&lt;</span><span class="ident">filename</span><span class="op">&gt;</span>...        <span class="ident">Additional</span> <span class="ident">root</span> <span class="ident">certificates</span> <span class="kw">in</span> <span class="ident">PEM</span> <span class="ident">or</span> <span class="ident">DER</span> <span class="ident">format</span>
-<span class="ident">ARGS</span>:
-    <span class="op">&lt;</span><span class="ident">uri</span><span class="op">&gt;</span>    <span class="ident">Printer</span> <span class="ident">URI</span>, <span class="ident">supported</span> <span class="ident">schemes</span>: <span class="ident">ipp</span>, <span class="ident">ipps</span>, <span class="ident">http</span>, <span class="ident">https</span></pre>
+<pre><code class="language-text">USAGE:
+    ipputil status [FLAGS] [OPTIONS] &lt;uri&gt;
+FLAGS:
+    -h, --help                  Prints help information
+    -r, --no-verify-hostname    Disable host name verification for SSL transport
+OPTIONS:
+    -a, --attribute &lt;attribute&gt;...    IPP attribute to query, default is get all
+    -c, --cacert &lt;filename&gt;...        Additional root certificates in PEM or DER format
+ARGS:
+    &lt;uri&gt;    Printer URI, supported schemes: ipp, ipps, http, https
+</code></pre>
 <p>Command line usage for printing the document</p>
+<pre><code class="language-text">USAGE:
+    ipputil print [FLAGS] [OPTIONS] &lt;uri&gt;
 
-<pre class="rust rust-example-rendered">
-<span class="ident">USAGE</span>:
-    <span class="ident">ipputil</span> <span class="ident">print</span> [<span class="ident">FLAGS</span>] [<span class="ident">OPTIONS</span>] <span class="op">&lt;</span><span class="ident">uri</span><span class="op">&gt;</span>
+FLAGS:
+    -h, --help                  Prints help information
+    -n, --no-check-state        Do not check printer state before printing
+    -r, --no-verify-hostname    Disable host name verification for SSL transport
 
-<span class="ident">FLAGS</span>:
-    <span class="op">-</span><span class="ident">h</span>, <span class="op">-</span><span class="op">-</span><span class="ident">help</span>                  <span class="ident">Prints</span> <span class="ident">help</span> <span class="ident">information</span>
-    <span class="op">-</span><span class="ident">n</span>, <span class="op">-</span><span class="op">-</span><span class="ident">no</span><span class="op">-</span><span class="ident">check</span><span class="op">-</span><span class="ident">state</span>        <span class="ident">Do</span> <span class="ident">not</span> <span class="ident">check</span> <span class="ident">printer</span> <span class="ident">state</span> <span class="ident">before</span> <span class="ident">printing</span>
-    <span class="op">-</span><span class="ident">r</span>, <span class="op">-</span><span class="op">-</span><span class="ident">no</span><span class="op">-</span><span class="ident">verify</span><span class="op">-</span><span class="ident">hostname</span>    <span class="ident">Disable</span> <span class="ident">host</span> <span class="ident">name</span> <span class="ident">verification</span> <span class="kw">for</span> <span class="ident">SSL</span> <span class="ident">transport</span>
+OPTIONS:
+    -c, --cacert &lt;filename&gt;...     Additional root certificates in PEM or DER format
+    -f, --file &lt;filename&gt;          Input file name to print. If missing will read from stdin
+    -j, --job &lt;jobname&gt;            Job name to send as job-name attribute
+    -o, --option &lt;key=value&gt;...    Extra IPP job attributes to send
+    -u, --user &lt;username&gt;          User name to send as requesting-user-name attribute
 
-<span class="ident">OPTIONS</span>:
-    <span class="op">-</span><span class="ident">c</span>, <span class="op">-</span><span class="op">-</span><span class="ident">cacert</span> <span class="op">&lt;</span><span class="ident">filename</span><span class="op">&gt;</span>...     <span class="ident">Additional</span> <span class="ident">root</span> <span class="ident">certificates</span> <span class="kw">in</span> <span class="ident">PEM</span> <span class="ident">or</span> <span class="ident">DER</span> <span class="ident">format</span>
-    <span class="op">-</span><span class="ident">f</span>, <span class="op">-</span><span class="op">-</span><span class="ident">file</span> <span class="op">&lt;</span><span class="ident">filename</span><span class="op">&gt;</span>          <span class="ident">Input</span> <span class="ident">file</span> <span class="ident">name</span> <span class="ident">to</span> <span class="ident">print</span>. <span class="ident">If</span> <span class="ident">missing</span> <span class="ident">will</span> <span class="ident">read</span> <span class="ident">from</span> <span class="ident">stdin</span>
-    <span class="op">-</span><span class="ident">j</span>, <span class="op">-</span><span class="op">-</span><span class="ident">job</span> <span class="op">&lt;</span><span class="ident">jobname</span><span class="op">&gt;</span>            <span class="ident">Job</span> <span class="ident">name</span> <span class="ident">to</span> <span class="ident">send</span> <span class="kw">as</span> <span class="ident">job</span><span class="op">-</span><span class="ident">name</span> <span class="ident">attribute</span>
-    <span class="op">-</span><span class="ident">o</span>, <span class="op">-</span><span class="op">-</span><span class="ident">option</span> <span class="op">&lt;</span><span class="ident">key</span><span class="op">=</span><span class="ident">value</span><span class="op">&gt;</span>...    <span class="ident">Extra</span> <span class="ident">IPP</span> <span class="ident">job</span> <span class="ident">attributes</span> <span class="ident">to</span> <span class="ident">send</span>
-    <span class="op">-</span><span class="ident">u</span>, <span class="op">-</span><span class="op">-</span><span class="ident">user</span> <span class="op">&lt;</span><span class="ident">username</span><span class="op">&gt;</span>          <span class="ident">User</span> <span class="ident">name</span> <span class="ident">to</span> <span class="ident">send</span> <span class="kw">as</span> <span class="ident">requesting</span><span class="op">-</span><span class="ident">user</span><span class="op">-</span><span class="ident">name</span> <span class="ident">attribute</span>
-
-<span class="ident">ARGS</span>:
-    <span class="op">&lt;</span><span class="ident">uri</span><span class="op">&gt;</span>    <span class="ident">Printer</span> <span class="ident">URI</span>, <span class="ident">supported</span> <span class="ident">schemes</span>: <span class="ident">ipp</span>, <span class="ident">ipps</span>, <span class="ident">http</span>, <span class="ident">https</span></pre>
+ARGS:
+    &lt;uri&gt;    Printer URI, supported schemes: ipp, ipps, http, https
+</code></pre>
 </div></section>
     <section id='search' class="content hidden"></section>
 
