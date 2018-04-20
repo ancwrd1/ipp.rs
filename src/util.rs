@@ -14,7 +14,7 @@ use ::{IppClient, IppAttribute, IppValue, PrintJob, GetPrinterAttributes, IppErr
 use consts::tag::DelimiterTag;
 use consts::attribute::{PrinterState, PRINTER_STATE, PRINTER_STATE_REASONS};
 
-const GIT_VERSION: &str = env!("GIT_VERSION");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 const ERROR_STATES: &[&str] = &[
     "media-jam",
@@ -173,7 +173,7 @@ pub fn util_main<I, T>(args: I) -> Result<(), IppError>
         I: IntoIterator<Item = T>,
         T: Into<OsString> + Clone {
     let args = App::new("IPP utility")
-        .version(GIT_VERSION)
+        .version(VERSION)
         .setting(AppSettings::SubcommandRequired)
         .setting(AppSettings::VersionlessSubcommands)
         .arg(Arg::with_name("cacert")
