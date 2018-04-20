@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP print protocol implementation for Rust"
 license = "MIT"
