@@ -29,7 +29,7 @@ const ERROR_STATES: &[&str] = &[
     "shutdown"];
 
 fn unwrap_values(values: Option<Values>) -> Values {
-    values.unwrap_or_else(|| Values::default())
+    values.unwrap_or_else(Values::default)
 }
 
 fn new_client(matches: &ArgMatches) -> IppClient {
@@ -56,8 +56,8 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
         let attrs = client.send(operation)?;
 
-        if let Some(&ref a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
-            if let &IppValue::Enum(ref e) = a.value() {
+        if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
+            if let IppValue::Enum(ref e) = *a.value() {
                 if let Some(state) = PrinterState::from_i32(*e) {
                     if state == PrinterState::Stopped {
                         debug!("Printer is stopped");
@@ -67,11 +67,11 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
             }
         }
 
-        if let Some(&ref reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
-            let keywords = match reasons.value() {
-                &IppValue::ListOf(ref v) =>
-                    v.iter().filter_map(|e| if let &IppValue::Keyword(ref k) = e { Some(k.clone()) } else { None }).collect(),
-                &IppValue::Keyword(ref v) => vec![v.clone()],
+        if let Some(reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
+            let keywords = match *reasons.value() {
+                IppValue::ListOf(ref v) =>
+                    v.iter().filter_map(|e| if let IppValue::Keyword(ref k) = *e { Some(k.clone()) } else { None }).collect(),
+                IppValue::Keyword(ref v) => vec![v.clone()],
                 _ => Vec::new()
             };
             if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
@@ -168,7 +168,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 /// ARGS:
 ///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
 /// ```
-pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
+pub fn util_main<I, T>(args: I) -> Result<(), IppError>
     where
         I: IntoIterator<Item = T>,
         T: Into<OsString> + Clone {

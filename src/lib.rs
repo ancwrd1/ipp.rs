@@ -94,30 +94,30 @@ pub enum IppError {
 
 impl IppError {
     pub fn as_exit_code(&self) -> i32 {
-        match self {
-            &IppError::HttpError(_) => 2,
-            &IppError::IOError(_) => 3,
-            &IppError::RequestError(_) => 4,
-            &IppError::AttributeError(_) => 5,
-            &IppError::StatusError(_) => 6,
-            &IppError::TagError(_) => 7,
-            &IppError::ParamError(_) => 1,
-            &IppError::PrinterStateError(_) => 8
+        match *self {
+            IppError::HttpError(_) => 2,
+            IppError::IOError(_) => 3,
+            IppError::RequestError(_) => 4,
+            IppError::AttributeError(_) => 5,
+            IppError::StatusError(_) => 6,
+            IppError::TagError(_) => 7,
+            IppError::ParamError(_) => 1,
+            IppError::PrinterStateError(_) => 8
         }
     }
 }
 
 impl fmt::Display for IppError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &IppError::HttpError(ref e) => write!(f, "{}", e),
-            &IppError::IOError(ref e) => write!(f, "{}", e),
-            &IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
-            &IppError::AttributeError(ref e) => write!(f, "IPP attribute error: {}", e),
-            &IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
-            &IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e),
-            &IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e),
-            &IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e)
+        match *self {
+            IppError::HttpError(ref e) => write!(f, "{}", e),
+            IppError::IOError(ref e) => write!(f, "{}", e),
+            IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
+            IppError::AttributeError(ref e) => write!(f, "IPP attribute error: {}", e),
+            IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
+            IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e),
+            IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e),
+            IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e)
         }
     }
 }

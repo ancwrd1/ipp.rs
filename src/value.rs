@@ -216,7 +216,7 @@ impl IppValue {
                 writer.write_i8(units)?;
                 Ok(9)
             }
-            IppValue::Other { tag: _, ref data } => {
+            IppValue::Other { ref data, .. } => {
                 writer.write_u16::<BigEndian>(data.len() as u16)?;
                 writer.write_all(data)?;
                 Ok(2 + data.len())
@@ -253,7 +253,7 @@ impl fmt::Display for IppValue {
                 let s: Vec<String> = list.iter().map(|v| format!("{}", v)).collect();
                 write!(f, "<{}>", s.join(", "))
             }
-            IppValue::DateTime { year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, utcmins: _ } => {
+            IppValue::DateTime { year, month, day, hour, minutes, seconds, deciseconds, utcdir, utchours, .. } => {
                 write!(f, "{}-{}-{},{}:{}:{}.{},{}{}utc", year, month, day, hour,
                     minutes, seconds, deciseconds, utcdir as char, utchours)
             }
