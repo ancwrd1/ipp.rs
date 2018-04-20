@@ -71,16 +71,24 @@ pub const IPP_VERSION: u16 = 0x0101;
 
 use consts::statuscode::StatusCode;
 
-/// IPP value
+/// IPP error
 #[derive(Debug)]
 pub enum IppError {
+    /// HTTP error
     HttpError(reqwest::Error),
+    /// Network or file I/O error
     IOError(::std::io::Error),
+    /// IPP request error
     RequestError(String),
+    /// IPP attribute error
     AttributeError(String),
+    /// IPP status error
     StatusError(consts::statuscode::StatusCode),
+    /// IPP binary tag error
     TagError(u8),
+    /// Command-line parameter error
     ParamError(clap::Error),
+    /// Printer state error
     PrinterStateError(Vec<String>)
 }
 
@@ -143,8 +151,11 @@ pub type Result<T> = result::Result<T, IppError>;
 /// IPP request and response header
 #[derive(Clone, Debug)]
 pub struct IppHeader {
+    /// IPP protocol version in big endian encoding, for example 0x0101 for version 1.1
     pub version: u16,
+    /// Operation tag for requests, status for responses
     pub operation_status: u16,
+    /// ID of the request
     pub request_id: u32
 }
 
@@ -162,6 +173,7 @@ impl IppHeader {
         IppHeader { version, operation_status: status, request_id }
     }
 
+    /// Write header to a given writer
     pub fn write(&self, writer: &mut Write) -> Result<usize> {
         writer.write_u16::<BigEndian>(self.version)?;
         writer.write_u16::<BigEndian>(self.operation_status)?;

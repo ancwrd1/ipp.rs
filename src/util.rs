@@ -134,6 +134,40 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 /// Entry point to main utility function
 ///
 /// * `args` - a list of arguments to pass to `clap` argument parser
+///
+/// Command line usage for getting printer status (will print list of printer attributes on stdout)
+/// ```
+/// USAGE:
+///     ipputil status [FLAGS] [OPTIONS] <uri>
+/// FLAGS:
+///     -h, --help                  Prints help information
+///     -r, --no-verify-hostname    Disable host name verification for SSL transport
+/// OPTIONS:
+///     -a, --attribute <attribute>...    IPP attribute to query, default is get all
+///     -c, --cacert <filename>...        Additional root certificates in PEM or DER format
+/// ARGS:
+///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
+///```
+/// Command line usage for printing the document
+/// ```
+/// USAGE:
+///     ipputil print [FLAGS] [OPTIONS] <uri>
+///
+/// FLAGS:
+///     -h, --help                  Prints help information
+///     -n, --no-check-state        Do not check printer state before printing
+///     -r, --no-verify-hostname    Disable host name verification for SSL transport
+///
+/// OPTIONS:
+///     -c, --cacert <filename>...     Additional root certificates in PEM or DER format
+///     -f, --file <filename>          Input file name to print. If missing will read from stdin
+///     -j, --job <jobname>            Job name to send as job-name attribute
+///     -o, --option <key=value>...    Extra IPP job attributes to send
+///     -u, --user <username>          User name to send as requesting-user-name attribute
+///
+/// ARGS:
+///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
+/// ```
 pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
     where
         I: IntoIterator<Item = T>,
