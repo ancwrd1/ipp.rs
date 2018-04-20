@@ -10,8 +10,11 @@
     <title>request.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
         
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -161,11 +172,59 @@
 <span id="116">116</span>
 <span id="117">117</span>
 <span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
 </pre><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! IPP request</span>
 <span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Read</span>, <span class="ident">Write</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Read</span>, <span class="ident">Write</span>, <span class="ident">Cursor</span>};
 
 <span class="kw">use</span> <span class="ident">attribute</span>::{<span class="ident">IppAttribute</span>, <span class="ident">IppAttributeList</span>};
 <span class="kw">use</span> ::{<span class="prelude-ty">Result</span>, <span class="ident">IPP_VERSION</span>, <span class="ident">IppHeader</span>};
@@ -175,19 +234,47 @@
 <span class="kw">use</span> <span class="ident">value</span>::<span class="ident">IppValue</span>;
 <span class="kw">use</span> <span class="ident">parser</span>::<span class="ident">IppParser</span>;
 
-<span class="doccomment">/// IPP request struct</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppRequestResponse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Operation ID</span>
+<span class="doccomment">/// IPP request/response struct</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppRequestResponse</span> {
+    <span class="doccomment">/// IPP header</span>
     <span class="ident">header</span>: <span class="ident">IppHeader</span>,
     <span class="doccomment">/// IPP attributes</span>
     <span class="ident">attributes</span>: <span class="ident">IppAttributeList</span>,
-    <span class="doccomment">/// Optional payload to send after IPP-encoded stream (for example Print-Job operation)</span>
-    <span class="ident">payload</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span><span class="op">&gt;</span>
+    <span class="doccomment">/// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)</span>
+    <span class="ident">payload</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">IppRequestResponse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="doccomment">/// Helper class to combine IPP data and payload</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppReadAdapter</span> {
+    <span class="ident">data</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>,
+    <span class="ident">payload</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;&gt;</span>
+}
+
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">IppReadAdapter</span> {}
+
+<span class="kw">impl</span> <span class="ident">Read</span> <span class="kw">for</span> <span class="ident">IppReadAdapter</span> {
+    <span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">read</span>(<span class="ident">buf</span>)<span class="question-mark">?</span> {
+            <span class="number">0</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">payload</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">payload</span> { <span class="ident">payload</span>.<span class="ident">read</span>(<span class="ident">buf</span>) } <span class="kw">else</span> { <span class="prelude-val">Ok</span>(<span class="number">0</span>) },
+            <span class="ident">rc</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">rc</span>)
+        }
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IppRequestTrait</span> {
+    <span class="kw">fn</span> <span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">IppHeader</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">IppRequestTrait</span> <span class="kw">for</span> <span class="ident">IppRequestResponse</span> {
+    <span class="doccomment">/// Get header</span>
+    <span class="kw">fn</span> <span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">IppHeader</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">header</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">IppRequestResponse</span> {
     <span class="doccomment">/// Create new IPP request for the operation and uri</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">operation</span>: <span class="ident">Operation</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">operation</span>: <span class="ident">Operation</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
 
         <span class="kw">let</span> <span class="ident">hdr</span> <span class="op">=</span> <span class="ident">IppHeader</span>::<span class="ident">new</span>(<span class="ident">IPP_VERSION</span>, <span class="ident">operation</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span> {
@@ -213,7 +300,7 @@
 
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_response</span>(<span class="ident">status</span>: <span class="ident">u16</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_response</span>(<span class="ident">status</span>: <span class="ident">u16</span>, <span class="ident">id</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
         <span class="kw">let</span> <span class="ident">hdr</span> <span class="op">=</span> <span class="ident">IppHeader</span>::<span class="ident">new</span>(<span class="ident">IPP_VERSION</span>, <span class="ident">status</span>, <span class="ident">id</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span> {
             <span class="ident">header</span>: <span class="ident">hdr</span>,
@@ -233,7 +320,7 @@
     }
 
     <span class="doccomment">/// Create IppRequestResponse from the parser</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_parser</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">IppParser</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_parser</span>(<span class="ident">parser</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">IppParser</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">parser</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">IppRequestResponse</span> {
@@ -243,9 +330,12 @@
         })
     }
 
-    <span class="doccomment">/// Get header</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">IppHeader</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">header</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">header_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">IppHeader</span> {
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">header</span>
     }
 
     <span class="doccomment">/// Get attributes</span>
@@ -253,18 +343,22 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">payload</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;&gt;</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">payload</span>
+    }
+
     <span class="doccomment">/// Set payload</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_payload</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">payload</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Read</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_payload</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">payload</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">payload</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">payload</span>)
     }
 
+    <span class="doccomment">/// Set attribute</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_attribute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">group</span>: <span class="ident">DelimiterTag</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
-        <span class="doccomment">/// Set attribute</span>
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">add</span>(<span class="ident">group</span>, <span class="ident">attribute</span>);
     }
 
     <span class="doccomment">/// Serialize request into the binary stream (TCP)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">write</span>(<span class="ident">writer</span>)<span class="question-mark">?</span>;
 
         <span class="ident">retval</span> <span class="op">+=</span> <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">write</span>(<span class="ident">writer</span>)<span class="question-mark">?</span>;
@@ -278,6 +372,19 @@
         }
 
         <span class="prelude-val">Ok</span>(<span class="ident">retval</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_reader</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">IppReadAdapter</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">Cursor</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">1024</span>));
+        <span class="kw">let</span> _ <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> _ <span class="op">=</span> <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>).<span class="ident">unwrap</span>();
+
+        <span class="ident">cursor</span>.<span class="ident">set_position</span>(<span class="number">0</span>);
+
+        <span class="ident">IppReadAdapter</span> {
+            <span class="ident">data</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">cursor</span>),
+            <span class="ident">payload</span>: <span class="self">self</span>.<span class="ident">payload</span>
+        }
     }
 }
 </pre>
@@ -294,18 +401,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -338,7 +449,6 @@
         window.rootPath = "../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>

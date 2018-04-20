@@ -10,8 +10,11 @@
     <title>ipp::IppError - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../dark.css">
+    <link rel="stylesheet" type="text/css" href="../main.css" id="themeStyle">
+    <script src="../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'><a href='index.html'>ipp</a></p><script>window.sidebarCurrent = {name: 'IppError', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'>Enum IppError</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#variants">Variants</a><div class="sidebar-links"><a href="#variant.HttpError">HttpError</a><a href="#variant.IOError">IOError</a><a href="#variant.RequestError">RequestError</a><a href="#variant.AttributeError">AttributeError</a><a href="#variant.StatusError">StatusError</a><a href="#variant.TagError">TagError</a><a href="#variant.ParamError">ParamError</a><a href="#variant.PrinterStateError">PrinterStateError</a></div><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.as_exit_code">as_exit_code</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Debug">Debug</a><a href="#impl-Display">Display</a><a href="#impl-From%3CError%3E">From&lt;Error&gt;</a><a href="#impl-From%3CStatusCode%3E">From&lt;StatusCode&gt;</a></div></div><p class='location'><a href='index.html'>ipp</a></p><script>window.sidebarCurrent = {name: 'IppError', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -48,27 +59,54 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/ipp/lib.rs.html#63-70' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/ipp/lib.rs.html#76-93' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum IppError {
-    HttpError(<a class="enum" href="https://hyper.rs/hyper/v0.10.9/hyper/hyper/error/enum.Error.html" title="enum hyper::error::Error">Error</a>),
+    HttpError(<a class="struct" href="https://docs.rs/reqwest/0.8.5/reqwest/error/struct.Error.html" title="struct reqwest::error::Error">Error</a>),
     IOError(<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>),
-    RequestError(<a class="struct" href="https://doc.rust-lang.org/nightly/collections/string/struct.String.html" title="struct collections::string::String">String</a>),
-    AttributeError(<a class="struct" href="https://doc.rust-lang.org/nightly/collections/string/struct.String.html" title="struct collections::string::String">String</a>),
+    RequestError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>),
+    AttributeError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>),
     StatusError(<a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>),
     TagError(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>),
-}</pre><div class='docblock'><p>IPP value</p>
-</div><h2 class='variants'>Variants</h2>
-<span id='variant.HttpError' class='variant'><span id='HttpError.v' class='invisible'><code>HttpError(<a class="enum" href="https://hyper.rs/hyper/v0.10.9/hyper/hyper/error/enum.Error.html" title="enum hyper::error::Error">Error</a>)</code></span></span><span id='variant.IOError' class='variant'><span id='IOError.v' class='invisible'><code>IOError(<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>)</code></span></span><span id='variant.RequestError' class='variant'><span id='RequestError.v' class='invisible'><code>RequestError(<a class="struct" href="https://doc.rust-lang.org/nightly/collections/string/struct.String.html" title="struct collections::string::String">String</a>)</code></span></span><span id='variant.AttributeError' class='variant'><span id='AttributeError.v' class='invisible'><code>AttributeError(<a class="struct" href="https://doc.rust-lang.org/nightly/collections/string/struct.String.html" title="struct collections::string::String">String</a>)</code></span></span><span id='variant.StatusError' class='variant'><span id='StatusError.v' class='invisible'><code>StatusError(<a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>)</code></span></span><span id='variant.TagError' class='variant'><span id='TagError.v' class='invisible'><code>TagError(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</code></span></span><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#62' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
-<div class='docblock'><p>Formats the value using the given formatter.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#72-76' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.from' class="method"><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(error: <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span></h4>
+    ParamError(<a class="struct" href="https://docs.rs/clap/2.31.2/clap/errors/struct.Error.html" title="struct clap::errors::Error">Error</a>),
+    PrinterStateError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;),
+}</pre><div class='docblock'><p>IPP error</p>
+</div><h2 id='variants' class='variants small-section-header'>
+                   Variants<a href='#variants' class='anchor'></a></h2>
+<span id="variant.HttpError" class="variant small-section-header"><a href="#variant.HttpError" class="anchor field"></a><span id='HttpError.v' class='invisible'><code>HttpError(<a class="struct" href="https://docs.rs/reqwest/0.8.5/reqwest/error/struct.Error.html" title="struct reqwest::error::Error">Error</a>)</code></span></span><div class='docblock'><p>HTTP error</p>
+</div><span id="variant.IOError" class="variant small-section-header"><a href="#variant.IOError" class="anchor field"></a><span id='IOError.v' class='invisible'><code>IOError(<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>)</code></span></span><div class='docblock'><p>Network or file I/O error</p>
+</div><span id="variant.RequestError" class="variant small-section-header"><a href="#variant.RequestError" class="anchor field"></a><span id='RequestError.v' class='invisible'><code>RequestError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>IPP request error</p>
+</div><span id="variant.AttributeError" class="variant small-section-header"><a href="#variant.AttributeError" class="anchor field"></a><span id='AttributeError.v' class='invisible'><code>AttributeError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>IPP attribute error</p>
+</div><span id="variant.StatusError" class="variant small-section-header"><a href="#variant.StatusError" class="anchor field"></a><span id='StatusError.v' class='invisible'><code>StatusError(<a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>)</code></span></span><div class='docblock'><p>IPP status error</p>
+</div><span id="variant.TagError" class="variant small-section-header"><a href="#variant.TagError" class="anchor field"></a><span id='TagError.v' class='invisible'><code>TagError(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</code></span></span><div class='docblock'><p>IPP binary tag error</p>
+</div><span id="variant.ParamError" class="variant small-section-header"><a href="#variant.ParamError" class="anchor field"></a><span id='ParamError.v' class='invisible'><code>ParamError(<a class="struct" href="https://docs.rs/clap/2.31.2/clap/errors/struct.Error.html" title="struct clap::errors::Error">Error</a>)</code></span></span><div class='docblock'><p>Command-line parameter error</p>
+</div><span id="variant.PrinterStateError" class="variant small-section-header"><a href="#variant.PrinterStateError" class="anchor field"></a><span id='PrinterStateError.v' class='invisible'><code>PrinterStateError(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;)</code></span></span><div class='docblock'><p>Printer state error</p>
+</div>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#95-108' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.as_exit_code' class="method"><span id='as_exit_code.v' class='invisible'><code>pub fn <a href='#method.as_exit_code' class='fnname'>as_exit_code</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#96-107' title='goto source code'>[src]</a></span></h4>
+</div>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+        <h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#75' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#75' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-Display' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-Display' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#110-123' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt-1' class="method"><span id='fmt.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#111-122' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-From%3CError%3E' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-From%3CError%3E' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#125-129' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class="method"><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(error: <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#126-128' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Performs the conversion.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#78-82' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.from-1' class="method"><span id='from.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(code: <a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span></h4>
+</div></div><h3 id='impl-From%3CStatusCode%3E' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-From%3CStatusCode%3E' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#131-135' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-1' class="method"><span id='from.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(code: <a class="enum" href="../ipp/consts/statuscode/enum.StatusCode.html" title="enum ipp::consts::statuscode::StatusCode">StatusCode</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#132-134' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Performs the conversion.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="enum" href="https://hyper.rs/hyper/v0.10.9/hyper/hyper/error/enum.Error.html" title="enum hyper::error::Error">Error</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#84-88' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.from-2' class="method"><span id='from.v-2' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(error: <a class="enum" href="https://hyper.rs/hyper/v0.10.9/hyper/hyper/error/enum.Error.html" title="enum hyper::error::Error">Error</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span></h4>
+</div></div><h3 id='impl-From%3CError%3E-1' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="https://docs.rs/reqwest/0.8.5/reqwest/error/struct.Error.html" title="struct reqwest::error::Error">Error</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-From%3CError%3E-1' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#137-141' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-2' class="method"><span id='from.v-2' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(error: <a class="struct" href="https://docs.rs/reqwest/0.8.5/reqwest/error/struct.Error.html" title="struct reqwest::error::Error">Error</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#138-140' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 id='impl-From%3CError%3E-2' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="https://docs.rs/clap/2.31.2/clap/errors/struct.Error.html" title="struct clap::errors::Error">Error</a>&gt; for <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code><a href='#impl-From%3CError%3E-2' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#143-147' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-3' class="method"><span id='from.v-3' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(error: <a class="struct" href="https://docs.rs/clap/2.31.2/clap/errors/struct.Error.html" title="struct clap::errors::Error">Error</a>) -&gt; <a class="enum" href="../ipp/enum.IppError.html" title="enum ipp::IppError">IppError</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/ipp/lib.rs.html#144-146' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Performs the conversion.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -83,18 +121,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -127,7 +169,6 @@
         window.rootPath = "../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     <script defer src="../search-index.js"></script>
 </body>

@@ -10,8 +10,11 @@
     <title>tag.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
+    <script src="../../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
         
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -89,16 +100,11 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
 </pre><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! IPP tags</span>
 
-<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>,<span class="ident">PartialEq</span>,<span class="ident">Eq</span>,<span class="ident">Hash</span>,<span class="ident">Clone</span>,<span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Primitive</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DelimiterTag</span> {
     <span class="ident">OperationAttributes</span> <span class="op">=</span> <span class="number">0x01</span>,
     <span class="ident">JobAttributes</span> <span class="op">=</span> <span class="number">0x02</span>,
@@ -106,10 +112,8 @@
     <span class="ident">PrinterAttributes</span> <span class="op">=</span> <span class="number">0x04</span>,
     <span class="ident">UnsupportedAttributes</span> <span class="op">=</span> <span class="number">0x05</span>,
 }
-}
 
-<span class="macro">enum_from_primitive</span><span class="macro">!</span> {
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>,<span class="ident">PartialEq</span>,<span class="ident">Eq</span>,<span class="ident">Hash</span>,<span class="ident">Clone</span>,<span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Primitive</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ValueTag</span> {
     <span class="ident">Unsupported</span> <span class="op">=</span> <span class="number">0x10</span>,
     <span class="ident">Unknown</span> <span class="op">=</span> <span class="number">0x12</span>,
@@ -135,7 +139,6 @@
     <span class="ident">MimeMediaType</span> <span class="op">=</span> <span class="number">0x49</span>,
     <span class="ident">MemberAttrName</span> <span class="op">=</span> <span class="number">0x4a</span>,
 }
-}
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_value_tag</span>(<span class="ident">value</span>: <span class="ident">u8</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="ident">value</span> <span class="op">&gt;=</span> <span class="number">0x10</span> <span class="op">&amp;&amp;</span> <span class="ident">value</span> <span class="op">&lt;=</span> <span class="number">0x4a</span>
@@ -158,18 +161,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -202,7 +209,6 @@
         window.rootPath = "../../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>

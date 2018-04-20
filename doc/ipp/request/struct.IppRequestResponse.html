@@ -10,8 +10,11 @@
     <title>ipp::request::IppRequestResponse - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>request</a></p><script>window.sidebarCurrent = {name: 'IppRequestResponse', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'>Struct IppRequestResponse</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.new">new</a><a href="#method.new_response">new_response</a><a href="#method.from_parser">from_parser</a><a href="#method.header">header</a><a href="#method.header_mut">header_mut</a><a href="#method.attributes">attributes</a><a href="#method.payload">payload</a><a href="#method.set_payload">set_payload</a><a href="#method.set_attribute">set_attribute</a><a href="#method.write">write</a><a href="#method.into_reader">into_reader</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-IppRequestTrait">IppRequestTrait</a></div></div><p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>request</a></p><script>window.sidebarCurrent = {name: 'IppRequestResponse', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -49,22 +60,36 @@
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a class='srclink' href='../../src/ipp/request.rs.html#15-22' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct IppRequestResponse&lt;'a&gt; { /* fields omitted */ }</pre><div class='docblock'><p>IPP request struct</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#24-118' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(operation: <a class="enum" href="../../ipp/consts/operation/enum.Operation.html" title="enum ipp::consts::operation::Operation">Operation</a>, uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'a&gt;</code></span></h4>
+<pre class='rust struct'>pub struct IppRequestResponse { /* fields omitted */ }</pre><div class='docblock'><p>IPP request/response struct</p>
+</div>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#52-166' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(operation: <a class="enum" href="../../ipp/consts/operation/enum.Operation.html" title="enum ipp::consts::operation::Operation">Operation</a>, uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#54-78' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create new IPP request for the operation and uri</p>
-</div><h4 id='method.new_response' class="method"><span id='new_response.v' class='invisible'><code>fn <a href='#method.new_response' class='fnname'>new_response</a>(status: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>, id: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'a&gt;</code></span></h4>
-<h4 id='method.from_parser' class="method"><span id='from_parser.v' class='invisible'><code>fn <a href='#method.from_parser' class='fnname'>from_parser</a>&lt;'b&gt;(parser: &amp;mut <a class="struct" href="../../ipp/parser/struct.IppParser.html" title="struct ipp::parser::IppParser">IppParser</a>) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'b&gt;&gt;</code></span></h4>
+</div><h4 id='method.new_response' class="method"><span id='new_response.v' class='invisible'><code>pub fn <a href='#method.new_response' class='fnname'>new_response</a>(status: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>, id: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#80-97' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.from_parser' class="method"><span id='from_parser.v' class='invisible'><code>pub fn <a href='#method.from_parser' class='fnname'>from_parser</a>(parser: &amp;mut <a class="struct" href="../../ipp/parser/struct.IppParser.html" title="struct ipp::parser::IppParser">IppParser</a>) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#100-108' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create IppRequestResponse from the parser</p>
-</div><h4 id='method.header' class="method"><span id='header.v' class='invisible'><code>fn <a href='#method.header' class='fnname'>header</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span></h4>
-<div class='docblock'><p>Get header</p>
-</div><h4 id='method.attributes' class="method"><span id='attributes.v' class='invisible'><code>fn <a href='#method.attributes' class='fnname'>attributes</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a></code></span></h4>
+</div><h4 id='method.header' class="method"><span id='header.v' class='invisible'><code>pub fn <a href='#method.header' class='fnname'>header</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#110-112' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.header_mut' class="method"><span id='header_mut.v' class='invisible'><code>pub fn <a href='#method.header_mut' class='fnname'>header_mut</a>(&amp;mut self) -&gt; &amp;mut <a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#114-116' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.attributes' class="method"><span id='attributes.v' class='invisible'><code>pub fn <a href='#method.attributes' class='fnname'>attributes</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#119-121' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Get attributes</p>
-</div><h4 id='method.set_payload' class="method"><span id='set_payload.v' class='invisible'><code>fn <a href='#method.set_payload' class='fnname'>set_payload</a>(&amp;mut self, payload: &amp;'a mut <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>)</code></span></h4>
+</div><h4 id='method.payload' class="method"><span id='payload.v' class='invisible'><code>pub fn <a href='#method.payload' class='fnname'>payload</a>(&amp;self) -&gt; &amp;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;<a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>&gt;&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#123-125' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.set_payload' class="method"><span id='set_payload.v' class='invisible'><code>pub fn <a href='#method.set_payload' class='fnname'>set_payload</a>(&amp;mut self, payload: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;<a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>&gt;)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#128-130' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Set payload</p>
-</div><h4 id='method.set_attribute' class="method"><span id='set_attribute.v' class='invisible'><code>fn <a href='#method.set_attribute' class='fnname'>set_attribute</a>(&amp;mut self, group: <a class="enum" href="../../ipp/consts/tag/enum.DelimiterTag.html" title="enum ipp::consts::tag::DelimiterTag">DelimiterTag</a>, attribute: <a class="struct" href="../../ipp/attribute/struct.IppAttribute.html" title="struct ipp::attribute::IppAttribute">IppAttribute</a>)</code></span></h4>
-<h4 id='method.write' class="method"><span id='write.v' class='invisible'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;'a mut self, writer: &amp;mut <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html" title="trait std::io::Write">Write</a>) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span></h4>
+</div><h4 id='method.set_attribute' class="method"><span id='set_attribute.v' class='invisible'><code>pub fn <a href='#method.set_attribute' class='fnname'>set_attribute</a>(&amp;mut self, group: <a class="enum" href="../../ipp/consts/tag/enum.DelimiterTag.html" title="enum ipp::consts::tag::DelimiterTag">DelimiterTag</a>, attribute: <a class="struct" href="../../ipp/attribute/struct.IppAttribute.html" title="struct ipp::attribute::IppAttribute">IppAttribute</a>)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#133-135' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Set attribute</p>
+</div><h4 id='method.write' class="method"><span id='write.v' class='invisible'><code>pub fn <a href='#method.write' class='fnname'>write</a>(&amp;mut self, writer: &amp;mut <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html" title="trait std::io::Write">Write</a>) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#138-152' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Serialize request into the binary stream (TCP)</p>
+</div><h4 id='method.into_reader' class="method"><div class="important-traits"><div class='tooltip'>ⓘ<span class='tooltiptext'>Important traits for <a class="struct" href="../../ipp/request/struct.IppReadAdapter.html" title="struct ipp::request::IppReadAdapter">IppReadAdapter</a></span></div><div class="content hidden"><h3 class="important">Important traits for <a class="struct" href="../../ipp/request/struct.IppReadAdapter.html" title="struct ipp::request::IppReadAdapter">IppReadAdapter</a></h3><code class="content"><span class="where fmt-newline">impl <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a> for <a class="struct" href="../../ipp/request/struct.IppReadAdapter.html" title="struct ipp::request::IppReadAdapter">IppReadAdapter</a></span></code></div></div><span id='into_reader.v' class='invisible'><code>pub fn <a href='#method.into_reader' class='fnname'>into_reader</a>(self) -&gt; <a class="struct" href="../../ipp/request/struct.IppReadAdapter.html" title="struct ipp::request::IppReadAdapter">IppReadAdapter</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#154-165' title='goto source code'>[src]</a></span></h4>
+</div>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+        <h3 id='impl-IppRequestTrait' class='impl'><span class='in-band'><code>impl <a class="trait" href="../../ipp/request/trait.IppRequestTrait.html" title="trait ipp::request::IppRequestTrait">IppRequestTrait</a> for <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a></code><a href='#impl-IppRequestTrait' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#45-50' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.header-1' class="method"><span id='header.v-1' class='invisible'><code>fn <a href='../../ipp/request/trait.IppRequestTrait.html#tymethod.header' class='fnname'>header</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/request.rs.html#47-49' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get header</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
@@ -78,18 +103,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -122,7 +151,6 @@
         window.rootPath = "../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>

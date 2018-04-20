@@ -10,8 +10,11 @@
     <title>ipp - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../dark.css">
+    <link rel="stylesheet" type="text/css" href="../main.css" id="themeStyle">
+    <script src="../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'></p><script>window.sidebarCurrent = {name: 'ipp', ty: 'mod', relpath: '../'};</script>
+        <p class='location'>Crate ipp</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'ipp', ty: 'mod', relpath: '../'};</script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -48,28 +59,35 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/ipp/lib.rs.html#1-139' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/ipp/lib.rs.html#1-206' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>IPP protocol implementation for Rust</p>
-
 <p>Usage examples:</p>
 
 <pre class="rust rust-example-rendered">
-<span class="comment">// using raw API</span>
- <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">GetPrinterAttributes</span>);
- <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">new</span>(<span class="string">&quot;http://localhost:631/printers/test-printer&quot;</span>);
- <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">req</span>).<span class="ident">unwrap</span>();
- <span class="kw">if</span> <span class="ident">resp</span>.<span class="ident">header</span>().<span class="ident">operation_status</span> <span class="op">&lt;=</span> <span class="number">3</span> {
-     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;result: {:?}&quot;</span>, <span class="ident">resp</span>.<span class="ident">attributes</span>());
- }
+ <span class="comment">// using raw API</span>
+ <span class="kw">use</span> <span class="ident">ipp</span>::{<span class="ident">IppRequestResponse</span>, <span class="ident">IppClient</span>};
+ <span class="kw">use</span> <span class="ident">ipp</span>::<span class="ident">consts</span>::<span class="ident">operation</span>::<span class="ident">Operation</span>;
 
+ <span class="kw">let</span> <span class="ident">uri</span> <span class="op">=</span> <span class="string">&quot;http://localhost:631/printers/test-printer&quot;</span>;
+ <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">GetPrinterAttributes</span>, <span class="ident">uri</span>);
+ <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">new</span>(<span class="ident">uri</span>);
+ <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">resp</span>) <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send_request</span>(<span class="ident">req</span>) {
+     <span class="kw">if</span> <span class="ident">resp</span>.<span class="ident">header</span>().<span class="ident">operation_status</span> <span class="op">&lt;=</span> <span class="number">3</span> {
+         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;result: {:?}&quot;</span>, <span class="ident">resp</span>.<span class="ident">attributes</span>());
+     }
+ }</pre>
+
+<pre class="rust rust-example-rendered">
  <span class="comment">// using operation API</span>
+ <span class="kw">use</span> <span class="ident">ipp</span>::{<span class="ident">GetPrinterAttributes</span>, <span class="ident">IppClient</span>};
  <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">GetPrinterAttributes</span>::<span class="ident">new</span>();
  <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">new</span>(<span class="string">&quot;http://localhost:631/printers/test-printer&quot;</span>);
- <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="ident">unwrap</span>();
- <span class="kw">for</span> (_, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">attrs</span>.<span class="ident">get_group</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>).<span class="ident">unwrap</span>() {
-     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
+ <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">attrs</span>) <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>) {
+     <span class="kw">for</span> (_, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">attrs</span>.<span class="ident">get_printer_attributes</span>().<span class="ident">unwrap</span>() {
+         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
+     }
  }</pre>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
 <table><tr><td><code>pub use attribute::<a class="struct" href="../ipp/attribute/struct.IppAttribute.html" title="struct ipp::attribute::IppAttribute">IppAttribute</a>;</code></td></tr><tr><td><code>pub use attribute::<a class="struct" href="../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>;</code></td></tr><tr><td><code>pub use client::<a class="struct" href="../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a>;</code></td></tr><tr><td><code>pub use operation::<a class="trait" href="../ipp/operation/trait.IppOperation.html" title="trait ipp::operation::IppOperation">IppOperation</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.PrintJob.html" title="struct ipp::operation::PrintJob">PrintJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.GetPrinterAttributes.html" title="struct ipp::operation::GetPrinterAttributes">GetPrinterAttributes</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.CreateJob.html" title="struct ipp::operation::CreateJob">CreateJob</a>;</code></td></tr><tr><td><code>pub use operation::<a class="struct" href="../ipp/operation/struct.SendDocument.html" title="struct ipp::operation::SendDocument">SendDocument</a>;</code></td></tr><tr><td><code>pub use request::<a class="struct" href="../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>;</code></td></tr><tr><td><code>pub use value::<a class="enum" href="../ipp/value/enum.IppValue.html" title="enum ipp::value::IppValue">IppValue</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -77,6 +95,7 @@
                                   title='mod ipp::attribute'>attribute</a></td>
                            <td class='docblock-short'>
                                 <p>Attribute-related structs</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -84,6 +103,7 @@
                                   title='mod ipp::client'>client</a></td>
                            <td class='docblock-short'>
                                 <p>IPP client</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -91,6 +111,15 @@
                                   title='mod ipp::consts'>consts</a></td>
                            <td class='docblock-short'>
                                 <p>This module holds IPP constants such as attribute names, operations and tags</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="ffi/index.html"
+                                  title='mod ipp::ffi'>ffi</a></td>
+                           <td class='docblock-short'>
+                                <p>Interface functions to be called from other languages</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -98,6 +127,7 @@
                                   title='mod ipp::operation'>operation</a></td>
                            <td class='docblock-short'>
                                 <p>High-level IPP operation abstractions</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -105,6 +135,7 @@
                                   title='mod ipp::parser'>parser</a></td>
                            <td class='docblock-short'>
                                 <p>IPP stream parser</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -112,13 +143,23 @@
                                   title='mod ipp::request'>request</a></td>
                            <td class='docblock-short'>
                                 <p>IPP request</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class="mod" href="server/index.html"
                                   title='mod ipp::server'>server</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Basic definitions for IPP server implementation</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="util/index.html"
+                                  title='mod ipp::util'>util</a></td>
+                           <td class='docblock-short'>
+                                <p>High-level utility functions to be used from external application or command-line utility</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -126,6 +167,7 @@
                                   title='mod ipp::value'>value</a></td>
                            <td class='docblock-short'>
                                 <p>IPP value</p>
+
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -134,6 +176,7 @@
                                   title='struct ipp::IppHeader'>IppHeader</a></td>
                            <td class='docblock-short'>
                                 <p>IPP request and response header</p>
+
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -141,7 +184,8 @@
                            <td><a class="enum" href="enum.IppError.html"
                                   title='enum ipp::IppError'>IppError</a></td>
                            <td class='docblock-short'>
-                                <p>IPP value</p>
+                                <p>IPP error</p>
+
                            </td>
                        </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
 <table>
@@ -158,6 +202,7 @@
                                   title='trait ipp::ReadIppExt'>ReadIppExt</a></td>
                            <td class='docblock-short'>
                                 <p>Trait which adds two methods to Read implementations: <code>read_string</code> and <code>read_vec</code></p>
+
                            </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
@@ -180,18 +225,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -224,7 +273,6 @@
         window.rootPath = "../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     <script defer src="../search-index.js"></script>
 </body>

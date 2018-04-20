@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["attribute",""],["operation",""],["statuscode",""],["tag",""]]});
+initSidebarItems({"mod":[["attribute","IPP attribute names"],["operation","IPP operations"],["statuscode","IPP status codes"],["tag","IPP tags"]]});

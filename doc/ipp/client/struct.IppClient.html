@@ -10,8 +10,11 @@
     <title>ipp::client::IppClient - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>client</a></p><script>window.sidebarCurrent = {name: 'IppClient', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'>Struct IppClient</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.new">new</a><a href="#method.with_root_certificates">with_root_certificates</a><a href="#method.set_verify_hostname">set_verify_hostname</a><a href="#method.send">send</a><a href="#method.send_request">send_request</a></div></div><p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>client</a></p><script>window.sidebarCurrent = {name: 'IppClient', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -48,16 +59,27 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/ipp/client.rs.html#22-24' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/ipp/client.rs.html#24-28' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct IppClient { /* fields omitted */ }</pre><div class='docblock'><p>IPP client.</p>
-
 <p>IPP client is responsible for sending requests to IPP server.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#26-92' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a></code></span></h4>
+</div>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#30-155' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#32-38' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create new instance of the client</p>
-</div><h4 id='method.send' class="method"><span id='send.v' class='invisible'><code>fn <a href='#method.send' class='fnname'>send</a>&lt;T:&nbsp;<a class="trait" href="../../ipp/operation/trait.IppOperation.html" title="trait ipp::operation::IppOperation">IppOperation</a>&gt;(&amp;self, operation: T) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>&gt;</code></span></h4>
+</div><h4 id='method.with_root_certificates' class="method"><span id='with_root_certificates.v' class='invisible'><code>pub fn <a href='#method.with_root_certificates' class='fnname'>with_root_certificates</a>&lt;T&gt;(uri: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>, certfiles: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[T]</a>) -&gt; <a class="struct" href="../../ipp/client/struct.IppClient.html" title="struct ipp::client::IppClient">IppClient</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#44-50' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Create new instance of the client with a list of root CA certificates</p>
+<ul>
+<li><code>uri</code> - target printer URI</li>
+<li><code>certfiles</code> - list of certificate file names</li>
+</ul>
+</div><h4 id='method.set_verify_hostname' class="method"><span id='set_verify_hostname.v' class='invisible'><code>pub fn <a href='#method.set_verify_hostname' class='fnname'>set_verify_hostname</a>(&amp;mut self, verify: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#53-55' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Enable or disable host name validation for SSL transport. By default it is enabled.</p>
+</div><h4 id='method.send' class="method"><span id='send.v' class='invisible'><code>pub fn <a href='#method.send' class='fnname'>send</a>&lt;T:&nbsp;<a class="trait" href="../../ipp/operation/trait.IppOperation.html" title="trait ipp::operation::IppOperation">IppOperation</a>&gt;(&amp;self, operation: T) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#58-72' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>send IPP operation</p>
-</div><h4 id='method.send_request' class="method"><span id='send_request.v' class='invisible'><code>fn <a href='#method.send_request' class='fnname'>send_request</a>&lt;'a, 'b&gt;(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; request: &amp;'a mut <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'a&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&lt;'b&gt;&gt;</code></span></h4>
+</div><h4 id='method.send_request' class="method"><span id='send_request.v' class='invisible'><code>pub fn <a href='#method.send_request' class='fnname'>send_request</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;request: <a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a><br>) -&gt; <a class="type" href="../../ipp/type.Result.html" title="type ipp::Result">Result</a>&lt;<a class="struct" href="../../ipp/request/struct.IppRequestResponse.html" title="struct ipp::request::IppRequestResponse">IppRequestResponse</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/client.rs.html#75-154' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Send request and return response</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -72,18 +94,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -116,7 +142,6 @@
         window.rootPath = "../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>

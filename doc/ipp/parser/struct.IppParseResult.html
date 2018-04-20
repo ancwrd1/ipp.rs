@@ -10,8 +10,11 @@
     <title>ipp::parser::IppParseResult - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>parser</a></p><script>window.sidebarCurrent = {name: 'IppParseResult', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'>Struct IppParseResult</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.new">new</a><a href="#method.header">header</a><a href="#method.attributes">attributes</a></div></div><p class='location'><a href='../index.html'>ipp</a>::<wbr><a href='index.html'>parser</a></p><script>window.sidebarCurrent = {name: 'IppParseResult', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -50,12 +61,16 @@
                    </a>
                </span><a class='srclink' href='../../src/ipp/parser.rs.html#20-23' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct IppParseResult { /* fields omitted */ }</pre><div class='docblock'><p>IPP parsing result</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../../ipp/parser/struct.IppParseResult.html" title="struct ipp::parser::IppParseResult">IppParseResult</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/parser.rs.html#25-40' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(header: <a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a>, attributes: <a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>) -&gt; <a class="struct" href="../../ipp/parser/struct.IppParseResult.html" title="struct ipp::parser::IppParseResult">IppParseResult</a></code></span></h4>
+</div>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../ipp/parser/struct.IppParseResult.html" title="struct ipp::parser::IppParseResult">IppParseResult</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/parser.rs.html#25-40' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(header: <a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a>, attributes: <a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a>) -&gt; <a class="struct" href="../../ipp/parser/struct.IppParseResult.html" title="struct ipp::parser::IppParseResult">IppParseResult</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/parser.rs.html#27-29' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create instance of the parsing result</p>
-</div><h4 id='method.header' class="method"><span id='header.v' class='invisible'><code>fn <a href='#method.header' class='fnname'>header</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span></h4>
+</div><h4 id='method.header' class="method"><span id='header.v' class='invisible'><code>pub fn <a href='#method.header' class='fnname'>header</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/struct.IppHeader.html" title="struct ipp::IppHeader">IppHeader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/parser.rs.html#32-34' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Get parsed header</p>
-</div><h4 id='method.attributes' class="method"><span id='attributes.v' class='invisible'><code>fn <a href='#method.attributes' class='fnname'>attributes</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a></code></span></h4>
+</div><h4 id='method.attributes' class="method"><span id='attributes.v' class='invisible'><code>pub fn <a href='#method.attributes' class='fnname'>attributes</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../ipp/attribute/struct.IppAttributeList.html" title="struct ipp::attribute::IppAttributeList">IppAttributeList</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/ipp/parser.rs.html#37-39' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Get parsed attributes</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -70,18 +85,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -114,7 +133,6 @@
         window.rootPath = "../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>

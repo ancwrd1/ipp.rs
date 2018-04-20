@@ -10,8 +10,11 @@
     <title>ipp::consts::attribute - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
+    <script src="../../../storage.js"></script>
     
 
     
@@ -28,10 +31,18 @@
     
 
     <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'><a href='../../index.html'>ipp</a>::<wbr><a href='../index.html'>consts</a></p><script>window.sidebarCurrent = {name: 'attribute', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'>Module attribute</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li></ul></div><p class='location'><a href='../../index.html'>ipp</a>::<wbr><a href='../index.html'>consts</a></p><script>window.sidebarCurrent = {name: 'attribute', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -48,9 +59,45 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../../src/ipp/consts/attribute.rs.html#1-43' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../../src/ipp/consts/attribute.rs.html#1-107' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>IPP attribute names</p>
-</div><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+</div><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.Finishings.html"
+                                  title='enum ipp::consts::attribute::Finishings'>Finishings</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.JobState.html"
+                                  title='enum ipp::consts::attribute::JobState'>JobState</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.Orientation.html"
+                                  title='enum ipp::consts::attribute::Orientation'>Orientation</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.PrintQuality.html"
+                                  title='enum ipp::consts::attribute::PrintQuality'>PrintQuality</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.PrinterState.html"
+                                  title='enum ipp::consts::attribute::PrinterState'>PrinterState</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="constant" href="constant.ATTRIBUTES_CHARSET.html"
@@ -102,6 +149,13 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.COPIES_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::COPIES_DEFAULT'>COPIES_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.COPIES_SUPPORTED.html"
                                   title='constant ipp::consts::attribute::COPIES_SUPPORTED'>COPIES_SUPPORTED</a></td>
                            <td class='docblock-short'>
@@ -118,6 +172,20 @@
                        <tr class=' module-item'>
                            <td><a class="constant" href="constant.DOCUMENT_FORMAT_SUPPORTED.html"
                                   title='constant ipp::consts::attribute::DOCUMENT_FORMAT_SUPPORTED'>DOCUMENT_FORMAT_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.FINISHINGS_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::FINISHINGS_DEFAULT'>FINISHINGS_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.FINISHINGS_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::FINISHINGS_SUPPORTED'>FINISHINGS_SUPPORTED</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -179,6 +247,20 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MEDIA_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::MEDIA_DEFAULT'>MEDIA_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MEDIA_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::MEDIA_SUPPORTED'>MEDIA_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.NATURAL_LANGUAGE_CONFIGURED.html"
                                   title='constant ipp::consts::attribute::NATURAL_LANGUAGE_CONFIGURED'>NATURAL_LANGUAGE_CONFIGURED</a></td>
                            <td class='docblock-short'>
@@ -193,8 +275,43 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.ORIENTATION_REQUESTED_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::ORIENTATION_REQUESTED_DEFAULT'>ORIENTATION_REQUESTED_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.ORIENTATION_REQUESTED_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::ORIENTATION_REQUESTED_SUPPORTED'>ORIENTATION_REQUESTED_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.OUTPUT_BIN_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::OUTPUT_BIN_DEFAULT'>OUTPUT_BIN_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.OUTPUT_BIN_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::OUTPUT_BIN_SUPPORTED'>OUTPUT_BIN_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.OUTPUT_MODE_SUPPORTED.html"
                                   title='constant ipp::consts::attribute::OUTPUT_MODE_SUPPORTED'>OUTPUT_MODE_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PAGES_PER_MINUTE.html"
+                                  title='constant ipp::consts::attribute::PAGES_PER_MINUTE'>PAGES_PER_MINUTE</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -207,8 +324,22 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_INFO.html"
+                                  title='constant ipp::consts::attribute::PRINTER_INFO'>PRINTER_INFO</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.PRINTER_IS_ACCEPTING_JOBS.html"
                                   title='constant ipp::consts::attribute::PRINTER_IS_ACCEPTING_JOBS'>PRINTER_IS_ACCEPTING_JOBS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_LOCATION.html"
+                                  title='constant ipp::consts::attribute::PRINTER_LOCATION'>PRINTER_LOCATION</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -221,6 +352,13 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_MORE_INFO.html"
+                                  title='constant ipp::consts::attribute::PRINTER_MORE_INFO'>PRINTER_MORE_INFO</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.PRINTER_NAME.html"
                                   title='constant ipp::consts::attribute::PRINTER_NAME'>PRINTER_NAME</a></td>
                            <td class='docblock-short'>
@@ -228,8 +366,29 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_RESOLUTION_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::PRINTER_RESOLUTION_DEFAULT'>PRINTER_RESOLUTION_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_RESOLUTION_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::PRINTER_RESOLUTION_SUPPORTED'>PRINTER_RESOLUTION_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.PRINTER_STATE.html"
                                   title='constant ipp::consts::attribute::PRINTER_STATE'>PRINTER_STATE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_STATE_MESSAGE.html"
+                                  title='constant ipp::consts::attribute::PRINTER_STATE_MESSAGE'>PRINTER_STATE_MESSAGE</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -256,8 +415,29 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINTER_URI_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::PRINTER_URI_SUPPORTED'>PRINTER_URI_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="constant" href="constant.PRINT_COLOR_MODE_SUPPORTED.html"
                                   title='constant ipp::consts::attribute::PRINT_COLOR_MODE_SUPPORTED'>PRINT_COLOR_MODE_SUPPORTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINT_QUALITY_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::PRINT_QUALITY_DEFAULT'>PRINT_QUALITY_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.PRINT_QUALITY_SUPPORTED.html"
+                                  title='constant ipp::consts::attribute::PRINT_QUALITY_SUPPORTED'>PRINT_QUALITY_SUPPORTED</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -279,6 +459,13 @@
                        <tr class=' module-item'>
                            <td><a class="constant" href="constant.REQUESTING_USER_NAME.html"
                                   title='constant ipp::consts::attribute::REQUESTING_USER_NAME'>REQUESTING_USER_NAME</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.SIDES_DEFAULT.html"
+                                  title='constant ipp::consts::attribute::SIDES_DEFAULT'>SIDES_DEFAULT</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
@@ -323,18 +510,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>↹</kbd></dt>
+                    <dd>Switch tab</dd>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
@@ -367,7 +558,6 @@
         window.rootPath = "../../../";
         window.currentCrate = "ipp";
     </script>
-    <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>
