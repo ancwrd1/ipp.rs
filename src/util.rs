@@ -136,7 +136,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 /// * `args` - a list of arguments to pass to `clap` argument parser
 ///
 /// Command line usage for getting printer status (will print list of printer attributes on stdout)
-/// ```
+/// ```text
 /// USAGE:
 ///     ipputil status [FLAGS] [OPTIONS] <uri>
 /// FLAGS:
@@ -149,7 +149,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 ///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
 ///```
 /// Command line usage for printing the document
-/// ```
+/// ```text
 /// USAGE:
 ///     ipputil print [FLAGS] [OPTIONS] <uri>
 ///
