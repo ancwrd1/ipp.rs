@@ -37,6 +37,10 @@ impl IppClient {
         }
     }
 
+    /// Create new instance of the client with a list of root CA certificates
+    ///
+    /// * `uri` - target printer URI
+    /// * `certfiles` - list of certificate file names
     pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient where T: AsRef<str> {
         IppClient {
             uri: uri.to_string(),
@@ -45,6 +49,7 @@ impl IppClient {
         }
     }
 
+    /// Enable or disable host name validation for SSL transport. By default it is enabled.
     pub fn set_verify_hostname(&mut self, verify: bool) {
         self.verify_hostname = verify;
     }

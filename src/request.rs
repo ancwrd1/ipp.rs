@@ -11,16 +11,17 @@ use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANG
 use value::IppValue;
 use parser::IppParser;
 
-/// IPP request struct
+/// IPP request/response struct
 pub struct IppRequestResponse {
-    /// Operation ID
+    /// IPP header
     header: IppHeader,
     /// IPP attributes
     attributes: IppAttributeList,
-    /// Optional payload to send after IPP-encoded stream (for example Print-Job operation)
+    /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
     payload: Option<Box<Read>>
 }
 
+/// Helper class to combine IPP data and payload
 pub struct IppReadAdapter {
     data: Box<Read>,
     payload: Option<Box<Read>>

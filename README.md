@@ -2,7 +2,7 @@
 
 IPP protocol implementation for Rust
 
-[Documentation](https://dremon.github.io/ipp.rs/doc/ipp)
+[Documentation](https://docs.rs/ipp)
 
 Usage example:
 

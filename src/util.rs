@@ -1,3 +1,7 @@
+//!
+//! High-level utility functions to be used from external application or command-line utility
+//!
+
 use std::env;
 use std::ffi::OsString;
 use std::fs::File;
@@ -127,6 +131,9 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
     Ok(())
 }
 
+/// Entry point to main utility function
+///
+/// * `args` - a list of arguments to pass to `clap` argument parser
 pub fn util_main<'a, I, T>(args: I) -> Result<(), IppError>
     where
         I: IntoIterator<Item = T>,

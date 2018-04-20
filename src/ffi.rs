@@ -1,3 +1,7 @@
+//!
+//! Interface functions to be called from other languages
+//!
+
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use util;
@@ -14,7 +18,9 @@ unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
 
     rc
 }
-
+/// Entry point to main utility function for externally linking applications
+///
+/// * `args` - zero-terminated char* argv[] array matching the ipputil entry point arguments, including application name
 #[no_mangle]
 pub unsafe extern fn ipp_main(args: *const *const c_char) -> i32 {
     let args = convert_args(args);
