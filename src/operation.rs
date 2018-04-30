@@ -143,7 +143,7 @@ impl IppOperation for CreateJob {
     }
 }
 
-/// IPP operation Print-Job
+/// IPP operation Send-Document
 pub struct SendDocument {
     job_id: i32,
     reader: Box<Read>,
