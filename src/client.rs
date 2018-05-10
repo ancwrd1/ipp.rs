@@ -1,8 +1,8 @@
 //!
 //! IPP client
 //!
-use std::fs::File;
-use std::io::{Read, BufReader};
+use std::fs;
+use std::io::BufReader;
 use std::time::Duration;
 use num_traits::FromPrimitive;
 use reqwest::{Certificate, Client, Method,  Body, StatusCode};
@@ -99,16 +99,14 @@ impl IppClient {
                 let mut builder = Client::builder();
 
                 for certfile in &self.cacerts {
-                    let mut f = File::open(&certfile)?;
-                    let mut buf = Vec::new();
-                    let size = f.read_to_end(&mut buf)?;
-                    let cacert = match Certificate::from_der(&buf[0..size]) {
+                    let mut buf = fs::read(&certfile)?;
+                    let cacert = match Certificate::from_der(&buf) {
                         Ok(cacert) => {
                             debug!("Read DER certificate from {}", certfile);
                             cacert
                         }
                         Err(_) => {
-                            let cacert = Certificate::from_pem(&buf[0..size])?;
+                            let cacert = Certificate::from_pem(&buf)?;
                             debug!("Read PEM certificate from {}", certfile);
                             cacert
                         }
