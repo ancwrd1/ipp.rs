@@ -1,20 +1,20 @@
 //!
 //! IPP client
 //!
+use num_traits::FromPrimitive;
+use reqwest::header::Headers;
+use reqwest::{Body, Certificate, Client, Method, StatusCode};
 use std::fs;
 use std::io::BufReader;
 use std::time::Duration;
-use num_traits::FromPrimitive;
-use reqwest::{Certificate, Client, Method,  Body, StatusCode};
-use reqwest::header::Headers;
 use url::Url;
 
-use ::{IppError, Result};
-use request::IppRequestResponse;
-use operation::IppOperation;
 use attribute::IppAttributeList;
-use parser::IppParser;
 use consts::statuscode;
+use operation::IppOperation;
+use parser::IppParser;
+use request::IppRequestResponse;
+use {IppError, Result};
 
 const TIMEOUT: u64 = 30;
 
@@ -24,7 +24,7 @@ const TIMEOUT: u64 = 30;
 pub struct IppClient {
     uri: String,
     cacerts: Vec<String>,
-    verify_hostname: bool
+    verify_hostname: bool,
 }
 
 impl IppClient {
@@ -33,7 +33,7 @@ impl IppClient {
         IppClient {
             uri: uri.to_string(),
             cacerts: Vec::new(),
-            verify_hostname: true
+            verify_hostname: true,
         }
     }
 
@@ -41,11 +41,17 @@ impl IppClient {
     ///
     /// * `uri` - target printer URI
     /// * `certfiles` - list of certificate file names
-    pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient where T: AsRef<str> {
+    pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient
+    where
+        T: AsRef<str>,
+    {
         IppClient {
             uri: uri.to_string(),
-            cacerts: certfiles.iter().map(|s| s.as_ref().to_string()).collect::<Vec<String>>(),
-            verify_hostname: true
+            cacerts: certfiles
+                .iter()
+                .map(|s| s.as_ref().to_string())
+                .collect::<Vec<String>>(),
+            verify_hostname: true,
         }
     }
 
@@ -62,12 +68,13 @@ impl IppClient {
                     // IPP error
                     Err(IppError::StatusError(
                         statuscode::StatusCode::from_u16(resp.header().operation_status)
-                            .unwrap_or(statuscode::StatusCode::ServerErrorInternalError)))
+                            .unwrap_or(statuscode::StatusCode::ServerErrorInternalError),
+                    ))
                 } else {
                     Ok(resp.attributes().clone())
                 }
             }
-            Err(err) => Err(err)
+            Err(err) => Err(err),
         }
     }
 
@@ -77,17 +84,21 @@ impl IppClient {
             Ok(mut url) => {
                 match url.scheme() {
                     "ipp" => {
-                        url.set_scheme("http").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
-                        if  url.port().is_none() {
-                            url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        url.set_scheme("http")
+                            .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        if url.port().is_none() {
+                            url.set_port(Some(631))
+                                .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
                         }
-                    },
+                    }
                     "ipps" => {
-                         url.set_scheme("https").map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
-                        if  url.port().is_none() {
-                            url.set_port(Some(631)).map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        url.set_scheme("https")
+                            .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        if url.port().is_none() {
+                            url.set_port(Some(631))
+                                .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
                         }
-                    },
+                    }
                     _ => {}
                 }
 
@@ -124,7 +135,11 @@ impl IppClient {
                     .timeout(Duration::from_secs(TIMEOUT))
                     .build()?;
 
-                let http_req = client.request(Method::Post, url).headers(headers).body(Body::new(request.into_reader())).build()?;
+                let http_req = client
+                    .request(Method::Post, url)
+                    .headers(headers)
+                    .body(Body::new(request.into_reader()))
+                    .build()?;
                 let http_resp = client.execute(http_req)?;
 
                 if http_resp.status() == StatusCode::Ok {
@@ -136,12 +151,13 @@ impl IppClient {
                     Ok(resp)
                 } else {
                     error!("HTTP error: {}", http_resp.status());
-                    Err(IppError::RequestError(
-                        if let Some(reason) = http_resp.status().canonical_reason() {
-                            reason.to_string()
-                        } else {
-                            format!("{}", http_resp.status())
-                        }))
+                    Err(IppError::RequestError(if let Some(reason) =
+                        http_resp.status().canonical_reason()
+                    {
+                        reason.to_string()
+                    } else {
+                        format!("{}", http_resp.status())
+                    }))
                 }
             }
             Err(err) => {

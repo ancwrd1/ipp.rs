@@ -2,13 +2,13 @@
 //! High-level IPP operation abstractions
 //!
 
-use std::io::Read;
 use attribute::IppAttribute;
-use request::IppRequestResponse;
-use value::IppValue;
-use consts::tag::*;
-use consts::operation::*;
 use consts::attribute::*;
+use consts::operation::*;
+use consts::tag::*;
+use request::IppRequestResponse;
+use std::io::Read;
+use value::IppValue;
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
@@ -21,7 +21,7 @@ pub struct PrintJob {
     reader: Box<Read>,
     user_name: String,
     job_name: Option<String>,
-    attributes: Vec<IppAttribute>
+    attributes: Vec<IppAttribute>,
 }
 
 impl PrintJob {
@@ -30,13 +30,12 @@ impl PrintJob {
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new(reader: Box<Read>,
-               user_name: &str, job_name: Option<&str>) -> PrintJob {
+    pub fn new(reader: Box<Read>, user_name: &str, job_name: Option<&str>) -> PrintJob {
         PrintJob {
             reader,
             user_name: user_name.to_string(),
             job_name: job_name.map(|v| v.to_string()),
-            attributes: Vec::new()
+            attributes: Vec::new(),
         }
     }
 
@@ -50,14 +49,19 @@ impl IppOperation for PrintJob {
     fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
 
-        retval.set_attribute(DelimiterTag::OperationAttributes,
-            IppAttribute::new(REQUESTING_USER_NAME,
-                IppValue::NameWithoutLanguage(self.user_name.clone())));
+        retval.set_attribute(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(
+                REQUESTING_USER_NAME,
+                IppValue::NameWithoutLanguage(self.user_name.clone()),
+            ),
+        );
 
         if let Some(ref job_name) = self.job_name {
-            retval.set_attribute(DelimiterTag::OperationAttributes,
-                                IppAttribute::new(JOB_NAME,
-                                IppValue::NameWithoutLanguage(job_name.clone())))
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(JOB_NAME, IppValue::NameWithoutLanguage(job_name.clone())),
+            )
         }
 
         for attr in &self.attributes {
@@ -71,7 +75,7 @@ impl IppOperation for PrintJob {
 /// IPP operation Get-Printer-Attributes
 #[derive(Default)]
 pub struct GetPrinterAttributes {
-    attributes: Vec<String>
+    attributes: Vec<String>,
 }
 
 impl GetPrinterAttributes {
@@ -82,8 +86,13 @@ impl GetPrinterAttributes {
     }
 
     /// Set attributes to request from the printer
-    pub fn with_attributes<T>(attributes: &[T]) -> GetPrinterAttributes where T: AsRef<str> {
-        GetPrinterAttributes { attributes: attributes.iter().map(|a| a.as_ref().to_string()).collect() }
+    pub fn with_attributes<T>(attributes: &[T]) -> GetPrinterAttributes
+    where
+        T: AsRef<str>,
+    {
+        GetPrinterAttributes {
+            attributes: attributes.iter().map(|a| a.as_ref().to_string()).collect(),
+        }
     }
 }
 
@@ -92,9 +101,15 @@ impl IppOperation for GetPrinterAttributes {
         let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 
         if !self.attributes.is_empty() {
-            let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
-            retval.set_attribute(DelimiterTag::OperationAttributes,
-                IppAttribute::new(REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)));
+            let vals: Vec<IppValue> = self
+                .attributes
+                .iter()
+                .map(|a| IppValue::Keyword(a.clone()))
+                .collect();
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)),
+            );
         }
 
         retval
@@ -104,7 +119,7 @@ impl IppOperation for GetPrinterAttributes {
 /// IPP operation Create-Job
 pub struct CreateJob {
     job_name: Option<String>,
-    attributes: Vec<IppAttribute>
+    attributes: Vec<IppAttribute>,
 }
 
 impl CreateJob {
@@ -114,7 +129,7 @@ impl CreateJob {
     pub fn new(job_name: Option<&str>) -> CreateJob {
         CreateJob {
             job_name: job_name.map(|v| v.to_string()),
-            attributes: Vec::new()
+            attributes: Vec::new(),
         }
     }
 
@@ -122,8 +137,6 @@ impl CreateJob {
     pub fn add_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
-
-
 }
 
 impl IppOperation for CreateJob {
@@ -131,9 +144,10 @@ impl IppOperation for CreateJob {
         let mut retval = IppRequestResponse::new(Operation::CreateJob, uri);
 
         if let Some(ref job_name) = self.job_name {
-            retval.set_attribute(DelimiterTag::OperationAttributes,
-                                IppAttribute::new(JOB_NAME,
-                                IppValue::NameWithoutLanguage(job_name.clone())))
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(JOB_NAME, IppValue::NameWithoutLanguage(job_name.clone())),
+            )
         }
 
         for attr in &self.attributes {
@@ -148,7 +162,7 @@ pub struct SendDocument {
     job_id: i32,
     reader: Box<Read>,
     user_name: String,
-    last: bool
+    last: bool,
 }
 
 impl SendDocument {
@@ -158,13 +172,12 @@ impl SendDocument {
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new(job_id: i32, reader: Box<Read>,
-               user_name: &str, last: bool) -> SendDocument {
+    pub fn new(job_id: i32, reader: Box<Read>, user_name: &str, last: bool) -> SendDocument {
         SendDocument {
             job_id,
             reader,
             user_name: user_name.to_string(),
-            last
+            last,
         }
     }
 }
@@ -173,16 +186,23 @@ impl IppOperation for SendDocument {
     fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::SendDocument, uri);
 
-        retval.set_attribute(DelimiterTag::OperationAttributes,
-            IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)));
+        retval.set_attribute(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)),
+        );
 
-        retval.set_attribute(DelimiterTag::OperationAttributes,
-            IppAttribute::new(REQUESTING_USER_NAME,
-                IppValue::NameWithoutLanguage(self.user_name.clone())));
+        retval.set_attribute(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(
+                REQUESTING_USER_NAME,
+                IppValue::NameWithoutLanguage(self.user_name.clone()),
+            ),
+        );
 
-        retval.set_attribute(DelimiterTag::OperationAttributes,
-            IppAttribute::new(LAST_DOCUMENT,
-                IppValue::Boolean(self.last)));
+        retval.set_attribute(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(LAST_DOCUMENT, IppValue::Boolean(self.last)),
+        );
 
         retval.set_payload(self.reader);
 

@@ -1,15 +1,15 @@
 //!
 //! IPP request
 //!
-use std::io::{self, Read, Write, Cursor};
+use std::io::{self, Cursor, Read, Write};
 
 use attribute::{IppAttribute, IppAttributeList};
-use ::{Result, IPP_VERSION, IppHeader};
-use consts::tag::DelimiterTag;
+use consts::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
 use consts::operation::Operation;
-use consts::attribute::{PRINTER_URI, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE};
-use value::IppValue;
+use consts::tag::DelimiterTag;
 use parser::IppParser;
+use value::IppValue;
+use {IppHeader, Result, IPP_VERSION};
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -18,13 +18,13 @@ pub struct IppRequestResponse {
     /// IPP attributes
     attributes: IppAttributeList,
     /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
-    payload: Option<Box<Read>>
+    payload: Option<Box<Read>>,
 }
 
 /// Helper class to combine IPP data and payload
 pub struct IppReadAdapter {
     data: Box<Read>,
-    payload: Option<Box<Read>>
+    payload: Option<Box<Read>>,
 }
 
 unsafe impl Send for IppReadAdapter {}
@@ -32,8 +32,12 @@ unsafe impl Send for IppReadAdapter {}
 impl Read for IppReadAdapter {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         match self.data.read(buf)? {
-            0 => if let Some(ref mut payload) = self.payload { payload.read(buf) } else { Ok(0) },
-            rc => Ok(rc)
+            0 => if let Some(ref mut payload) = self.payload {
+                payload.read(buf)
+            } else {
+                Ok(0)
+            },
+            rc => Ok(rc),
         }
     }
 }
@@ -52,29 +56,34 @@ impl IppRequestTrait for IppRequestResponse {
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
     pub fn new(operation: Operation, uri: &str) -> IppRequestResponse {
-
         let hdr = IppHeader::new(IPP_VERSION, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
-            payload: None };
+            payload: None,
+        };
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_CHARSET,
-                              IppValue::Charset("utf-8".to_string())));
+            IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
+        );
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
-                              IppValue::NaturalLanguage("en".to_string())));
+            IppAttribute::new(
+                ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage("en".to_string()),
+            ),
+        );
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(PRINTER_URI,
-                              IppValue::Uri(uri.replace("http", "ipp").to_string())));
+            IppAttribute::new(
+                PRINTER_URI,
+                IppValue::Uri(uri.replace("http", "ipp").to_string()),
+            ),
+        );
 
         retval
-
     }
 
     pub fn new_response(status: u16, id: u32) -> IppRequestResponse {
@@ -82,16 +91,20 @@ impl IppRequestResponse {
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
-            payload: None };
+            payload: None,
+        };
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_CHARSET,
-                              IppValue::Charset("utf-8".to_string())));
+            IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
+        );
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE,
-                              IppValue::NaturalLanguage("en".to_string())));
+            IppAttribute::new(
+                ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage("en".to_string()),
+            ),
+        );
 
         retval
     }
@@ -160,7 +173,7 @@ impl IppRequestResponse {
 
         IppReadAdapter {
             data: Box::new(cursor),
-            payload: self.payload
+            payload: self.payload,
         }
     }
 }

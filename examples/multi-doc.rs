@@ -1,18 +1,21 @@
-extern crate ipp;
 extern crate env_logger;
+extern crate ipp;
 
 use std::env;
-use std::process::exit;
 use std::fs::File;
+use std::process::exit;
 
-use ipp::{IppClient, IppValue, GetPrinterAttributes, CreateJob, SendDocument};
-use ipp::consts::tag::DelimiterTag;
-use ipp::consts::attribute::{OPERATIONS_SUPPORTED, JOB_ID};
+use ipp::consts::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
 use ipp::consts::operation::Operation;
+use ipp::consts::tag::DelimiterTag;
+use ipp::{CreateJob, GetPrinterAttributes, IppClient, IppValue, SendDocument};
 
 fn supports_multi_doc(v: &IppValue) -> bool {
-    if let IppValue::Enum(v) = *v { v == Operation::CreateJob as i32 || v == Operation::SendDocument as i32 }
-    else { false }
+    if let IppValue::Enum(v) = *v {
+        v == Operation::CreateJob as i32 || v == Operation::SendDocument as i32
+    } else {
+        false
+    }
 }
 
 fn main() {
@@ -30,7 +33,9 @@ fn main() {
     // check if printer supports create/send operations
     let get_op = GetPrinterAttributes::with_attributes(&[OPERATIONS_SUPPORTED.to_string()]);
     let printer_attrs = client.send(get_op).unwrap();
-    let ops_attr = printer_attrs.get(DelimiterTag::PrinterAttributes, OPERATIONS_SUPPORTED).unwrap();
+    let ops_attr = printer_attrs
+        .get(DelimiterTag::PrinterAttributes, OPERATIONS_SUPPORTED)
+        .unwrap();
 
     if !ops_attr.value().into_iter().any(supports_multi_doc) {
         println!("ERROR: target printer does not support create/send operations");
@@ -39,9 +44,13 @@ fn main() {
 
     let create_op = CreateJob::new(Some("multi-doc"));
     let attrs = client.send(create_op).unwrap();
-    let job_id = match *attrs.get(DelimiterTag::JobAttributes, JOB_ID).unwrap().value() {
+    let job_id = match *attrs
+        .get(DelimiterTag::JobAttributes, JOB_ID)
+        .unwrap()
+        .value()
+    {
         IppValue::Integer(id) => id,
-        _ => panic!("invalid value")
+        _ => panic!("invalid value"),
     };
     println!("job id: {}", job_id);
 

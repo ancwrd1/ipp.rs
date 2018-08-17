@@ -3,22 +3,22 @@ extern crate ipp;
 #[macro_use]
 extern crate lazy_static;
 
-use std::time;
 use std::fs::OpenOptions;
-use std::sync::atomic;
 use std::io;
+use std::sync::atomic;
+use std::time;
 
-use hyper::server::{Server, Request, Response, Handler};
-use ipp::parser::IppParser;
-use ipp::server::*;
-use ipp::{IppRequestResponse,IppHeader};
-use ipp::request::IppRequestTrait;
-use ipp::consts::statuscode::*;
-use ipp::consts::tag::*;
+use hyper::server::{Handler, Request, Response, Server};
+use ipp::attribute::{IppAttribute, IppAttributeList};
 use ipp::consts::attribute::*;
 use ipp::consts::operation::Operation;
-use ipp::attribute::{IppAttribute,IppAttributeList};
+use ipp::consts::statuscode::*;
+use ipp::consts::tag::*;
+use ipp::parser::IppParser;
+use ipp::request::IppRequestTrait;
+use ipp::server::*;
 use ipp::value::IppValue;
+use ipp::{IppHeader, IppRequestResponse};
 
 struct DummyServer {
     name: String,
@@ -32,18 +32,18 @@ impl DummyServer {
             PRINTER_NAME => {
                 IppAttribute::new(attr, IppValue::NameWithoutLanguage(self.name.clone()))
             }
-            PRINTER_INFO => {
-                IppAttribute::new(attr,
-                                  IppValue::TextWithoutLanguage("Project Typemetal".to_string()))
-            }
-            PRINTER_STATE_MESSAGE => {
-                IppAttribute::new(attr,
-                                  IppValue::TextWithoutLanguage("Being awesome".to_string()))
-            }
-            PRINTER_MAKE_AND_MODEL => {
-                IppAttribute::new(attr,
-                                  IppValue::TextWithoutLanguage("Rust Printer".to_string()))
-            }
+            PRINTER_INFO => IppAttribute::new(
+                attr,
+                IppValue::TextWithoutLanguage("Project Typemetal".to_string()),
+            ),
+            PRINTER_STATE_MESSAGE => IppAttribute::new(
+                attr,
+                IppValue::TextWithoutLanguage("Being awesome".to_string()),
+            ),
+            PRINTER_MAKE_AND_MODEL => IppAttribute::new(
+                attr,
+                IppValue::TextWithoutLanguage("Rust Printer".to_string()),
+            ),
             IPP_VERSIONS_SUPPORTED => {
                 let versions = vec![IppValue::Keyword("1.1".to_string())];
                 IppAttribute::new(attr, IppValue::ListOf(versions))
@@ -64,22 +64,23 @@ impl DummyServer {
                 IppAttribute::new(attr, IppValue::ListOf(finishings))
             }
             QUEUED_JOB_COUNT => IppAttribute::new(attr, IppValue::Integer(0)),
-            PRINTER_UP_TIME => {
-                IppAttribute::new(attr,
-                                  IppValue::Integer(self.start_time.elapsed().unwrap().as_secs() as
-                                                    i32))
-            }
+            PRINTER_UP_TIME => IppAttribute::new(
+                attr,
+                IppValue::Integer(self.start_time.elapsed().unwrap().as_secs() as i32),
+            ),
             PDL_OVERRIDE_SUPPORTED => {
                 IppAttribute::new(attr, IppValue::Keyword("not-attempted".to_string()))
             }
             CHARSET_CONFIGURED => IppAttribute::new(attr, IppValue::Charset("utf-8".to_string())),
-            DOCUMENT_FORMAT_DEFAULT => {
-                IppAttribute::new(attr,
-                                  IppValue::MimeMediaType("image/pwg-raster".to_string()))
-            }
+            DOCUMENT_FORMAT_DEFAULT => IppAttribute::new(
+                attr,
+                IppValue::MimeMediaType("image/pwg-raster".to_string()),
+            ),
             DOCUMENT_FORMAT_SUPPORTED => {
-                let formats = vec![IppValue::MimeMediaType("image/pwg-raster".to_string()),
-                                   IppValue::MimeMediaType("image/jpeg".to_string())];
+                let formats = vec![
+                    IppValue::MimeMediaType("image/pwg-raster".to_string()),
+                    IppValue::MimeMediaType("image/jpeg".to_string()),
+                ];
                 IppAttribute::new(attr, IppValue::ListOf(formats))
             }
             COMPRESSION_SUPPORTED => {
@@ -102,12 +103,14 @@ impl DummyServer {
                 IppAttribute::new(attr, IppValue::ListOf(charsets))
             }
             OPERATIONS_SUPPORTED => {
-                let operations = vec![IppValue::Enum(Operation::PrintJob as i32),
-                                      IppValue::Enum(Operation::CreateJob as i32),
-                                      IppValue::Enum(Operation::CancelJob as i32),
-                                      IppValue::Enum(Operation::GetJobAttributes as i32),
-                                      IppValue::Enum(Operation::GetJobs as i32),
-                                      IppValue::Enum(Operation::GetPrinterAttributes as i32)];
+                let operations = vec![
+                    IppValue::Enum(Operation::PrintJob as i32),
+                    IppValue::Enum(Operation::CreateJob as i32),
+                    IppValue::Enum(Operation::CancelJob as i32),
+                    IppValue::Enum(Operation::GetJobAttributes as i32),
+                    IppValue::Enum(Operation::GetJobs as i32),
+                    IppValue::Enum(Operation::GetPrinterAttributes as i32),
+                ];
                 IppAttribute::new(attr, IppValue::ListOf(operations))
             }
             PRINTER_STATE_REASONS => {
@@ -147,24 +150,40 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
         println!();
-        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
-                                                        req.header().request_id);
+        let mut resp = IppRequestResponse::new_response(
+            StatusCode::SuccessfulOK as u16,
+            req.header().request_id,
+        );
 
-        resp.set_attribute(DelimiterTag::JobAttributes,
-                           IppAttribute::new(JOB_URI,
-                               IppValue::Uri("ipp://192.168.1.217/jobs/foo".to_string())));
-        resp.set_attribute(DelimiterTag::JobAttributes,
-                           IppAttribute::new(JOB_ID,
-                               IppValue::Integer(1)));
-        resp.set_attribute(DelimiterTag::JobAttributes,
-                           IppAttribute::new(JOB_STATE,
-                               IppValue::Enum(JobState::Processing as i32)));
-        resp.set_attribute(DelimiterTag::JobAttributes,
-                           IppAttribute::new(JOB_STATE_REASONS,
-                               IppValue::Keyword("completed-successfully".to_string())));
+        resp.set_attribute(
+            DelimiterTag::JobAttributes,
+            IppAttribute::new(
+                JOB_URI,
+                IppValue::Uri("ipp://192.168.1.217/jobs/foo".to_string()),
+            ),
+        );
+        resp.set_attribute(
+            DelimiterTag::JobAttributes,
+            IppAttribute::new(JOB_ID, IppValue::Integer(1)),
+        );
+        resp.set_attribute(
+            DelimiterTag::JobAttributes,
+            IppAttribute::new(JOB_STATE, IppValue::Enum(JobState::Processing as i32)),
+        );
+        resp.set_attribute(
+            DelimiterTag::JobAttributes,
+            IppAttribute::new(
+                JOB_STATE_REASONS,
+                IppValue::Keyword("completed-successfully".to_string()),
+            ),
+        );
 
         self.printing.store(true, atomic::Ordering::Relaxed);
-        let mut file = OpenOptions::new().write(true).create(true).open("printjob.dat").unwrap();
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open("printjob.dat")
+            .unwrap();
         io::copy(&mut req.req, &mut file).unwrap();
         Ok(resp)
     }
@@ -174,8 +193,10 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
         println!();
-        let resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
-                                                        req.header().request_id);
+        let resp = IppRequestResponse::new_response(
+            StatusCode::SuccessfulOK as u16,
+            req.header().request_id,
+        );
 
         Ok(resp)
     }
@@ -198,7 +219,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
 
     fn get_printer_attributes(&self, req: &mut Self::IppRequest) -> IppServerResult {
         lazy_static! {
-            static ref SUPPORTED_ATTRIBUTES : Vec<&'static str> = vec![
+            static ref SUPPORTED_ATTRIBUTES: Vec<&'static str> = vec![
                 PRINTER_URI_SUPPORTED,
                 URI_SECURITY_SUPPORTED,
                 URI_AUTHENTICATION_SUPPORTED,
@@ -226,10 +247,15 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         }
         let supported_attributes = &SUPPORTED_ATTRIBUTES[..];
 
-        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16,
-                                                        req.header().request_id);
-        let mut requested_attributes : Vec<&str> = vec![];
-        if let Some(attr) = req.attributes.get(DelimiterTag::OperationAttributes, REQUESTED_ATTRIBUTES) {
+        let mut resp = IppRequestResponse::new_response(
+            StatusCode::SuccessfulOK as u16,
+            req.header().request_id,
+        );
+        let mut requested_attributes: Vec<&str> = vec![];
+        if let Some(attr) = req
+            .attributes
+            .get(DelimiterTag::OperationAttributes, REQUESTED_ATTRIBUTES)
+        {
             match *attr.value() {
                 IppValue::Keyword(ref x) => {
                     requested_attributes = vec![x];
@@ -242,7 +268,7 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
                         } else {
                             return Err(StatusCode::ClientErrorBadRequest);
                         }
-                    };
+                    }
                 }
                 _ => {
                     return Err(StatusCode::ClientErrorBadRequest);
@@ -258,8 +284,10 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
 
         for attr in attribute_list {
             if supported_attributes.contains(attr) {
-                resp.set_attribute(DelimiterTag::PrinterAttributes,
-                                   self.get_printer_attribute(attr));
+                resp.set_attribute(
+                    DelimiterTag::PrinterAttributes,
+                    self.get_printer_attribute(attr),
+                );
             } else {
                 println!("Unsupported attribute {}", attr);
             }
@@ -283,12 +311,14 @@ impl Handler for DummyServer {
 
         let mut ippresp = match self.ipp_handle_request(&mut dummy_req) {
             Ok(response) => response,
-            Err(ipp_error) =>
-                IppRequestResponse::new_response(ipp_error as u16,
-                                                 ippreq.header().request_id),
+            Err(ipp_error) => {
+                IppRequestResponse::new_response(ipp_error as u16, ippreq.header().request_id)
+            }
         };
         let mut res_streaming = res.start().unwrap();
-        ippresp.write(&mut res_streaming).expect("Failed to write response");
+        ippresp
+            .write(&mut res_streaming)
+            .expect("Failed to write response");
     }
 }
 

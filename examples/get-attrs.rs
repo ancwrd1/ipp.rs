@@ -1,5 +1,5 @@
-extern crate ipp;
 extern crate env_logger;
+extern crate ipp;
 
 use std::env;
 use std::process::exit;

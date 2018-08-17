@@ -22,10 +22,10 @@ unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
 ///
 /// * `args` - zero-terminated char* argv[] array matching the ipputil entry point arguments, including application name
 #[no_mangle]
-pub unsafe extern fn ipp_main(args: *const *const c_char) -> i32 {
+pub unsafe extern "C" fn ipp_main(args: *const *const c_char) -> i32 {
     let args = convert_args(args);
     match util::util_main(args) {
         Ok(_) => 0,
-        Err(e) => e.as_exit_code()
+        Err(e) => e.as_exit_code(),
     }
 }
