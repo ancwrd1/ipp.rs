@@ -80,8 +80,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
                         } else {
                             None
                         }
-                    })
-                    .collect(),
+                    }).collect(),
                 IppValue::Keyword(ref v) => vec![v.clone()],
                 _ => Vec::new(),
             };
@@ -201,16 +200,14 @@ where
                 .help("Additional root certificates in PEM or DER format")
                 .global(true)
                 .required(false),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("noverifyhostname")
                 .short("r")
                 .long("--no-verify-hostname")
                 .help("Disable host name verification for SSL transport")
                 .global(true)
                 .required(false),
-        )
-        .subcommand(
+        ).subcommand(
             SubCommand::with_name("print")
                 .about("Print file to an IPP printer")
                 .arg(
@@ -219,32 +216,28 @@ where
                         .long("no-check-state")
                         .help("Do not check printer state before printing")
                         .required(false),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("filename")
                         .short("f")
                         .long("file")
                         .value_name("filename")
                         .help("Input file name to print. If missing will read from stdin")
                         .required(false),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("username")
                         .short("u")
                         .long("user")
                         .value_name("username")
                         .help("User name to send as requesting-user-name attribute")
                         .required(false),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("jobname")
                         .short("j")
                         .long("job")
                         .value_name("jobname")
                         .help("Job name to send as job-name attribute")
                         .required(false),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("option")
                         .short("o")
                         .long("option")
@@ -253,16 +246,14 @@ where
                         .multiple(true)
                         .number_of_values(1)
                         .required(false),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("uri")
                         .index(1)
                         .value_name("uri")
                         .required(true)
                         .help("Printer URI, supported schemes: ipp, ipps, http, https"),
                 ),
-        )
-        .subcommand(
+        ).subcommand(
             SubCommand::with_name("status")
                 .about("Get status of an IPP printer")
                 .arg(
@@ -274,16 +265,14 @@ where
                         .number_of_values(1)
                         .required(false)
                         .help("IPP attribute to query, default is get all"),
-                )
-                .arg(
+                ).arg(
                     Arg::with_name("uri")
                         .index(1)
                         .value_name("uri")
                         .required(true)
                         .help("Printer URI, supported schemes: ipp, ipps, http, https"),
                 ),
-        )
-        .get_matches_from_safe(args)?;
+        ).get_matches_from_safe(args)?;
 
     if let Some(printcmd) = args.subcommand_matches("print") {
         do_print(printcmd)

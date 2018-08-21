@@ -1,19 +1,16 @@
 //!
 //! Attribute-related structs
 //!
+use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
 use std::io::Write;
-use byteorder::{BigEndian, WriteBytesExt};
 
-use ::Result;
-use value::IppValue;
-use consts::tag::*;
 use consts::attribute::*;
+use consts::tag::*;
+use value::IppValue;
+use Result;
 
-const HEADER_ATTRS: [&str; 3] = [
-    ATTRIBUTES_CHARSET,
-    ATTRIBUTES_NATURAL_LANGUAGE,
-    PRINTER_URI];
+const HEADER_ATTRS: [&str; 3] = [ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI];
 
 fn is_header_attr(attr: &str) -> bool {
     HEADER_ATTRS.into_iter().any(|&at| at == attr)
@@ -25,7 +22,7 @@ pub struct IppAttribute {
     /// Attribute name
     name: String,
     /// Attribute value
-    value: IppValue
+    value: IppValue,
 }
 
 impl IppAttribute {
@@ -34,7 +31,10 @@ impl IppAttribute {
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
     pub fn new(name: &str, value: IppValue) -> IppAttribute {
-        IppAttribute { name: name.to_string(), value }
+        IppAttribute {
+            name: name.to_string(),
+            value,
+        }
     }
 
     /// Return attribute name
@@ -69,7 +69,7 @@ impl IppAttribute {
 /// Attribute list indexed by group and name
 #[derive(Clone, Default, Debug)]
 pub struct IppAttributeList {
-    attributes: HashMap<DelimiterTag, HashMap<String, IppAttribute>>
+    attributes: HashMap<DelimiterTag, HashMap<String, IppAttribute>>,
 }
 
 impl IppAttributeList {
@@ -90,7 +90,9 @@ impl IppAttributeList {
 
     /// Get attribute from the list
     pub fn get<'a>(&'a self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
-        self.attributes.get(&group).and_then(|attrs| attrs.get(name))
+        self.attributes
+            .get(&group)
+            .and_then(|attrs| attrs.get(name))
     }
 
     /// Get attribute list for a group
@@ -127,15 +129,20 @@ impl IppAttributeList {
         }
 
         // now the rest
-        for hdr in &[DelimiterTag::OperationAttributes, DelimiterTag::JobAttributes, DelimiterTag::PrinterAttributes] {
+        for hdr in &[
+            DelimiterTag::OperationAttributes,
+            DelimiterTag::JobAttributes,
+            DelimiterTag::PrinterAttributes,
+        ] {
             let group = *hdr;
             if let Some(attrs) = self.attributes.get(&group) {
                 if group != DelimiterTag::OperationAttributes {
                     writer.write_u8(group as u8)?;
                     retval += 1;
                 }
-                for (_, attr) in attrs.iter().filter(
-                    |&(_, v)| group != DelimiterTag::OperationAttributes || !is_header_attr(v.name())) {
+                for (_, attr) in attrs.iter().filter(|&(_, v)| {
+                    group != DelimiterTag::OperationAttributes || !is_header_attr(v.name())
+                }) {
                     retval += attr.write(writer)?;
                 }
             }
