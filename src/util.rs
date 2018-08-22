@@ -5,7 +5,7 @@
 use std::env;
 use std::ffi::OsString;
 use std::fs::File;
-use std::io::{stdin, Read};
+use std::io::{stdin, BufReader, Read};
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
 use num_traits::FromPrimitive;
@@ -48,7 +48,7 @@ fn new_client(matches: &ArgMatches) -> IppClient {
 
 fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
     let reader: Box<Read> = match matches.value_of("filename") {
-        Some(filename) => Box::new(File::open(filename)?),
+        Some(filename) => Box::new(BufReader::new(File::open(filename)?)),
         None => Box::new(stdin()),
     };
 

@@ -3,6 +3,7 @@ extern crate ipp;
 
 use std::env;
 use std::fs::File;
+use std::io::BufReader;
 use std::process::exit;
 
 use ipp::consts::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
@@ -59,7 +60,12 @@ fn main() {
         println!("Sending {}, last: {}", item, last);
         let f = File::open(&item).unwrap();
 
-        let send_op = SendDocument::new(job_id, Box::new(f), &env::var("USER").unwrap(), last);
+        let send_op = SendDocument::new(
+            job_id,
+            Box::new(BufReader::new(f)),
+            &env::var("USER").unwrap(),
+            last,
+        );
         let send_attrs = client.send(send_op).unwrap();
         for v in send_attrs.get_job_attributes().unwrap().values() {
             println!("{}: {}", v.name(), v.value());

@@ -3,6 +3,7 @@ extern crate ipp;
 
 use std::env;
 use std::fs::File;
+use std::io::BufReader;
 use std::process::exit;
 
 use ipp::{IppAttribute, IppClient, IppValue, PrintJob};
@@ -19,7 +20,11 @@ pub fn main() {
 
     let client = IppClient::new(&args[1]);
     let f = File::open(&args[2]).unwrap();
-    let mut operation = PrintJob::new(Box::new(f), &env::var("USER").unwrap(), Some(&args[1]));
+    let mut operation = PrintJob::new(
+        Box::new(BufReader::new(f)),
+        &env::var("USER").unwrap(),
+        Some(&args[1]),
+    );
 
     for arg in &args[3..] {
         let mut kv = arg.split('=');
