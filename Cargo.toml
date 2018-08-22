@@ -11,7 +11,6 @@ keywords = ["ipp", "printing", "protocol"]
 
 [lib]
 name = "ipp"
-crate_type = ["cdylib", "lib"]
 
 [dependencies]
 byteorder = "1.1"

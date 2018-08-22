@@ -56,7 +56,6 @@ pub mod consts {
 
 pub mod attribute;
 pub mod client;
-pub mod ffi;
 pub mod operation;
 pub mod parser;
 pub mod request;
