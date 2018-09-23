@@ -2,8 +2,8 @@
 //! IPP client
 //!
 use num_traits::FromPrimitive;
-use reqwest::header::Headers;
-use reqwest::{Body, Certificate, Client, Method, StatusCode};
+use reqwest::header::{HeaderMap, HeaderValue};
+use reqwest::{Body, Certificate, Client, StatusCode};
 use std::fs;
 use std::io::BufReader;
 use std::time::Duration;
@@ -104,8 +104,8 @@ impl IppClient {
 
                 debug!("Request URI: {}", url);
 
-                let mut headers = Headers::new();
-                headers.set_raw("Content-Type", "application/ipp");
+                let mut headers = HeaderMap::new();
+                headers.insert("Content-Type", HeaderValue::from_static("application/ipp"));
 
                 let mut builder = Client::builder();
 
@@ -122,12 +122,12 @@ impl IppClient {
                             cacert
                         }
                     };
-                    builder.add_root_certificate(cacert);
+                    builder = builder.add_root_certificate(cacert);
                 }
 
                 if !self.verify_hostname {
                     debug!("Disabling hostname verification!");
-                    builder.danger_disable_hostname_verification();
+                    builder = builder.danger_accept_invalid_hostnames(true);
                 }
 
                 let client = builder
@@ -136,13 +136,13 @@ impl IppClient {
                     .build()?;
 
                 let http_req = client
-                    .request(Method::Post, url)
+                    .post(url)
                     .headers(headers)
                     .body(Body::new(request.into_reader()))
                     .build()?;
                 let http_resp = client.execute(http_req)?;
 
-                if http_resp.status() == StatusCode::Ok {
+                if http_resp.status() == StatusCode::OK {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
