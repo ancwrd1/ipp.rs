@@ -89,7 +89,7 @@ impl IppAttributeList {
     }
 
     /// Get attribute from the list
-    pub fn get<'a>(&'a self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
+    pub fn get(&self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
         self.attributes
             .get(&group)
             .and_then(|attrs| attrs.get(name))

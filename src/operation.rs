@@ -13,7 +13,7 @@ use value::IppValue;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn to_ipp_request(self, uri: &str) -> IppRequestResponse;
+    fn into_ipp_request(self, uri: &str) -> IppRequestResponse;
 }
 
 /// IPP operation Print-Job
@@ -46,7 +46,7 @@ impl PrintJob {
 }
 
 impl IppOperation for PrintJob {
-    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
+    fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
 
         retval.set_attribute(
@@ -97,7 +97,7 @@ impl GetPrinterAttributes {
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
+    fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 
         if !self.attributes.is_empty() {
@@ -140,7 +140,7 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
+    fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::CreateJob, uri);
 
         if let Some(ref job_name) = self.job_name {
@@ -183,7 +183,7 @@ impl SendDocument {
 }
 
 impl IppOperation for SendDocument {
-    fn to_ipp_request(self, uri: &str) -> IppRequestResponse {
+    fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::SendDocument, uri);
 
         retval.set_attribute(
