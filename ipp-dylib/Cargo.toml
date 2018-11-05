@@ -1,0 +1,10 @@
+[package]
+name = "ipp"
+version = "0.1.0"
+authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+
+[lib]
+crate_type = ["cdylib"]
+
+[dependencies]
+ippclient = { path = "../ipp-client" }

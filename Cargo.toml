@@ -1,5 +1,5 @@
 [package]
-name = "ipp"
+name = "ipp-rs"
 version = "0.2.1"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP print protocol implementation for Rust"
@@ -10,12 +10,12 @@ readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
 [workspace]
-members = [ "ipp-parse", "ipp-proto", "ipp-client", "ipp-server" ]
+members = [ "ipp-parse", "ipp-proto", "ipp-client", "ipp-server", "ipp-dylib" ]
 
 [dev-dependencies]
 env_logger = "0.5"
 hyper = "0.12"
-lazy_static = "1.1"
+lazy_static = "1.2"
 futures = "0.1"
 ippparse = { path = "ipp-parse" }
 ippproto = { path = "ipp-proto" }
