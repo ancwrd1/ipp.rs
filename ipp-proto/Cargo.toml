@@ -1,0 +1,8 @@
+[package]
+name = "ippproto"
+version = "0.1.0"
+authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+
+[dependencies]
+ippparse = { path = "../ipp-parse" }
+log = "0.4"

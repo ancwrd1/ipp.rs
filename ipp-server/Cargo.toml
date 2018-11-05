@@ -1,0 +1,9 @@
+[package]
+name = "ippserver"
+version = "0.1.0"
+authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+
+[dependencies]
+num-traits = "0.2"
+ippparse = { path = "../ipp-parse" }
+ippproto = { path = "../ipp-proto" }

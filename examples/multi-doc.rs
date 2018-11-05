@@ -1,15 +1,19 @@
 extern crate env_logger;
-extern crate ipp;
+extern crate ippclient;
+extern crate ippparse;
+extern crate ippproto;
 
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-use ipp::consts::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
-use ipp::consts::operation::Operation;
-use ipp::consts::tag::DelimiterTag;
-use ipp::{CreateJob, GetPrinterAttributes, IppClient, IppValue, SendDocument};
+use ippclient::client::IppClient;
+use ippparse::rfc2911::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
+use ippparse::rfc2911::operation::Operation;
+use ippparse::rfc2911::tag::DelimiterTag;
+use ippparse::value::IppValue;
+use ippproto::operation::{CreateJob, GetPrinterAttributes, SendDocument};
 
 fn supports_multi_doc(v: &IppValue) -> bool {
     if let IppValue::Enum(v) = *v {

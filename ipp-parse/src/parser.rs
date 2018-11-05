@@ -1,16 +1,16 @@
 //!
 //! IPP stream parser
 //!
-use byteorder::{BigEndian, ReadBytesExt};
-use std::io::Read;
+use std::io::{self, Read};
 
+use byteorder::{BigEndian, ReadBytesExt};
+use log::debug;
 use num_traits::FromPrimitive;
 
 use attribute::{IppAttribute, IppAttributeList};
-use consts::statuscode::StatusCode;
-use consts::tag::*;
+use rfc2911::tag::*;
 use value::IppValue;
-use {IppError, IppHeader, ReadIppExt, Result};
+use {IppHeader, ReadIppExt};
 
 fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 {
@@ -55,7 +55,7 @@ impl<'a> IppParser<'a> {
     }
 
     /// Parse IPP stream
-    pub fn parse(&mut self) -> Result<IppParseResult> {
+    pub fn parse(&mut self) -> io::Result<IppParseResult> {
         // last delimiter tag
         let mut delimiter = DelimiterTag::EndOfAttributes;
 
@@ -89,8 +89,10 @@ impl<'a> IppParser<'a> {
                     break;
                 } else {
                     // remember delimiter tag
-                    delimiter =
-                        DelimiterTag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
+                    delimiter = DelimiterTag::from_u8(tag).ok_or(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Tag error: {}", tag),
+                    ))?;
                 }
             } else if is_value_tag(tag) {
                 // value tag
@@ -132,7 +134,10 @@ impl<'a> IppParser<'a> {
                     val_list.push(value);
                 }
             } else {
-                return Err(IppError::TagError(tag));
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!("Tag error: {}", tag),
+                ));
             }
         }
 

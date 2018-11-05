@@ -9,19 +9,15 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
-[lib]
-name = "ipp"
-
-[dependencies]
-byteorder = "1.1"
-log = "0.4"
-env_logger = "0.5"
-enum-primitive-derive = "0.1"
-num-traits = "0.2"
-lazy_static = "1.0"
-reqwest = "0.9"
-url = "1.5"
-clap = "2"
+[workspace]
+members = [ "ipp-parse", "ipp-proto", "ipp-client", "ipp-server" ]
 
 [dev-dependencies]
-hyper = "0.10"
+env_logger = "0.5"
+hyper = "0.12"
+lazy_static = "1.1"
+futures = "0.1"
+ippparse = { path = "ipp-parse" }
+ippproto = { path = "ipp-proto" }
+ippclient = { path = "ipp-client" }
+ippserver = { path = "ipp-server" }

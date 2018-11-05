@@ -1,20 +1,22 @@
 //!
 //! IPP client
 //!
-use num_traits::FromPrimitive;
-use reqwest::header::{HeaderMap, HeaderValue};
-use reqwest::{Body, Certificate, Client, StatusCode};
 use std::fs;
 use std::io::BufReader;
 use std::time::Duration;
+
+use log::{debug, error};
+use num_traits::FromPrimitive;
+use reqwest::header::{HeaderMap, HeaderValue};
+use reqwest::{Body, Certificate, Client, StatusCode};
 use url::Url;
 
-use attribute::IppAttributeList;
-use consts::statuscode;
-use operation::IppOperation;
-use parser::IppParser;
-use request::IppRequestResponse;
-use {IppError, Result};
+use ippparse::attribute::IppAttributeList;
+use ippparse::parser::IppParser;
+use ippparse::rfc2911::statuscode;
+use ippproto::operation::IppOperation;
+use ippproto::request::IppRequestResponse;
+use IppError;
 
 const TIMEOUT: u64 = 30;
 
@@ -61,7 +63,7 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributeList> {
+    pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributeList, IppError> {
         match self.send_request(operation.into_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
@@ -79,7 +81,10 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse> {
+    pub fn send_request(
+        &self,
+        request: IppRequestResponse,
+    ) -> Result<IppRequestResponse, IppError> {
         match Url::parse(&self.uri) {
             Ok(mut url) => {
                 match url.scheme() {

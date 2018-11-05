@@ -3,13 +3,15 @@
 //!
 use std::io::{self, Cursor, Read, Write};
 
-use attribute::{IppAttribute, IppAttributeList};
-use consts::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
-use consts::operation::Operation;
-use consts::tag::DelimiterTag;
-use parser::IppParser;
-use value::IppValue;
-use {IppHeader, Result, IPP_VERSION};
+use log::debug;
+
+use ippparse::attribute::{IppAttribute, IppAttributeList};
+use ippparse::parser::IppParser;
+use ippparse::rfc2911::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
+use ippparse::rfc2911::operation::Operation;
+use ippparse::rfc2911::tag::DelimiterTag;
+use ippparse::value::IppValue;
+use ippparse::{IppHeader, IPP_VERSION};
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -110,7 +112,7 @@ impl IppRequestResponse {
     }
 
     /// Create IppRequestResponse from the parser
-    pub fn from_parser(parser: &mut IppParser) -> Result<IppRequestResponse> {
+    pub fn from_parser(parser: &mut IppParser) -> io::Result<IppRequestResponse> {
         let res = parser.parse()?;
 
         Ok(IppRequestResponse {
@@ -148,7 +150,7 @@ impl IppRequestResponse {
     }
 
     /// Serialize request into the binary stream (TCP)
-    pub fn write(&mut self, writer: &mut Write) -> Result<usize> {
+    pub fn write(&mut self, writer: &mut Write) -> io::Result<usize> {
         let mut retval = self.header.write(writer)?;
 
         retval += self.attributes.write(writer)?;

@@ -1,24 +1,37 @@
+#![allow(unused)]
+
+extern crate futures;
 extern crate hyper;
-extern crate ipp;
-#[macro_use]
+extern crate ippparse;
+extern crate ippproto;
+extern crate ippserver;
 extern crate lazy_static;
 
 use std::fs::OpenOptions;
-use std::io;
+use std::io::{self, Cursor};
 use std::sync::atomic;
 use std::time;
 
-use hyper::server::{Handler, Request, Response, Server};
-use ipp::attribute::{IppAttribute, IppAttributeList};
-use ipp::consts::attribute::*;
-use ipp::consts::operation::Operation;
-use ipp::consts::statuscode::*;
-use ipp::consts::tag::*;
-use ipp::parser::IppParser;
-use ipp::request::IppRequestTrait;
-use ipp::server::*;
-use ipp::value::IppValue;
-use ipp::{IppHeader, IppRequestResponse};
+use hyper::{Request, Server};
+
+use lazy_static::lazy_static;
+
+use futures::future::Future;
+use futures::stream::Stream;
+use hyper::service::service_fn;
+use hyper::Body;
+use hyper::Chunk;
+use hyper::Response;
+use ippparse::attribute::{IppAttribute, IppAttributeList};
+use ippparse::parser::IppParser;
+use ippparse::rfc2911::attribute::*;
+use ippparse::rfc2911::operation::Operation;
+use ippparse::rfc2911::statuscode::*;
+use ippparse::rfc2911::tag::*;
+use ippparse::value::IppValue;
+use ippparse::IppHeader;
+use ippproto::request::{IppRequestResponse, IppRequestTrait};
+use ippserver::server::*;
 
 struct DummyServer {
     name: String,
@@ -130,22 +143,22 @@ impl DummyServer {
     }
 }
 
-struct DummyRequest<'a, 'b: 'a> {
+struct DummyRequest {
     header: IppHeader,
     attributes: IppAttributeList,
-    req: Request<'a, 'b>,
+    cursor: Cursor<Chunk>,
 }
 
-impl<'a, 'b> IppRequestTrait for DummyRequest<'a, 'b> {
+impl IppRequestTrait for DummyRequest {
     fn header(&self) -> &IppHeader {
         &self.header
     }
 }
 
-impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
-    type IppRequest = DummyRequest<'b, 'c>;
+impl IppServer for DummyServer {
+    type IppRequest = DummyRequest;
 
-    fn print_job(&self, req: &mut Self::IppRequest) -> IppServerResult {
+    fn print_job(&mut self, mut req: Self::IppRequest) -> IppServerResult {
         println!("Print-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
@@ -184,11 +197,11 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
             .create(true)
             .open("printjob.dat")
             .unwrap();
-        io::copy(&mut req.req, &mut file).unwrap();
+        io::copy(&mut req.cursor, &mut file).unwrap();
         Ok(resp)
     }
 
-    fn validate_job(&self, req: &mut Self::IppRequest) -> IppServerResult {
+    fn validate_job(&mut self, req: Self::IppRequest) -> IppServerResult {
         println!("Validate-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
@@ -201,23 +214,23 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
         Ok(resp)
     }
 
-    fn create_job(&self, _req: &mut Self::IppRequest) -> IppServerResult {
+    fn create_job(&mut self, req: Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn cancel_job(&self, _req: &mut Self::IppRequest) -> IppServerResult {
+    fn cancel_job(&mut self, req: Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_job_attributes(&self, _req: &mut Self::IppRequest) -> IppServerResult {
+    fn get_job_attributes(&mut self, req: Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_jobs(&self, _req: &mut Self::IppRequest) -> IppServerResult {
+    fn get_jobs(&mut self, req: Self::IppRequest) -> IppServerResult {
         Err(StatusCode::ServerErrorOperationNotSupported)
     }
 
-    fn get_printer_attributes(&self, req: &mut Self::IppRequest) -> IppServerResult {
+    fn get_printer_attributes(&mut self, req: Self::IppRequest) -> IppServerResult {
         lazy_static! {
             static ref SUPPORTED_ATTRIBUTES: Vec<&'static str> = vec![
                 PRINTER_URI_SUPPORTED,
@@ -297,36 +310,42 @@ impl<'b, 'c: 'b> IppServer<'b, 'c> for DummyServer {
     }
 }
 
-impl Handler for DummyServer {
-    fn handle(&self, mut req: Request, res: Response) {
-        let ippreq = {
-            let mut parser = IppParser::new(&mut req);
-            IppRequestResponse::from_parser(&mut parser).unwrap()
-        };
-        let mut dummy_req = DummyRequest {
-            header: ippreq.header().clone(),
-            attributes: ippreq.attributes().clone(),
-            req,
-        };
-
-        let mut ippresp = match self.ipp_handle_request(&mut dummy_req) {
-            Ok(response) => response,
-            Err(ipp_error) => {
-                IppRequestResponse::new_response(ipp_error as u16, ippreq.header().request_id)
-            }
-        };
-        let mut res_streaming = res.start().unwrap();
-        ippresp
-            .write(&mut res_streaming)
-            .expect("Failed to write response");
-    }
-}
-
 fn main() {
-    let server = DummyServer {
-        name: "foobar".to_string(),
-        start_time: time::SystemTime::now(),
-        printing: atomic::AtomicBool::new(false),
-    };
-    Server::http("0.0.0.0:631").unwrap().handle(server).unwrap();
+    let addr = ([0, 0, 0, 0], 8631).into();
+    let server = Server::bind(&addr).serve(|| {
+        service_fn(|req: Request<Body>| {
+            let mut server = DummyServer {
+                name: "foobar".to_string(),
+                start_time: time::SystemTime::now(),
+                printing: atomic::AtomicBool::new(false),
+            };
+            req.into_body().concat2().map(move |c| {
+                let mut cursor = Cursor::new(c);
+                let ippreq = {
+                    let mut parser = IppParser::new(&mut cursor);
+                    IppRequestResponse::from_parser(&mut parser).unwrap()
+                };
+                let dummy_req = DummyRequest {
+                    header: ippreq.header().clone(),
+                    attributes: ippreq.attributes().clone(),
+                    cursor,
+                };
+
+                let mut ippresp = match server.handle_request(dummy_req) {
+                    Ok(response) => response,
+                    Err(ipp_error) => IppRequestResponse::new_response(
+                        ipp_error as u16,
+                        ippreq.header().request_id,
+                    ),
+                };
+                let mut buf: Vec<u8> = vec![];
+                let _ = ippresp.write(&mut buf);
+                Response::new(Body::from(buf))
+            })
+        })
+    });
+
+    hyper::rt::run(server.map_err(|e| {
+        eprintln!("server error: {}", e);
+    }));
 }

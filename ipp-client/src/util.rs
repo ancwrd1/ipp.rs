@@ -8,11 +8,17 @@ use std::fs::File;
 use std::io::{stdin, BufReader, Read};
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
+use log::debug;
 use num_traits::FromPrimitive;
 
-use consts::attribute::{PrinterState, PRINTER_STATE, PRINTER_STATE_REASONS};
-use consts::tag::DelimiterTag;
-use {GetPrinterAttributes, IppAttribute, IppClient, IppError, IppValue, PrintJob};
+use ippparse::attribute::IppAttribute;
+use ippparse::rfc2911::attribute::{PrinterState, PRINTER_STATE, PRINTER_STATE_REASONS};
+use ippparse::rfc2911::tag::DelimiterTag;
+use ippparse::value::IppValue;
+use ippproto::operation::{GetPrinterAttributes, PrintJob};
+
+use client::IppClient;
+use IppError;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

@@ -1,10 +1,12 @@
 extern crate env_logger;
-extern crate ipp;
+extern crate ippclient;
+extern crate ippproto;
 
 use std::env;
 use std::process::exit;
 
-use ipp::{GetPrinterAttributes, IppClient};
+use ippclient::client::IppClient;
+use ippproto::operation::GetPrinterAttributes;
 
 pub fn main() {
     env_logger::init();

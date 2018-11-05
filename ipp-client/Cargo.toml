@@ -1,0 +1,14 @@
+[package]
+name = "ippclient"
+version = "0.1.0"
+authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+
+[dependencies]
+ippproto = { path = "../ipp-proto" }
+ippparse = { path = "../ipp-parse" }
+reqwest = "0.9"
+clap = "2.32"
+num-traits = "0.2"
+url = "1.7"
+env_logger = "0.5"
+log = "0.4"

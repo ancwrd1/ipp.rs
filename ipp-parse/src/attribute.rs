@@ -3,12 +3,11 @@
 //!
 use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
-use std::io::Write;
+use std::io::{self, Write};
 
-use consts::attribute::*;
-use consts::tag::*;
+use rfc2911::attribute::*;
+use rfc2911::tag::*;
 use value::IppValue;
-use Result;
 
 const HEADER_ATTRS: [&str; 3] = [ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI];
 
@@ -48,7 +47,7 @@ impl IppAttribute {
     }
 
     /// Serialize attribute into binary stream
-    pub fn write(&self, writer: &mut Write) -> Result<usize> {
+    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
         let mut retval = 0;
 
         writer.write_u8(self.value.to_tag() as u8)?;
@@ -116,7 +115,7 @@ impl IppAttributeList {
     }
 
     /// Serialize attribute list into binary stream
-    pub fn write(&self, writer: &mut Write) -> Result<usize> {
+    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
         // first send the header attributes
         writer.write_u8(DelimiterTag::OperationAttributes as u8)?;
 

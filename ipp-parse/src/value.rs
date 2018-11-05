@@ -1,14 +1,14 @@
 //!
 //! IPP value
 //!
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::fmt;
-use std::io::{Read, Write};
+use std::io::{self, Read, Write};
 
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use num_traits::FromPrimitive;
 
-use consts::tag::ValueTag;
-use {ReadIppExt, Result};
+use rfc2911::tag::ValueTag;
+use ReadIppExt;
 
 /// Currently supported IPP values
 #[derive(Clone, Debug)]
@@ -80,7 +80,7 @@ impl IppValue {
     }
 
     /// Read value from binary stream
-    pub fn read(vtag: u8, reader: &mut Read) -> Result<IppValue> {
+    pub fn read(vtag: u8, reader: &mut Read) -> io::Result<IppValue> {
         let vsize = reader.read_u16::<BigEndian>()?;
 
         let ipptag = match ValueTag::from_u8(vtag) {
@@ -159,7 +159,7 @@ impl IppValue {
     }
 
     /// Write value to binary stream
-    pub fn write(&self, writer: &mut Write) -> Result<usize> {
+    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
                 writer.write_u16::<BigEndian>(4)?;

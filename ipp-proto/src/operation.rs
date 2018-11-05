@@ -1,14 +1,14 @@
 //!
 //! High-level IPP operation abstractions
 //!
-
-use attribute::IppAttribute;
-use consts::attribute::*;
-use consts::operation::*;
-use consts::tag::*;
-use request::IppRequestResponse;
 use std::io::Read;
-use value::IppValue;
+
+use ippparse::attribute::IppAttribute;
+use ippparse::rfc2911::attribute::*;
+use ippparse::rfc2911::operation::*;
+use ippparse::rfc2911::tag::*;
+use ippparse::value::IppValue;
+use request::IppRequestResponse;
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
