@@ -7,7 +7,7 @@
 //! // using raw API
 //! use ippproto::request::IppRequestResponse;
 //! use client::IppClient;
-//! use ippparse::rfc2911::operation::Operation;
+//! use ippparse::ipp::operation::Operation;
 //!
 //! let uri = "http://localhost:631/printers/test-printer";
 //! let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
@@ -44,7 +44,7 @@ extern crate url;
 use std::fmt;
 use std::io;
 
-use ippparse::rfc2911::statuscode::StatusCode;
+use ippparse::ipp::StatusCode;
 
 pub mod client;
 pub mod util;

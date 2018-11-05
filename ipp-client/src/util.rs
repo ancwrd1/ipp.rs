@@ -12,8 +12,9 @@ use log::debug;
 use num_traits::FromPrimitive;
 
 use ippparse::attribute::IppAttribute;
-use ippparse::rfc2911::attribute::{PrinterState, PRINTER_STATE, PRINTER_STATE_REASONS};
-use ippparse::rfc2911::tag::DelimiterTag;
+use ippparse::attribute::{PRINTER_STATE, PRINTER_STATE_REASONS};
+use ippparse::ipp::DelimiterTag;
+use ippparse::ipp::PrinterState;
 use ippparse::value::IppValue;
 use ippproto::operation::{GetPrinterAttributes, PrintJob};
 

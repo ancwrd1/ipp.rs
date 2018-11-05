@@ -2,13 +2,13 @@
 //! IPP value
 //!
 use std::fmt;
-use std::io::{self, Read, Write};
+use std::io::{self, Cursor, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use num_traits::FromPrimitive;
 
-use rfc2911::tag::ValueTag;
-use ReadIppExt;
+use ipp::ValueTag;
+use IppReadExt;
 
 /// Currently supported IPP values
 #[derive(Clone, Debug)]
@@ -260,6 +260,12 @@ impl IppValue {
                 Ok(2 + data.len())
             }
         }
+    }
+
+    pub fn into_reader(self) -> impl Read {
+        let mut buf = Vec::new();
+        self.write(&mut buf).unwrap();
+        Cursor::new(buf)
     }
 }
 

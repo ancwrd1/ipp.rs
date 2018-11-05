@@ -12,8 +12,8 @@ use reqwest::{Body, Certificate, Client, StatusCode};
 use url::Url;
 
 use ippparse::attribute::IppAttributeList;
+use ippparse::ipp;
 use ippparse::parser::IppParser;
-use ippparse::rfc2911::statuscode;
 use ippproto::operation::IppOperation;
 use ippproto::request::IppRequestResponse;
 use IppError;
@@ -69,8 +69,8 @@ impl IppClient {
                 if resp.header().operation_status > 3 {
                     // IPP error
                     Err(IppError::StatusError(
-                        statuscode::StatusCode::from_u16(resp.header().operation_status)
-                            .unwrap_or(statuscode::StatusCode::ServerErrorInternalError),
+                        ipp::StatusCode::from_u16(resp.header().operation_status)
+                            .unwrap_or(ipp::StatusCode::ServerErrorInternalError),
                     ))
                 } else {
                     Ok(resp.attributes().clone())

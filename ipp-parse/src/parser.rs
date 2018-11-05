@@ -8,9 +8,9 @@ use log::debug;
 use num_traits::FromPrimitive;
 
 use attribute::{IppAttribute, IppAttributeList};
-use rfc2911::tag::*;
+use ipp::*;
 use value::IppValue;
-use {IppHeader, ReadIppExt};
+use {IppHeader, IppReadExt};
 
 fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 {
@@ -22,24 +22,13 @@ fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
 
 /// IPP parsing result
 pub struct IppParseResult {
-    header: IppHeader,
-    attributes: IppAttributeList,
+    pub header: IppHeader,
+    pub attributes: IppAttributeList,
 }
 
 impl IppParseResult {
-    /// Create instance of the parsing result
-    pub fn new(header: IppHeader, attributes: IppAttributeList) -> IppParseResult {
+    fn new(header: IppHeader, attributes: IppAttributeList) -> IppParseResult {
         IppParseResult { header, attributes }
-    }
-
-    /// Get parsed header
-    pub fn header(&self) -> &IppHeader {
-        &self.header
-    }
-
-    /// Get parsed attributes
-    pub fn attributes(&self) -> &IppAttributeList {
-        &self.attributes
     }
 }
 

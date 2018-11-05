@@ -9,9 +9,8 @@ use std::io::BufReader;
 use std::process::exit;
 
 use ippclient::client::IppClient;
-use ippparse::rfc2911::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
-use ippparse::rfc2911::operation::Operation;
-use ippparse::rfc2911::tag::DelimiterTag;
+use ippparse::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
+use ippparse::ipp::{DelimiterTag, Operation};
 use ippparse::value::IppValue;
 use ippproto::operation::{CreateJob, GetPrinterAttributes, SendDocument};
 

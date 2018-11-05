@@ -5,9 +5,8 @@
 
 use num_traits::FromPrimitive;
 
-use ippparse::rfc2911::operation::Operation;
-use ippparse::rfc2911::statuscode::StatusCode;
-use ippparse::IPP_VERSION;
+use ippparse::ipp::{Operation, StatusCode};
+use ippparse::IppVersion;
 use ippproto::request::{IppRequestResponse, IppRequestTrait};
 
 pub type IppServerResult = Result<IppRequestResponse, StatusCode>;
@@ -97,8 +96,8 @@ pub trait IppServer {
     }
 
     /// Returns IPP version supported by the server
-    fn get_version(&self) -> u16 {
-        IPP_VERSION
+    fn get_version(&self) -> IppVersion {
+        IppVersion::Ipp11
     }
 
     /// IPP request dispatcher

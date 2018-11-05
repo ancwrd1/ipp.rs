@@ -1,17 +1,17 @@
 //!
 //! IPP request
 //!
-use std::io::{self, Cursor, Read, Write};
+use std::io::{self, Read, Write};
 
 use log::debug;
 
-use ippparse::attribute::{IppAttribute, IppAttributeList};
+use ippparse::attribute::{
+    IppAttribute, IppAttributeList, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI,
+};
+use ippparse::ipp::{DelimiterTag, Operation};
 use ippparse::parser::IppParser;
-use ippparse::rfc2911::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
-use ippparse::rfc2911::operation::Operation;
-use ippparse::rfc2911::tag::DelimiterTag;
 use ippparse::value::IppValue;
-use ippparse::{IppHeader, IPP_VERSION};
+use ippparse::{IppHeader, IppVersion};
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -58,7 +58,7 @@ impl IppRequestTrait for IppRequestResponse {
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
     pub fn new(operation: Operation, uri: &str) -> IppRequestResponse {
-        let hdr = IppHeader::new(IPP_VERSION, operation as u16, 1);
+        let hdr = IppHeader::new(IppVersion::Ipp11, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
@@ -88,8 +88,9 @@ impl IppRequestResponse {
         retval
     }
 
+    /// Create response from status and id
     pub fn new_response(status: u16, id: u32) -> IppRequestResponse {
-        let hdr = IppHeader::new(IPP_VERSION, status, id);
+        let hdr = IppHeader::new(IppVersion::Ipp11, status, id);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributeList::new(),
@@ -116,16 +117,18 @@ impl IppRequestResponse {
         let res = parser.parse()?;
 
         Ok(IppRequestResponse {
-            header: res.header().clone(),
-            attributes: res.attributes().clone(),
+            header: res.header,
+            attributes: res.attributes,
             payload: None,
         })
     }
 
+    /// Get IPP header
     pub fn header(&self) -> &IppHeader {
         &self.header
     }
 
+    /// Get mutable IPP header
     pub fn header_mut(&mut self) -> &mut IppHeader {
         &mut self.header
     }
@@ -135,6 +138,7 @@ impl IppRequestResponse {
         &self.attributes
     }
 
+    /// Get payload
     pub fn payload(&self) -> &Option<Box<Read>> {
         &self.payload
     }
@@ -166,15 +170,14 @@ impl IppRequestResponse {
         Ok(retval)
     }
 
-    pub fn into_reader(self) -> IppReadAdapter {
-        let mut cursor = Cursor::new(Vec::with_capacity(1024));
-        let _ = self.header.write(&mut cursor).unwrap();
-        let _ = self.attributes.write(&mut cursor).unwrap();
-
-        cursor.set_position(0);
-
+    /// Convert request into reader
+    pub fn into_reader(self) -> impl Read {
         IppReadAdapter {
-            data: Box::new(cursor),
+            data: Box::new(
+                self.header
+                    .into_reader()
+                    .chain(self.attributes.into_reader()),
+            ),
             payload: self.payload,
         }
     }

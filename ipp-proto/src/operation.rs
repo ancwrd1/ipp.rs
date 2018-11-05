@@ -3,10 +3,8 @@
 //!
 use std::io::Read;
 
-use ippparse::attribute::IppAttribute;
-use ippparse::rfc2911::attribute::*;
-use ippparse::rfc2911::operation::*;
-use ippparse::rfc2911::tag::*;
+use ippparse::attribute::*;
+use ippparse::ipp::*;
 use ippparse::value::IppValue;
 use request::IppRequestResponse;
 
