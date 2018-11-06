@@ -4,11 +4,11 @@ extern crate enum_primitive_derive;
 extern crate log;
 extern crate num_traits;
 
-use std::fmt::{self, Formatter};
 use std::io::{self, Cursor, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
+use num_traits::FromPrimitive;
 
 pub mod attribute;
 pub mod ipp;
@@ -16,67 +16,9 @@ pub mod parser;
 pub mod value;
 
 pub use attribute::{IppAttribute, IppAttributes};
+pub use ipp::IppVersion;
 pub use parser::IppParser;
 pub use value::IppValue;
-
-/// IPP protocol version
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum IppVersion {
-    Ipp10,
-    Ipp11,
-    Ipp20,
-    Ipp21,
-    Ipp22,
-}
-
-impl IppVersion {
-    /// Construct IppVersion from reader
-    pub fn from_reader(reader: &mut Read) -> io::Result<IppVersion> {
-        Ok(match reader.read_u16::<BigEndian>()? {
-            0x0100 => IppVersion::Ipp10,
-            0x0101 => IppVersion::Ipp11,
-            0x0200 => IppVersion::Ipp20,
-            0x0201 => IppVersion::Ipp21,
-            0x0202 => IppVersion::Ipp22,
-            other => {
-                return Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    format!("Invalid IPP version: {:0x}", other),
-                ))
-            }
-        })
-    }
-
-    pub fn as_u16(&self) -> u16 {
-        match self {
-            IppVersion::Ipp10 => 0x0100,
-            IppVersion::Ipp11 => 0x0101,
-            IppVersion::Ipp20 => 0x0200,
-            IppVersion::Ipp21 => 0x0201,
-            IppVersion::Ipp22 => 0x0202,
-        }
-    }
-}
-
-impl IppWriter for IppVersion {
-    /// Write IppVersion into stream as big endian u16 integer
-    fn write(&self, writer: &mut Write) -> io::Result<usize> {
-        writer.write_u16::<BigEndian>(self.as_u16())?;
-        Ok(2)
-    }
-}
-
-impl fmt::Display for IppVersion {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            IppVersion::Ipp10 => write!(f, "1.0"),
-            IppVersion::Ipp11 => write!(f, "1.1"),
-            IppVersion::Ipp20 => write!(f, "2.0"),
-            IppVersion::Ipp21 => write!(f, "2.1"),
-            IppVersion::Ipp22 => write!(f, "2.2"),
-        }
-    }
-}
 
 pub trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;
@@ -126,7 +68,8 @@ impl IppHeader {
     /// Create IppHeader from the reader
     pub fn from_reader(reader: &mut Read) -> io::Result<IppHeader> {
         let retval = IppHeader::new(
-            IppVersion::from_reader(reader)?,
+            IppVersion::from_u16(reader.read_u16::<BigEndian>()?)
+                .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "Invalid IPP version"))?,
             reader.read_u16::<BigEndian>()?,
             reader.read_u32::<BigEndian>()?,
         );
@@ -146,7 +89,7 @@ impl IppHeader {
 impl IppWriter for IppHeader {
     /// Write header to a given writer
     fn write(&self, writer: &mut Write) -> io::Result<usize> {
-        self.version.write(writer)?;
+        writer.write_u16::<BigEndian>(self.version as u16)?;
         writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;
 

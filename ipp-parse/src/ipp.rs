@@ -5,7 +5,17 @@ use std::fmt;
 
 use enum_primitive_derive::Primitive;
 
-#[derive(Debug, Primitive)]
+/// IPP protocol version
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+pub enum IppVersion {
+    Ipp10 = 0x0100,
+    Ipp11 = 0x0101,
+    Ipp20 = 0x0200,
+    Ipp21 = 0x0201,
+    Ipp22 = 0x0202,
+}
+
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Operation {
     PrintJob = 0x0002,
     PrintUri = 0x0003,
@@ -58,7 +68,7 @@ pub enum Finishings {
     EdgeStitch = 9,
 }
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum JobState {
     Pending = 3,
     PendingHeld = 4,
@@ -69,7 +79,7 @@ pub enum JobState {
     Completed = 9,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq, Hash, Eq)]
 pub enum DelimiterTag {
     OperationAttributes = 0x01,
     JobAttributes = 0x02,
@@ -78,7 +88,7 @@ pub enum DelimiterTag {
     UnsupportedAttributes = 0x05,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum ValueTag {
     Unsupported = 0x10,
     Unknown = 0x12,
@@ -105,7 +115,7 @@ pub enum ValueTag {
     MemberAttrName = 0x4a,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Primitive)]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum StatusCode {
     SuccessfulOK = 0x0000,
     SuccessfulOKIgnoredOrSubstitutedAttributes = 0x0001,

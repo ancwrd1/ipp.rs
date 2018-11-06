@@ -34,13 +34,9 @@ impl IppParseResult {
 /// IPP parser implementation
 pub struct IppParser<'a> {
     reader: &'a mut Read,
-    // last delimiter tag
     last_delimiter: DelimiterTag,
-    // last attribute value
     last_name: Option<String>,
-    // stack of current attributes context. Used with lists and collections
     context: Vec<Vec<IppValue>>,
-    // holds the result of parsing
     attributes: IppAttributes,
 }
 
@@ -119,7 +115,6 @@ impl<'a> IppParser<'a> {
 
     /// Parse IPP stream
     pub fn parse(mut self) -> io::Result<IppParseResult> {
-        // parse IPP header
         let header = IppHeader::from_reader(self.reader)?;
         debug!("IPP header: {:?}", header);
 

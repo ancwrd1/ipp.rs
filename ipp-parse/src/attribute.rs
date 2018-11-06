@@ -142,9 +142,10 @@ impl IppAttributes {
     /// * `group` - delimiter group<br/>
     /// * `attribute` - attribute to add<br/>
     pub fn add(&mut self, group: DelimiterTag, attribute: IppAttribute) {
-        self.attributes.entry(group).or_insert_with(HashMap::new);
-        let opt = self.attributes.get_mut(&group).unwrap();
-        opt.insert(attribute.name().to_string(), attribute);
+        self.attributes
+            .entry(group)
+            .or_insert_with(HashMap::new)
+            .insert(attribute.name().to_string(), attribute);
     }
 
     /// Get attribute from the list
