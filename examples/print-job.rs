@@ -8,10 +8,9 @@ use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-use ippclient::client::IppClient;
-use ippparse::attribute::IppAttribute;
-use ippparse::value::IppValue;
-use ippproto::operation::PrintJob;
+use ippclient::IppClient;
+use ippparse::{IppAttribute, IppValue};
+use ippproto::IppOperationBuilder;
 
 pub fn main() {
     env_logger::init();
@@ -23,13 +22,11 @@ pub fn main() {
         exit(1);
     }
 
-    let client = IppClient::new(&args[1]);
     let f = File::open(&args[2]).unwrap();
-    let mut operation = PrintJob::new(
-        Box::new(BufReader::new(f)),
-        &env::var("USER").unwrap(),
-        Some(&args[1]),
-    );
+
+    let mut builder = IppOperationBuilder::print_job(Box::new(BufReader::new(f)))
+        .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+        .job_title(&args[1]);
 
     for arg in &args[3..] {
         let mut kv = arg.split('=');
@@ -43,12 +40,15 @@ pub fn main() {
             IppValue::Keyword(v.to_string())
         };
 
-        operation.add_attribute(IppAttribute::new(k, value));
+        builder = builder.attribute(IppAttribute::new(k, value));
     }
 
+    let operation = builder.build();
+
+    let client = IppClient::new(&args[1]);
     let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_job_attributes().unwrap().values() {
+    for v in attrs.job_attributes().unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

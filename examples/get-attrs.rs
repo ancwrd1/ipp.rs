@@ -5,8 +5,8 @@ extern crate ippproto;
 use std::env;
 use std::process::exit;
 
-use ippclient::client::IppClient;
-use ippproto::operation::GetPrinterAttributes;
+use ippclient::IppClient;
+use ippproto::IppOperationBuilder;
 
 pub fn main() {
     env_logger::init();
@@ -19,11 +19,13 @@ pub fn main() {
     }
 
     let client = IppClient::new(&args[1]);
-    let operation = GetPrinterAttributes::with_attributes(&args[2..]);
+    let operation = IppOperationBuilder::get_printer_attributes()
+        .attributes(&args[2..])
+        .build();
 
     let attrs = client.send(operation).unwrap();
 
-    for v in attrs.get_printer_attributes().unwrap().values() {
+    for v in attrs.printer_attributes().unwrap().values() {
         println!("{}: {}", v.name(), v.value());
     }
 }

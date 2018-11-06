@@ -11,11 +11,9 @@ use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
 use log::debug;
 use num_traits::FromPrimitive;
 
-use ippparse::attribute::IppAttribute;
 use ippparse::attribute::{PRINTER_STATE, PRINTER_STATE_REASONS};
-use ippparse::ipp::DelimiterTag;
-use ippparse::ipp::PrinterState;
-use ippparse::value::IppValue;
+use ippparse::ipp::{DelimiterTag, PrinterState};
+use ippparse::{IppAttribute, IppValue};
 use ippproto::operation::{GetPrinterAttributes, PrintJob};
 
 use client::IppClient;
@@ -124,7 +122,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_job_attributes() {
+    if let Some(group) = attrs.job_attributes() {
         for v in group.values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -141,7 +139,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 
     let attrs = client.send(operation)?;
 
-    if let Some(group) = attrs.get_printer_attributes() {
+    if let Some(group) = attrs.printer_attributes() {
         let mut values: Vec<_> = group.values().collect();
         values.sort_by(|a, b| a.name().cmp(b.name()));
         for v in values {

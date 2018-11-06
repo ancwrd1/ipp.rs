@@ -3,15 +3,7 @@
 //!
 use std::fmt;
 
-/// Check if a given byte is a valid IPP value tag
-pub fn is_value_tag(value: u8) -> bool {
-    value >= 0x10 && value <= 0x4a
-}
-
-/// Check if a given byte is a valid IPP delimiter tag
-pub fn is_delimiter_tag(value: u8) -> bool {
-    value >= 0x01 && value <= 0x05
-}
+use enum_primitive_derive::Primitive;
 
 #[derive(Debug, Primitive)]
 pub enum Operation {

@@ -2,45 +2,32 @@
 //! IPP request
 //!
 use std::io::{self, Read, Write};
+use std::sync::Mutex;
 
 use log::debug;
 
-use ippparse::attribute::{
-    IppAttribute, IppAttributeList, ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI,
-};
+use ippparse::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
 use ippparse::ipp::{DelimiterTag, Operation};
-use ippparse::parser::IppParser;
-use ippparse::value::IppValue;
-use ippparse::{IppHeader, IppVersion};
+use ippparse::*;
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
     /// IPP header
     header: IppHeader,
     /// IPP attributes
-    attributes: IppAttributeList,
+    attributes: IppAttributes,
     /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
     payload: Option<Box<Read>>,
 }
 
-/// Helper class to combine IPP data and payload
-pub struct IppReadAdapter {
-    data: Box<Read>,
-    payload: Option<Box<Read>>,
+struct IppReadAdapter {
+    inner: Mutex<Box<Read>>,
 }
-
 unsafe impl Send for IppReadAdapter {}
 
 impl Read for IppReadAdapter {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        match self.data.read(buf)? {
-            0 => if let Some(ref mut payload) = self.payload {
-                payload.read(buf)
-            } else {
-                Ok(0)
-            },
-            rc => Ok(rc),
-        }
+        self.inner.lock().unwrap().read(buf)
     }
 }
 
@@ -61,7 +48,7 @@ impl IppRequestResponse {
         let hdr = IppHeader::new(IppVersion::Ipp11, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
-            attributes: IppAttributeList::new(),
+            attributes: IppAttributes::new(),
             payload: None,
         };
 
@@ -93,7 +80,7 @@ impl IppRequestResponse {
         let hdr = IppHeader::new(IppVersion::Ipp11, status, id);
         let mut retval = IppRequestResponse {
             header: hdr,
-            attributes: IppAttributeList::new(),
+            attributes: IppAttributes::new(),
             payload: None,
         };
 
@@ -113,7 +100,7 @@ impl IppRequestResponse {
     }
 
     /// Create IppRequestResponse from the parser
-    pub fn from_parser(parser: &mut IppParser) -> io::Result<IppRequestResponse> {
+    pub fn from_parser(parser: IppParser) -> io::Result<IppRequestResponse> {
         let res = parser.parse()?;
 
         Ok(IppRequestResponse {
@@ -134,7 +121,7 @@ impl IppRequestResponse {
     }
 
     /// Get attributes
-    pub fn attributes(&self) -> &IppAttributeList {
+    pub fn attributes(&self) -> &IppAttributes {
         &self.attributes
     }
 
@@ -173,12 +160,12 @@ impl IppRequestResponse {
     /// Convert request into reader
     pub fn into_reader(self) -> impl Read {
         IppReadAdapter {
-            data: Box::new(
+            inner: Mutex::new(Box::new(
                 self.header
                     .into_reader()
-                    .chain(self.attributes.into_reader()),
-            ),
-            payload: self.payload,
+                    .chain(self.attributes.into_reader())
+                    .chain(self.payload.unwrap_or_else(|| Box::new(io::empty()))),
+            )),
         }
     }
 }

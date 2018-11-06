@@ -2,12 +2,12 @@
 //! Attribute-related structs
 //!
 use std::collections::HashMap;
-use std::io::{self, Cursor, Read, Write};
+use std::io::{self, Write};
 
 use byteorder::{BigEndian, WriteBytesExt};
 
 use ipp::*;
-use value::IppValue;
+use {IppValue, IppWriter};
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";
@@ -103,9 +103,11 @@ impl IppAttribute {
     pub fn value(&self) -> &IppValue {
         &self.value
     }
+}
 
+impl IppWriter for IppAttribute {
     /// Serialize attribute into binary stream
-    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
         let mut retval = 0;
 
         writer.write_u8(self.value.to_tag() as u8)?;
@@ -125,14 +127,14 @@ impl IppAttribute {
 
 /// Attribute list indexed by group and name
 #[derive(Clone, Default, Debug)]
-pub struct IppAttributeList {
+pub struct IppAttributes {
     attributes: HashMap<DelimiterTag, HashMap<String, IppAttribute>>,
 }
 
-impl IppAttributeList {
+impl IppAttributes {
     /// Create attribute list
-    pub fn new() -> IppAttributeList {
-        IppAttributeList::default()
+    pub fn new() -> IppAttributes {
+        IppAttributes::default()
     }
 
     /// Add attribute to the list
@@ -153,27 +155,29 @@ impl IppAttributeList {
     }
 
     /// Get attribute list for a group
-    pub fn get_group(&self, group: DelimiterTag) -> Option<&HashMap<String, IppAttribute>> {
+    pub fn group(&self, group: DelimiterTag) -> Option<&HashMap<String, IppAttribute>> {
         self.attributes.get(&group)
     }
 
     /// Get printer attributes
-    pub fn get_printer_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.get_group(DelimiterTag::PrinterAttributes)
+    pub fn printer_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.group(DelimiterTag::PrinterAttributes)
     }
 
     /// Get job attributes
-    pub fn get_job_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.get_group(DelimiterTag::JobAttributes)
+    pub fn job_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.group(DelimiterTag::JobAttributes)
     }
 
     /// Get operation attributes
-    pub fn get_operation_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.get_group(DelimiterTag::OperationAttributes)
+    pub fn operation_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
+        self.group(DelimiterTag::OperationAttributes)
     }
+}
 
+impl IppWriter for IppAttributes {
     /// Serialize attribute list into binary stream
-    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
         // first send the header attributes
         writer.write_u8(DelimiterTag::OperationAttributes as u8)?;
 
@@ -208,11 +212,5 @@ impl IppAttributeList {
         retval += 1;
 
         Ok(retval)
-    }
-
-    pub fn into_reader(self) -> impl Read {
-        let mut buf = Vec::new();
-        self.write(&mut buf).unwrap();
-        Cursor::new(buf)
     }
 }

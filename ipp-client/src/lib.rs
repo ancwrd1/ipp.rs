@@ -26,7 +26,7 @@
 //! let operation = GetPrinterAttributes::new();
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! if let Ok(attrs) = client.send(operation) {
-//!     for (_, v) in attrs.get_printer_attributes().unwrap() {
+//!     for (_, v) in attrs.printer_attributes().unwrap() {
 //!         println!("{}: {}", v.name(), v.value());
 //!     }
 //! }
@@ -48,6 +48,8 @@ use ippparse::ipp::StatusCode;
 
 pub mod client;
 pub mod util;
+
+pub use client::IppClient;
 
 /// IPP error
 #[derive(Debug)]

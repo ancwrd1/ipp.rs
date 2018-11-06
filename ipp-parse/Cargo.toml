@@ -1,10 +1,17 @@
 [package]
 name = "ippparse"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
+description = "IPP parser and base protocol definitions"
+license = "MIT"
+repository = "https://github.com/dremon/ipp.rs"
+documentation = "https://docs.rs/ipp"
+readme = "README.md"
+keywords = ["ipp", "printing", "protocol"]
 
 [dependencies]
 byteorder = "1.1"
 log = "0.4"
 enum-primitive-derive = "0.1"
 num-traits = "0.2"
+bytes = "0.4"

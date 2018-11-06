@@ -11,9 +11,8 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Certificate, Client, StatusCode};
 use url::Url;
 
-use ippparse::attribute::IppAttributeList;
 use ippparse::ipp;
-use ippparse::parser::IppParser;
+use ippparse::{IppAttributes, IppParser};
 use ippproto::operation::IppOperation;
 use ippproto::request::IppRequestResponse;
 use IppError;
@@ -63,7 +62,7 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributeList, IppError> {
+    pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributes, IppError> {
         match self.send_request(operation.into_ipp_request(&self.uri)) {
             Ok(resp) => {
                 if resp.header().operation_status > 3 {
@@ -89,19 +88,15 @@ impl IppClient {
             Ok(mut url) => {
                 match url.scheme() {
                     "ipp" => {
-                        url.set_scheme("http")
-                            .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        url.set_scheme("http").unwrap();
                         if url.port().is_none() {
-                            url.set_port(Some(631))
-                                .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                            url.set_port(Some(631)).unwrap();
                         }
                     }
                     "ipps" => {
-                        url.set_scheme("https")
-                            .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                        url.set_scheme("https").unwrap();
                         if url.port().is_none() {
-                            url.set_port(Some(631))
-                                .map_err(|_| IppError::RequestError("Invalid URI".to_string()))?;
+                            url.set_port(Some(631)).unwrap();
                         }
                     }
                     _ => {}
@@ -151,7 +146,7 @@ impl IppClient {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
                     let mut parser = IppParser::new(&mut reader);
-                    let resp = IppRequestResponse::from_parser(&mut parser)?;
+                    let resp = IppRequestResponse::from_parser(parser)?;
 
                     Ok(resp)
                 } else {

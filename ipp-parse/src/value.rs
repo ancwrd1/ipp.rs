@@ -2,15 +2,16 @@
 //! IPP value
 //!
 use std::fmt;
-use std::io::{self, Cursor, Read, Write};
+use std::io::{self, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use bytes::Bytes;
 use num_traits::FromPrimitive;
 
 use ipp::ValueTag;
-use IppReadExt;
+use {IppReadExt, IppWriter};
 
-/// Currently supported IPP values
+/// IPP value enumeration
 #[derive(Clone, Debug)]
 pub enum IppValue {
     Integer(i32),
@@ -50,7 +51,7 @@ pub enum IppValue {
     },
     Other {
         tag: u8,
-        data: Vec<u8>,
+        data: Bytes,
     },
 }
 
@@ -88,7 +89,7 @@ impl IppValue {
             None => {
                 return Ok(IppValue::Other {
                     tag: vtag,
-                    data: reader.read_vec(vsize as usize)?,
+                    data: reader.read_bytes(vsize as usize)?,
                 });
             }
         };
@@ -153,13 +154,15 @@ impl IppValue {
             }),
             _ => Ok(IppValue::Other {
                 tag: vtag,
-                data: reader.read_vec(vsize as usize)?,
+                data: reader.read_bytes(vsize as usize)?,
             }),
         }
     }
+}
 
+impl IppWriter for IppValue {
     /// Write value to binary stream
-    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
                 writer.write_u16::<BigEndian>(4)?;
@@ -260,12 +263,6 @@ impl IppValue {
                 Ok(2 + data.len())
             }
         }
-    }
-
-    pub fn into_reader(self) -> impl Read {
-        let mut buf = Vec::new();
-        self.write(&mut buf).unwrap();
-        Cursor::new(buf)
     }
 }
 

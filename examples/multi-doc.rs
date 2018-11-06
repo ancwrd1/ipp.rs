@@ -8,11 +8,11 @@ use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-use ippclient::client::IppClient;
+use ippclient::IppClient;
 use ippparse::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
 use ippparse::ipp::{DelimiterTag, Operation};
-use ippparse::value::IppValue;
-use ippproto::operation::{CreateJob, GetPrinterAttributes, SendDocument};
+use ippparse::IppValue;
+use ippproto::IppOperationBuilder;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
     if let IppValue::Enum(v) = *v {
@@ -35,7 +35,9 @@ fn main() {
     let client = IppClient::new(&args[1]);
 
     // check if printer supports create/send operations
-    let get_op = GetPrinterAttributes::with_attributes(&[OPERATIONS_SUPPORTED.to_string()]);
+    let get_op = IppOperationBuilder::get_printer_attributes()
+        .attribute(OPERATIONS_SUPPORTED)
+        .build();
     let printer_attrs = client.send(get_op).unwrap();
     let ops_attr = printer_attrs
         .get(DelimiterTag::PrinterAttributes, OPERATIONS_SUPPORTED)
@@ -46,7 +48,9 @@ fn main() {
         exit(2);
     }
 
-    let create_op = CreateJob::new(Some("multi-doc"));
+    let create_op = IppOperationBuilder::create_job()
+        .job_name("multi-doc")
+        .build();
     let attrs = client.send(create_op).unwrap();
     let job_id = match *attrs
         .get(DelimiterTag::JobAttributes, JOB_ID)
@@ -63,14 +67,13 @@ fn main() {
         println!("Sending {}, last: {}", item, last);
         let f = File::open(&item).unwrap();
 
-        let send_op = SendDocument::new(
-            job_id,
-            Box::new(BufReader::new(f)),
-            &env::var("USER").unwrap(),
-            last,
-        );
+        let send_op = IppOperationBuilder::send_document(job_id, Box::new(BufReader::new(f)))
+            .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+            .last(last)
+            .build();
+
         let send_attrs = client.send(send_op).unwrap();
-        for v in send_attrs.get_job_attributes().unwrap().values() {
+        for v in send_attrs.job_attributes().unwrap().values() {
             println!("{}: {}", v.name(), v.value());
         }
     }

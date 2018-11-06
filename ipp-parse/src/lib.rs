@@ -1,5 +1,5 @@
 extern crate byteorder;
-#[macro_use]
+extern crate bytes;
 extern crate enum_primitive_derive;
 extern crate log;
 extern crate num_traits;
@@ -8,20 +8,20 @@ use std::fmt::{self, Formatter};
 use std::io::{self, Cursor, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use bytes::{Bytes, BytesMut};
 
 pub mod attribute;
 pub mod ipp;
 pub mod parser;
 pub mod value;
 
-pub use attribute::{IppAttribute, IppAttributeList};
+pub use attribute::{IppAttribute, IppAttributes};
 pub use parser::IppParser;
 pub use value::IppValue;
 
 /// IPP protocol version
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum IppVersion {
-    Unknown,
     Ipp10,
     Ipp11,
     Ipp20,
@@ -38,25 +38,30 @@ impl IppVersion {
             0x0200 => IppVersion::Ipp20,
             0x0201 => IppVersion::Ipp21,
             0x0202 => IppVersion::Ipp22,
-            _ => IppVersion::Unknown,
+            other => {
+                return Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!("Invalid IPP version: {:0x}", other),
+                ))
+            }
         })
     }
 
-    /// Write IppVersion into stream as big endian u16 integer
-    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    pub fn as_u16(&self) -> u16 {
         match self {
-            IppVersion::Unknown => {
-                return Err(io::Error::new(
-                    io::ErrorKind::Other,
-                    "Cannot serialize unknown IPP version!",
-                ))
-            }
-            IppVersion::Ipp10 => writer.write_u16::<BigEndian>(0x0100)?,
-            IppVersion::Ipp11 => writer.write_u16::<BigEndian>(0x0101)?,
-            IppVersion::Ipp20 => writer.write_u16::<BigEndian>(0x0200)?,
-            IppVersion::Ipp21 => writer.write_u16::<BigEndian>(0x0201)?,
-            IppVersion::Ipp22 => writer.write_u16::<BigEndian>(0x0202)?,
+            IppVersion::Ipp10 => 0x0100,
+            IppVersion::Ipp11 => 0x0101,
+            IppVersion::Ipp20 => 0x0200,
+            IppVersion::Ipp21 => 0x0201,
+            IppVersion::Ipp22 => 0x0202,
         }
+    }
+}
+
+impl IppWriter for IppVersion {
+    /// Write IppVersion into stream as big endian u16 integer
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+        writer.write_u16::<BigEndian>(self.as_u16())?;
         Ok(2)
     }
 }
@@ -64,7 +69,6 @@ impl IppVersion {
 impl fmt::Display for IppVersion {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            IppVersion::Unknown => write!(f, "unknown"),
             IppVersion::Ipp10 => write!(f, "1.0"),
             IppVersion::Ipp11 => write!(f, "1.1"),
             IppVersion::Ipp20 => write!(f, "2.0"),
@@ -74,19 +78,34 @@ impl fmt::Display for IppVersion {
     }
 }
 
-/// Trait which adds two methods to Read implementations: `read_string` and `read_vec`
+pub trait IppWriter {
+    fn write(&self, writer: &mut Write) -> io::Result<usize>;
+}
+
+pub trait IppIntoReader: IppWriter {
+    fn into_reader(self) -> Box<Read>
+    where
+        Self: Sized,
+    {
+        let mut buf = Vec::new();
+        self.write(&mut buf).unwrap();
+        Box::new(Cursor::new(buf))
+    }
+}
+impl<R: IppWriter + Sized> IppIntoReader for R {}
+
+/// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
 pub trait IppReadExt: Read {
     fn read_string(&mut self, len: usize) -> std::io::Result<String> {
-        Ok(String::from_utf8_lossy(&self.read_vec(len)?).to_string())
+        Ok(String::from_utf8_lossy(&self.read_bytes(len)?).to_string())
     }
 
-    fn read_vec(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
-        let mut namebuf: Vec<u8> = Vec::with_capacity(len);
-        unsafe { namebuf.set_len(len) };
+    fn read_bytes(&mut self, len: usize) -> std::io::Result<Bytes> {
+        let mut buf = BytesMut::with_capacity(len);
+        buf.resize(len, 0);
+        self.read_exact(&mut buf)?;
 
-        self.read_exact(&mut namebuf)?;
-
-        Ok(namebuf)
+        Ok(buf.freeze())
     }
 }
 
@@ -122,20 +141,15 @@ impl IppHeader {
             request_id,
         }
     }
+}
 
+impl IppWriter for IppHeader {
     /// Write header to a given writer
-    pub fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
         self.version.write(writer)?;
         writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;
 
         Ok(8)
-    }
-
-    /// Convert IppHeader into reader
-    pub fn into_reader(self) -> impl Read {
-        let mut buf = Vec::new();
-        self.write(&mut buf).unwrap();
-        Cursor::new(buf)
     }
 }

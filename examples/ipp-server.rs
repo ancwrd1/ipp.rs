@@ -12,22 +12,16 @@ use std::io::{self, Cursor};
 use std::sync::atomic;
 use std::time;
 
-use hyper::{Request, Server};
-
-use lazy_static::lazy_static;
-
 use futures::future::Future;
 use futures::stream::Stream;
 use hyper::service::service_fn;
-use hyper::Body;
-use hyper::Chunk;
-use hyper::Response;
+use hyper::{Body, Chunk, Response};
+use hyper::{Request, Server};
+use lazy_static::lazy_static;
+
 use ippparse::attribute::*;
-use ippparse::attribute::{IppAttribute, IppAttributeList};
 use ippparse::ipp::*;
-use ippparse::parser::IppParser;
-use ippparse::value::IppValue;
-use ippparse::IppHeader;
+use ippparse::*;
 use ippproto::request::{IppRequestResponse, IppRequestTrait};
 use ippserver::server::*;
 
@@ -143,7 +137,7 @@ impl DummyServer {
 
 struct DummyRequest {
     header: IppHeader,
-    attributes: IppAttributeList,
+    attributes: IppAttributes,
     cursor: Cursor<Chunk>,
 }
 
@@ -321,7 +315,7 @@ fn main() {
                 let mut cursor = Cursor::new(c);
                 let ippreq = {
                     let mut parser = IppParser::new(&mut cursor);
-                    IppRequestResponse::from_parser(&mut parser).unwrap()
+                    IppRequestResponse::from_parser(parser).unwrap()
                 };
                 let dummy_req = DummyRequest {
                     header: ippreq.header().clone(),

@@ -5,7 +5,7 @@ use std::io::Read;
 
 use ippparse::attribute::*;
 use ippparse::ipp::*;
-use ippparse::value::IppValue;
+use ippparse::IppValue;
 use request::IppRequestResponse;
 
 /// Trait which represents a single IPP operation
@@ -28,11 +28,14 @@ impl PrintJob {
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new(reader: Box<Read>, user_name: &str, job_name: Option<&str>) -> PrintJob {
+    pub fn new<T>(reader: Box<Read>, user_name: T, job_name: Option<T>) -> PrintJob
+    where
+        T: AsRef<str>,
+    {
         PrintJob {
             reader,
-            user_name: user_name.to_string(),
-            job_name: job_name.map(|v| v.to_string()),
+            user_name: user_name.as_ref().to_string(),
+            job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
         }
     }
@@ -124,9 +127,12 @@ impl CreateJob {
     /// Create Create-Job operation
     ///
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new(job_name: Option<&str>) -> CreateJob {
+    pub fn new<T>(job_name: Option<T>) -> CreateJob
+    where
+        T: AsRef<str>,
+    {
         CreateJob {
-            job_name: job_name.map(|v| v.to_string()),
+            job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
         }
     }
@@ -170,11 +176,14 @@ impl SendDocument {
     /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new(job_id: i32, reader: Box<Read>, user_name: &str, last: bool) -> SendDocument {
+    pub fn new<T>(job_id: i32, reader: Box<Read>, user_name: T, last: bool) -> SendDocument
+    where
+        T: AsRef<str>,
+    {
         SendDocument {
             job_id,
             reader,
-            user_name: user_name.to_string(),
+            user_name: user_name.as_ref().to_string(),
             last,
         }
     }
