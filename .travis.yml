@@ -18,5 +18,5 @@ cache:
     - target/debug/build
 
 script:
-  - cargo build
-  - cargo test
+  - cargo build --all
+  - cargo test --all

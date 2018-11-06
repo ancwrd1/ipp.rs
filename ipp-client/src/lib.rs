@@ -3,11 +3,11 @@
 //!
 //! Usage examples:
 //!
-//!```rust
+//!```rust,ignore
 //! // using raw API
 //! use ippproto::request::IppRequestResponse;
-//! use client::IppClient;
-//! use ippparse::ipp::operation::Operation;
+//! use ippclient::IppClient;
+//! use ippparse::ipp::Operation;
 //!
 //! let uri = "http://localhost:631/printers/test-printer";
 //! let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
@@ -18,12 +18,13 @@
 //!     }
 //! }
 //!```
-//!```rust
+//!
+//!```rust,ignore
 //! // using operation API
-//! use ippproto::operation::GetPrinterAttributes;
-//! use client::IppClient;
+//! use ippproto::IppOperationBuilder;
+//! use IppClient;
 
-//! let operation = GetPrinterAttributes::new();
+//! let operation = IppOperationBuilder::get_printer_attributes().build();
 //! let client = IppClient::new("http://localhost:631/printers/test-printer");
 //! if let Ok(attrs) = client.send(operation) {
 //!     for (_, v) in attrs.printer_attributes().unwrap() {
