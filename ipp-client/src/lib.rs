@@ -3,35 +3,42 @@
 //!
 //! Usage examples:
 //!
-//!```rust,ignore
+//!```rust
 //! // using raw API
+//! extern crate ippclient;
+//! extern crate ippparse;
+//! extern crate ippproto;
 //! use ippproto::request::IppRequestResponse;
 //! use ippclient::IppClient;
 //! use ippparse::ipp::Operation;
 //!
-//! let uri = "http://localhost:631/printers/test-printer";
-//! let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
-//! let client = IppClient::new(uri);
-//! if let Ok(resp) = client.send_request(req) {
-//!     if resp.header().operation_status <= 3 {
-//!         println!("result: {:?}", resp.attributes());
+//! fn main() {
+//!     let uri = "http://localhost:631/printers/test-printer";
+//!     let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
+//!     let client = IppClient::new(uri);
+//!     if let Ok(resp) = client.send_request(req) {
+//!         if resp.header().operation_status <= 2 {
+//!             println!("result: {:?}", resp.attributes());
+//!         }
 //!     }
 //! }
 //!```
-//!
-//!```rust,ignore
+//!```rust
 //! // using operation API
+//! extern crate ippclient;
+//! extern crate ippproto;
 //! use ippproto::IppOperationBuilder;
-//! use IppClient;
-
-//! let operation = IppOperationBuilder::get_printer_attributes().build();
-//! let client = IppClient::new("http://localhost:631/printers/test-printer");
-//! if let Ok(attrs) = client.send(operation) {
-//!     for (_, v) in attrs.printer_attributes().unwrap() {
-//!         println!("{}: {}", v.name(), v.value());
+//! use ippclient::IppClient;
+//!
+//! fn main() {
+//!     let operation = IppOperationBuilder::get_printer_attributes().build();
+//!     let client = IppClient::new("http://localhost:631/printers/test-printer");
+//!     if let Ok(attrs) = client.send(operation) {
+//!         for (_, v) in attrs.printer_attributes().unwrap() {
+//!             println!("{}: {}", v.name(), v.value());
+//!         }
 //!     }
 //! }
-
 //!```
 
 extern crate clap;

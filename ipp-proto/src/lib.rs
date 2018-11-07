@@ -1,36 +1,41 @@
 extern crate ippparse;
 extern crate log;
 
-use operation::PrintJob;
 use std::io::Read;
-use operation::GetPrinterAttributes;
-use operation::CreateJob;
+
 use ippparse::IppAttribute;
-use operation::SendDocument;
+use operation::IppOperation;
+use operation::{CreateJob, GetPrinterAttributes, PrintJob, SendDocument};
 
 pub mod operation;
 pub mod request;
 
+/// Builder to create IPP operations
 pub struct IppOperationBuilder;
 
 impl IppOperationBuilder {
+    /// Create PrintJob operation
     pub fn print_job(reader: Box<Read>) -> PrintJobBuilder {
         PrintJobBuilder::new(reader)
     }
 
+    /// Create GetPrinterAttributes operation
     pub fn get_printer_attributes() -> GetPrinterAttributesBuilder {
         GetPrinterAttributesBuilder::new()
     }
 
+    /// Create CreateJob operation
     pub fn create_job() -> CreateJobBuilder {
         CreateJobBuilder::new()
     }
 
+    /// Create SendDocument operation
     pub fn send_document(job_id: i32, reader: Box<Read>) -> SendDocumentBuilder {
         SendDocumentBuilder::new(job_id, reader)
     }
 }
 
+/// Builder to create PrintJob operation
 pub struct PrintJobBuilder {
     reader: Box<Read>,
     user_name: Option<String>,
@@ -44,25 +49,29 @@ impl PrintJobBuilder {
             reader,
             user_name: None,
             job_title: None,
-            attributes: Vec::new()
+            attributes: Vec::new(),
         }
     }
+    /// Specify requesting-user-name attribute
     pub fn user_name(mut self, user_name: &str) -> Self {
         self.user_name = Some(user_name.to_owned());
         self
     }
 
+    /// Specify job-name attribute
     pub fn job_title(mut self, job_title: &str) -> Self {
         self.job_title = Some(job_title.to_owned());
         self
     }
 
+    /// Specify custom job attribute
     pub fn attribute(mut self, attribute: IppAttribute) -> Self {
         self.attributes.push(attribute);
         self
     }
 
-    pub fn build(self) -> PrintJob {
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
         let mut op = PrintJob::new(
             self.reader,
             &self.user_name.unwrap_or_else(|| String::new()),
@@ -75,6 +84,7 @@ impl PrintJobBuilder {
     }
 }
 
+/// Builder to create GetPrinterAttributes operation
 pub struct GetPrinterAttributesBuilder {
     attributes: Vec<String>,
 }
@@ -86,24 +96,29 @@ impl GetPrinterAttributesBuilder {
         }
     }
 
+    /// Specify which attribute to retrieve from the printer. Can be repeated.
     pub fn attribute(mut self, attribute: &str) -> Self {
         self.attributes.push(attribute.to_owned());
         self
     }
 
+    /// Specify which attributes to retrieve from the printer
     pub fn attributes<T>(mut self, attributes: &[T]) -> Self
     where
         T: AsRef<str>,
     {
-        self.attributes.extend(attributes.iter().map(|s| s.as_ref().to_string()));
+        self.attributes
+            .extend(attributes.iter().map(|s| s.as_ref().to_string()));
         self
     }
 
-    pub fn build(self) -> GetPrinterAttributes {
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
         GetPrinterAttributes::with_attributes(&self.attributes)
     }
 }
 
+/// Builder to create CreateJob operation
 pub struct CreateJobBuilder {
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
@@ -117,17 +132,20 @@ impl CreateJobBuilder {
         }
     }
 
+    /// Specify job-name attribute
     pub fn job_name(mut self, job_name: &str) -> Self {
         self.job_name = Some(job_name.to_owned());
         self
     }
 
+    /// Specify custom job attribute
     pub fn attribute(mut self, attribute: IppAttribute) -> Self {
         self.attributes.push(attribute);
         self
     }
 
-    pub fn build(self) -> CreateJob {
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
         let mut op = CreateJob::new(self.job_name.as_ref());
         for attr in self.attributes {
             op.add_attribute(attr);
@@ -136,6 +154,7 @@ impl CreateJobBuilder {
     }
 }
 
+/// Builder to create SendDocument operation
 pub struct SendDocumentBuilder {
     job_id: i32,
     reader: Box<Read>,
@@ -153,22 +172,25 @@ impl SendDocumentBuilder {
         }
     }
 
+    /// Specify originating-user-name attribute
     pub fn user_name(mut self, user_name: &str) -> Self {
         self.user_name = Some(user_name.to_owned());
         self
     }
 
+    /// Parameter which indicates whether this document is a last one
     pub fn last(mut self, last: bool) -> Self {
         self.is_last = last;
         self
     }
 
-    pub fn build(self) -> SendDocument {
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
         SendDocument::new(
             self.job_id,
             self.reader,
             &self.user_name.unwrap_or_else(|| String::new()),
-            self.is_last
+            self.is_last,
         )
     }
 }
