@@ -1,5 +1,5 @@
 //!
-//! IPP client
+//! IPP print protocol suite
 //!
 //! Usage examples:
 //!
@@ -24,15 +24,15 @@
 //! }
 //!```
 //!```rust
-//! // using operation API
+//! // using high level API
 //! extern crate ippclient;
 //! extern crate ippproto;
 //! use ippproto::IppOperationBuilder;
-//! use ippclient::IppClient;
+//! use ippclient::IppClientBuilder;
 //!
 //! fn main() {
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
-//!     let client = IppClient::new("http://localhost:631/printers/test-printer");
+//!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
 //!     if let Ok(attrs) = client.send(operation) {
 //!         for (_, v) in attrs.printer_attributes().unwrap() {
 //!             println!("{}: {}", v.name(), v.value());
@@ -51,6 +51,7 @@ extern crate url;
 
 use std::fmt;
 use std::io;
+use std::path::{Path, PathBuf};
 
 use ippparse::ipp::StatusCode;
 
@@ -58,6 +59,8 @@ pub mod client;
 pub mod util;
 
 pub use client::IppClient;
+
+const DEFAULT_TIMEOUT: u64 = 30;
 
 /// IPP error
 #[derive(Debug)]
@@ -123,5 +126,67 @@ impl From<reqwest::Error> for IppError {
 impl From<clap::Error> for IppError {
     fn from(error: clap::Error) -> IppError {
         IppError::ParamError(error)
+    }
+}
+
+/// Builder to create IPP client
+pub struct IppClientBuilder {
+    uri: String,
+    ca_certs: Vec<PathBuf>,
+    verify_hostname: bool,
+    timeout: u64,
+}
+
+impl IppClientBuilder {
+    /// Create a client builder for a given URI
+    pub fn new(uri: &str) -> Self {
+        IppClientBuilder {
+            uri: uri.to_owned(),
+            ca_certs: Vec::new(),
+            verify_hostname: true,
+            timeout: DEFAULT_TIMEOUT,
+        }
+    }
+
+    /// Add CA certificate
+    pub fn ca_cert<P>(mut self, path: P) -> Self
+    where
+        P: AsRef<Path>,
+    {
+        self.ca_certs.push(path.as_ref().to_owned());
+        self
+    }
+
+    /// Add CA certificates
+    pub fn ca_certs<P>(mut self, paths: &[P]) -> Self
+    where
+        P: AsRef<Path>,
+    {
+        self.ca_certs
+            .extend(paths.iter().map(|p| p.as_ref().to_owned()));
+        self
+    }
+
+    /// Enable or disable host name verification
+    pub fn verify_hostname(mut self, verify: bool) -> Self {
+        self.verify_hostname = verify;
+        self
+    }
+
+    /// Set network timeout in seconds
+    pub fn timeout(mut self, timeout: u64) -> Self {
+        self.timeout = timeout;
+        self
+    }
+
+    /// Build the client
+    pub fn build(self) -> IppClient {
+        let mut client = IppClient::new(&self.uri);
+        client.set_verify_hostname(self.verify_hostname);
+        for cert in self.ca_certs {
+            client.add_root_certificate(&cert);
+        }
+        client.set_timeout(self.timeout);
+        client
     }
 }

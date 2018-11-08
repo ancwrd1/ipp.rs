@@ -3,6 +3,7 @@
 //!
 use std::fs;
 use std::io::BufReader;
+use std::path::PathBuf;
 use std::time::Duration;
 
 use log::{debug, error};
@@ -15,17 +16,17 @@ use ippparse::ipp;
 use ippparse::{IppAttributes, IppParser};
 use ippproto::operation::IppOperation;
 use ippproto::request::IppRequestResponse;
+use std::path::Path;
 use IppError;
-
-const TIMEOUT: u64 = 30;
 
 /// IPP client.
 ///
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
     uri: String,
-    cacerts: Vec<String>,
+    cacerts: Vec<PathBuf>,
     verify_hostname: bool,
+    timeout: u64,
 }
 
 impl IppClient {
@@ -35,30 +36,26 @@ impl IppClient {
             uri: uri.to_string(),
             cacerts: Vec::new(),
             verify_hostname: true,
-        }
-    }
-
-    /// Create new instance of the client with a list of root CA certificates
-    ///
-    /// * `uri` - target printer URI
-    /// * `certfiles` - list of certificate file names
-    pub fn with_root_certificates<T>(uri: &str, certfiles: &[T]) -> IppClient
-    where
-        T: AsRef<str>,
-    {
-        IppClient {
-            uri: uri.to_string(),
-            cacerts: certfiles
-                .iter()
-                .map(|s| s.as_ref().to_string())
-                .collect::<Vec<String>>(),
-            verify_hostname: true,
+            timeout: 30,
         }
     }
 
     /// Enable or disable host name validation for SSL transport. By default it is enabled.
     pub fn set_verify_hostname(&mut self, verify: bool) {
         self.verify_hostname = verify;
+    }
+
+    /// Add CA certificate
+    pub fn add_root_certificate<P>(&mut self, cacert: P)
+    where
+        P: AsRef<Path>,
+    {
+        self.cacerts.push(cacert.as_ref().to_owned());
+    }
+
+    /// Set communication timeout in seconds
+    pub fn set_timeout(&mut self, timeout: u64) {
+        self.timeout = timeout;
     }
 
     /// send IPP operation
@@ -113,12 +110,12 @@ impl IppClient {
                     let buf = fs::read(&certfile)?;
                     let cacert = match Certificate::from_der(&buf) {
                         Ok(cacert) => {
-                            debug!("Read DER certificate from {}", certfile);
+                            debug!("Read DER certificate from {:?}", certfile);
                             cacert
                         }
                         Err(_) => {
                             let cacert = Certificate::from_pem(&buf)?;
-                            debug!("Read PEM certificate from {}", certfile);
+                            debug!("Read PEM certificate from {:?}", certfile);
                             cacert
                         }
                     };
@@ -132,7 +129,7 @@ impl IppClient {
 
                 let client = builder
                     .gzip(false)
-                    .timeout(Duration::from_secs(TIMEOUT))
+                    .timeout(Duration::from_secs(self.timeout))
                     .build()?;
 
                 let http_req = client

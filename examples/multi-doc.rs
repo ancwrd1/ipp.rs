@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-use ippclient::IppClient;
+use ippclient::IppClientBuilder;
 use ippparse::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
 use ippparse::ipp::{DelimiterTag, Operation};
 use ippparse::IppValue;
@@ -32,7 +32,7 @@ fn main() {
         exit(1);
     }
 
-    let client = IppClient::new(&args[1]);
+    let client = IppClientBuilder::new(&args[1]).build();
 
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes()

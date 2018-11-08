@@ -8,7 +8,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::process::exit;
 
-use ippclient::IppClient;
+use ippclient::IppClientBuilder;
 use ippparse::{IppAttribute, IppValue};
 use ippproto::IppOperationBuilder;
 
@@ -45,7 +45,7 @@ pub fn main() {
 
     let operation = builder.build();
 
-    let client = IppClient::new(&args[1]);
+    let client = IppClientBuilder::new(&args[1]).build();
     let attrs = client.send(operation).unwrap();
 
     for v in attrs.job_attributes().unwrap().values() {

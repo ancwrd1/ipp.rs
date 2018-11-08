@@ -17,6 +17,7 @@ use ippparse::{IppAttribute, IppValue};
 use ippproto::operation::{GetPrinterAttributes, PrintJob};
 
 use client::IppClient;
+use IppClientBuilder;
 use IppError;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -39,16 +40,15 @@ fn unwrap_values(values: Option<Values>) -> Values {
 }
 
 fn new_client(matches: &ArgMatches) -> IppClient {
-    let mut client = IppClient::with_root_certificates(
-        matches.value_of("uri").unwrap(),
-        &unwrap_values(matches.values_of("cacert")).collect::<Vec<_>>(),
-    );
+    let mut builder = IppClientBuilder::new(matches.value_of("uri").unwrap())
+        .timeout(matches.value_of("timeout").unwrap().parse::<u64>().unwrap())
+        .ca_certs(&unwrap_values(matches.values_of("cacert")).collect::<Vec<_>>());
 
     if matches.is_present("noverifyhostname") {
-        client.set_verify_hostname(false);
+        builder = builder.verify_hostname(false);
     }
 
-    client
+    builder.build()
 }
 
 fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
@@ -163,6 +163,8 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 /// OPTIONS:
 ///     -a, --attribute <attribute>...    IPP attribute to query, default is get all
 ///     -c, --cacert <filename>...        Additional root certificates in PEM or DER format
+///     -t, --timeout <timeout>           Network timeout in seconds [default: 30]
+///
 /// ARGS:
 ///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
 ///```
@@ -181,6 +183,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 ///     -f, --file <filename>          Input file name to print. If missing will read from stdin
 ///     -j, --job <jobname>            Job name to send as job-name attribute
 ///     -o, --option <key=value>...    Extra IPP job attributes to send
+///     -t, --timeout <timeout>        Network timeout in seconds [default: 30]
 ///     -u, --user <username>          User name to send as requesting-user-name attribute
 ///
 /// ARGS:
@@ -212,6 +215,13 @@ where
                 .help("Disable host name verification for SSL transport")
                 .global(true)
                 .required(false),
+        ).arg(
+            Arg::with_name("timeout")
+                .short("t")
+                .long("--timeout")
+                .help("Network timeout in seconds")
+                .global(true)
+                .default_value("30"),
         ).subcommand(
             SubCommand::with_name("print")
                 .about("Print file to an IPP printer")
