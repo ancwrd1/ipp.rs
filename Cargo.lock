@@ -338,25 +338,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "ipp"
-version = "0.3.0"
-dependencies = [
- "env_logger 0.5.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
- "hyper 0.12.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "ippclient 0.3.0",
- "ippparse 0.3.0",
- "ippproto 0.3.0",
- "ippserver 0.3.0",
- "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "ippclient"
 version = "0.3.0"
 dependencies = [
- "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "env_logger 0.5.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "ippparse 0.3.0",
  "ippproto 0.3.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -390,6 +374,19 @@ version = "0.3.0"
 dependencies = [
  "ippparse 0.3.0",
  "ippproto 0.3.0",
+ "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ipputil"
+version = "0.3.0"
+dependencies = [
+ "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "env_logger 0.5.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ippclient 0.3.0",
+ "ippparse 0.3.0",
+ "ippproto 0.3.0",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

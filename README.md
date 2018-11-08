@@ -7,16 +7,19 @@ IPP protocol implementation for Rust
 Usage example:
 
 ```rust
-extern crate ipp;
-use ipp::{GetPrinterAttributes, IppClient};
-pub fn main() {
-    let client = IppClient::new("http://localhost:631/printers/test-printer");
-    let operation = GetPrinterAttributes::new();
+extern crate ippclient;
+extern crate ippproto;
 
-    let attrs = client.send(operation).unwrap();
+use ippproto::IppOperationBuilder;
+use ippclient::IppClientBuilder;
 
-    for v in attrs.get_printer_attributes().unwrap().values() {
-        println!("{}: {}", v.name(), v.value());
+fn main() {
+    let operation = IppOperationBuilder::get_printer_attributes().build();
+    let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
+    if let Ok(attrs) = client.send(operation) {
+        for (_, v) in attrs.printer_attributes().unwrap() {
+            println!("{}: {}", v.name(), v.value());
+        }
     }
 }
 ```

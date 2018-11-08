@@ -26,6 +26,7 @@ pub struct IppClient {
     uri: String,
     cacerts: Vec<PathBuf>,
     verify_hostname: bool,
+    verify_certificate: bool,
     timeout: u64,
 }
 
@@ -36,6 +37,7 @@ impl IppClient {
             uri: uri.to_string(),
             cacerts: Vec::new(),
             verify_hostname: true,
+            verify_certificate: true,
             timeout: 30,
         }
     }
@@ -43,6 +45,11 @@ impl IppClient {
     /// Enable or disable host name validation for SSL transport. By default it is enabled.
     pub fn set_verify_hostname(&mut self, verify: bool) {
         self.verify_hostname = verify;
+    }
+
+    /// Enable or disable server certificate validation for SSL transport. By default it is enabled.
+    pub fn set_verify_certificate(&mut self, verify: bool) {
+        self.verify_certificate = verify;
     }
 
     /// Add CA certificate

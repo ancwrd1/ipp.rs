@@ -1,23 +1,26 @@
 extern crate env_logger;
 extern crate ippclient;
+extern crate ipputil;
 
 use std::env;
 use std::process::exit;
 
-use ippclient::{util, IppError};
+use ippclient::IppError;
+use ipputil::util;
 
 fn main() {
     env_logger::init();
 
     let result = util::util_main(env::args_os());
-    match result {
-        Ok(_) => {}
-        Err(e) => match e {
-            IppError::ParamError(e) => e.exit(),
+    if let Err(e) = result {
+        match e {
+            IppError::ParamError(ref err) => {
+                eprintln!("{}", err);
+            }
             _ => {
                 eprintln!("ERROR: {}", e);
-                exit(e.as_exit_code());
             }
-        },
+        }
+        exit(e.as_exit_code());
     }
 }

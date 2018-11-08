@@ -16,9 +16,7 @@ use ippparse::ipp::{DelimiterTag, PrinterState};
 use ippparse::{IppAttribute, IppValue};
 use ippproto::operation::{GetPrinterAttributes, PrintJob};
 
-use client::IppClient;
-use IppClientBuilder;
-use IppError;
+use ippclient::{IppClient, IppClientBuilder, IppError};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -46,6 +44,10 @@ fn new_client(matches: &ArgMatches) -> IppClient {
 
     if matches.is_present("noverifyhostname") {
         builder = builder.verify_hostname(false);
+    }
+
+    if matches.is_present("noverifycertificate") {
+        builder = builder.verify_certificate(false);
     }
 
     builder.build()
@@ -151,15 +153,18 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 
 /// Entry point to main utility function
 ///
-/// * `args` - a list of arguments to pass to `clap` argument parser
+/// * `args` - a list of arguments including program name as a first argument
 ///
 /// Command line usage for getting printer status (will print list of printer attributes on stdout)
 /// ```text
 /// USAGE:
-///     ipputil status [FLAGS] [OPTIONS] <uri>
+/// ipputil status [FLAGS] [OPTIONS] <uri>
+///
 /// FLAGS:
-///     -h, --help                  Prints help information
-///     -r, --no-verify-hostname    Disable host name verification for SSL transport
+///     -h, --help                     Prints help information
+///     --no-verify-certificate    Disable server certificate verification
+///     --no-verify-hostname       Disable server host name verification
+///
 /// OPTIONS:
 ///     -a, --attribute <attribute>...    IPP attribute to query, default is get all
 ///     -c, --cacert <filename>...        Additional root certificates in PEM or DER format
@@ -174,13 +179,14 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 ///     ipputil print [FLAGS] [OPTIONS] <uri>
 ///
 /// FLAGS:
-///     -h, --help                  Prints help information
-///     -n, --no-check-state        Do not check printer state before printing
-///     -r, --no-verify-hostname    Disable host name verification for SSL transport
+///     -h, --help                     Prints help information
+///     -n, --no-check-state           Do not check printer state before printing
+///         --no-verify-certificate    Disable server certificate verification
+///         --no-verify-hostname       Disable server host name verification
 ///
 /// OPTIONS:
 ///     -c, --cacert <filename>...     Additional root certificates in PEM or DER format
-///     -f, --file <filename>          Input file name to print. If missing will read from stdin
+///     -f, --file <filename>          Input file name to print [default: standard input]
 ///     -j, --job <jobname>            Job name to send as job-name attribute
 ///     -o, --option <key=value>...    Extra IPP job attributes to send
 ///     -t, --timeout <timeout>        Network timeout in seconds [default: 30]
@@ -210,9 +216,14 @@ where
                 .required(false),
         ).arg(
             Arg::with_name("noverifyhostname")
-                .short("r")
                 .long("--no-verify-hostname")
-                .help("Disable host name verification for SSL transport")
+                .help("Disable server host name verification")
+                .global(true)
+                .required(false),
+        ).arg(
+            Arg::with_name("noverifycertificate")
+                .long("--no-verify-certificate")
+                .help("Disable server certificate verification")
                 .global(true)
                 .required(false),
         ).arg(
@@ -236,7 +247,7 @@ where
                         .short("f")
                         .long("file")
                         .value_name("filename")
-                        .help("Input file name to print. If missing will read from stdin")
+                        .help("Input file name to print [default: standard input]")
                         .required(false),
                 ).arg(
                     Arg::with_name("username")
@@ -287,7 +298,8 @@ where
                         .required(true)
                         .help("Printer URI, supported schemes: ipp, ipps, http, https"),
                 ),
-        ).get_matches_from_safe(args)?;
+        ).get_matches_from_safe(args)
+        .map_err(|e| IppError::ParamError(e.to_string()))?;
 
     if let Some(printcmd) = args.subcommand_matches("print") {
         do_print(printcmd)

@@ -1,5 +1,5 @@
 //!
-//! IPP print protocol suite
+//! IPP client
 //!
 //! Usage examples:
 //!
@@ -41,7 +41,6 @@
 //! }
 //!```
 
-extern crate clap;
 extern crate ippparse;
 extern crate ippproto;
 extern crate log;
@@ -56,7 +55,6 @@ use std::path::{Path, PathBuf};
 use ippparse::ipp::StatusCode;
 
 pub mod client;
-pub mod util;
 
 pub use client::IppClient;
 
@@ -73,10 +71,10 @@ pub enum IppError {
     RequestError(String),
     /// IPP status error
     StatusError(StatusCode),
-    /// Command-line parameter error
-    ParamError(clap::Error),
     /// Printer state error
     PrinterStateError(Vec<String>),
+    /// Parameter error
+    ParamError(String),
 }
 
 impl IppError {
@@ -86,7 +84,7 @@ impl IppError {
             IppError::IOError(_) => 3,
             IppError::RequestError(_) => 4,
             IppError::StatusError(_) => 6,
-            IppError::ParamError(_) => 1,
+            IppError::ParamError(_) => 7,
             IppError::PrinterStateError(_) => 8,
         }
     }
@@ -99,7 +97,7 @@ impl fmt::Display for IppError {
             IppError::IOError(ref e) => write!(f, "{}", e),
             IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
             IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
-            IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e),
+            IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
         }
     }
@@ -123,17 +121,12 @@ impl From<reqwest::Error> for IppError {
     }
 }
 
-impl From<clap::Error> for IppError {
-    fn from(error: clap::Error) -> IppError {
-        IppError::ParamError(error)
-    }
-}
-
 /// Builder to create IPP client
 pub struct IppClientBuilder {
     uri: String,
     ca_certs: Vec<PathBuf>,
     verify_hostname: bool,
+    verify_certificate: bool,
     timeout: u64,
 }
 
@@ -144,6 +137,7 @@ impl IppClientBuilder {
             uri: uri.to_owned(),
             ca_certs: Vec::new(),
             verify_hostname: true,
+            verify_certificate: true,
             timeout: DEFAULT_TIMEOUT,
         }
     }
@@ -173,6 +167,12 @@ impl IppClientBuilder {
         self
     }
 
+    /// Enable or disable server certificate verification
+    pub fn verify_certificate(mut self, verify: bool) -> Self {
+        self.verify_certificate = verify;
+        self
+    }
+
     /// Set network timeout in seconds
     pub fn timeout(mut self, timeout: u64) -> Self {
         self.timeout = timeout;
@@ -183,6 +183,7 @@ impl IppClientBuilder {
     pub fn build(self) -> IppClient {
         let mut client = IppClient::new(&self.uri);
         client.set_verify_hostname(self.verify_hostname);
+        client.set_verify_certificate(self.verify_certificate);
         for cert in self.ca_certs {
             client.add_root_certificate(&cert);
         }

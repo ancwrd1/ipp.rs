@@ -1,11 +1,15 @@
-//!
-//! Interface functions to be called from other languages
-//!
+extern crate clap;
+extern crate log;
+extern crate num_traits;
 
 extern crate ippclient;
+extern crate ippparse;
+extern crate ippproto;
 
 use std::ffi::CStr;
 use std::os::raw::c_char;
+
+pub mod util;
 
 unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
     let mut rc = Vec::new();
@@ -25,7 +29,7 @@ unsafe fn convert_args(args: *const *const c_char) -> Vec<String> {
 #[no_mangle]
 pub unsafe extern "C" fn ipp_main(args: *const *const c_char) -> i32 {
     let args = convert_args(args);
-    match ippclient::util::util_main(args) {
+    match util::util_main(args) {
         Ok(_) => 0,
         Err(e) => e.as_exit_code(),
     }
