@@ -16,3 +16,7 @@ num-traits = "0.2"
 reqwest = "0.9"
 url = "1.7"
 log = "0.4"
+
+[dev-dependencies]
+futures = "0.1"
+env_logger = "0.5"

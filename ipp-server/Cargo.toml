@@ -13,3 +13,9 @@ keywords = ["ipp", "printing", "protocol"]
 num-traits = "0.2"
 ippparse = { path = "../ipp-parse" }
 ippproto = { path = "../ipp-proto" }
+
+[dev-dependencies]
+ippserver = { path = "../ipp-server" }
+lazy_static = "1.2"
+hyper = "0.12"
+futures = "0.1"

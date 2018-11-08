@@ -1,11 +1,2 @@
 [workspace]
 members = [ "ipp-parse", "ipp-proto", "ipp-client", "ipp-server", "ipp-util" ]
-
-[dev-dependencies]
-ippclient = { path = "ipp-parse" }
-ippparse = { path = "ipp-parse" }
-ippproto = { path = "ipp-proto" }
-ippserver = { path = "ipp-server" }
-lazy_static = "1.2"
-hyper = "0.12"
-futures = "0.1"

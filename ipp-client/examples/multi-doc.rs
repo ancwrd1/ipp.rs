@@ -15,8 +15,8 @@ use ippparse::IppValue;
 use ippproto::IppOperationBuilder;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
-    if let IppValue::Enum(v) = *v {
-        v == Operation::CreateJob as i32 || v == Operation::SendDocument as i32
+    if let IppValue::Enum(ref v) = v {
+        *v == Operation::CreateJob as i32 || *v == Operation::SendDocument as i32
     } else {
         false
     }
