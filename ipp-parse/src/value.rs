@@ -8,8 +8,7 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::Bytes;
 use num_traits::FromPrimitive;
 
-use ipp::ValueTag;
-use {IppReadExt, IppWriter};
+use {ipp::ValueTag, IppReadExt, IppWriter};
 
 /// IPP value enumeration
 #[derive(Clone, Debug)]
@@ -325,26 +324,26 @@ impl fmt::Display for IppValue {
 
 impl<'a> IntoIterator for &'a IppValue {
     type Item = &'a IppValue;
-    type IntoIter = IppValueIntoIterator<'a>;
+    type IntoIter = IppValueIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        IppValueIntoIterator {
+        IppValueIterator {
             value: self,
             index: 0,
         }
     }
 }
 
-pub struct IppValueIntoIterator<'a> {
+pub struct IppValueIterator<'a> {
     value: &'a IppValue,
     index: usize,
 }
 
-impl<'a> Iterator for IppValueIntoIterator<'a> {
+impl<'a> Iterator for IppValueIterator<'a> {
     type Item = &'a IppValue;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match *self.value {
+        match self.value {
             IppValue::ListOf(ref list) | IppValue::Collection(ref list) => {
                 if self.index < list.len() {
                     self.index += 1;

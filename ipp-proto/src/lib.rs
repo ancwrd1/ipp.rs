@@ -4,8 +4,7 @@ extern crate log;
 use std::io::Read;
 
 use ippparse::IppAttribute;
-use operation::IppOperation;
-use operation::{CreateJob, GetPrinterAttributes, PrintJob, SendDocument};
+use operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
 
 pub mod operation;
 pub mod request;

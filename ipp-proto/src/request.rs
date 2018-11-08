@@ -6,9 +6,11 @@ use std::sync::Mutex;
 
 use log::debug;
 
-use ippparse::attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI};
-use ippparse::ipp::{DelimiterTag, Operation};
-use ippparse::*;
+use ippparse::{
+    attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI},
+    ipp::{DelimiterTag, Operation},
+    *,
+};
 
 /// IPP request/response struct
 pub struct IppRequestResponse {

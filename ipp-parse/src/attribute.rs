@@ -6,8 +6,7 @@ use std::io::{self, Write};
 
 use byteorder::{BigEndian, WriteBytesExt};
 
-use ipp::*;
-use {IppValue, IppWriter};
+use {ipp::*, IppValue, IppWriter};
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";

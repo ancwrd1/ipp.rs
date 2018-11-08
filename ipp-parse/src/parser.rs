@@ -7,8 +7,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use log::debug;
 use num_traits::FromPrimitive;
 
-use ipp::*;
-use {IppAttribute, IppAttributes, IppHeader, IppReadExt, IppValue};
+use {ipp::*, *};
 
 // create a single value from one-element list, list otherwise
 fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
@@ -17,6 +16,10 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     } else {
         IppValue::ListOf(list)
     }
+}
+
+fn tag_error(tag: u8) -> io::Error {
+    io::Error::new(io::ErrorKind::Other, format!("Tag error: {}", tag))
 }
 
 /// IPP parsing result
@@ -52,7 +55,7 @@ impl<'a> IppParser<'a> {
         }
     }
 
-    fn add_attribute(&mut self) {
+    fn add_last_attribute(&mut self) {
         if let Some(ref last_name) = self.last_name {
             if let Some(val_list) = self.context.pop() {
                 self.attributes.add(
@@ -67,15 +70,12 @@ impl<'a> IppParser<'a> {
     fn parse_delimiter(&mut self, tag: u8) -> io::Result<bool> {
         debug!("Delimiter tag: {:0x}", tag);
         if tag == DelimiterTag::EndOfAttributes as u8 {
-            // end of stream, get last saved collection
-            self.add_attribute();
+            // end of stream, add last attribute
+            self.add_last_attribute();
             Ok(true)
         } else {
             // remember delimiter tag
-            self.last_delimiter = DelimiterTag::from_u8(tag).ok_or(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Tag error: {}", tag),
-            ))?;
+            self.last_delimiter = DelimiterTag::from_u8(tag).ok_or_else(|| tag_error(tag))?;
             Ok(false)
         }
     }
@@ -90,7 +90,7 @@ impl<'a> IppParser<'a> {
 
         if namelen > 0 {
             // single attribute or begin of array
-            self.add_attribute();
+            self.add_last_attribute();
             // store it as a previous attribute
             self.last_name = Some(name);
         }
@@ -125,10 +125,7 @@ impl<'a> IppParser<'a> {
                 },
                 tag @ 0x10...0x4a => self.parse_value(tag)?,
                 tag => {
-                    return Err(io::Error::new(
-                        io::ErrorKind::Other,
-                        format!("Tag error: {}", tag),
-                    ))
+                    return Err(tag_error(tag));
                 }
             }
         }

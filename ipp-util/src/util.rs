@@ -11,12 +11,13 @@ use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
 use log::debug;
 use num_traits::FromPrimitive;
 
-use ippparse::attribute::{PRINTER_STATE, PRINTER_STATE_REASONS};
-use ippparse::ipp::{DelimiterTag, PrinterState};
-use ippparse::{IppAttribute, IppValue};
-use ippproto::operation::{GetPrinterAttributes, PrintJob};
-
 use ippclient::{IppClient, IppClientBuilder, IppError};
+use ippparse::{
+    attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
+    ipp::{DelimiterTag, PrinterState},
+    IppAttribute, IppValue,
+};
+use ippproto::operation::{GetPrinterAttributes, PrintJob};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

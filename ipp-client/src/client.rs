@@ -3,6 +3,7 @@
 //!
 use std::fs;
 use std::io::BufReader;
+use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -12,11 +13,8 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Certificate, Client, StatusCode};
 use url::Url;
 
-use ippparse::ipp;
-use ippparse::{IppAttributes, IppParser};
-use ippproto::operation::IppOperation;
-use ippproto::request::IppRequestResponse;
-use std::path::Path;
+use ippparse::{ipp, IppAttributes, IppParser};
+use ippproto::{operation::IppOperation, request::IppRequestResponse};
 use IppError;
 
 /// IPP client.
@@ -67,9 +65,9 @@ impl IppClient {
 
     /// send IPP operation
     pub fn send<T: IppOperation>(&self, operation: T) -> Result<IppAttributes, IppError> {
-        match self.send_request(operation.into_ipp_request(&self.uri)) {
-            Ok(resp) => {
-                if resp.header().operation_status > 3 {
+        self.send_request(operation.into_ipp_request(&self.uri))
+            .and_then(|resp| {
+                if resp.header().operation_status > 2 {
                     // IPP error
                     Err(IppError::StatusError(
                         ipp::StatusCode::from_u16(resp.header().operation_status)
@@ -78,9 +76,7 @@ impl IppClient {
                 } else {
                     Ok(resp.attributes().clone())
                 }
-            }
-            Err(err) => Err(err),
-        }
+            })
     }
 
     /// Send request and return response
@@ -88,8 +84,9 @@ impl IppClient {
         &self,
         request: IppRequestResponse,
     ) -> Result<IppRequestResponse, IppError> {
-        match Url::parse(&self.uri) {
-            Ok(mut url) => {
+        Url::parse(&self.uri)
+            .map_err(|e| IppError::RequestError(e.to_string()))
+            .and_then(|mut url| {
                 match url.scheme() {
                     "ipp" => {
                         url.set_scheme("http").unwrap();
@@ -134,6 +131,11 @@ impl IppClient {
                     builder = builder.danger_accept_invalid_hostnames(true);
                 }
 
+                if !self.verify_certificate {
+                    debug!("Disabling certificate verification!");
+                    builder = builder.danger_accept_invalid_certs(true);
+                }
+
                 let client = builder
                     .gzip(false)
                     .timeout(Duration::from_secs(self.timeout))
@@ -149,25 +151,19 @@ impl IppClient {
                 if http_resp.status() == StatusCode::OK {
                     // HTTP 200 assumes we have IPP response to parse
                     let mut reader = BufReader::new(http_resp);
-                    let mut parser = IppParser::new(&mut reader);
+                    let parser = IppParser::new(&mut reader);
                     let resp = IppRequestResponse::from_parser(parser)?;
 
                     Ok(resp)
                 } else {
                     error!("HTTP error: {}", http_resp.status());
-                    Err(IppError::RequestError(if let Some(reason) =
-                        http_resp.status().canonical_reason()
-                    {
+                    let error = if let Some(reason) = http_resp.status().canonical_reason() {
                         reason.to_string()
                     } else {
-                        format!("{}", http_resp.status())
-                    }))
+                        format!("HTTP error {}", http_resp.status())
+                    };
+                    Err(IppError::RequestError(error))
                 }
-            }
-            Err(err) => {
-                error!("Invalid URI: {}", self.uri);
-                Err(IppError::RequestError(err.to_string()))
-            }
-        }
+            })
     }
 }
