@@ -338,13 +338,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "ippclient"
+name = "ipp-client"
 version = "0.3.0"
 dependencies = [
  "env_logger 0.5.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
- "ippparse 0.3.0",
- "ippproto 0.3.0",
+ "ipp-parse 0.3.0",
+ "ipp-proto 0.3.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest 0.9.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -352,7 +352,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ippparse"
+name = "ipp-parse"
 version = "0.3.0"
 dependencies = [
  "byteorder 1.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -363,35 +363,35 @@ dependencies = [
 ]
 
 [[package]]
-name = "ippproto"
+name = "ipp-proto"
 version = "0.3.0"
 dependencies = [
- "ippparse 0.3.0",
+ "ipp-parse 0.3.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
-name = "ippserver"
+name = "ipp-server"
 version = "0.3.0"
 dependencies = [
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "hyper 0.12.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "ippparse 0.3.0",
- "ippproto 0.3.0",
- "ippserver 0.3.0",
+ "ipp-parse 0.3.0",
+ "ipp-proto 0.3.0",
+ "ipp-server 0.3.0",
  "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
-name = "ipputil"
+name = "ipp-util"
 version = "0.3.0"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "env_logger 0.5.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "ippclient 0.3.0",
- "ippparse 0.3.0",
- "ippproto 0.3.0",
+ "ipp-client 0.3.0",
+ "ipp-parse 0.3.0",
+ "ipp-proto 0.3.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

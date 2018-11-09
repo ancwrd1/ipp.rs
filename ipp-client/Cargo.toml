@@ -1,5 +1,5 @@
 [package]
-name = "ippclient"
+name = "ipp-client"
 version = "0.3.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP client based on reqwest"
@@ -9,9 +9,12 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
+[lib]
+name = "ippclient"
+
 [dependencies]
-ippproto = { path = "../ipp-proto" }
-ippparse = { path = "../ipp-parse" }
+ipp-proto = { path = "../ipp-proto" }
+ipp-parse = { path = "../ipp-parse" }
 num-traits = "0.2"
 reqwest = "0.9"
 url = "1.7"

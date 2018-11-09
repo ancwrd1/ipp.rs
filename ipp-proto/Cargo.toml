@@ -1,5 +1,5 @@
 [package]
-name = "ippproto"
+name = "ipp-proto"
 version = "0.3.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "High level IPP protocol definitions"
@@ -9,6 +9,9 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
+[lib]
+name = "ippproto"
+
 [dependencies]
-ippparse = { path = "../ipp-parse" }
+ipp-parse = { path = "../ipp-parse" }
 log = "0.4"

@@ -1,5 +1,5 @@
 [package]
-name = "ippserver"
+name = "ipp-server"
 version = "0.3.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Helpers to make IPP servers"
@@ -9,13 +9,16 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
+[lib]
+name = "ippserver"
+
 [dependencies]
 num-traits = "0.2"
-ippparse = { path = "../ipp-parse" }
-ippproto = { path = "../ipp-proto" }
+ipp-parse = { path = "../ipp-parse" }
+ipp-proto = { path = "../ipp-proto" }
 
 [dev-dependencies]
-ippserver = { path = "../ipp-server" }
+ipp-server = { path = "../ipp-server" }
 lazy_static = "1.2"
 hyper = "0.12"
 futures = "0.1"
