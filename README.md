@@ -7,11 +7,11 @@ IPP protocol implementation for Rust
 Usage example:
 
 ```rust
-extern crate ippclient;
-extern crate ippproto;
+extern crate ipp_client;
+extern crate ipp_proto;
 
-use ippproto::IppOperationBuilder;
-use ippclient::IppClientBuilder;
+use ipp_proto::IppOperationBuilder;
+use ipp_client::IppClientBuilder;
 
 fn main() {
     let operation = IppOperationBuilder::get_printer_attributes().build();

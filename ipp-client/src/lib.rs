@@ -5,12 +5,12 @@
 //!
 //!```rust
 //! // using raw API
-//! extern crate ippclient;
-//! extern crate ippparse;
-//! extern crate ippproto;
-//! use ippproto::request::IppRequestResponse;
-//! use ippclient::IppClient;
-//! use ippparse::ipp::Operation;
+//! extern crate ipp_client;
+//! extern crate ipp_parse;
+//! extern crate ipp_proto;
+//! use ipp_proto::request::IppRequestResponse;
+//! use ipp_client::IppClient;
+//! use ipp_parse::ipp::Operation;
 //!
 //! fn main() {
 //!     let uri = "http://localhost:631/printers/test-printer";
@@ -25,10 +25,10 @@
 //!```
 //!```rust
 //! // using high level API
-//! extern crate ippclient;
-//! extern crate ippproto;
-//! use ippproto::IppOperationBuilder;
-//! use ippclient::IppClientBuilder;
+//! extern crate ipp_client;
+//! extern crate ipp_proto;
+//! use ipp_proto::IppOperationBuilder;
+//! use ipp_client::IppClientBuilder;
 //!
 //! fn main() {
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
