@@ -1,11 +1,12 @@
 //!
 //! IPP client
 //!
-use std::fs;
-use std::io::BufReader;
-use std::path::Path;
-use std::path::PathBuf;
-use std::time::Duration;
+use std::{
+    fs,
+    io::BufReader,
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use log::{debug, error};
 use num_traits::FromPrimitive;
@@ -13,9 +14,9 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Body, Certificate, Client, StatusCode};
 use url::Url;
 
-use ippparse::{ipp, IppAttributes, IppParser};
-use ippproto::{operation::IppOperation, request::IppRequestResponse};
-use IppError;
+use crate::IppError;
+use ipp_parse::{ipp, IppAttributes, IppParser};
+use ipp_proto::{operation::IppOperation, request::IppRequestResponse};
 
 /// IPP client.
 ///

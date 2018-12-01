@@ -2,28 +2,25 @@
 
 extern crate futures;
 extern crate hyper;
-extern crate ippparse;
-extern crate ippproto;
-extern crate ippserver;
+extern crate ipp_parse;
+extern crate ipp_proto;
+extern crate ipp_server;
 extern crate lazy_static;
 
-use std::fs::OpenOptions;
-use std::io::{self, Cursor};
-use std::sync::atomic;
-use std::time;
+use std::{
+    fs::OpenOptions,
+    io::{self, Cursor},
+    sync::atomic,
+    time,
+};
 
-use futures::future::Future;
-use futures::stream::Stream;
-use hyper::service::service_fn;
-use hyper::{Body, Chunk, Response};
-use hyper::{Request, Server};
+use futures::{future::Future, stream::Stream};
+use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
 use lazy_static::lazy_static;
 
-use ippparse::attribute::*;
-use ippparse::ipp::*;
-use ippparse::*;
-use ippproto::request::{IppRequestResponse, IppRequestTrait};
-use ippserver::server::*;
+use ipp_parse::{attribute::*, ipp::*, IppHeader, IppParser, IppValue};
+use ipp_proto::request::{IppRequestResponse, IppRequestTrait};
+use ipp_server::server::*;
 
 struct DummyServer {
     name: String,

@@ -9,9 +9,6 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
-[lib]
-name = "ippclient"
-
 [dependencies]
 ipp-proto = { path = "../ipp-proto" }
 ipp-parse = { path = "../ipp-parse" }
@@ -22,4 +19,4 @@ log = "0.4"
 
 [dev-dependencies]
 futures = "0.1"
-env_logger = "0.5"
+env_logger = "0.6"

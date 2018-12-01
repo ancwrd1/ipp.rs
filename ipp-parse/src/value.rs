@@ -1,14 +1,16 @@
 //!
 //! IPP value
 //!
-use std::fmt;
-use std::io::{self, Read, Write};
+use std::{
+    fmt,
+    io::{self, Read, Write},
+};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::Bytes;
 use num_traits::FromPrimitive;
 
-use {ipp::ValueTag, IppReadExt, IppWriter};
+use crate::{ipp::ValueTag, IppReadExt, IppWriter};
 
 /// IPP value enumeration
 #[derive(Clone, Debug)]

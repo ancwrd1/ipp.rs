@@ -9,9 +9,6 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
-[lib]
-name = "ippproto"
-
 [dependencies]
 ipp-parse = { path = "../ipp-parse" }
 log = "0.4"

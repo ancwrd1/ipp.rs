@@ -1,18 +1,17 @@
 extern crate env_logger;
-extern crate ippclient;
-extern crate ippparse;
-extern crate ippproto;
+extern crate ipp_client;
+extern crate ipp_parse;
+extern crate ipp_proto;
 
-use std::env;
-use std::fs::File;
-use std::io::BufReader;
-use std::process::exit;
+use std::{env, fs::File, io::BufReader, process::exit};
 
-use ippclient::IppClientBuilder;
-use ippparse::attribute::{JOB_ID, OPERATIONS_SUPPORTED};
-use ippparse::ipp::{DelimiterTag, Operation};
-use ippparse::IppValue;
-use ippproto::IppOperationBuilder;
+use ipp_client::IppClientBuilder;
+use ipp_parse::{
+    attribute::{JOB_ID, OPERATIONS_SUPPORTED},
+    ipp::{DelimiterTag, Operation},
+    IppValue,
+};
+use ipp_proto::IppOperationBuilder;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
     if let IppValue::Enum(ref v) = v {

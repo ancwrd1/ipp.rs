@@ -1,12 +1,14 @@
 //!
 //! IPP request
 //!
-use std::io::{self, Read, Write};
-use std::sync::Mutex;
+use std::{
+    io::{self, Read, Write},
+    sync::Mutex,
+};
 
 use log::debug;
 
-use ippparse::{
+use ipp_parse::{
     attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI},
     ipp::{DelimiterTag, Operation},
     *,

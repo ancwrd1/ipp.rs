@@ -10,14 +10,13 @@ readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
 [lib]
-name = "ipputil"
 crate_type = ["cdylib", "lib"]
 
 [dependencies]
 ipp-client = { path = "../ipp-client" }
 ipp-parse = { path = "../ipp-parse" }
 ipp-proto = { path = "../ipp-proto" }
-env_logger = "0.5"
+env_logger = "0.6"
 clap = "2.32"
 num-traits = "0.2"
 log = "0.4"

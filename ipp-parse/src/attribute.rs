@@ -1,12 +1,14 @@
 //!
 //! Attribute-related structs
 //!
-use std::collections::HashMap;
-use std::io::{self, Write};
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+};
 
 use byteorder::{BigEndian, WriteBytesExt};
 
-use {ipp::*, IppValue, IppWriter};
+use crate::{ipp::*, IppValue, IppWriter};
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";

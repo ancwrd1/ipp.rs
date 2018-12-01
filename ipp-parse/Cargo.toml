@@ -9,9 +9,6 @@ documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
-[lib]
-name = "ippparse"
-
 [dependencies]
 byteorder = "1.1"
 log = "0.4"

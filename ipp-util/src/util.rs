@@ -2,22 +2,24 @@
 //! High-level utility functions to be used from external application or command-line utility
 //!
 
-use std::env;
-use std::ffi::OsString;
-use std::fs::File;
-use std::io::{stdin, BufReader, Read};
+use std::{
+    env,
+    ffi::OsString,
+    fs::File,
+    io::{stdin, BufReader, Read},
+};
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
 use log::debug;
 use num_traits::FromPrimitive;
 
-use ippclient::{IppClient, IppClientBuilder, IppError};
-use ippparse::{
+use ipp_client::{IppClient, IppClientBuilder, IppError};
+use ipp_parse::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     ipp::{DelimiterTag, PrinterState},
     IppAttribute, IppValue,
 };
-use ippproto::operation::{GetPrinterAttributes, PrintJob};
+use ipp_proto::operation::{GetPrinterAttributes, PrintJob};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

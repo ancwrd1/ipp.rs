@@ -15,10 +15,12 @@ pub mod ipp;
 pub mod parser;
 pub mod value;
 
-pub use attribute::{IppAttribute, IppAttributes};
-pub use ipp::IppVersion;
-pub use parser::IppParser;
-pub use value::IppValue;
+pub use crate::{
+    attribute::{IppAttribute, IppAttributes},
+    ipp::IppVersion,
+    parser::IppParser,
+    value::IppValue,
+};
 
 pub trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;

@@ -41,18 +41,19 @@
 //! }
 //!```
 
-extern crate ippparse;
-extern crate ippproto;
+extern crate ipp_parse;
+extern crate ipp_proto;
 extern crate log;
 extern crate num_traits;
 extern crate reqwest;
 extern crate url;
 
-use std::fmt;
-use std::io;
-use std::path::{Path, PathBuf};
+use std::{
+    fmt, io,
+    path::{Path, PathBuf},
+};
 
-use ippparse::ipp::StatusCode;
+use ipp_parse::ipp::StatusCode;
 
 pub mod client;
 

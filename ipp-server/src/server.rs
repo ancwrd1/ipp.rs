@@ -5,9 +5,11 @@
 
 use num_traits::FromPrimitive;
 
-use ippparse::ipp::{Operation, StatusCode};
-use ippparse::IppVersion;
-use ippproto::request::{IppRequestResponse, IppRequestTrait};
+use ipp_parse::{
+    ipp::{Operation, StatusCode},
+    IppVersion,
+};
+use ipp_proto::request::{IppRequestResponse, IppRequestTrait};
 
 pub type IppServerResult = Result<IppRequestResponse, StatusCode>;
 

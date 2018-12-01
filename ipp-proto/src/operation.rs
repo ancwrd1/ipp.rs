@@ -3,7 +3,7 @@
 //!
 use std::io::Read;
 
-use ippparse::{attribute::*, ipp::*, IppValue};
+use ipp_parse::{attribute::*, ipp::*, IppValue};
 use request::IppRequestResponse;
 
 /// Trait which represents a single IPP operation

@@ -1,12 +1,11 @@
 extern crate env_logger;
-extern crate ippclient;
-extern crate ipputil;
+extern crate ipp_client;
+extern crate ipp_util;
 
-use std::env;
-use std::process::exit;
+use std::{env, process::exit};
 
-use ippclient::IppError;
-use ipputil::util;
+use ipp_client::IppError;
+use ipp_util::util;
 
 fn main() {
     env_logger::init();

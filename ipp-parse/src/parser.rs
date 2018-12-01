@@ -7,7 +7,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use log::debug;
 use num_traits::FromPrimitive;
 
-use {ipp::*, *};
+use crate::{ipp::*, *};
 
 // create a single value from one-element list, list otherwise
 fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
