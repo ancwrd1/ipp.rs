@@ -363,3 +363,27 @@ impl<'a> Iterator for IppValueIterator<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_value_iterator_single() {
+        let val = IppValue::Integer(1234);
+
+        for v in &val {
+            assert_eq!(*v, val);
+        }
+    }
+
+    #[test]
+    fn test_value_iterator_multiple() {
+        let list = vec![IppValue::Integer(1234), IppValue::Integer(5678)];
+        let val = IppValue::ListOf(list.clone());
+
+        for v in val.into_iter().enumerate() {
+            assert_eq!(*v.1, list[v.0]);
+        }
+    }
+}
