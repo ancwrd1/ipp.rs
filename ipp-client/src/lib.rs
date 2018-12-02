@@ -192,3 +192,32 @@ impl IppClientBuilder {
         client
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_builder() {
+        let mut builder = IppClientBuilder::new("foobar");
+        assert_eq!(builder.uri, "foobar");
+
+        let cert = PathBuf::from("mycert");
+        builder = builder.ca_cert(&cert);
+        assert_eq!(builder.ca_certs, vec![cert.clone()]);
+
+        builder = builder.ca_certs(&[cert.clone()]);
+        assert_eq!(builder.ca_certs, vec![cert.clone(), cert.clone()]);
+
+        builder = builder.verify_hostname(false);
+        assert!(!builder.verify_hostname);
+
+        builder = builder.verify_certificate(false);
+        assert!(!builder.verify_certificate);
+
+        builder = builder.timeout(100);
+        assert_eq!(builder.timeout, 100);
+
+        let _ = builder.build();
+    }
+}

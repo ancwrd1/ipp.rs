@@ -133,3 +133,78 @@ impl<'a> IppParser<'a> {
         Ok(IppParseResult::new(header, self.attributes))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn test_parse_no_attributes() {
+        let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
+        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        assert!(result.is_ok());
+
+        let res = result.as_ref().unwrap();
+        assert!(res.attributes.job_attributes().is_none());
+        assert!(res.attributes.printer_attributes().is_none());
+        assert!(res.attributes.operation_attributes().is_none());
+    }
+
+    #[test]
+    fn test_parse_single_value() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12,
+            0x34, 0x56, 0x78, 3,
+        ];
+        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        assert!(result.is_ok());
+
+        let res = result.as_ref().unwrap();
+        let attrs = res.attributes.printer_attributes().unwrap();
+        let attr = attrs.get("test").unwrap();
+        if let IppValue::Integer(val) = attr.value() {
+            assert_eq!(*val, 0x12345678);
+        } else {
+            assert!(false);
+        }
+    }
+
+    #[test]
+    fn test_parse_list() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12,
+            0x34, 0x56, 0x78, 0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
+        ];
+        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        assert!(result.is_ok());
+
+        let res = result.as_ref().unwrap();
+        let attrs = res.attributes.printer_attributes().unwrap();
+        let attr = attrs.get("test").unwrap();
+        if let IppValue::ListOf(list) = attr.value() {
+            assert_eq!(*list, vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)]);
+        } else {
+            assert!(false);
+        }
+    }
+
+    #[test]
+    fn test_parse_collection() {
+        let data = vec![
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 0, 0, 0, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12,
+            0x34, 0x56, 0x78, 0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 0x37, 0, 0, 0, 0, 3,
+        ];
+        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        assert!(result.is_ok());
+
+        let res = result.as_ref().unwrap();
+        let attrs = res.attributes.printer_attributes().unwrap();
+        let attr = attrs.get("test").unwrap();
+        if let IppValue::Collection(coll) = attr.value() {
+            assert_eq!(*coll, vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)]);
+        } else {
+            assert!(false);
+        }
+    }
+}

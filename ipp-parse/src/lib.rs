@@ -98,3 +98,36 @@ impl IppWriter for IppHeader {
         Ok(8)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_read_header_ok() {
+        let data = &[0x01, 0x01, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66];
+
+        let header = IppHeader::from_reader(&mut Cursor::new(data));
+        assert!(header.is_ok());
+        assert_eq!(header.as_ref().unwrap().version, IppVersion::Ipp11);
+        assert_eq!(header.as_ref().unwrap().operation_status, 0x1122);
+        assert_eq!(header.as_ref().unwrap().request_id, 0x33445566);
+    }
+
+    #[test]
+    fn test_read_header_error() {
+        let data = &[0xff, 0, 0, 0, 0, 0, 0, 0];
+
+        let header = IppHeader::from_reader(&mut Cursor::new(data));
+        assert!(header.is_err());
+        assert_eq!(header.err().unwrap().to_string(), "Invalid IPP version");
+    }
+
+    #[test]
+    fn test_write_header() {
+        let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55aa55);
+        let mut buf = Vec::new();
+        assert!(header.write(&mut Cursor::new(&mut buf)).is_ok());
+        assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
+    }
+}

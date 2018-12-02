@@ -13,7 +13,7 @@ use num_traits::FromPrimitive;
 use crate::{ipp::ValueTag, IppReadExt, IppWriter};
 
 /// IPP value enumeration
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum IppValue {
     Integer(i32),
     Enum(i32),
