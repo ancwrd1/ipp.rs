@@ -16,7 +16,7 @@ crate_type = ["cdylib", "lib"]
 ipp-client = { path = "../ipp-client" }
 ipp-parse = { path = "../ipp-parse" }
 ipp-proto = { path = "../ipp-proto" }
-env_logger = "0.6"
+pretty_env_logger = "0.2"
 clap = "2.32"
 num-traits = "0.2"
 log = "0.4"

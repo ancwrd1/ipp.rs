@@ -1,4 +1,4 @@
-extern crate env_logger;
+extern crate pretty_env_logger;
 extern crate ipp_client;
 extern crate ipp_util;
 
@@ -8,7 +8,7 @@ use ipp_client::IppError;
 use ipp_util::util;
 
 fn main() {
-    env_logger::init();
+    pretty_env_logger::init_timed();
 
     let result = util::util_main(env::args_os());
     if let Err(e) = result {
