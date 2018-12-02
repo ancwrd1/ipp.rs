@@ -2,7 +2,7 @@
 //! IPP request
 //!
 use std::{
-    io::{self, Read, Write},
+    io::{self, Cursor, Read, Write},
     sync::Mutex,
 };
 
@@ -163,12 +163,19 @@ impl IppRequestResponse {
 
     /// Convert request into reader
     pub fn into_reader(self) -> impl Read {
+        // NOTE: workaround for embedded firmware bug, don't refactor into chain calls!
+        // When Transfer-Encoding: chunked is used the IPP metadata must be serialized in one chunk.
+        // Otherwise many printers will fail with error 400.
+        let mut cursor = Cursor::new(Vec::with_capacity(1024));
+        self.header
+            .write(&mut cursor)
+            .and_then(|_| self.attributes.write(&mut cursor))
+            .unwrap();
+        cursor.set_position(0);
+
         IppReadAdapter {
             inner: Mutex::new(Box::new(
-                self.header
-                    .into_reader()
-                    .chain(self.attributes.into_reader())
-                    .chain(self.payload.unwrap_or_else(|| Box::new(io::empty()))),
+                cursor.chain(self.payload.unwrap_or_else(|| Box::new(io::empty()))),
             )),
         }
     }
