@@ -10,8 +10,8 @@ readme = "README.md"
 keywords = ["ipp", "printing", "protocol"]
 
 [dependencies]
-ipp-proto = { path = "../ipp-proto" }
-ipp-parse = { path = "../ipp-parse" }
+ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
+ipp-parse = { version = "0.3.0", path = "../ipp-parse" }
 num-traits = "0.2"
 reqwest = "0.9"
 url = "1.7"

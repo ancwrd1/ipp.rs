@@ -11,8 +11,8 @@ keywords = ["ipp", "printing", "protocol"]
 
 [dependencies]
 num-traits = "0.2"
-ipp-parse = { path = "../ipp-parse" }
-ipp-proto = { path = "../ipp-proto" }
+ipp-parse = { version = "0.3.0", path = "../ipp-parse" }
+ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
 
 [dev-dependencies]
 ipp-server = { path = "../ipp-server" }
