@@ -257,7 +257,7 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "byteorder 1.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -297,13 +297,13 @@ dependencies = [
 
 [[package]]
 name = "hyper"
-version = "0.12.16"
+version = "0.12.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytes 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures-cpupool 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "h2 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "h2 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "http 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "httparse 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "iovec 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -328,7 +328,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytes 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
- "hyper 0.12.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.12.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "native-tls 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-io 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -395,7 +395,7 @@ name = "ipp-server"
 version = "0.3.0"
 dependencies = [
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
- "hyper 0.12.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.12.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "ipp-parse 0.3.0",
  "ipp-proto 0.3.0",
  "ipp-server 0.3.0",
@@ -871,7 +871,7 @@ dependencies = [
  "encoding_rs 0.8.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "http 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "hyper 0.12.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.12.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "hyper-tls 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libflate 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1439,11 +1439,11 @@ dependencies = [
 "checksum fuchsia-zircon-sys 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "3dcaa9ae7725d12cdb85b3ad99a434db70b468c09ded17e012d86b5c1010f7a7"
 "checksum futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)" = "49e7653e374fe0d0c12de4250f0bdb60680b8c80eed558c5c7538eec9c89e21b"
 "checksum futures-cpupool 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)" = "ab90cde24b3319636588d0c35fe03b1333857621051837ed769faefb4c2162e4"
-"checksum h2 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "7dd33bafe2e6370e6c8eb0cf1b8c5f93390b90acde7e9b03723f166b28b648ed"
+"checksum h2 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "1ac030ae20dee464c5d0f36544d8b914a6bc606da44a57e052d2b0f5dae129e0"
 "checksum http 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "02096a6d2c55e63f7fcb800690e4f889a25f6ec342e3adb4594e293b625215ab"
 "checksum httparse 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "e8734b0cfd3bc3e101ec59100e101c2eecd19282202e87808b3037b442777a83"
 "checksum humantime 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3ca7e5f2e110db35f93b837c81797f3714500b81d517bf20c431b16d3ca4f114"
-"checksum hyper 0.12.16 (registry+https://github.com/rust-lang/crates.io-index)" = "0aeedb8ca5f0f96be00f84073c6d0d5f962ecad020ef543dff99a7c12717a60e"
+"checksum hyper 0.12.17 (registry+https://github.com/rust-lang/crates.io-index)" = "c49a75385d35ff5e9202755f09beb0b878a05c4c363fcc52b23eeb5dcb6782cc"
 "checksum hyper-tls 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "32cd73f14ad370d3b4d4b7dce08f69b81536c82e39fcc89731930fe5788cd661"
 "checksum idna 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "38f09e0f0b1fb55fdee1f17470ad800da77af5186a1a76c026b679358b7e844e"
 "checksum indexmap 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7e81a7c05f79578dbc15793d8b619db9ba32b4577003ef3af1a91c416798c58d"
