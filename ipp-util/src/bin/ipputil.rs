@@ -1,6 +1,6 @@
-extern crate pretty_env_logger;
 extern crate ipp_client;
 extern crate ipp_util;
+extern crate pretty_env_logger;
 
 use std::{env, process::exit};
 

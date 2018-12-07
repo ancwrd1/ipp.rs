@@ -354,12 +354,14 @@ impl<'a> Iterator for IppValueIterator<'a> {
                     None
                 }
             }
-            _ => if self.index == 0 {
-                self.index += 1;
-                Some(self.value)
-            } else {
-                None
-            },
+            _ => {
+                if self.index == 0 {
+                    self.index += 1;
+                    Some(self.value)
+                } else {
+                    None
+                }
+            }
         }
     }
 }
