@@ -1,9 +1,3 @@
-extern crate byteorder;
-extern crate bytes;
-extern crate enum_primitive_derive;
-extern crate log;
-extern crate num_traits;
-
 use std::io::{self, Cursor, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};

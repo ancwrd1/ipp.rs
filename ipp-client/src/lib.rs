@@ -41,13 +41,6 @@
 //! }
 //!```
 
-extern crate ipp_parse;
-extern crate ipp_proto;
-extern crate log;
-extern crate num_traits;
-extern crate reqwest;
-extern crate url;
-
 use std::{
     fmt, io,
     path::{Path, PathBuf},
@@ -57,7 +50,7 @@ use ipp_parse::ipp::StatusCode;
 
 pub mod client;
 
-pub use client::IppClient;
+pub use crate::client::IppClient;
 
 const DEFAULT_TIMEOUT: u64 = 30;
 

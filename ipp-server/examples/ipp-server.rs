@@ -1,12 +1,5 @@
 #![allow(unused)]
 
-extern crate futures;
-extern crate hyper;
-extern crate ipp_parse;
-extern crate ipp_proto;
-extern crate ipp_server;
-extern crate lazy_static;
-
 use std::{
     fs::OpenOptions,
     io::{self, Cursor},

@@ -1,10 +1,7 @@
-extern crate ipp_parse;
-extern crate log;
-
 use std::io::Read;
 
 use ipp_parse::IppAttribute;
-use operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
+use crate::operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
 
 pub mod operation;
 pub mod request;

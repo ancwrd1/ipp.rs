@@ -10,8 +10,10 @@ use std::{
 
 use log::{debug, error};
 use num_traits::FromPrimitive;
-use reqwest::header::{HeaderMap, HeaderValue};
-use reqwest::{Body, Certificate, Client, StatusCode};
+use reqwest::{
+    header::{HeaderMap, HeaderValue},
+    Body, Certificate, Client, StatusCode,
+};
 use url::Url;
 
 use crate::IppError;

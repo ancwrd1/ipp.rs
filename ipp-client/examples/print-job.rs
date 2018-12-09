@@ -1,8 +1,3 @@
-extern crate env_logger;
-extern crate ipp_client;
-extern crate ipp_parse;
-extern crate ipp_proto;
-
 use std::{env, fs::File, io::BufReader, process::exit};
 
 use ipp_client::IppClientBuilder;
