@@ -1,7 +1,7 @@
 use std::io::Read;
 
-use ipp_parse::IppAttribute;
 use crate::operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
+use ipp_parse::IppAttribute;
 
 pub mod operation;
 pub mod request;
@@ -87,9 +87,7 @@ pub struct GetPrinterAttributesBuilder {
 
 impl GetPrinterAttributesBuilder {
     fn new() -> GetPrinterAttributesBuilder {
-        GetPrinterAttributesBuilder {
-            attributes: Vec::new(),
-        }
+        GetPrinterAttributesBuilder { attributes: Vec::new() }
     }
 
     /// Specify which attribute to retrieve from the printer. Can be repeated.

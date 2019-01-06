@@ -150,8 +150,7 @@ impl IppClientBuilder {
     where
         P: AsRef<Path>,
     {
-        self.ca_certs
-            .extend(paths.iter().map(|p| p.as_ref().to_owned()));
+        self.ca_certs.extend(paths.iter().map(|p| p.as_ref().to_owned()));
         self
     }
 

@@ -104,19 +104,11 @@ impl IppValue {
                 debug_assert_eq!(vsize, 4);
                 Ok(IppValue::Enum(reader.read_i32::<BigEndian>()?))
             }
-            ValueTag::OctectStringUnspecified => {
-                Ok(IppValue::OctetString(reader.read_string(vsize as usize)?))
-            }
-            ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(
-                reader.read_string(vsize as usize)?,
-            )),
-            ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(
-                reader.read_string(vsize as usize)?,
-            )),
+            ValueTag::OctectStringUnspecified => Ok(IppValue::OctetString(reader.read_string(vsize as usize)?)),
+            ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(reader.read_string(vsize as usize)?)),
+            ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(reader.read_string(vsize as usize)?)),
             ValueTag::Charset => Ok(IppValue::Charset(reader.read_string(vsize as usize)?)),
-            ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(
-                reader.read_string(vsize as usize)?,
-            )),
+            ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(reader.read_string(vsize as usize)?)),
             ValueTag::Uri => Ok(IppValue::Uri(reader.read_string(vsize as usize)?)),
             ValueTag::RangeOfInteger => {
                 debug_assert_eq!(vsize, 8);
@@ -130,9 +122,7 @@ impl IppValue {
                 Ok(IppValue::Boolean(reader.read_u8()? != 0))
             }
             ValueTag::Keyword => Ok(IppValue::Keyword(reader.read_string(vsize as usize)?)),
-            ValueTag::MimeMediaType => {
-                Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?))
-            }
+            ValueTag::MimeMediaType => Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?)),
             ValueTag::DateTime => Ok(IppValue::DateTime {
                 year: reader.read_u16::<BigEndian>()?,
                 month: reader.read_u8()?,
@@ -145,9 +135,7 @@ impl IppValue {
                 utchours: reader.read_u8()?,
                 utcmins: reader.read_u8()?,
             }),
-            ValueTag::MemberAttrName => Ok(IppValue::MemberAttrName(
-                reader.read_string(vsize as usize)?,
-            )),
+            ValueTag::MemberAttrName => Ok(IppValue::MemberAttrName(reader.read_string(vsize as usize)?)),
             ValueTag::Resolution => Ok(IppValue::Resolution {
                 crossfeed: reader.read_i32::<BigEndian>()?,
                 feed: reader.read_i32::<BigEndian>()?,
@@ -247,11 +235,7 @@ impl IppWriter for IppValue {
 
                 Ok(13)
             }
-            IppValue::Resolution {
-                crossfeed,
-                feed,
-                units,
-            } => {
+            IppValue::Resolution { crossfeed, feed, units } => {
                 writer.write_u16::<BigEndian>(9)?;
                 writer.write_i32::<BigEndian>(crossfeed)?;
                 writer.write_i32::<BigEndian>(feed)?;
@@ -307,17 +291,9 @@ impl fmt::Display for IppValue {
                 "{}-{}-{},{}:{}:{}.{},{}{}utc",
                 year, month, day, hour, minutes, seconds, deciseconds, utcdir as char, utchours
             ),
-            IppValue::Resolution {
-                crossfeed,
-                feed,
-                units,
-            } => write!(
-                f,
-                "{}x{}{}",
-                crossfeed,
-                feed,
-                if units == 3 { "in" } else { "cm" }
-            ),
+            IppValue::Resolution { crossfeed, feed, units } => {
+                write!(f, "{}x{}{}", crossfeed, feed, if units == 3 { "in" } else { "cm" })
+            }
 
             IppValue::Other { tag, ref data } => write!(f, "{:0x}: {:?}", tag, data),
         }
@@ -329,10 +305,7 @@ impl<'a> IntoIterator for &'a IppValue {
     type IntoIter = IppValueIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        IppValueIterator {
-            value: self,
-            index: 0,
-        }
+        IppValueIterator { value: self, index: 0 }
     }
 }
 

@@ -156,8 +156,7 @@ mod tests {
     #[test]
     fn test_parse_single_value() {
         let data = &[
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12,
-            0x34, 0x56, 0x78, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
@@ -175,8 +174,8 @@ mod tests {
     #[test]
     fn test_parse_list() {
         let data = &[
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12,
-            0x34, 0x56, 0x78, 0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
+            0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
         ];
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
@@ -197,8 +196,8 @@ mod tests {
     #[test]
     fn test_parse_collection() {
         let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4,
-            0x12, 0x34, 0x56, 0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
+            0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
@@ -209,10 +208,7 @@ mod tests {
         if let IppValue::Collection(coll) = attr.value() {
             assert_eq!(
                 *coll,
-                vec![
-                    IppValue::Integer(0x12345678),
-                    IppValue::Keyword("key".to_owned())
-                ]
+                vec![IppValue::Integer(0x12345678), IppValue::Keyword("key".to_owned())]
             );
         } else {
             assert!(false);

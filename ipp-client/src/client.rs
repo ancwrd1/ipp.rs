@@ -83,10 +83,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub fn send_request(
-        &self,
-        request: IppRequestResponse,
-    ) -> Result<IppRequestResponse, IppError> {
+    pub fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         Url::parse(&self.uri)
             .map_err(|e| IppError::RequestError(e.to_string()))
             .and_then(|mut url| {
@@ -139,10 +136,7 @@ impl IppClient {
                     builder = builder.danger_accept_invalid_certs(true);
                 }
 
-                let client = builder
-                    .gzip(false)
-                    .timeout(Duration::from_secs(self.timeout))
-                    .build()?;
+                let client = builder.gzip(false).timeout(Duration::from_secs(self.timeout)).build()?;
 
                 let http_req = client
                     .post(url)

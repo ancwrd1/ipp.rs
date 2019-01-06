@@ -3,8 +3,8 @@
 //!
 use std::io::Read;
 
-use ipp_parse::{attribute::*, ipp::*, IppValue};
 use crate::request::IppRequestResponse;
+use ipp_parse::{attribute::*, ipp::*, IppValue};
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
@@ -100,11 +100,7 @@ impl IppOperation for GetPrinterAttributes {
         let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 
         if !self.attributes.is_empty() {
-            let vals: Vec<IppValue> = self
-                .attributes
-                .iter()
-                .map(|a| IppValue::Keyword(a.clone()))
-                .collect();
+            let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
             retval.set_attribute(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)),

@@ -42,15 +42,9 @@ fn main() {
         exit(2);
     }
 
-    let create_op = IppOperationBuilder::create_job()
-        .job_name("multi-doc")
-        .build();
+    let create_op = IppOperationBuilder::create_job().job_name("multi-doc").build();
     let attrs = client.send(create_op).unwrap();
-    let job_id = match *attrs
-        .get(DelimiterTag::JobAttributes, JOB_ID)
-        .unwrap()
-        .value()
-    {
+    let job_id = match *attrs.get(DelimiterTag::JobAttributes, JOB_ID).unwrap().value() {
         IppValue::Integer(id) => id,
         _ => panic!("invalid value"),
     };

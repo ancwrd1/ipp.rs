@@ -65,8 +65,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
     let client = new_client(matches);
 
     if !matches.is_present("nocheckstate") {
-        let operation =
-            GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
+        let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
         let attrs = client.send(operation)?;
 
         if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
@@ -139,9 +138,8 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
 fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
     let client = new_client(matches);
 
-    let operation = GetPrinterAttributes::with_attributes(
-        &unwrap_values(matches.values_of("attribute")).collect::<Vec<_>>(),
-    );
+    let operation =
+        GetPrinterAttributes::with_attributes(&unwrap_values(matches.values_of("attribute")).collect::<Vec<_>>());
 
     let attrs = client.send(operation)?;
 

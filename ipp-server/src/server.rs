@@ -104,8 +104,8 @@ pub trait IppServer {
 
     /// IPP request dispatcher
     fn handle_request(&mut self, req: Self::IppRequest) -> IppServerResult {
-        let operation = Operation::from_u16(req.header().operation_status)
-            .ok_or(StatusCode::ServerErrorOperationNotSupported)?;
+        let operation =
+            Operation::from_u16(req.header().operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)?;
 
         match operation {
             Operation::PrintJob => self.print_job(req),

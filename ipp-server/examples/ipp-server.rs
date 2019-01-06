@@ -24,21 +24,14 @@ struct DummyServer {
 impl DummyServer {
     fn get_printer_attribute(&self, attr: &str) -> IppAttribute {
         match attr {
-            PRINTER_NAME => {
-                IppAttribute::new(attr, IppValue::NameWithoutLanguage(self.name.clone()))
+            PRINTER_NAME => IppAttribute::new(attr, IppValue::NameWithoutLanguage(self.name.clone())),
+            PRINTER_INFO => IppAttribute::new(attr, IppValue::TextWithoutLanguage("Project Typemetal".to_string())),
+            PRINTER_STATE_MESSAGE => {
+                IppAttribute::new(attr, IppValue::TextWithoutLanguage("Being awesome".to_string()))
             }
-            PRINTER_INFO => IppAttribute::new(
-                attr,
-                IppValue::TextWithoutLanguage("Project Typemetal".to_string()),
-            ),
-            PRINTER_STATE_MESSAGE => IppAttribute::new(
-                attr,
-                IppValue::TextWithoutLanguage("Being awesome".to_string()),
-            ),
-            PRINTER_MAKE_AND_MODEL => IppAttribute::new(
-                attr,
-                IppValue::TextWithoutLanguage("Rust Printer".to_string()),
-            ),
+            PRINTER_MAKE_AND_MODEL => {
+                IppAttribute::new(attr, IppValue::TextWithoutLanguage("Rust Printer".to_string()))
+            }
             IPP_VERSIONS_SUPPORTED => {
                 let versions = vec![IppValue::Keyword("1.1".to_string())];
                 IppAttribute::new(attr, IppValue::ListOf(versions))
@@ -63,14 +56,9 @@ impl DummyServer {
                 attr,
                 IppValue::Integer(self.start_time.elapsed().unwrap().as_secs() as i32),
             ),
-            PDL_OVERRIDE_SUPPORTED => {
-                IppAttribute::new(attr, IppValue::Keyword("not-attempted".to_string()))
-            }
+            PDL_OVERRIDE_SUPPORTED => IppAttribute::new(attr, IppValue::Keyword("not-attempted".to_string())),
             CHARSET_CONFIGURED => IppAttribute::new(attr, IppValue::Charset("utf-8".to_string())),
-            DOCUMENT_FORMAT_DEFAULT => IppAttribute::new(
-                attr,
-                IppValue::MimeMediaType("image/pwg-raster".to_string()),
-            ),
+            DOCUMENT_FORMAT_DEFAULT => IppAttribute::new(attr, IppValue::MimeMediaType("image/pwg-raster".to_string())),
             DOCUMENT_FORMAT_SUPPORTED => {
                 let formats = vec![
                     IppValue::MimeMediaType("image/pwg-raster".to_string()),
@@ -86,9 +74,7 @@ impl DummyServer {
                 let auths = vec![IppValue::Keyword("none".to_string())];
                 IppAttribute::new(attr, IppValue::ListOf(auths))
             }
-            NATURAL_LANGUAGE_CONFIGURED => {
-                IppAttribute::new(attr, IppValue::NaturalLanguage("en".to_string()))
-            }
+            NATURAL_LANGUAGE_CONFIGURED => IppAttribute::new(attr, IppValue::NaturalLanguage("en".to_string())),
             GENERATED_NATURAL_LANGUAGE_SUPPORTED => {
                 let langs = vec![IppValue::NaturalLanguage("en".to_string())];
                 IppAttribute::new(attr, IppValue::ListOf(langs))
@@ -145,17 +131,11 @@ impl IppServer for DummyServer {
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
         println!();
-        let mut resp = IppRequestResponse::new_response(
-            StatusCode::SuccessfulOK as u16,
-            req.header().request_id,
-        );
+        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
 
         resp.set_attribute(
             DelimiterTag::JobAttributes,
-            IppAttribute::new(
-                JOB_URI,
-                IppValue::Uri("ipp://192.168.1.217/jobs/foo".to_string()),
-            ),
+            IppAttribute::new(JOB_URI, IppValue::Uri("ipp://192.168.1.217/jobs/foo".to_string())),
         );
         resp.set_attribute(
             DelimiterTag::JobAttributes,
@@ -188,10 +168,7 @@ impl IppServer for DummyServer {
         println!("{:?}", req.header());
         println!("{:?}", req.attributes);
         println!();
-        let resp = IppRequestResponse::new_response(
-            StatusCode::SuccessfulOK as u16,
-            req.header().request_id,
-        );
+        let resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
 
         Ok(resp)
     }
@@ -242,10 +219,7 @@ impl IppServer for DummyServer {
         }
         let supported_attributes = &SUPPORTED_ATTRIBUTES[..];
 
-        let mut resp = IppRequestResponse::new_response(
-            StatusCode::SuccessfulOK as u16,
-            req.header().request_id,
-        );
+        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
         let mut requested_attributes: Vec<&str> = vec![];
         if let Some(attr) = req
             .attributes
@@ -279,10 +253,7 @@ impl IppServer for DummyServer {
 
         for attr in attribute_list {
             if supported_attributes.contains(attr) {
-                resp.set_attribute(
-                    DelimiterTag::PrinterAttributes,
-                    self.get_printer_attribute(attr),
-                );
+                resp.set_attribute(DelimiterTag::PrinterAttributes, self.get_printer_attribute(attr));
             } else {
                 println!("Unsupported attribute {}", attr);
             }
@@ -315,10 +286,7 @@ fn main() {
 
                 let mut ippresp = match server.handle_request(dummy_req) {
                     Ok(response) => response,
-                    Err(ipp_error) => IppRequestResponse::new_response(
-                        ipp_error as u16,
-                        ippreq.header().request_id,
-                    ),
+                    Err(ipp_error) => IppRequestResponse::new_response(ipp_error as u16, ippreq.header().request_id),
                 };
                 let mut buf: Vec<u8> = vec![];
                 let _ = ippresp.write(&mut buf);

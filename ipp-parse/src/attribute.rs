@@ -151,9 +151,7 @@ impl IppAttributes {
 
     /// Get attribute from the list
     pub fn get(&self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
-        self.attributes
-            .get(&group)
-            .and_then(|attrs| attrs.get(name))
+        self.attributes.get(&group).and_then(|attrs| attrs.get(name))
     }
 
     /// Get attribute list for a group
@@ -203,9 +201,10 @@ impl IppWriter for IppAttributes {
                     writer.write_u8(group as u8)?;
                     retval += 1;
                 }
-                for (_, attr) in attrs.iter().filter(|&(_, v)| {
-                    group != DelimiterTag::OperationAttributes || !is_header_attr(v.name())
-                }) {
+                for (_, attr) in attrs
+                    .iter()
+                    .filter(|&(_, v)| group != DelimiterTag::OperationAttributes || !is_header_attr(v.name()))
+                {
                     retval += attr.write(writer)?;
                 }
             }

@@ -62,18 +62,12 @@ impl IppRequestResponse {
         );
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage("en".to_string()),
-            ),
+            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
         );
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                PRINTER_URI,
-                IppValue::Uri(uri.replace("http", "ipp").to_string()),
-            ),
+            IppAttribute::new(PRINTER_URI, IppValue::Uri(uri.replace("http", "ipp").to_string())),
         );
 
         retval
@@ -94,10 +88,7 @@ impl IppRequestResponse {
         );
         retval.set_attribute(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage("en".to_string()),
-            ),
+            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
         );
 
         retval
