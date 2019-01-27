@@ -14,7 +14,7 @@ edition = "2018"
 ipp-client = { version = "0.3.0", path = "../ipp-client" }
 ipp-parse = { version = "0.3.0", path = "../ipp-parse" }
 ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
-pretty_env_logger = "0.2"
+pretty_env_logger = "0.3"
 clap = "2.32"
 num-traits = "0.2"
 log = "0.4"
