@@ -170,7 +170,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 /// OPTIONS:
 ///     -a, --attribute <attribute>...    IPP attribute to query, default is get all
 ///     -c, --cacert <filename>...        Additional root certificates in PEM or DER format
-///     -t, --timeout <timeout>           Network timeout in seconds [default: 30]
+///     -t, --timeout <timeout>           Network timeout in seconds, 0 to disable [default: 30]
 ///
 /// ARGS:
 ///     <uri>    Printer URI, supported schemes: ipp, ipps, http, https
@@ -191,7 +191,7 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
 ///     -f, --file <filename>          Input file name to print [default: standard input]
 ///     -j, --job <jobname>            Job name to send as job-name attribute
 ///     -o, --option <key=value>...    Extra IPP job attributes to send
-///     -t, --timeout <timeout>        Network timeout in seconds [default: 30]
+///     -t, --timeout <timeout>        Network timeout in seconds, 0 to disable [default: 30]
 ///     -u, --user <username>          User name to send as requesting-user-name attribute
 ///
 /// ARGS:
@@ -235,7 +235,7 @@ where
             Arg::with_name("timeout")
                 .short("t")
                 .long("--timeout")
-                .help("Network timeout in seconds")
+                .help("Network timeout in seconds, 0 to disable")
                 .global(true)
                 .default_value("30"),
         )

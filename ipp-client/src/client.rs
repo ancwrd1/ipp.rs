@@ -136,7 +136,17 @@ impl IppClient {
                     builder = builder.danger_accept_invalid_certs(true);
                 }
 
-                let client = builder.gzip(false).timeout(Duration::from_secs(self.timeout)).build()?;
+                builder = builder.gzip(false);
+
+                if self.timeout > 0 {
+                    debug!("Setting timeout to {}", self.timeout);
+                    builder = builder.timeout(Duration::from_secs(self.timeout));
+                } else {
+                    debug!("Disabling HTTP timeout");
+                    builder = builder.timeout(None);
+                }
+
+                let client = builder.build()?;
 
                 let http_req = client
                     .post(url)
