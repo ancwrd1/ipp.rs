@@ -46,7 +46,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ipp_parse::ipp::StatusCode;
+use ipp_parse::{ipp::StatusCode, ParseError};
 
 pub mod client;
 
@@ -69,6 +69,8 @@ pub enum IppError {
     PrinterStateError(Vec<String>),
     /// Parameter error
     ParamError(String),
+    /// Parsing error
+    ParseError(ParseError),
 }
 
 impl IppError {
@@ -80,6 +82,7 @@ impl IppError {
             IppError::StatusError(_) => 6,
             IppError::ParamError(_) => 7,
             IppError::PrinterStateError(_) => 8,
+            IppError::ParseError(_) => 9,
         }
     }
 }
@@ -93,25 +96,32 @@ impl fmt::Display for IppError {
             IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
             IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
+            IppError::ParseError(ref e) => write!(f, "IPP parse error: {:?}", e),
         }
     }
 }
 
 impl From<io::Error> for IppError {
-    fn from(error: io::Error) -> IppError {
+    fn from(error: io::Error) -> Self {
         IppError::IOError(error)
     }
 }
 
 impl From<StatusCode> for IppError {
-    fn from(code: StatusCode) -> IppError {
+    fn from(code: StatusCode) -> Self {
         IppError::StatusError(code)
     }
 }
 
 impl From<reqwest::Error> for IppError {
-    fn from(error: reqwest::Error) -> IppError {
+    fn from(error: reqwest::Error) -> Self {
         IppError::HttpError(error)
+    }
+}
+
+impl From<ParseError> for IppError {
+    fn from(error: ParseError) -> Self {
+        IppError::ParseError(error)
     }
 }
 

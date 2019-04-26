@@ -1,10 +1,10 @@
 //!
 //! IPP stream parser
 //!
-use std::io::{self, Read};
+use std::io::Read;
 
 use byteorder::{BigEndian, ReadBytesExt};
-use log::debug;
+use log::{debug, error};
 use num_traits::FromPrimitive;
 
 use crate::{ipp::*, *};
@@ -16,10 +16,6 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     } else {
         IppValue::ListOf(list)
     }
-}
-
-fn tag_error(tag: u8) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, format!("Tag error: {}", tag))
 }
 
 /// IPP parsing result
@@ -67,7 +63,7 @@ impl<'a> IppParser<'a> {
         }
     }
 
-    fn parse_delimiter(&mut self, tag: u8) -> io::Result<bool> {
+    fn parse_delimiter(&mut self, tag: u8) -> Result<bool, ParseError> {
         debug!("Delimiter tag: {:0x}", tag);
         if tag == DelimiterTag::EndOfAttributes as u8 {
             // end of stream, add last attribute
@@ -75,12 +71,12 @@ impl<'a> IppParser<'a> {
             Ok(true)
         } else {
             // remember delimiter tag
-            self.last_delimiter = DelimiterTag::from_u8(tag).ok_or_else(|| tag_error(tag))?;
+            self.last_delimiter = DelimiterTag::from_u8(tag).ok_or_else(|| ParseError::InvalidTag(tag))?;
             Ok(false)
         }
     }
 
-    fn parse_value(&mut self, tag: u8) -> io::Result<()> {
+    fn parse_value(&mut self, tag: u8) -> Result<(), ParseError> {
         // value tag
         let namelen = self.reader.read_u16::<BigEndian>()?;
         let name = self.reader.read_string(namelen as usize)?;
@@ -97,10 +93,24 @@ impl<'a> IppParser<'a> {
         if tag == ValueTag::BegCollection as u8 {
             // start new collection in the stack
             debug!("Begin collection");
+            match value {
+                IppValue::Other { tag: _, ref data } if data.is_empty() => {}
+                _ => {
+                    error!("Invalid begin collection attribute");
+                    return Err(ParseError::InvalidCollection);
+                }
+            }
             self.context.push(vec![]);
         } else if tag == ValueTag::EndCollection as u8 {
             // get collection from the stack and add it to the previous element
             debug!("End collection");
+            match value {
+                IppValue::Other { tag: _, ref data } if data.is_empty() => {}
+                _ => {
+                    error!("Invalid end collection attribute");
+                    return Err(ParseError::InvalidCollection);
+                }
+            }
             if let Some(arr) = self.context.pop() {
                 if let Some(val_list) = self.context.last_mut() {
                     val_list.push(IppValue::Collection(arr));
@@ -114,7 +124,7 @@ impl<'a> IppParser<'a> {
     }
 
     /// Parse IPP stream
-    pub fn parse(mut self) -> io::Result<IppParseResult> {
+    pub fn parse(mut self) -> Result<IppParseResult, ParseError> {
         let header = IppHeader::from_reader(self.reader)?;
         debug!("IPP header: {:?}", header);
 
@@ -127,7 +137,7 @@ impl<'a> IppParser<'a> {
                 }
                 tag @ 0x10...0x4a => self.parse_value(tag)?,
                 tag => {
-                    return Err(tag_error(tag));
+                    return Err(ParseError::InvalidTag(tag));
                 }
             }
         }
@@ -147,7 +157,7 @@ mod tests {
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
 
-        let res = result.as_ref().unwrap();
+        let res = result.ok().unwrap();
         assert!(res.attributes.job_attributes().is_none());
         assert!(res.attributes.printer_attributes().is_none());
         assert!(res.attributes.operation_attributes().is_none());
@@ -161,7 +171,7 @@ mod tests {
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
 
-        let res = result.as_ref().unwrap();
+        let res = result.ok().unwrap();
         let attrs = res.attributes.printer_attributes().unwrap();
         let attr = attrs.get("test").unwrap();
         if let IppValue::Integer(val) = attr.value() {
@@ -180,7 +190,7 @@ mod tests {
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
 
-        let res = result.as_ref().unwrap();
+        let res = result.ok().unwrap();
         let attrs = res.attributes.printer_attributes().unwrap();
         let attr = attrs.get("test").unwrap();
         if let IppValue::ListOf(list) = attr.value() {
@@ -202,7 +212,7 @@ mod tests {
         let result = IppParser::new(&mut Cursor::new(data)).parse();
         assert!(result.is_ok());
 
-        let res = result.as_ref().unwrap();
+        let res = result.ok().unwrap();
         let attrs = res.attributes.printer_attributes().unwrap();
         let attr = attrs.get("coll").unwrap();
         if let IppValue::Collection(coll) = attr.value() {

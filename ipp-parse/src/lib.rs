@@ -16,6 +16,20 @@ pub use crate::{
     value::IppValue,
 };
 
+#[derive(Debug)]
+pub enum ParseError {
+    InvalidTag(u8),
+    InvalidVersion,
+    InvalidCollection,
+    IOError(io::Error),
+}
+
+impl From<io::Error> for ParseError {
+    fn from(error: io::Error) -> Self {
+        ParseError::IOError(error)
+    }
+}
+
 pub trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;
 }
@@ -62,10 +76,9 @@ pub struct IppHeader {
 
 impl IppHeader {
     /// Create IppHeader from the reader
-    pub fn from_reader(reader: &mut Read) -> io::Result<IppHeader> {
+    pub fn from_reader(reader: &mut Read) -> Result<IppHeader, ParseError> {
         let retval = IppHeader::new(
-            IppVersion::from_u16(reader.read_u16::<BigEndian>()?)
-                .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "Invalid IPP version"))?,
+            IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| ParseError::InvalidVersion)?,
             reader.read_u16::<BigEndian>()?,
             reader.read_u32::<BigEndian>()?,
         );
@@ -103,9 +116,11 @@ mod tests {
 
         let header = IppHeader::from_reader(&mut Cursor::new(data));
         assert!(header.is_ok());
-        assert_eq!(header.as_ref().unwrap().version, IppVersion::Ipp11);
-        assert_eq!(header.as_ref().unwrap().operation_status, 0x1122);
-        assert_eq!(header.as_ref().unwrap().request_id, 0x33445566);
+
+        let header = header.ok().unwrap();
+        assert_eq!(header.version, IppVersion::Ipp11);
+        assert_eq!(header.operation_status, 0x1122);
+        assert_eq!(header.request_id, 0x33445566);
     }
 
     #[test]
@@ -114,7 +129,10 @@ mod tests {
 
         let header = IppHeader::from_reader(&mut Cursor::new(data));
         assert!(header.is_err());
-        assert_eq!(header.err().unwrap().to_string(), "Invalid IPP version");
+        if let Some(ParseError::InvalidVersion) = header.err() {
+        } else {
+            assert!(false);
+        }
     }
 
     #[test]

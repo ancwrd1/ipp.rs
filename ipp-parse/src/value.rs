@@ -395,7 +395,7 @@ mod tests {
         let result = crate::parser::IppParser::new(&mut io::Cursor::new(data)).parse();
         assert!(result.is_ok());
 
-        let res = result.as_ref().unwrap();
+        let res = result.ok().unwrap();
         let attrs = res.attributes.printer_attributes().unwrap();
         let attr = attrs.get("coll").unwrap();
         if let IppValue::Collection(coll) = attr.value() {

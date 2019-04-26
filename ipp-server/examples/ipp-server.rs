@@ -276,7 +276,7 @@ fn main() {
                 let mut cursor = Cursor::new(c);
                 let ippreq = {
                     let mut parser = IppParser::new(&mut cursor);
-                    IppRequestResponse::from_parser(parser).unwrap()
+                    IppRequestResponse::from_parser(parser).ok().unwrap()
                 };
                 let dummy_req = DummyRequest {
                     header: ippreq.header().clone(),

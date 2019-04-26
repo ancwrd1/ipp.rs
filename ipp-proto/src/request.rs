@@ -95,7 +95,7 @@ impl IppRequestResponse {
     }
 
     /// Create IppRequestResponse from the parser
-    pub fn from_parser(parser: IppParser) -> io::Result<IppRequestResponse> {
+    pub fn from_parser(parser: IppParser) -> Result<IppRequestResponse, ParseError> {
         let res = parser.parse()?;
 
         Ok(IppRequestResponse {
