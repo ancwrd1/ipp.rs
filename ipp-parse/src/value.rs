@@ -196,16 +196,24 @@ impl IppWriter for IppValue {
             }
             IppValue::Collection(ref list) => {
                 let mut retval = 0;
-                for (i, item) in list.iter().enumerate() {
-                    retval += item.write(writer)?;
-                    if i < list.len() - 1 {
-                        writer.write_u8(self.to_tag() as u8)?;
-                        writer.write_u16::<BigEndian>(0)?;
-                        retval += 3;
-                    }
+
+                // begin collection: value size is 0
+                writer.write_u16::<BigEndian>(0)?;
+                retval += 2;
+
+                for item in list.iter() {
+                    // item tag
+                    writer.write_u8(item.to_tag() as u8)?;
+                    // name size is zero, this is a collection
+                    writer.write_u16::<BigEndian>(0)?;
+                    // write the item
+                    retval += 3 + item.write(writer)?;
                 }
+                // write end collection attribute
                 writer.write_u8(ValueTag::EndCollection as u8)?;
-                retval += 1;
+                writer.write_u32::<BigEndian>(0)?;
+                retval += 5;
+
                 Ok(retval)
             }
             IppValue::DateTime {
@@ -342,6 +350,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::IppAttribute;
 
     #[test]
     fn test_value_iterator_single() {
@@ -359,6 +368,43 @@ mod tests {
 
         for v in val.into_iter().enumerate() {
             assert_eq!(*v.1, list[v.0]);
+        }
+    }
+
+    #[test]
+    fn test_collection_de_serialize() {
+        let attr = IppAttribute::new(
+            "coll",
+            IppValue::Collection(vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)]),
+        );
+        let mut buf = Vec::new();
+        assert!(attr.write(&mut io::Cursor::new(&mut buf)).is_ok());
+
+        assert_eq!(
+            vec![
+                0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x11, 0x11, 0x11, 0x11, 0x21, 0, 0, 0, 4,
+                0x22, 0x22, 0x22, 0x22, 0x37, 0, 0, 0, 0,
+            ],
+            buf
+        );
+
+        let mut data = vec![1, 1, 0, 0, 0, 0, 0, 0, 4];
+        data.extend(buf);
+        data.extend(vec![3]);
+
+        let result = crate::parser::IppParser::new(&mut io::Cursor::new(data)).parse();
+        assert!(result.is_ok());
+
+        let res = result.as_ref().unwrap();
+        let attrs = res.attributes.printer_attributes().unwrap();
+        let attr = attrs.get("coll").unwrap();
+        if let IppValue::Collection(coll) = attr.value() {
+            assert_eq!(
+                *coll,
+                vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)]
+            );
+        } else {
+            assert!(false);
         }
     }
 }
