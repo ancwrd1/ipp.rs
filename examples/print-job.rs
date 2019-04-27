@@ -1,11 +1,11 @@
-extern crate ipp;
 extern crate env_logger;
+extern crate ipp;
 
 use std::env;
-use std::process::exit;
 use std::fs::File;
+use std::process::exit;
 
-use ipp::{IppClient, IppAttribute, IppValue, PrintJob};
+use ipp::{IppAttribute, IppClient, IppValue, PrintJob};
 
 pub fn main() {
     env_logger::init();
@@ -19,11 +19,7 @@ pub fn main() {
 
     let client = IppClient::new(&args[1]);
     let f = File::open(&args[2]).unwrap();
-    let mut operation = PrintJob::new(
-        Box::new(f),
-        &env::var("USER").unwrap(),
-        Some(&args[1])
-    );
+    let mut operation = PrintJob::new(Box::new(f), &env::var("USER").unwrap(), Some(&args[1]));
 
     for arg in &args[3..] {
         let mut kv = arg.split('=');

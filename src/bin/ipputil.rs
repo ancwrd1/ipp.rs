@@ -1,5 +1,5 @@
-extern crate ipp;
 extern crate env_logger;
+extern crate ipp;
 
 use ipp::{util, IppError};
 use std::env;
@@ -17,6 +17,6 @@ fn main() {
                 eprintln!("ERROR: {}", e);
                 exit(e.as_exit_code());
             }
-        }
+        },
     }
 }

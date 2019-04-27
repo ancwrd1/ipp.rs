@@ -4,15 +4,15 @@
 
 use num_traits::FromPrimitive;
 
-use request::{IppRequestResponse,IppRequestTrait};
-use consts::statuscode::StatusCode;
 use consts::operation::Operation;
+use consts::statuscode::StatusCode;
+use request::{IppRequestResponse, IppRequestTrait};
 
 pub type IppServerResult = Result<IppRequestResponse, StatusCode>;
 
 /// A trait which defines IPP operations
 pub trait IppServer<'b, 'c> {
-    type IppRequest : IppRequestTrait;
+    type IppRequest: IppRequestTrait;
 
     /// Print-Job operation
     fn print_job(&self, _req: &mut Self::IppRequest) -> IppServerResult;

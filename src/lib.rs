@@ -33,38 +33,40 @@
 
 extern crate byteorder;
 extern crate clap;
+extern crate num_traits;
 extern crate reqwest;
 extern crate url;
-extern crate num_traits;
-#[macro_use] extern crate enum_primitive_derive;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate enum_primitive_derive;
+#[macro_use]
+extern crate log;
 
-use std::result;
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::fmt;
 use std::io::{self, Read, Write};
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use std::result;
 
 pub mod consts {
     //! This module holds IPP constants such as attribute names, operations and tags
-    pub mod tag;
-    pub mod statuscode;
-    pub mod operation;
     pub mod attribute;
+    pub mod operation;
+    pub mod statuscode;
+    pub mod tag;
 }
 
-pub mod value;
-pub mod parser;
-pub mod request;
 pub mod attribute;
 pub mod client;
-pub mod server;
-pub mod operation;
-pub mod util;
 pub mod ffi;
+pub mod operation;
+pub mod parser;
+pub mod request;
+pub mod server;
+pub mod util;
+pub mod value;
 
 pub use attribute::{IppAttribute, IppAttributeList};
 pub use client::IppClient;
-pub use operation::{IppOperation, PrintJob, GetPrinterAttributes, CreateJob, SendDocument};
+pub use operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
 pub use request::IppRequestResponse;
 pub use value::IppValue;
 pub const IPP_VERSION: u16 = 0x0101;
@@ -89,7 +91,7 @@ pub enum IppError {
     /// Command-line parameter error
     ParamError(clap::Error),
     /// Printer state error
-    PrinterStateError(Vec<String>)
+    PrinterStateError(Vec<String>),
 }
 
 impl IppError {
@@ -102,7 +104,7 @@ impl IppError {
             IppError::StatusError(_) => 6,
             IppError::TagError(_) => 7,
             IppError::ParamError(_) => 1,
-            IppError::PrinterStateError(_) => 8
+            IppError::PrinterStateError(_) => 8,
         }
     }
 }
@@ -117,7 +119,7 @@ impl fmt::Display for IppError {
             IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
             IppError::TagError(ref e) => write!(f, "IPP tag error: {:0x}", e),
             IppError::ParamError(ref e) => write!(f, "IPP tag error: {}", e),
-            IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e)
+            IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
         }
     }
 }
@@ -156,7 +158,7 @@ pub struct IppHeader {
     /// Operation tag for requests, status for responses
     pub operation_status: u16,
     /// ID of the request
-    pub request_id: u32
+    pub request_id: u32,
 }
 
 impl IppHeader {
@@ -164,13 +166,18 @@ impl IppHeader {
         let retval = IppHeader::new(
             reader.read_u16::<BigEndian>()?,
             reader.read_u16::<BigEndian>()?,
-            reader.read_u32::<BigEndian>()?);
+            reader.read_u32::<BigEndian>()?,
+        );
         Ok(retval)
     }
 
     /// Create IPP header
     pub fn new(version: u16, status: u16, request_id: u32) -> IppHeader {
-        IppHeader { version, operation_status: status, request_id }
+        IppHeader {
+            version,
+            operation_status: status,
+            request_id,
+        }
     }
 
     /// Write header to a given writer
@@ -202,5 +209,4 @@ pub trait ReadIppExt: Read {
 impl<R: io::Read + ?Sized> ReadIppExt for R {}
 
 #[test]
-fn it_works() {
-}
+fn it_works() {}

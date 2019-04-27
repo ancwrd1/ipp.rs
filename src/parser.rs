@@ -1,25 +1,29 @@
 //!
 //! IPP stream parser
 //!
-use std::io::Read;
 use byteorder::{BigEndian, ReadBytesExt};
+use std::io::Read;
 
 use num_traits::FromPrimitive;
 
-use ::{Result, IppError, IppHeader, ReadIppExt};
 use attribute::{IppAttribute, IppAttributeList};
-use value::IppValue;
-use consts::tag::*;
 use consts::statuscode::StatusCode;
+use consts::tag::*;
+use value::IppValue;
+use {IppError, IppHeader, ReadIppExt, Result};
 
 fn list_to_value(mut list: Vec<IppValue>) -> IppValue {
-    if list.len() == 1 { list.remove(0) } else { IppValue::ListOf(list) }
+    if list.len() == 1 {
+        list.remove(0)
+    } else {
+        IppValue::ListOf(list)
+    }
 }
 
 /// IPP parsing result
 pub struct IppParseResult {
     header: IppHeader,
-    attributes: IppAttributeList
+    attributes: IppAttributeList,
 }
 
 impl IppParseResult {
@@ -41,7 +45,7 @@ impl IppParseResult {
 
 /// IPP parser implementation
 pub struct IppParser<'a> {
-    reader: &'a mut Read
+    reader: &'a mut Read,
 }
 
 impl<'a> IppParser<'a> {
@@ -76,13 +80,17 @@ impl<'a> IppParser<'a> {
                     // end of stream, get last saved collection
                     if let Some(last_name) = last_name {
                         if let Some(val_list) = stack.pop() {
-                            retval.add(delimiter, IppAttribute::new(&last_name, list_to_value(val_list)));
+                            retval.add(
+                                delimiter,
+                                IppAttribute::new(&last_name, list_to_value(val_list)),
+                            );
                         }
                     }
                     break;
                 } else {
                     // remember delimiter tag
-                    delimiter = DelimiterTag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
+                    delimiter =
+                        DelimiterTag::from_u8(tag).ok_or(StatusCode::ClientErrorBadRequest)?;
                 }
             } else if is_value_tag(tag) {
                 // value tag
@@ -97,7 +105,10 @@ impl<'a> IppParser<'a> {
                     if let Some(last_name) = last_name {
                         // put the previous attribute into the retval
                         if let Some(val_list) = stack.pop() {
-                            retval.add(delimiter, IppAttribute::new(&last_name, list_to_value(val_list)));
+                            retval.add(
+                                delimiter,
+                                IppAttribute::new(&last_name, list_to_value(val_list)),
+                            );
                         }
                         stack.push(vec![]);
                     }
@@ -121,7 +132,7 @@ impl<'a> IppParser<'a> {
                     val_list.push(value);
                 }
             } else {
-                return Err(IppError::TagError(tag))
+                return Err(IppError::TagError(tag));
             }
         }
 
