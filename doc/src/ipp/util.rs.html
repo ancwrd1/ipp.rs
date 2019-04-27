@@ -1,60 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/util.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>util.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
-    
-    <link rel="stylesheet" type="text/css" href="../../dark.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
-    <script src="../../storage.js"></script>
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        <div class="sidebar-menu">&#9776;</div>
-        
-        
-    </nav>
-
-    <div class="theme-picker">
-        <button id="theme-picker" aria-label="Pick another theme!">
-            <img src="../../brush.svg" width="18" alt="Pick another theme!">
-        </button>
-        <div id="theme-choices"></div>
-    </div>
-    <script src="../../theme.js"></script>
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ipp/index.html'><img src='../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -310,7 +254,46 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
-</pre><pre class="rust ">
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! High-level utility functions to be used from external application or command-line utility</span>
 <span class="doccomment">//!</span>
@@ -320,12 +303,12 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">stdin</span>, <span class="ident">Read</span>};
 
+<span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">App</span>, <span class="ident">AppSettings</span>, <span class="ident">Arg</span>, <span class="ident">ArgMatches</span>, <span class="ident">SubCommand</span>, <span class="ident">Values</span>};
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">FromPrimitive</span>;
-<span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">Arg</span>, <span class="ident">ArgMatches</span>, <span class="ident">App</span>, <span class="ident">AppSettings</span>, <span class="ident">SubCommand</span>, <span class="ident">Values</span>};
 
-<span class="kw">use</span> ::{<span class="ident">IppClient</span>, <span class="ident">IppAttribute</span>, <span class="ident">IppValue</span>, <span class="ident">PrintJob</span>, <span class="ident">GetPrinterAttributes</span>, <span class="ident">IppError</span>};
-<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">tag</span>::<span class="ident">DelimiterTag</span>;
 <span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">attribute</span>::{<span class="ident">PrinterState</span>, <span class="ident">PRINTER_STATE</span>, <span class="ident">PRINTER_STATE_REASONS</span>};
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">tag</span>::<span class="ident">DelimiterTag</span>;
+<span class="kw">use</span> {<span class="ident">GetPrinterAttributes</span>, <span class="ident">IppAttribute</span>, <span class="ident">IppClient</span>, <span class="ident">IppError</span>, <span class="ident">IppValue</span>, <span class="ident">PrintJob</span>};
 
 <span class="kw">const</span> <span class="ident">VERSION</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="macro">env</span><span class="macro">!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>);
 
@@ -339,7 +322,8 @@
     <span class="string">&quot;output-tray-missing&quot;</span>,
     <span class="string">&quot;marker-supply-empty&quot;</span>,
     <span class="string">&quot;paused&quot;</span>,
-    <span class="string">&quot;shutdown&quot;</span>];
+    <span class="string">&quot;shutdown&quot;</span>,
+];
 
 <span class="kw">fn</span> <span class="ident">unwrap_values</span>(<span class="ident">values</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Values</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Values</span> {
     <span class="ident">values</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">Values</span>::<span class="ident">default</span>)
@@ -348,7 +332,8 @@
 <span class="kw">fn</span> <span class="ident">new_client</span>(<span class="ident">matches</span>: <span class="kw-2">&amp;</span><span class="ident">ArgMatches</span>) <span class="op">-&gt;</span> <span class="ident">IppClient</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">IppClient</span>::<span class="ident">with_root_certificates</span>(
         <span class="ident">matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;uri&quot;</span>).<span class="ident">unwrap</span>(),
-        <span class="kw-2">&amp;</span><span class="ident">unwrap_values</span>(<span class="ident">matches</span>.<span class="ident">values_of</span>(<span class="string">&quot;cacert&quot;</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>());
+        <span class="kw-2">&amp;</span><span class="ident">unwrap_values</span>(<span class="ident">matches</span>.<span class="ident">values_of</span>(<span class="string">&quot;cacert&quot;</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>(),
+    );
 
     <span class="kw">if</span> <span class="ident">matches</span>.<span class="ident">is_present</span>(<span class="string">&quot;noverifyhostname&quot;</span>) {
         <span class="ident">client</span>.<span class="ident">set_verify_hostname</span>(<span class="bool-val">false</span>);
@@ -360,13 +345,14 @@
 <span class="kw">fn</span> <span class="ident">do_print</span>(<span class="ident">matches</span>: <span class="kw-2">&amp;</span><span class="ident">ArgMatches</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;filename&quot;</span>) {
         <span class="prelude-val">Some</span>(<span class="ident">filename</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">filename</span>)<span class="question-mark">?</span>),
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">stdin</span>())
+        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">stdin</span>()),
     };
 
     <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">new_client</span>(<span class="ident">matches</span>);
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">matches</span>.<span class="ident">is_present</span>(<span class="string">&quot;nocheckstate&quot;</span>) {
-        <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(<span class="kw-2">&amp;</span>[<span class="ident">PRINTER_STATE</span>, <span class="ident">PRINTER_STATE_REASONS</span>]);
+        <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span>
+            <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(<span class="kw-2">&amp;</span>[<span class="ident">PRINTER_STATE</span>, <span class="ident">PRINTER_STATE_REASONS</span>]);
         <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>)<span class="question-mark">?</span>;
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>) <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>, <span class="ident">PRINTER_STATE</span>) {
@@ -382,10 +368,18 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reasons</span>) <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>, <span class="ident">PRINTER_STATE_REASONS</span>) {
             <span class="kw">let</span> <span class="ident">keywords</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">reasons</span>.<span class="ident">value</span>() {
-                <span class="ident">IppValue</span>::<span class="ident">ListOf</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span>
-                    <span class="ident">v</span>.<span class="ident">iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="kw">if</span> <span class="kw">let</span> <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="kw-2">ref</span> <span class="ident">k</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="ident">e</span> { <span class="prelude-val">Some</span>(<span class="ident">k</span>.<span class="ident">clone</span>()) } <span class="kw">else</span> { <span class="prelude-val">None</span> }).<span class="ident">collect</span>(),
+                <span class="ident">IppValue</span>::<span class="ident">ListOf</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>
+                    .<span class="ident">iter</span>()
+                    .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="kw-2">ref</span> <span class="ident">k</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="ident">e</span> {
+                            <span class="prelude-val">Some</span>(<span class="ident">k</span>.<span class="ident">clone</span>())
+                        } <span class="kw">else</span> {
+                            <span class="prelude-val">None</span>
+                        }
+                    })
+                    .<span class="ident">collect</span>(),
                 <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">v</span>.<span class="ident">clone</span>()],
-                _ <span class="op">=&gt;</span> <span class="ident">Vec</span>::<span class="ident">new</span>()
+                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">Vec</span>::<span class="ident">new</span>(),
             };
             <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ERROR_STATES</span>.<span class="ident">contains</span>(<span class="op">&amp;&amp;</span><span class="ident">k</span>[..])) {
                 <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Printer is in error state: {:?}&quot;</span>, <span class="ident">keywords</span>);
@@ -396,8 +390,10 @@
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">PrintJob</span>::<span class="ident">new</span>(
         <span class="ident">reader</span>,
-        <span class="ident">matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;username&quot;</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="ident">env</span>::<span class="ident">var</span>(<span class="string">&quot;USER&quot;</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span>_<span class="op">|</span> <span class="ident">String</span>::<span class="ident">new</span>())),
-        <span class="ident">matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;jobname&quot;</span>)
+        <span class="ident">matches</span>
+            .<span class="ident">value_of</span>(<span class="string">&quot;username&quot;</span>)
+            .<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="ident">env</span>::<span class="ident">var</span>(<span class="string">&quot;USER&quot;</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">String</span>::<span class="ident">new</span>())),
+        <span class="ident">matches</span>.<span class="ident">value_of</span>(<span class="string">&quot;jobname&quot;</span>),
     );
 
     <span class="kw">for</span> <span class="ident">arg</span> <span class="kw">in</span> <span class="ident">unwrap_values</span>(<span class="ident">matches</span>.<span class="ident">values_of</span>(<span class="string">&quot;option&quot;</span>)) {
@@ -430,12 +426,13 @@
     <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">new_client</span>(<span class="ident">matches</span>);
 
     <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(
-        <span class="kw-2">&amp;</span><span class="ident">unwrap_values</span>(<span class="ident">matches</span>.<span class="ident">values_of</span>(<span class="string">&quot;attribute&quot;</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>());
+        <span class="kw-2">&amp;</span><span class="ident">unwrap_values</span>(<span class="ident">matches</span>.<span class="ident">values_of</span>(<span class="string">&quot;attribute&quot;</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>(),
+    );
 
     <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>)<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get_printer_attributes</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">values</span>: <span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">values</span>().<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">values</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">values</span>().<span class="ident">collect</span>();
         <span class="ident">values</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">name</span>().<span class="ident">cmp</span>(<span class="ident">b</span>.<span class="ident">name</span>()));
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">values</span> {
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
@@ -482,81 +479,106 @@
 <span class="doccomment">///     &lt;uri&gt;    Printer URI, supported schemes: ipp, ipps, http, https</span>
 <span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">util_main</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">args</span>: <span class="ident">I</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>,
-        <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">OsString</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> {
+<span class="kw">where</span>
+    <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">OsString</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
+{
     <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">App</span>::<span class="ident">new</span>(<span class="string">&quot;IPP utility&quot;</span>)
         .<span class="ident">version</span>(<span class="ident">VERSION</span>)
         .<span class="ident">setting</span>(<span class="ident">AppSettings</span>::<span class="ident">SubcommandRequired</span>)
         .<span class="ident">setting</span>(<span class="ident">AppSettings</span>::<span class="ident">VersionlessSubcommands</span>)
-        .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;cacert&quot;</span>)
-            .<span class="ident">short</span>(<span class="string">&quot;c&quot;</span>)
-            .<span class="ident">long</span>(<span class="string">&quot;cacert&quot;</span>)
-            .<span class="ident">value_name</span>(<span class="string">&quot;filename&quot;</span>)
-            .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
-            .<span class="ident">number_of_values</span>(<span class="number">1</span>)
-            .<span class="ident">help</span>(<span class="string">&quot;Additional root certificates in PEM or DER format&quot;</span>)
-            .<span class="ident">global</span>(<span class="bool-val">true</span>)
-            .<span class="ident">required</span>(<span class="bool-val">false</span>))
-        .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;noverifyhostname&quot;</span>)
-            .<span class="ident">short</span>(<span class="string">&quot;r&quot;</span>)
-            .<span class="ident">long</span>(<span class="string">&quot;--no-verify-hostname&quot;</span>)
-            .<span class="ident">help</span>(<span class="string">&quot;Disable host name verification for SSL transport&quot;</span>)
-            .<span class="ident">global</span>(<span class="bool-val">true</span>)
-            .<span class="ident">required</span>(<span class="bool-val">false</span>))
-        .<span class="ident">subcommand</span>(<span class="ident">SubCommand</span>::<span class="ident">with_name</span>(<span class="string">&quot;print&quot;</span>)
-            .<span class="ident">about</span>(<span class="string">&quot;Print file to an IPP printer&quot;</span>)
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;nocheckstate&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;n&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;no-check-state&quot;</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Do not check printer state before printing&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;filename&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;f&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;file&quot;</span>)
+        .<span class="ident">arg</span>(
+            <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;cacert&quot;</span>)
+                .<span class="ident">short</span>(<span class="string">&quot;c&quot;</span>)
+                .<span class="ident">long</span>(<span class="string">&quot;cacert&quot;</span>)
                 .<span class="ident">value_name</span>(<span class="string">&quot;filename&quot;</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Input file name to print. If missing will read from stdin&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;username&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;u&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;user&quot;</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;username&quot;</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;User name to send as requesting-user-name attribute&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;jobname&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;j&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;job&quot;</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;jobname&quot;</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Job name to send as job-name attribute&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;option&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;o&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;option&quot;</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;key=value&quot;</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Extra IPP job attributes to send&quot;</span>)
                 .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
                 .<span class="ident">number_of_values</span>(<span class="number">1</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;uri&quot;</span>)
-                .<span class="ident">index</span>(<span class="number">1</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;uri&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">true</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Printer URI, supported schemes: ipp, ipps, http, https&quot;</span>)))
-        .<span class="ident">subcommand</span>(<span class="ident">SubCommand</span>::<span class="ident">with_name</span>(<span class="string">&quot;status&quot;</span>)
-            .<span class="ident">about</span>(<span class="string">&quot;Get status of an IPP printer&quot;</span>)
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;attribute&quot;</span>)
-                .<span class="ident">short</span>(<span class="string">&quot;a&quot;</span>)
-                .<span class="ident">long</span>(<span class="string">&quot;attribute&quot;</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;attribute&quot;</span>)
-                .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
-                .<span class="ident">number_of_values</span>(<span class="number">1</span>)
-                .<span class="ident">required</span>(<span class="bool-val">false</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;IPP attribute to query, default is get all&quot;</span>))
-            .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;uri&quot;</span>)
-                .<span class="ident">index</span>(<span class="number">1</span>)
-                .<span class="ident">value_name</span>(<span class="string">&quot;uri&quot;</span>)
-                .<span class="ident">required</span>(<span class="bool-val">true</span>)
-                .<span class="ident">help</span>(<span class="string">&quot;Printer URI, supported schemes: ipp, ipps, http, https&quot;</span>)))
+                .<span class="ident">help</span>(<span class="string">&quot;Additional root certificates in PEM or DER format&quot;</span>)
+                .<span class="ident">global</span>(<span class="bool-val">true</span>)
+                .<span class="ident">required</span>(<span class="bool-val">false</span>),
+        )
+        .<span class="ident">arg</span>(
+            <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;noverifyhostname&quot;</span>)
+                .<span class="ident">short</span>(<span class="string">&quot;r&quot;</span>)
+                .<span class="ident">long</span>(<span class="string">&quot;--no-verify-hostname&quot;</span>)
+                .<span class="ident">help</span>(<span class="string">&quot;Disable host name verification for SSL transport&quot;</span>)
+                .<span class="ident">global</span>(<span class="bool-val">true</span>)
+                .<span class="ident">required</span>(<span class="bool-val">false</span>),
+        )
+        .<span class="ident">subcommand</span>(
+            <span class="ident">SubCommand</span>::<span class="ident">with_name</span>(<span class="string">&quot;print&quot;</span>)
+                .<span class="ident">about</span>(<span class="string">&quot;Print file to an IPP printer&quot;</span>)
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;nocheckstate&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;n&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;no-check-state&quot;</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Do not check printer state before printing&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;filename&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;f&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;file&quot;</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;filename&quot;</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Input file name to print. If missing will read from stdin&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;username&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;u&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;user&quot;</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;username&quot;</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;User name to send as requesting-user-name attribute&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;jobname&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;j&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;job&quot;</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;jobname&quot;</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Job name to send as job-name attribute&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;option&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;o&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;option&quot;</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;key=value&quot;</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Extra IPP job attributes to send&quot;</span>)
+                        .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
+                        .<span class="ident">number_of_values</span>(<span class="number">1</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;uri&quot;</span>)
+                        .<span class="ident">index</span>(<span class="number">1</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;uri&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">true</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Printer URI, supported schemes: ipp, ipps, http, https&quot;</span>),
+                ),
+        )
+        .<span class="ident">subcommand</span>(
+            <span class="ident">SubCommand</span>::<span class="ident">with_name</span>(<span class="string">&quot;status&quot;</span>)
+                .<span class="ident">about</span>(<span class="string">&quot;Get status of an IPP printer&quot;</span>)
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;attribute&quot;</span>)
+                        .<span class="ident">short</span>(<span class="string">&quot;a&quot;</span>)
+                        .<span class="ident">long</span>(<span class="string">&quot;attribute&quot;</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;attribute&quot;</span>)
+                        .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
+                        .<span class="ident">number_of_values</span>(<span class="number">1</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">false</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;IPP attribute to query, default is get all&quot;</span>),
+                )
+                .<span class="ident">arg</span>(
+                    <span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;uri&quot;</span>)
+                        .<span class="ident">index</span>(<span class="number">1</span>)
+                        .<span class="ident">value_name</span>(<span class="string">&quot;uri&quot;</span>)
+                        .<span class="ident">required</span>(<span class="bool-val">true</span>)
+                        .<span class="ident">help</span>(<span class="string">&quot;Printer URI, supported schemes: ipp, ipps, http, https&quot;</span>),
+                ),
+        )
         .<span class="ident">get_matches_from_safe</span>(<span class="ident">args</span>)<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">printcmd</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">subcommand_matches</span>(<span class="string">&quot;print&quot;</span>) {
@@ -567,69 +589,5 @@
         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Fatal argument error&quot;</span>);
     }
 }
-</pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt><kbd>?</kbd></dt>
-                    <dd>Show this help dialog</dd>
-                    <dt><kbd>S</kbd></dt>
-                    <dd>Focus the search field</dd>
-                    <dt><kbd>↑</kbd></dt>
-                    <dd>Move up in search results</dd>
-                    <dt><kbd>↓</kbd></dt>
-                    <dd>Move down in search results</dd>
-                    <dt><kbd>↹</kbd></dt>
-                    <dd>Switch tab</dd>
-                    <dt><kbd>&#9166;</kbd></dt>
-                    <dd>Go to active search result</dd>
-                    <dt><kbd>+</kbd></dt>
-                    <dd>Expand all sections</dd>
-                    <dt><kbd>-</kbd></dt>
-                    <dd>Collapse all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../";
-        window.currentCrate = "ipp";
-    </script>
-    <script src="../../main.js"></script>
-    <script defer src="../../search-index.js"></script>
-</body>
-</html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

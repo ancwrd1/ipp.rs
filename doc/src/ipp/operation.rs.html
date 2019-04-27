@@ -1,60 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/operation.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>operation.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
-    
-    <link rel="stylesheet" type="text/css" href="../../dark.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
-    <script src="../../storage.js"></script>
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        <div class="sidebar-menu">&#9776;</div>
-        
-        
-    </nav>
-
-    <div class="theme-picker">
-        <button id="theme-picker" aria-label="Pick another theme!">
-            <img src="../../brush.svg" width="18" alt="Pick another theme!">
-        </button>
-        <div id="theme-choices"></div>
-    </div>
-    <script src="../../theme.js"></script>
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/operation.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>operation.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ipp/index.html'><img src='../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -245,18 +189,38 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
-</pre><pre class="rust ">
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! High-level IPP operation abstractions</span>
 <span class="doccomment">//!</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
 <span class="kw">use</span> <span class="ident">attribute</span>::<span class="ident">IppAttribute</span>;
-<span class="kw">use</span> <span class="ident">request</span>::<span class="ident">IppRequestResponse</span>;
-<span class="kw">use</span> <span class="ident">value</span>::<span class="ident">IppValue</span>;
-<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">tag</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">operation</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">attribute</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">operation</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">consts</span>::<span class="ident">tag</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">request</span>::<span class="ident">IppRequestResponse</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
+<span class="kw">use</span> <span class="ident">value</span>::<span class="ident">IppValue</span>;
 
 <span class="doccomment">/// Trait which represents a single IPP operation</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IppOperation</span> {
@@ -269,7 +233,7 @@
     <span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>,
     <span class="ident">user_name</span>: <span class="ident">String</span>,
     <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PrintJob</span> {
@@ -278,13 +242,12 @@
     <span class="doccomment">/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
     <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
     <span class="doccomment">/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>,
-               <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PrintJob</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>, <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PrintJob</span> {
         <span class="ident">PrintJob</span> {
             <span class="ident">reader</span>,
             <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">to_string</span>(),
             <span class="ident">job_name</span>: <span class="ident">job_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_string</span>()),
-            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>()
+            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
         }
     }
 
@@ -298,14 +261,19 @@
     <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">PrintJob</span>, <span class="ident">uri</span>);
 
-        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTING_USER_NAME</span>,
-                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>())));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+            <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(
+                <span class="ident">REQUESTING_USER_NAME</span>,
+                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>()),
+            ),
+        );
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
-            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-                                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>,
-                                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())))
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+                <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>, <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())),
+            )
         }
 
         <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span> {
@@ -319,7 +287,7 @@
 <span class="doccomment">/// IPP operation Get-Printer-Attributes</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetPrinterAttributes</span> {
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">GetPrinterAttributes</span> {
@@ -330,8 +298,13 @@
     }
 
     <span class="doccomment">/// Set attributes to request from the printer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_attributes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">attributes</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) <span class="op">-&gt;</span> <span class="ident">GetPrinterAttributes</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="ident">GetPrinterAttributes</span> { <span class="ident">attributes</span>: <span class="ident">attributes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()).<span class="ident">collect</span>() }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_attributes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">attributes</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) <span class="op">-&gt;</span> <span class="ident">GetPrinterAttributes</span>
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+    {
+        <span class="ident">GetPrinterAttributes</span> {
+            <span class="ident">attributes</span>: <span class="ident">attributes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()).<span class="ident">collect</span>(),
+        }
     }
 }
 
@@ -340,9 +313,15 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">GetPrinterAttributes</span>, <span class="ident">uri</span>);
 
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">let</span> <span class="ident">vals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="ident">a</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>();
-            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTED_ATTRIBUTES</span>, <span class="ident">IppValue</span>::<span class="ident">ListOf</span>(<span class="ident">vals</span>)));
+            <span class="kw">let</span> <span class="ident">vals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>
+                .<span class="ident">attributes</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">IppValue</span>::<span class="ident">Keyword</span>(<span class="ident">a</span>.<span class="ident">clone</span>()))
+                .<span class="ident">collect</span>();
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+                <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTED_ATTRIBUTES</span>, <span class="ident">IppValue</span>::<span class="ident">ListOf</span>(<span class="ident">vals</span>)),
+            );
         }
 
         <span class="ident">retval</span>
@@ -352,7 +331,7 @@
 <span class="doccomment">/// IPP operation Create-Job</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CreateJob</span> {
     <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>
+    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">CreateJob</span> {
@@ -362,7 +341,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CreateJob</span> {
         <span class="ident">CreateJob</span> {
             <span class="ident">job_name</span>: <span class="ident">job_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_string</span>()),
-            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>()
+            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
         }
     }
 
@@ -370,8 +349,6 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_attribute</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
     }
-
-
 }
 
 <span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">CreateJob</span> {
@@ -379,9 +356,10 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">CreateJob</span>, <span class="ident">uri</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
-            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-                                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>,
-                                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())))
+            <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+                <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+                <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_NAME</span>, <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="ident">job_name</span>.<span class="ident">clone</span>())),
+            )
         }
 
         <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span> {
@@ -396,7 +374,7 @@
     <span class="ident">job_id</span>: <span class="ident">i32</span>,
     <span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>,
     <span class="ident">user_name</span>: <span class="ident">String</span>,
-    <span class="ident">last</span>: <span class="ident">bool</span>
+    <span class="ident">last</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SendDocument</span> {
@@ -406,13 +384,12 @@
     <span class="doccomment">/// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed&lt;br/&gt;</span>
     <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
     <span class="doccomment">/// * `last` - whether this document is a last one&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>,
-               <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">last</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">SendDocument</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">reader</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Read</span><span class="op">&gt;</span>, <span class="ident">user_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">last</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">SendDocument</span> {
         <span class="ident">SendDocument</span> {
             <span class="ident">job_id</span>,
             <span class="ident">reader</span>,
             <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">to_string</span>(),
-            <span class="ident">last</span>
+            <span class="ident">last</span>,
         }
     }
 }
@@ -421,85 +398,28 @@
     <span class="kw">fn</span> <span class="ident">to_ipp_request</span>(<span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IppRequestResponse</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse</span>::<span class="ident">new</span>(<span class="ident">Operation</span>::<span class="ident">SendDocument</span>, <span class="ident">uri</span>);
 
-        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_ID</span>, <span class="ident">IppValue</span>::<span class="ident">Integer</span>(<span class="self">self</span>.<span class="ident">job_id</span>)));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+            <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">JOB_ID</span>, <span class="ident">IppValue</span>::<span class="ident">Integer</span>(<span class="self">self</span>.<span class="ident">job_id</span>)),
+        );
 
-        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">REQUESTING_USER_NAME</span>,
-                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>())));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+            <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(
+                <span class="ident">REQUESTING_USER_NAME</span>,
+                <span class="ident">IppValue</span>::<span class="ident">NameWithoutLanguage</span>(<span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">clone</span>()),
+            ),
+        );
 
-        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
-            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">LAST_DOCUMENT</span>,
-                <span class="ident">IppValue</span>::<span class="ident">Boolean</span>(<span class="self">self</span>.<span class="ident">last</span>)));
+        <span class="ident">retval</span>.<span class="ident">set_attribute</span>(
+            <span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>,
+            <span class="ident">IppAttribute</span>::<span class="ident">new</span>(<span class="ident">LAST_DOCUMENT</span>, <span class="ident">IppValue</span>::<span class="ident">Boolean</span>(<span class="self">self</span>.<span class="ident">last</span>)),
+        );
 
         <span class="ident">retval</span>.<span class="ident">set_payload</span>(<span class="self">self</span>.<span class="ident">reader</span>);
 
         <span class="ident">retval</span>
     }
 }
-</pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt><kbd>?</kbd></dt>
-                    <dd>Show this help dialog</dd>
-                    <dt><kbd>S</kbd></dt>
-                    <dd>Focus the search field</dd>
-                    <dt><kbd>↑</kbd></dt>
-                    <dd>Move up in search results</dd>
-                    <dt><kbd>↓</kbd></dt>
-                    <dd>Move down in search results</dd>
-                    <dt><kbd>↹</kbd></dt>
-                    <dd>Switch tab</dd>
-                    <dt><kbd>&#9166;</kbd></dt>
-                    <dd>Go to active search result</dd>
-                    <dt><kbd>+</kbd></dt>
-                    <dd>Expand all sections</dd>
-                    <dt><kbd>-</kbd></dt>
-                    <dd>Collapse all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../";
-        window.currentCrate = "ipp";
-    </script>
-    <script src="../../main.js"></script>
-    <script defer src="../../search-index.js"></script>
-</body>
-</html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
