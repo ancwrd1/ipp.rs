@@ -12,10 +12,9 @@ edition = "2018"
 
 [dependencies]
 ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
-ipp-parse = { version = "0.3.0", path = "../ipp-parse" }
 num-traits = "0.2"
 reqwest = "0.9"
-url = "1.7"
+url = "1"
 log = "0.4"
 
 [dev-dependencies]

@@ -9,6 +9,20 @@ use num_traits::FromPrimitive;
 
 use crate::{ipp::*, *};
 
+#[derive(Debug)]
+pub enum ParseError {
+    InvalidTag(u8),
+    InvalidVersion,
+    InvalidCollection,
+    IOError(io::Error),
+}
+
+impl From<io::Error> for ParseError {
+    fn from(error: io::Error) -> Self {
+        ParseError::IOError(error)
+    }
+}
+
 // create a single value from one-element list, list otherwise
 fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 {

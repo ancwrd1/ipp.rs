@@ -8,10 +8,12 @@ use std::{
 
 use log::debug;
 
-use ipp_parse::{
-    attribute::{ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI},
-    ipp::{DelimiterTag, Operation},
-    *,
+use crate::{
+    attribute::*,
+    ipp::{DelimiterTag, IppVersion, Operation},
+    parser::{IppParser, ParseError},
+    value::*,
+    IppHeader, IppWriter,
 };
 
 /// IPP request/response struct

@@ -14,12 +14,12 @@ use log::debug;
 use num_traits::FromPrimitive;
 
 use ipp_client::{IppClient, IppClientBuilder, IppError};
-use ipp_parse::{
+use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     ipp::{DelimiterTag, PrinterState},
+    operation::{GetPrinterAttributes, PrintJob},
     IppAttribute, IppValue,
 };
-use ipp_proto::operation::{GetPrinterAttributes, PrintJob};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

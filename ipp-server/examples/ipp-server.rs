@@ -11,8 +11,12 @@ use futures::{future::Future, stream::Stream};
 use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
 use lazy_static::lazy_static;
 
-use ipp_parse::{attribute::*, ipp::*, IppHeader, IppParser, IppValue};
-use ipp_proto::request::{IppRequestResponse, IppRequestTrait};
+use ipp_proto::{
+    attribute::*,
+    ipp::*,
+    request::{IppRequestResponse, IppRequestTrait},
+    IppHeader, IppParser, IppValue,
+};
 use ipp_server::server::*;
 
 struct DummyServer {

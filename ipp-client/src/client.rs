@@ -17,8 +17,7 @@ use reqwest::{
 use url::Url;
 
 use crate::IppError;
-use ipp_parse::{ipp, IppAttributes, IppParser};
-use ipp_proto::{operation::IppOperation, request::IppRequestResponse};
+use ipp_proto::{ipp, operation::IppOperation, request::IppRequestResponse, IppAttributes, IppParser};
 
 /// IPP client.
 ///

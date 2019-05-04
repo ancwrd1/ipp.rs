@@ -1,12 +1,11 @@
 use std::{env, fs::File, io::BufReader, process::exit};
 
 use ipp_client::IppClientBuilder;
-use ipp_parse::{
+use ipp_proto::{
     attribute::{JOB_ID, OPERATIONS_SUPPORTED},
     ipp::{DelimiterTag, Operation},
-    IppValue,
+    IppOperationBuilder, IppValue,
 };
-use ipp_proto::IppOperationBuilder;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
     if let IppValue::Enum(ref v) = v {

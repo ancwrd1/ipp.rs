@@ -3,8 +3,7 @@
 //!
 use std::io::Read;
 
-use crate::request::IppRequestResponse;
-use ipp_parse::{attribute::*, ipp::*, IppValue};
+use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppValue};
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {

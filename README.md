@@ -7,9 +7,6 @@ IPP protocol implementation for Rust
 Usage example:
 
 ```rust
-extern crate ipp_client;
-extern crate ipp_proto;
-
 use ipp_proto::IppOperationBuilder;
 use ipp_client::IppClientBuilder;
 

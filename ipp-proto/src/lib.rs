@@ -1,190 +1,137 @@
-use std::io::Read;
+use std::io::{self, Cursor, Read, Write};
 
-use crate::operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument};
-use ipp_parse::IppAttribute;
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use bytes::{Bytes, BytesMut};
+use num_traits::FromPrimitive;
 
+pub mod attribute;
+pub mod builder;
+pub mod ipp;
 pub mod operation;
+pub mod parser;
 pub mod request;
+pub mod value;
 
-/// Builder to create IPP operations
-pub struct IppOperationBuilder;
+pub use crate::{
+    attribute::{IppAttribute, IppAttributes},
+    builder::{
+        CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
+    },
+    ipp::IppVersion,
+    parser::{IppParser, ParseError},
+    value::IppValue,
+};
 
-impl IppOperationBuilder {
-    /// Create PrintJob operation
-    pub fn print_job(reader: Box<Read>) -> PrintJobBuilder {
-        PrintJobBuilder::new(reader)
-    }
-
-    /// Create GetPrinterAttributes operation
-    pub fn get_printer_attributes() -> GetPrinterAttributesBuilder {
-        GetPrinterAttributesBuilder::new()
-    }
-
-    /// Create CreateJob operation
-    pub fn create_job() -> CreateJobBuilder {
-        CreateJobBuilder::new()
-    }
-
-    /// Create SendDocument operation
-    pub fn send_document(job_id: i32, reader: Box<Read>) -> SendDocumentBuilder {
-        SendDocumentBuilder::new(job_id, reader)
-    }
+pub trait IppWriter {
+    fn write(&self, writer: &mut Write) -> io::Result<usize>;
 }
 
-/// Builder to create PrintJob operation
-pub struct PrintJobBuilder {
-    reader: Box<Read>,
-    user_name: Option<String>,
-    job_title: Option<String>,
-    attributes: Vec<IppAttribute>,
-}
-
-impl PrintJobBuilder {
-    fn new(reader: Box<Read>) -> PrintJobBuilder {
-        PrintJobBuilder {
-            reader,
-            user_name: None,
-            job_title: None,
-            attributes: Vec::new(),
-        }
-    }
-    /// Specify requesting-user-name attribute
-    pub fn user_name(mut self, user_name: &str) -> Self {
-        self.user_name = Some(user_name.to_owned());
-        self
-    }
-
-    /// Specify job-name attribute
-    pub fn job_title(mut self, job_title: &str) -> Self {
-        self.job_title = Some(job_title.to_owned());
-        self
-    }
-
-    /// Specify custom job attribute
-    pub fn attribute(mut self, attribute: IppAttribute) -> Self {
-        self.attributes.push(attribute);
-        self
-    }
-
-    /// Build operation
-    pub fn build(self) -> impl IppOperation {
-        let mut op = PrintJob::new(
-            self.reader,
-            &self.user_name.unwrap_or_else(String::new),
-            self.job_title.as_ref(),
-        );
-        for attr in self.attributes {
-            op.add_attribute(attr);
-        }
-        op
-    }
-}
-
-/// Builder to create GetPrinterAttributes operation
-pub struct GetPrinterAttributesBuilder {
-    attributes: Vec<String>,
-}
-
-impl GetPrinterAttributesBuilder {
-    fn new() -> GetPrinterAttributesBuilder {
-        GetPrinterAttributesBuilder { attributes: Vec::new() }
-    }
-
-    /// Specify which attribute to retrieve from the printer. Can be repeated.
-    pub fn attribute(mut self, attribute: &str) -> Self {
-        self.attributes.push(attribute.to_owned());
-        self
-    }
-
-    /// Specify which attributes to retrieve from the printer
-    pub fn attributes<T>(mut self, attributes: &[T]) -> Self
+pub trait IppIntoReader: IppWriter {
+    fn into_reader(self) -> Box<Read>
     where
-        T: AsRef<str>,
+        Self: Sized,
     {
-        self.attributes
-            .extend(attributes.iter().map(|s| s.as_ref().to_string()));
-        self
+        let mut buf = Vec::new();
+        self.write(&mut buf).unwrap();
+        Box::new(Cursor::new(buf))
+    }
+}
+impl<R: IppWriter + Sized> IppIntoReader for R {}
+
+/// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
+pub trait IppReadExt: Read {
+    fn read_string(&mut self, len: usize) -> std::io::Result<String> {
+        Ok(String::from_utf8_lossy(&self.read_bytes(len)?).to_string())
     }
 
-    /// Build operation
-    pub fn build(self) -> impl IppOperation {
-        GetPrinterAttributes::with_attributes(&self.attributes)
+    fn read_bytes(&mut self, len: usize) -> std::io::Result<Bytes> {
+        let mut buf = BytesMut::with_capacity(len);
+        buf.resize(len, 0);
+        self.read_exact(&mut buf)?;
+
+        Ok(buf.freeze())
     }
 }
 
-/// Builder to create CreateJob operation
-pub struct CreateJobBuilder {
-    job_name: Option<String>,
-    attributes: Vec<IppAttribute>,
+impl<R: io::Read + ?Sized> IppReadExt for R {}
+
+/// IPP request and response header
+#[derive(Clone, Debug)]
+pub struct IppHeader {
+    /// IPP protocol version
+    pub version: IppVersion,
+    /// Operation tag for requests, status for responses
+    pub operation_status: u16,
+    /// ID of the request
+    pub request_id: u32,
 }
 
-impl CreateJobBuilder {
-    fn new() -> CreateJobBuilder {
-        CreateJobBuilder {
-            job_name: None,
-            attributes: Vec::new(),
+impl IppHeader {
+    /// Create IppHeader from the reader
+    pub fn from_reader(reader: &mut Read) -> Result<IppHeader, ParseError> {
+        let retval = IppHeader::new(
+            IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| ParseError::InvalidVersion)?,
+            reader.read_u16::<BigEndian>()?,
+            reader.read_u32::<BigEndian>()?,
+        );
+        Ok(retval)
+    }
+
+    /// Create IPP header
+    pub fn new(version: IppVersion, status: u16, request_id: u32) -> IppHeader {
+        IppHeader {
+            version,
+            operation_status: status,
+            request_id,
+        }
+    }
+}
+
+impl IppWriter for IppHeader {
+    /// Write header to a given writer
+    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+        writer.write_u16::<BigEndian>(self.version as u16)?;
+        writer.write_u16::<BigEndian>(self.operation_status)?;
+        writer.write_u32::<BigEndian>(self.request_id)?;
+
+        Ok(8)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_read_header_ok() {
+        let data = &[0x01, 0x01, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66];
+
+        let header = IppHeader::from_reader(&mut Cursor::new(data));
+        assert!(header.is_ok());
+
+        let header = header.ok().unwrap();
+        assert_eq!(header.version, IppVersion::Ipp11);
+        assert_eq!(header.operation_status, 0x1122);
+        assert_eq!(header.request_id, 0x33445566);
+    }
+
+    #[test]
+    fn test_read_header_error() {
+        let data = &[0xff, 0, 0, 0, 0, 0, 0, 0];
+
+        let header = IppHeader::from_reader(&mut Cursor::new(data));
+        assert!(header.is_err());
+        if let Some(ParseError::InvalidVersion) = header.err() {
+        } else {
+            assert!(false);
         }
     }
 
-    /// Specify job-name attribute
-    pub fn job_name(mut self, job_name: &str) -> Self {
-        self.job_name = Some(job_name.to_owned());
-        self
-    }
-
-    /// Specify custom job attribute
-    pub fn attribute(mut self, attribute: IppAttribute) -> Self {
-        self.attributes.push(attribute);
-        self
-    }
-
-    /// Build operation
-    pub fn build(self) -> impl IppOperation {
-        let mut op = CreateJob::new(self.job_name.as_ref());
-        for attr in self.attributes {
-            op.add_attribute(attr);
-        }
-        op
-    }
-}
-
-/// Builder to create SendDocument operation
-pub struct SendDocumentBuilder {
-    job_id: i32,
-    reader: Box<Read>,
-    user_name: Option<String>,
-    is_last: bool,
-}
-
-impl SendDocumentBuilder {
-    fn new(job_id: i32, reader: Box<Read>) -> SendDocumentBuilder {
-        SendDocumentBuilder {
-            job_id,
-            reader,
-            user_name: None,
-            is_last: true,
-        }
-    }
-
-    /// Specify originating-user-name attribute
-    pub fn user_name(mut self, user_name: &str) -> Self {
-        self.user_name = Some(user_name.to_owned());
-        self
-    }
-
-    /// Parameter which indicates whether this document is a last one
-    pub fn last(mut self, last: bool) -> Self {
-        self.is_last = last;
-        self
-    }
-
-    /// Build operation
-    pub fn build(self) -> impl IppOperation {
-        SendDocument::new(
-            self.job_id,
-            self.reader,
-            &self.user_name.unwrap_or_else(String::new),
-            self.is_last,
-        )
+    #[test]
+    fn test_write_header() {
+        let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55aa55);
+        let mut buf = Vec::new();
+        assert!(header.write(&mut Cursor::new(&mut buf)).is_ok());
+        assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
     }
 }

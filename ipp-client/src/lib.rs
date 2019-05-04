@@ -5,12 +5,8 @@
 //!
 //!```rust
 //! // using raw API
-//! extern crate ipp_client;
-//! extern crate ipp_parse;
-//! extern crate ipp_proto;
-//! use ipp_proto::request::IppRequestResponse;
 //! use ipp_client::IppClient;
-//! use ipp_parse::ipp::Operation;
+//! use ipp_proto::{ipp::Operation, request::IppRequestResponse};
 //!
 //! fn main() {
 //!     let uri = "http://localhost:631/printers/test-printer";
@@ -25,8 +21,6 @@
 //!```
 //!```rust
 //! // using high level API
-//! extern crate ipp_client;
-//! extern crate ipp_proto;
 //! use ipp_proto::IppOperationBuilder;
 //! use ipp_client::IppClientBuilder;
 //!
@@ -46,7 +40,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ipp_parse::{ipp::StatusCode, ParseError};
+use ipp_proto::{ipp::StatusCode, ParseError};
 
 pub mod client;
 

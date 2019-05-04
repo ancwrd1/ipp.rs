@@ -1,8 +1,7 @@
 use std::{env, fs::File, io::BufReader, process::exit};
 
 use ipp_client::IppClientBuilder;
-use ipp_parse::{IppAttribute, IppValue};
-use ipp_proto::IppOperationBuilder;
+use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
 
 pub fn main() {
     env_logger::init();

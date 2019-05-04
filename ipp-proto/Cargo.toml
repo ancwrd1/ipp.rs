@@ -11,5 +11,8 @@ keywords = ["ipp", "printing", "protocol"]
 edition = "2018"
 
 [dependencies]
-ipp-parse = { version = "0.3.0", path = "../ipp-parse" }
 log = "0.4"
+byteorder = "1"
+enum-primitive-derive = "0.1"
+num-traits = "0.2"
+bytes = "0.4"
