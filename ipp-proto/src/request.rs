@@ -1,24 +1,19 @@
 //!
 //! IPP request
 //!
-use std::{
-    io::{self, Cursor, Read, Write},
-    sync::Mutex,
-};
+use std::io::{self, Cursor, Write};
 
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
     parser::{IppParser, ParseError},
     value::*,
-    IppHeader, IppWriter,
+    IppHeader, IppReadStream, IppWriter,
 };
 
 use bytes::Bytes;
-use futures::{Async, Poll, Stream};
+use futures::Stream;
 use log::debug;
-
-const CHUNK_SIZE: usize = 32768;
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -27,38 +22,7 @@ pub struct IppRequestResponse {
     /// IPP attributes
     attributes: IppAttributes,
     /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
-    payload: Option<Box<Read>>,
-}
-unsafe impl Send for IppRequestResponse {}
-
-struct IppReadAdapter {
-    inner: Mutex<Box<Read>>,
-}
-unsafe impl Send for IppReadAdapter {}
-
-impl Read for IppReadAdapter {
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        self.inner.lock().unwrap().read(buf)
-    }
-}
-
-impl Stream for IppReadAdapter {
-    type Item = Bytes;
-    type Error = io::Error;
-
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        let mut buf = vec![0; CHUNK_SIZE];
-        match self.inner.lock().unwrap().read(&mut buf) {
-            Ok(size) => {
-                if size > 0 {
-                    Ok(Async::Ready(Some(buf[0..size].into())))
-                } else {
-                    Ok(Async::Ready(None))
-                }
-            }
-            Err(err) => Err(err),
-        }
-    }
+    payload: Option<IppReadStream>,
 }
 
 pub trait IppRequestTrait {
@@ -147,12 +111,12 @@ impl IppRequestResponse {
     }
 
     /// Get payload
-    pub fn payload(&self) -> &Option<Box<Read>> {
+    pub fn payload(&self) -> &Option<IppReadStream> {
         &self.payload
     }
 
     /// Set payload
-    pub fn set_payload(&mut self, payload: Box<Read>) {
+    pub fn set_payload(&mut self, payload: IppReadStream) {
         self.payload = Some(payload)
     }
 
@@ -169,39 +133,21 @@ impl IppRequestResponse {
 
         debug!("Wrote {} bytes IPP stream", retval);
 
-        if let Some(ref mut payload) = self.payload {
-            let size = io::copy(payload, writer)? as usize;
-            debug!("Wrote {} bytes payload", size);
-            retval += size;
-        }
-
         Ok(retval)
     }
 
-    fn into_ipp_adapter(self) -> IppReadAdapter {
-        // NOTE: workaround for embedded firmware bug, don't refactor into chain calls!
-        // When Transfer-Encoding: chunked is used the IPP metadata must be serialized in one chunk.
-        // Otherwise many printers will fail with error 400.
-        let mut cursor = Cursor::new(Vec::with_capacity(1024));
-        self.header
-            .write(&mut cursor)
-            .and_then(|_| self.attributes.write(&mut cursor))
-            .unwrap();
-        cursor.set_position(0);
-
-        IppReadAdapter {
-            inner: Mutex::new(Box::new(
-                cursor.chain(self.payload.unwrap_or_else(|| Box::new(io::empty()))),
-            )),
-        }
-    }
-
-    /// Convert request into reader
-    pub fn into_reader(self) -> impl Read {
-        self.into_ipp_adapter()
-    }
-
     pub fn into_stream(self) -> Box<dyn Stream<Item = Bytes, Error = io::Error> + Send + 'static> {
-        Box::new(self.into_ipp_adapter())
+        let mut cursor = Cursor::new(Vec::with_capacity(1024));
+        let _ = self
+            .header
+            .write(&mut cursor)
+            .and_then(|_| self.attributes.write(&mut cursor));
+
+        let headers = futures::stream::once(Ok(cursor.into_inner().into()));
+
+        match self.payload {
+            Some(payload) => Box::new(headers.chain(payload)),
+            None => Box::new(headers),
+        }
     }
 }

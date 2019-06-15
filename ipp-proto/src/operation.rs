@@ -1,9 +1,7 @@
 //!
 //! High-level IPP operation abstractions
 //!
-use std::io::Read;
-
-use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppValue};
+use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppReadStream, IppValue};
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
@@ -13,7 +11,7 @@ pub trait IppOperation {
 
 /// IPP operation Print-Job
 pub struct PrintJob {
-    reader: Box<Read>,
+    stream: IppReadStream,
     user_name: String,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
@@ -22,15 +20,16 @@ pub struct PrintJob {
 impl PrintJob {
     /// Create Print-Job operation
     ///
-    /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
+    /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new<T>(reader: Box<Read>, user_name: T, job_name: Option<T>) -> PrintJob
+    pub fn new<S, N>(stream: IppReadStream, user_name: S, job_name: Option<N>) -> PrintJob
     where
-        T: AsRef<str>,
+        S: AsRef<str>,
+        N: AsRef<str>,
     {
         PrintJob {
-            reader,
+            stream,
             user_name: user_name.as_ref().to_string(),
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
@@ -65,7 +64,7 @@ impl IppOperation for PrintJob {
         for attr in &self.attributes {
             retval.set_attribute(DelimiterTag::JobAttributes, attr.clone());
         }
-        retval.set_payload(self.reader);
+        retval.set_payload(self.stream);
         retval
     }
 }
@@ -157,7 +156,7 @@ impl IppOperation for CreateJob {
 /// IPP operation Send-Document
 pub struct SendDocument {
     job_id: i32,
-    reader: Box<Read>,
+    stream: IppReadStream,
     user_name: String,
     last: bool,
 }
@@ -166,16 +165,16 @@ impl SendDocument {
     /// Create Send-Document operation
     ///
     /// * `job_id` - job ID returned by Create-Job operation<br/>
-    /// * `reader` - [std::io::Read](https://doc.rust-lang.org/stable/std/io/trait.Read.html) reference which points to the data to be printed<br/>
+    /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<T>(job_id: i32, reader: Box<Read>, user_name: T, last: bool) -> SendDocument
+    pub fn new<T>(job_id: i32, stream: IppReadStream, user_name: T, last: bool) -> SendDocument
     where
         T: AsRef<str>,
     {
         SendDocument {
             job_id,
-            reader,
+            stream,
             user_name: user_name.as_ref().to_string(),
             last,
         }
@@ -204,7 +203,7 @@ impl IppOperation for SendDocument {
             IppAttribute::new(LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
-        retval.set_payload(self.reader);
+        retval.set_payload(self.stream);
 
         retval
     }

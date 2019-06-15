@@ -1,7 +1,9 @@
-use std::{env, fs::File, io::BufReader, process::exit};
+use std::{env, process::exit};
 
-use ipp_client::IppClientBuilder;
-use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
+use futures::Future;
+
+use ipp_client::{IppClientBuilder, IppError};
+use ipp_proto::{IppAttribute, IppOperationBuilder, IppReadStream, IppValue};
 
 pub fn main() {
     env_logger::init();
@@ -13,34 +15,43 @@ pub fn main() {
         exit(1);
     }
 
-    let f = File::open(&args[2]).unwrap();
-
-    let mut builder = IppOperationBuilder::print_job(Box::new(BufReader::new(f)))
-        .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
-        .job_title(&args[1]);
-
-    for arg in &args[3..] {
-        let mut kv = arg.split('=');
-        let (k, v) = (kv.next().unwrap(), kv.next().unwrap());
-
-        let value = if let Ok(iv) = v.parse::<i32>() {
-            IppValue::Integer(iv)
-        } else if v == "true" || v == "false" {
-            IppValue::Boolean(v == "true")
-        } else {
-            IppValue::Keyword(v.to_string())
-        };
-
-        builder = builder.attribute(IppAttribute::new(k, value));
-    }
-
-    let operation = builder.build();
-
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let client = IppClientBuilder::new(&args[1]).build();
-    let attrs = runtime.block_on(client.send(operation)).unwrap();
+    let pool = tokio_threadpool::ThreadPool::new();
 
-    for v in attrs.job_attributes().unwrap().values() {
-        println!("{}: {}", v.name(), v.value());
-    }
+    let fut = pool
+        .spawn_handle(tokio::fs::File::open(args[2].to_owned()))
+        .map_err(IppError::from)
+        .and_then(move |f| {
+            let mut builder = IppOperationBuilder::print_job(IppReadStream::new(Box::new(f)))
+                .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+                .job_title(&args[1]);
+
+            for arg in &args[3..] {
+                let mut kv = arg.split('=');
+                let (k, v) = (kv.next().unwrap(), kv.next().unwrap());
+
+                let value = if let Ok(iv) = v.parse::<i32>() {
+                    IppValue::Integer(iv)
+                } else if v == "true" || v == "false" {
+                    IppValue::Boolean(v == "true")
+                } else {
+                    IppValue::Keyword(v.to_string())
+                };
+
+                builder = builder.attribute(IppAttribute::new(k, value));
+            }
+
+            let operation = builder.build();
+
+            let client = IppClientBuilder::new(&args[1]).build();
+
+            client.send(operation).and_then(|attrs| {
+                for v in attrs.job_attributes().unwrap().values() {
+                    println!("{}: {}", v.name(), v.value());
+                }
+                Ok(())
+            })
+        });
+
+    runtime.block_on(fut).unwrap();
 }

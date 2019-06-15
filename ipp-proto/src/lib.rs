@@ -1,7 +1,8 @@
-use std::io::{self, Cursor, Read, Write};
+use std::io::{self, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
+use futures::{try_ready, Async, Poll, Stream};
 use num_traits::FromPrimitive;
 use tokio::io::AsyncRead;
 
@@ -14,7 +15,6 @@ pub use crate::{
     parser::{IppParser, ParseError},
     value::IppValue,
 };
-use futures::{try_ready, Async, Poll, Stream};
 
 pub mod attribute;
 pub mod builder;
@@ -24,6 +24,7 @@ pub mod parser;
 pub mod request;
 pub mod value;
 
+/// Source for IPP data stream (job file)
 pub struct IppReadStream {
     inner: Box<AsyncRead>,
     buffer: Vec<u8>,
@@ -32,6 +33,7 @@ pub struct IppReadStream {
 impl IppReadStream {
     const CHUNK_SIZE: usize = 32768;
 
+    /// Create new instance using `AsyncRead`
     pub fn new(reader: Box<AsyncRead>) -> IppReadStream {
         IppReadStream {
             inner: reader,
@@ -39,6 +41,7 @@ impl IppReadStream {
         }
     }
 }
+unsafe impl Send for IppReadStream {}
 
 impl Stream for IppReadStream {
     type Item = Bytes;
@@ -58,30 +61,6 @@ pub trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;
 }
 
-pub trait IppIntoReader: IppWriter {
-    fn into_reader(self) -> Box<Read>
-    where
-        Self: Sized,
-    {
-        let mut buf = Vec::new();
-        self.write(&mut buf).unwrap();
-        Box::new(Cursor::new(buf))
-    }
-}
-impl<R: IppWriter + Sized> IppIntoReader for R {}
-
-pub trait IppIntoStream: IppWriter {
-    fn into_stream(self) -> IppReadStream
-    where
-        Self: Sized,
-    {
-        let mut buf = Vec::new();
-        self.write(&mut buf).unwrap();
-        IppReadStream::new(Box::new(Cursor::new(buf)))
-    }
-}
-impl<R: IppWriter + Sized> IppIntoStream for R {}
-
 /// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
 pub trait IppReadExt: Read {
     fn read_string(&mut self, len: usize) -> std::io::Result<String> {
@@ -96,7 +75,6 @@ pub trait IppReadExt: Read {
         Ok(buf.freeze())
     }
 }
-
 impl<R: io::Read + ?Sized> IppReadExt for R {}
 
 /// IPP request and response header
@@ -145,6 +123,7 @@ impl IppWriter for IppHeader {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Cursor;
 
     #[test]
     fn test_read_header_ok() {

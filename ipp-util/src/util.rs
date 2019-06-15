@@ -2,24 +2,21 @@
 //! High-level utility functions to be used from external application or command-line utility
 //!
 
-use std::{
-    env,
-    ffi::OsString,
-    fs::File,
-    io::{stdin, BufReader, Read},
-};
+use std::{ffi::OsString, io};
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand, Values};
 use log::debug;
 use num_traits::FromPrimitive;
 
+use futures::{future, Future};
 use ipp_client::{IppClient, IppClientBuilder, IppError};
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     ipp::{DelimiterTag, PrinterState},
     operation::{GetPrinterAttributes, PrintJob},
-    IppAttribute, IppValue,
+    IppAttribute, IppReadStream, IppValue,
 };
+use tokio::io::AsyncRead;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -56,16 +53,10 @@ fn new_client(matches: &ArgMatches) -> IppClient {
     builder.build()
 }
 
-fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
-    let reader: Box<Read> = match matches.value_of("filename") {
-        Some(filename) => Box::new(BufReader::new(File::open(filename)?)),
-        None => Box::new(stdin()),
-    };
-
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let client = new_client(matches);
-
+fn is_status_ok(matches: &ArgMatches) -> Result<(), IppError> {
     if !matches.is_present("nocheckstate") {
+        let mut runtime = tokio::runtime::Runtime::new().unwrap();
+        let client = new_client(matches);
         let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
         let attrs = runtime.block_on(client.send(operation))?;
 
@@ -101,39 +92,74 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
             }
         }
     }
+    Ok(())
+}
 
-    let mut operation = PrintJob::new(
-        reader,
-        matches
-            .value_of("username")
-            .unwrap_or(&env::var("USER").unwrap_or_else(|_| String::new())),
-        matches.value_of("jobname"),
-    );
+struct FileSource {
+    inner: Box<AsyncRead>,
+}
+unsafe impl Send for FileSource {}
 
-    for arg in unwrap_values(matches.values_of("option")) {
-        let mut kv = arg.split('=');
-        if let Some(k) = kv.next() {
-            if let Some(v) = kv.next() {
-                let value = if let Ok(iv) = v.parse::<i32>() {
-                    IppValue::Integer(iv)
-                } else if v == "true" || v == "false" {
-                    IppValue::Boolean(v == "true")
-                } else {
-                    IppValue::Keyword(v.to_string())
-                };
-                operation.add_attribute(IppAttribute::new(k, value));
+fn make_operation(matches: &ArgMatches) -> Box<dyn Future<Item = FileSource, Error = io::Error> + Send + 'static> {
+    match matches.value_of("filename").map(|v| v.to_owned()) {
+        Some(filename) => {
+            Box::new(tokio::fs::File::open(filename).and_then(|file| Ok(FileSource { inner: Box::new(file) })))
+        }
+        None => Box::new(future::ok(FileSource {
+            inner: Box::new(tokio::io::stdin()),
+        })),
+    }
+}
+
+fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
+    let _ = is_status_ok(matches)?;
+
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let pool = tokio_threadpool::ThreadPool::new();
+
+    let client = new_client(matches);
+
+    let username = matches
+        .value_of("username")
+        .map(|v| v.to_owned())
+        .unwrap_or_else(String::new);
+
+    let jobname = matches.value_of("jobname").map(|v| v.to_owned());
+
+    let options = unwrap_values(matches.values_of("option"))
+        .map(|v| v.to_owned())
+        .collect::<Vec<String>>();
+
+    let fut = pool.spawn_handle(make_operation(&matches));
+
+    runtime.block_on(fut.map_err(IppError::from).and_then(move |source| {
+        let mut operation = PrintJob::new(IppReadStream::new(source.inner), username, jobname);
+
+        for arg in options {
+            let mut kv = arg.split('=');
+            if let Some(k) = kv.next() {
+                if let Some(v) = kv.next() {
+                    let value = if let Ok(iv) = v.parse::<i32>() {
+                        IppValue::Integer(iv)
+                    } else if v == "true" || v == "false" {
+                        IppValue::Boolean(v == "true")
+                    } else {
+                        IppValue::Keyword(v.to_string())
+                    };
+                    operation.add_attribute(IppAttribute::new(k, value));
+                }
             }
         }
-    }
 
-    let attrs = runtime.block_on(client.send(operation))?;
-
-    if let Some(group) = attrs.job_attributes() {
-        for v in group.values() {
-            println!("{}: {}", v.name(), v.value());
-        }
-    }
-    Ok(())
+        client.send(operation).and_then(|attrs| {
+            if let Some(group) = attrs.job_attributes() {
+                for v in group.values() {
+                    println!("{}: {}", v.name(), v.value());
+                }
+            }
+            Ok(())
+        })
+    }))
 }
 
 fn do_status(matches: &ArgMatches) -> Result<(), IppError> {

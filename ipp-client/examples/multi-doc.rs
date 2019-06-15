@@ -1,10 +1,12 @@
-use std::{env, fs::File, io::BufReader, process::exit};
+use std::{env, process::exit};
 
-use ipp_client::IppClientBuilder;
+use futures::Future;
+
+use ipp_client::{IppClientBuilder, IppError};
 use ipp_proto::{
     attribute::{JOB_ID, OPERATIONS_SUPPORTED},
     ipp::{DelimiterTag, Operation},
-    IppOperationBuilder, IppValue,
+    IppOperationBuilder, IppReadStream, IppValue,
 };
 
 fn supports_multi_doc(v: &IppValue) -> bool {
@@ -25,8 +27,11 @@ fn main() {
         exit(1);
     }
 
+    let uri = args[1].clone();
+
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let client = IppClientBuilder::new(&args[1]).build();
+
+    let client = IppClientBuilder::new(&uri).build();
 
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes()
@@ -51,19 +56,31 @@ fn main() {
     };
     println!("job id: {}", job_id);
 
+    let pool = tokio_threadpool::ThreadPool::new();
+
     for (i, item) in args.iter().enumerate().skip(2) {
+        let client = IppClientBuilder::new(&uri).build();
+
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
-        let f = File::open(&item).unwrap();
 
-        let send_op = IppOperationBuilder::send_document(job_id, Box::new(BufReader::new(f)))
-            .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
-            .last(last)
-            .build();
+        let fut = pool
+            .spawn_handle(tokio::fs::File::open(item.to_owned()))
+            .map_err(IppError::from)
+            .and_then(move |f| {
+                let send_op = IppOperationBuilder::send_document(job_id, IppReadStream::new(Box::new(f)))
+                    .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+                    .last(last)
+                    .build();
 
-        let send_attrs = runtime.block_on(client.send(send_op)).unwrap();
-        for v in send_attrs.job_attributes().unwrap().values() {
-            println!("{}: {}", v.name(), v.value());
-        }
+                client.send(send_op).and_then(|send_attrs| {
+                    for v in send_attrs.job_attributes().unwrap().values() {
+                        println!("{}: {}", v.name(), v.value());
+                    }
+                    Ok(())
+                })
+            });
+
+        runtime.block_on(fut).unwrap();
     }
 }

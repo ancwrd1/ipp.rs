@@ -1,8 +1,7 @@
-use std::io::Read;
-
 use crate::{
     attribute::IppAttribute,
     operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument},
+    IppReadStream,
 };
 
 /// Builder to create IPP operations
@@ -10,8 +9,8 @@ pub struct IppOperationBuilder;
 
 impl IppOperationBuilder {
     /// Create PrintJob operation
-    pub fn print_job(reader: Box<Read>) -> PrintJobBuilder {
-        PrintJobBuilder::new(reader)
+    pub fn print_job(stream: IppReadStream) -> PrintJobBuilder {
+        PrintJobBuilder::new(stream)
     }
 
     /// Create GetPrinterAttributes operation
@@ -25,23 +24,23 @@ impl IppOperationBuilder {
     }
 
     /// Create SendDocument operation
-    pub fn send_document(job_id: i32, reader: Box<Read>) -> SendDocumentBuilder {
-        SendDocumentBuilder::new(job_id, reader)
+    pub fn send_document(job_id: i32, stream: IppReadStream) -> SendDocumentBuilder {
+        SendDocumentBuilder::new(job_id, stream)
     }
 }
 
 /// Builder to create PrintJob operation
 pub struct PrintJobBuilder {
-    reader: Box<Read>,
+    stream: IppReadStream,
     user_name: Option<String>,
     job_title: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
 impl PrintJobBuilder {
-    fn new(reader: Box<Read>) -> PrintJobBuilder {
+    fn new(stream: IppReadStream) -> PrintJobBuilder {
         PrintJobBuilder {
-            reader,
+            stream,
             user_name: None,
             job_title: None,
             attributes: Vec::new(),
@@ -68,7 +67,7 @@ impl PrintJobBuilder {
     /// Build operation
     pub fn build(self) -> impl IppOperation {
         let mut op = PrintJob::new(
-            self.reader,
+            self.stream,
             &self.user_name.unwrap_or_else(String::new),
             self.job_title.as_ref(),
         );
@@ -150,16 +149,16 @@ impl CreateJobBuilder {
 /// Builder to create SendDocument operation
 pub struct SendDocumentBuilder {
     job_id: i32,
-    reader: Box<Read>,
+    stream: IppReadStream,
     user_name: Option<String>,
     is_last: bool,
 }
 
 impl SendDocumentBuilder {
-    fn new(job_id: i32, reader: Box<Read>) -> SendDocumentBuilder {
+    fn new(job_id: i32, stream: IppReadStream) -> SendDocumentBuilder {
         SendDocumentBuilder {
             job_id,
-            reader,
+            stream,
             user_name: None,
             is_last: true,
         }
@@ -181,7 +180,7 @@ impl SendDocumentBuilder {
     pub fn build(self) -> impl IppOperation {
         SendDocument::new(
             self.job_id,
-            self.reader,
+            self.stream,
             &self.user_name.unwrap_or_else(String::new),
             self.is_last,
         )
