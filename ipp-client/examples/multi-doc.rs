@@ -25,13 +25,14 @@ fn main() {
         exit(1);
     }
 
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let client = IppClientBuilder::new(&args[1]).build();
 
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes()
         .attribute(OPERATIONS_SUPPORTED)
         .build();
-    let printer_attrs = client.send(get_op).unwrap();
+    let printer_attrs = runtime.block_on(client.send(get_op)).unwrap();
     let ops_attr = printer_attrs
         .get(DelimiterTag::PrinterAttributes, OPERATIONS_SUPPORTED)
         .unwrap();
@@ -41,8 +42,9 @@ fn main() {
         exit(2);
     }
 
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let create_op = IppOperationBuilder::create_job().job_name("multi-doc").build();
-    let attrs = client.send(create_op).unwrap();
+    let attrs = runtime.block_on(client.send(create_op)).unwrap();
     let job_id = match *attrs.get(DelimiterTag::JobAttributes, JOB_ID).unwrap().value() {
         IppValue::Integer(id) => id,
         _ => panic!("invalid value"),
@@ -59,7 +61,7 @@ fn main() {
             .last(last)
             .build();
 
-        let send_attrs = client.send(send_op).unwrap();
+        let send_attrs = runtime.block_on(client.send(send_op)).unwrap();
         for v in send_attrs.job_attributes().unwrap().values() {
             println!("{}: {}", v.name(), v.value());
         }

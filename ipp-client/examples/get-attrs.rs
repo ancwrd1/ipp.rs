@@ -13,12 +13,13 @@ pub fn main() {
         exit(1);
     }
 
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&args[2..])
         .build();
 
-    let attrs = client.send(operation).unwrap();
+    let attrs = runtime.block_on(client.send(operation)).unwrap();
 
     for v in attrs.printer_attributes().unwrap().values() {
         println!("{}: {}", v.name(), v.value());

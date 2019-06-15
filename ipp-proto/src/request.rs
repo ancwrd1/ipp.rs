@@ -6,8 +6,6 @@ use std::{
     sync::Mutex,
 };
 
-use log::debug;
-
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
@@ -15,6 +13,12 @@ use crate::{
     value::*,
     IppHeader, IppWriter,
 };
+
+use bytes::Bytes;
+use futures::{Async, Poll, Stream};
+use log::debug;
+
+const CHUNK_SIZE: usize = 32768;
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -25,6 +29,7 @@ pub struct IppRequestResponse {
     /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
     payload: Option<Box<Read>>,
 }
+unsafe impl Send for IppRequestResponse {}
 
 struct IppReadAdapter {
     inner: Mutex<Box<Read>>,
@@ -34,6 +39,25 @@ unsafe impl Send for IppReadAdapter {}
 impl Read for IppReadAdapter {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.inner.lock().unwrap().read(buf)
+    }
+}
+
+impl Stream for IppReadAdapter {
+    type Item = Bytes;
+    type Error = io::Error;
+
+    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
+        let mut buf = vec![0; CHUNK_SIZE];
+        match self.inner.lock().unwrap().read(&mut buf) {
+            Ok(size) => {
+                if size > 0 {
+                    Ok(Async::Ready(Some(buf[0..size].into())))
+                } else {
+                    Ok(Async::Ready(None))
+                }
+            }
+            Err(err) => Err(err),
+        }
     }
 }
 
@@ -154,8 +178,7 @@ impl IppRequestResponse {
         Ok(retval)
     }
 
-    /// Convert request into reader
-    pub fn into_reader(self) -> impl Read {
+    fn into_ipp_adapter(self) -> IppReadAdapter {
         // NOTE: workaround for embedded firmware bug, don't refactor into chain calls!
         // When Transfer-Encoding: chunked is used the IPP metadata must be serialized in one chunk.
         // Otherwise many printers will fail with error 400.
@@ -171,5 +194,14 @@ impl IppRequestResponse {
                 cursor.chain(self.payload.unwrap_or_else(|| Box::new(io::empty()))),
             )),
         }
+    }
+
+    /// Convert request into reader
+    pub fn into_reader(self) -> impl Read {
+        self.into_ipp_adapter()
+    }
+
+    pub fn into_stream(self) -> Box<dyn Stream<Item = Bytes, Error = io::Error> + Send + 'static> {
+        Box::new(self.into_ipp_adapter())
     }
 }

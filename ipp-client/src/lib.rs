@@ -7,12 +7,14 @@
 //! // using raw API
 //! use ipp_client::IppClient;
 //! use ipp_proto::{ipp::Operation, request::IppRequestResponse};
+//! use tokio::runtime::Runtime;
 //!
 //! fn main() {
+//!     let mut runtime = Runtime::new().unwrap();
 //!     let uri = "http://localhost:631/printers/test-printer";
 //!     let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
 //!     let client = IppClient::new(uri);
-//!     if let Ok(resp) = client.send_request(req) {
+//!     if let Ok(resp) = runtime.block_on(client.send_request(req)) {
 //!         if resp.header().operation_status <= 2 {
 //!             println!("result: {:?}", resp.attributes());
 //!         }
@@ -23,11 +25,13 @@
 //! // using high level API
 //! use ipp_proto::IppOperationBuilder;
 //! use ipp_client::IppClientBuilder;
+//! use tokio::runtime::Runtime;
 //!
 //! fn main() {
+//!     let mut runtime = Runtime::new().unwrap();
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
 //!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
-//!     if let Ok(attrs) = client.send(operation) {
+//!     if let Ok(attrs) = runtime.block_on(client.send(operation)) {
 //!         for (_, v) in attrs.printer_attributes().unwrap() {
 //!             println!("{}: {}", v.name(), v.value());
 //!         }

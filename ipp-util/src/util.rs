@@ -62,11 +62,12 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         None => Box::new(stdin()),
     };
 
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let client = new_client(matches);
 
     if !matches.is_present("nocheckstate") {
         let operation = GetPrinterAttributes::with_attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS]);
-        let attrs = client.send(operation)?;
+        let attrs = runtime.block_on(client.send(operation))?;
 
         if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
             if let IppValue::Enum(ref e) = *a.value() {
@@ -125,7 +126,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         }
     }
 
-    let attrs = client.send(operation)?;
+    let attrs = runtime.block_on(client.send(operation))?;
 
     if let Some(group) = attrs.job_attributes() {
         for v in group.values() {
@@ -141,7 +142,8 @@ fn do_status(matches: &ArgMatches) -> Result<(), IppError> {
     let operation =
         GetPrinterAttributes::with_attributes(&unwrap_values(matches.values_of("attribute")).collect::<Vec<_>>());
 
-    let attrs = client.send(operation)?;
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let attrs = runtime.block_on(client.send(operation))?;
 
     if let Some(group) = attrs.printer_attributes() {
         let mut values: Vec<_> = group.values().collect();

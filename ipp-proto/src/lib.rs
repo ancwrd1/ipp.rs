@@ -3,14 +3,7 @@ use std::io::{self, Cursor, Read, Write};
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
 use num_traits::FromPrimitive;
-
-pub mod attribute;
-pub mod builder;
-pub mod ipp;
-pub mod operation;
-pub mod parser;
-pub mod request;
-pub mod value;
+use tokio::io::AsyncRead;
 
 pub use crate::{
     attribute::{IppAttribute, IppAttributes},
@@ -21,6 +14,45 @@ pub use crate::{
     parser::{IppParser, ParseError},
     value::IppValue,
 };
+use futures::{try_ready, Async, Poll, Stream};
+
+pub mod attribute;
+pub mod builder;
+pub mod ipp;
+pub mod operation;
+pub mod parser;
+pub mod request;
+pub mod value;
+
+pub struct IppReadStream {
+    inner: Box<AsyncRead>,
+    buffer: Vec<u8>,
+}
+
+impl IppReadStream {
+    const CHUNK_SIZE: usize = 32768;
+
+    pub fn new(reader: Box<AsyncRead>) -> IppReadStream {
+        IppReadStream {
+            inner: reader,
+            buffer: vec![0; IppReadStream::CHUNK_SIZE],
+        }
+    }
+}
+
+impl Stream for IppReadStream {
+    type Item = Bytes;
+    type Error = io::Error;
+
+    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
+        let size = try_ready!(self.inner.poll_read(&mut self.buffer));
+        if size > 0 {
+            Ok(Async::Ready(Some(self.buffer[0..size].into())))
+        } else {
+            Ok(Async::Ready(None))
+        }
+    }
+}
 
 pub trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;
@@ -37,6 +69,18 @@ pub trait IppIntoReader: IppWriter {
     }
 }
 impl<R: IppWriter + Sized> IppIntoReader for R {}
+
+pub trait IppIntoStream: IppWriter {
+    fn into_stream(self) -> IppReadStream
+    where
+        Self: Sized,
+    {
+        let mut buf = Vec::new();
+        self.write(&mut buf).unwrap();
+        IppReadStream::new(Box::new(Cursor::new(buf)))
+    }
+}
+impl<R: IppWriter + Sized> IppIntoStream for R {}
 
 /// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
 pub trait IppReadExt: Read {

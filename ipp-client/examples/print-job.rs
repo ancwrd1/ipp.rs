@@ -36,8 +36,9 @@ pub fn main() {
 
     let operation = builder.build();
 
+    let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let client = IppClientBuilder::new(&args[1]).build();
-    let attrs = client.send(operation).unwrap();
+    let attrs = runtime.block_on(client.send(operation)).unwrap();
 
     for v in attrs.job_attributes().unwrap().values() {
         println!("{}: {}", v.name(), v.value());
