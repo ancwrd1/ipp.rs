@@ -56,16 +56,13 @@ fn main() {
     };
     println!("job id: {}", job_id);
 
-    let pool = tokio_threadpool::ThreadPool::new();
-
     for (i, item) in args.iter().enumerate().skip(2) {
         let client = IppClientBuilder::new(&uri).build();
 
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
 
-        let fut = pool
-            .spawn_handle(tokio::fs::File::open(item.to_owned()))
+        let fut = tokio::fs::File::open(item.to_owned())
             .map_err(IppError::from)
             .and_then(move |f| {
                 let send_op = IppOperationBuilder::send_document(job_id, IppReadStream::new(Box::new(f)))

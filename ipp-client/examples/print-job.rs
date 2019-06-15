@@ -16,10 +16,8 @@ pub fn main() {
     }
 
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let pool = tokio_threadpool::ThreadPool::new();
 
-    let fut = pool
-        .spawn_handle(tokio::fs::File::open(args[2].to_owned()))
+    let fut = tokio::fs::File::open(args[2].to_owned())
         .map_err(IppError::from)
         .and_then(move |f| {
             let mut builder = IppOperationBuilder::print_job(IppReadStream::new(Box::new(f)))

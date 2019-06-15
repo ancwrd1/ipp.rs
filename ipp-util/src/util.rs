@@ -115,7 +115,6 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
     let _ = is_status_ok(matches)?;
 
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let pool = tokio_threadpool::ThreadPool::new();
 
     let client = new_client(matches);
 
@@ -130,7 +129,7 @@ fn do_print(matches: &ArgMatches) -> Result<(), IppError> {
         .map(|v| v.to_owned())
         .collect::<Vec<String>>();
 
-    let fut = pool.spawn_handle(make_operation(&matches));
+    let fut = make_operation(&matches);
 
     runtime.block_on(fut.map_err(IppError::from).and_then(move |source| {
         let mut operation = PrintJob::new(IppReadStream::new(source.inner), username, jobname);
