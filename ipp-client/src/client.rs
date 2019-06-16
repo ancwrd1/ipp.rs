@@ -141,7 +141,7 @@ impl IppClient {
             builder = builder.danger_accept_invalid_certs(true);
         }
 
-        builder = builder.gzip(false);
+        builder = builder.gzip(false).connect_timeout(Duration::from_secs(10));
 
         if self.timeout > 0 {
             debug!("Setting timeout to {}", self.timeout);

@@ -6,7 +6,7 @@ use ipp_client::{IppClientBuilder, IppError};
 use ipp_proto::{
     attribute::{JOB_ID, OPERATIONS_SUPPORTED},
     ipp::{DelimiterTag, Operation},
-    IppOperationBuilder, IppReadStream, IppValue,
+    IppOperationBuilder, IppValue,
 };
 
 fn supports_multi_doc(v: &IppValue) -> bool {
@@ -65,7 +65,7 @@ fn main() {
         let fut = tokio::fs::File::open(item.to_owned())
             .map_err(IppError::from)
             .and_then(move |f| {
-                let send_op = IppOperationBuilder::send_document(job_id, IppReadStream::new(Box::new(f)))
+                let send_op = IppOperationBuilder::send_document(job_id, f)
                     .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
                     .last(last)
                     .build();

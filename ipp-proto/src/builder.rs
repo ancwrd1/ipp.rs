@@ -9,8 +9,11 @@ pub struct IppOperationBuilder;
 
 impl IppOperationBuilder {
     /// Create PrintJob operation
-    pub fn print_job(stream: IppReadStream) -> PrintJobBuilder {
-        PrintJobBuilder::new(stream)
+    pub fn print_job<T>(stream: T) -> PrintJobBuilder
+    where
+        IppReadStream: From<T>,
+    {
+        PrintJobBuilder::new(stream.into())
     }
 
     /// Create GetPrinterAttributes operation
@@ -24,8 +27,11 @@ impl IppOperationBuilder {
     }
 
     /// Create SendDocument operation
-    pub fn send_document(job_id: i32, stream: IppReadStream) -> SendDocumentBuilder {
-        SendDocumentBuilder::new(job_id, stream)
+    pub fn send_document<T>(job_id: i32, stream: T) -> SendDocumentBuilder
+    where
+        IppReadStream: From<T>,
+    {
+        SendDocumentBuilder::new(job_id, stream.into())
     }
 }
 

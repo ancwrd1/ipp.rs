@@ -34,7 +34,7 @@ impl IppReadStream {
     const CHUNK_SIZE: usize = 32768;
 
     /// Create new instance using `AsyncRead`
-    pub fn new(reader: Box<AsyncRead>) -> IppReadStream {
+    pub(crate) fn new(reader: Box<AsyncRead>) -> IppReadStream {
         IppReadStream {
             inner: reader,
             buffer: vec![0; IppReadStream::CHUNK_SIZE],
@@ -57,12 +57,21 @@ impl Stream for IppReadStream {
     }
 }
 
-pub trait IppWriter {
+impl<T> From<T> for IppReadStream
+where
+    T: 'static + AsyncRead,
+{
+    fn from(r: T) -> Self {
+        IppReadStream::new(Box::new(r))
+    }
+}
+
+pub(crate) trait IppWriter {
     fn write(&self, writer: &mut Write) -> io::Result<usize>;
 }
 
 /// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
-pub trait IppReadExt: Read {
+pub(crate) trait IppReadExt: Read {
     fn read_string(&mut self, len: usize) -> std::io::Result<String> {
         Ok(String::from_utf8_lossy(&self.read_bytes(len)?).to_string())
     }

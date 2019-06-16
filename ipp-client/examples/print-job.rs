@@ -3,7 +3,7 @@ use std::{env, process::exit};
 use futures::Future;
 
 use ipp_client::{IppClientBuilder, IppError};
-use ipp_proto::{IppAttribute, IppOperationBuilder, IppReadStream, IppValue};
+use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
 
 pub fn main() {
     env_logger::init();
@@ -20,7 +20,7 @@ pub fn main() {
     let fut = tokio::fs::File::open(args[2].to_owned())
         .map_err(IppError::from)
         .and_then(move |f| {
-            let mut builder = IppOperationBuilder::print_job(IppReadStream::new(Box::new(f)))
+            let mut builder = IppOperationBuilder::print_job(f)
                 .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
                 .job_title(&args[1]);
 
