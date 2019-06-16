@@ -33,7 +33,7 @@ const ERROR_STATES: &[&str] = &[
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
         .timeout(params.timeout)
-        .ca_certs(&params.ca_cert)
+        .ca_certs(&params.ca_certs)
         .verify_hostname(!params.no_verify_hostname)
         .verify_certificate(!params.no_verify_certificate)
         .build()
@@ -148,7 +148,7 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     let client = new_client(&cmd.uri, &params);
 
     let operation = IppOperationBuilder::get_printer_attributes()
-        .attributes(&cmd.attribute)
+        .attributes(&cmd.attributes)
         .build();
 
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
@@ -173,7 +173,7 @@ struct IppParams {
         global = true,
         help = "Additional CA root certificates in PEM or DER format"
     )]
-    ca_cert: Vec<String>,
+    ca_certs: Vec<String>,
 
     #[structopt(
         long = "no-verify-hostname",
@@ -251,7 +251,7 @@ struct IppStatusCmd {
     uri: String,
 
     #[structopt(long = "attribute", short = "a", help = "Attributes to query, default is to get all")]
-    attribute: Vec<String>,
+    attributes: Vec<String>,
 }
 
 /// Entry point to main utility function
@@ -270,8 +270,8 @@ struct IppStatusCmd {
 ///     -V, --version                  Prints version information
 ///
 /// OPTIONS:
-///     -a, --attribute <attribute>...    Attributes to query, default is to get all
-///     -c, --ca-cert <ca-cert>...        Additional CA root certificates in PEM or DER format
+///     -a, --attribute <attributes>...   Attributes to query, default is to get all
+///     -c, --ca-cert <ca-certs>...       Additional CA root certificates in PEM or DER format
 ///     -t, --timeout <timeout>           Network timeout in seconds, 0 to disable [default: 30]
 ///
 /// ARGS:
@@ -291,7 +291,7 @@ struct IppStatusCmd {
 ///     -V, --version                  Prints version information
 ///
 /// OPTIONS:
-///     -c, --ca-cert <ca-cert>...     Additional CA root certificates in PEM or DER format
+///     -c, --ca-cert <ca-certs>...    Additional CA root certificates in PEM or DER format
 ///     -f, --file <file>              Input file name to print [default: standard input]
 ///     -j, --job-name <job-name>      Job name to send as job-name attribute
 ///     -o, --option <options>...      Extra IPP job attributes in key=value format
@@ -301,7 +301,7 @@ struct IppStatusCmd {
 /// ARGS:
 ///     <uri>    Printer URI
 /// ```
-pub fn util_main<I, T>(args: I) -> Result<(), IppError>
+pub fn ipp_main<I, T>(args: I) -> Result<(), IppError>
 where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
