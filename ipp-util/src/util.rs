@@ -4,31 +4,12 @@
 
 use std::{ffi::OsString, io, path::PathBuf};
 
-use log::debug;
-use num_traits::FromPrimitive;
-use structopt::StructOpt;
-
 use futures::{future, Future};
-use ipp_client::{IppClient, IppClientBuilder, IppError};
-use ipp_proto::{
-    attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
-    ipp::{DelimiterTag, PrinterState},
-    IppAttribute, IppOperationBuilder, IppValue,
-};
+use structopt::StructOpt;
 use tokio::io::AsyncRead;
 
-const ERROR_STATES: &[&str] = &[
-    "media-jam",
-    "toner-empty",
-    "spool-area-full",
-    "cover-open",
-    "door-open",
-    "input-tray-missing",
-    "output-tray-missing",
-    "marker-supply-empty",
-    "paused",
-    "shutdown",
-];
+use ipp_client::{IppClient, IppClientBuilder, IppError};
+use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
@@ -37,48 +18,6 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
         .verify_hostname(!params.no_verify_hostname)
         .verify_certificate(!params.no_verify_certificate)
         .build()
-}
-
-fn is_status_ok(uri: &str, params: &IppParams) -> Result<(), IppError> {
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let client = new_client(uri, params);
-    let operation = IppOperationBuilder::get_printer_attributes()
-        .attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS])
-        .build();
-    let attrs = runtime.block_on(client.send(operation))?;
-
-    if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
-        if let IppValue::Enum(ref e) = *a.value() {
-            if let Some(state) = PrinterState::from_i32(*e) {
-                if state == PrinterState::Stopped {
-                    debug!("Printer is stopped");
-                    return Err(IppError::PrinterStateError(vec!["stopped".to_string()]));
-                }
-            }
-        }
-    }
-
-    if let Some(reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
-        let keywords = match *reasons.value() {
-            IppValue::ListOf(ref v) => v
-                .iter()
-                .filter_map(|e| {
-                    if let IppValue::Keyword(ref k) = *e {
-                        Some(k.clone())
-                    } else {
-                        None
-                    }
-                })
-                .collect(),
-            IppValue::Keyword(ref v) => vec![v.clone()],
-            _ => Vec::new(),
-        };
-        if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
-            debug!("Printer is in error state: {:?}", keywords);
-            return Err(IppError::PrinterStateError(keywords.clone()));
-        }
-    }
-    Ok(())
 }
 
 struct FileSource {
@@ -97,17 +36,15 @@ fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = FileSource, Error = io
 }
 
 fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
-    if !cmd.no_check_state {
-        let _ = is_status_ok(&cmd.uri, params)?;
-    }
-
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
 
     let client = new_client(&cmd.uri, params);
 
-    let fut = new_source(&cmd);
+    if !cmd.no_check_state {
+        let _ = runtime.block_on(client.check_ready())?;
+    }
 
-    runtime.block_on(fut.map_err(IppError::from).and_then(move |source| {
+    runtime.block_on(new_source(&cmd).map_err(IppError::from).and_then(move |source| {
         let mut builder = IppOperationBuilder::print_job(source.inner);
         if let Some(jobname) = cmd.job_name {
             builder = builder.job_title(&jobname);

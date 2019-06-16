@@ -1,7 +1,13 @@
 //!
 //! IPP client
 //!
-use std::{fs, io::BufReader, mem, path::PathBuf, time::Duration};
+use std::{
+    fs,
+    io::{BufReader, Cursor},
+    mem,
+    path::PathBuf,
+    time::Duration,
+};
 
 use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
@@ -14,8 +20,26 @@ use reqwest::{
 use url::Url;
 
 use crate::IppError;
-use ipp_proto::{ipp, operation::IppOperation, request::IppRequestResponse, IppAttributes, IppParser};
-use std::io::Cursor;
+use ipp_proto::{
+    attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
+    ipp::{self, DelimiterTag, PrinterState},
+    operation::IppOperation,
+    request::IppRequestResponse,
+    IppAttributes, IppOperationBuilder, IppParser, IppValue,
+};
+
+const ERROR_STATES: &[&str] = &[
+    "media-jam",
+    "toner-empty",
+    "spool-area-full",
+    "cover-open",
+    "door-open",
+    "input-tray-missing",
+    "output-tray-missing",
+    "marker-supply-empty",
+    "paused",
+    "shutdown",
+];
 
 /// IPP client.
 ///
@@ -29,6 +53,48 @@ pub struct IppClient {
 }
 
 impl IppClient {
+    /// Check printer ready status
+    pub fn check_ready(&self) -> impl Future<Item = (), Error = IppError> + Send {
+        let operation = IppOperationBuilder::get_printer_attributes()
+            .attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS])
+            .build();
+
+        self.send(operation).and_then(|attrs| {
+            if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
+                if let IppValue::Enum(ref e) = *a.value() {
+                    if let Some(state) = PrinterState::from_i32(*e) {
+                        if state == PrinterState::Stopped {
+                            debug!("Printer is stopped");
+                            return Err(IppError::PrinterStateError(vec!["stopped".to_string()]));
+                        }
+                    }
+                }
+            }
+
+            if let Some(reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
+                let keywords = match *reasons.value() {
+                    IppValue::ListOf(ref v) => v
+                        .iter()
+                        .filter_map(|e| {
+                            if let IppValue::Keyword(ref k) = *e {
+                                Some(k.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect(),
+                    IppValue::Keyword(ref v) => vec![v.clone()],
+                    _ => Vec::new(),
+                };
+                if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
+                    debug!("Printer is in error state: {:?}", keywords);
+                    return Err(IppError::PrinterStateError(keywords.clone()));
+                }
+            }
+            Ok(())
+        })
+    }
+
     /// send IPP operation
     pub fn send<T: IppOperation>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError> + Send {
         self.send_request(operation.into_ipp_request(&self.uri))
