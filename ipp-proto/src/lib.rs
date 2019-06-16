@@ -26,7 +26,7 @@ pub mod value;
 
 /// Source for IPP data stream (job file)
 pub struct IppReadStream {
-    inner: Box<AsyncRead>,
+    inner: Box<AsyncRead + Send>,
     buffer: Vec<u8>,
 }
 
@@ -34,14 +34,13 @@ impl IppReadStream {
     const CHUNK_SIZE: usize = 32768;
 
     /// Create new instance using `AsyncRead`
-    pub(crate) fn new(reader: Box<AsyncRead>) -> IppReadStream {
+    pub(crate) fn from_reader(reader: Box<AsyncRead + Send>) -> IppReadStream {
         IppReadStream {
             inner: reader,
             buffer: vec![0; IppReadStream::CHUNK_SIZE],
         }
     }
 }
-unsafe impl Send for IppReadStream {}
 
 impl Stream for IppReadStream {
     type Item = Bytes;
@@ -59,10 +58,10 @@ impl Stream for IppReadStream {
 
 impl<T> From<T> for IppReadStream
 where
-    T: 'static + AsyncRead,
+    T: 'static + AsyncRead + Send,
 {
     fn from(r: T) -> Self {
-        IppReadStream::new(Box::new(r))
+        IppReadStream::from_reader(Box::new(r))
     }
 }
 

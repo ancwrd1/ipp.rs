@@ -82,9 +82,8 @@ fn is_status_ok(uri: &str, params: &IppParams) -> Result<(), IppError> {
 }
 
 struct FileSource {
-    inner: Box<AsyncRead>,
+    inner: Box<AsyncRead + Send>,
 }
-unsafe impl Send for FileSource {}
 
 fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = FileSource, Error = io::Error> + Send + 'static> {
     match cmd.file {

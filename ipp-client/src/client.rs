@@ -1,13 +1,7 @@
 //!
 //! IPP client
 //!
-use std::{
-    fs,
-    io::BufReader,
-    mem,
-    path::{Path, PathBuf},
-    time::Duration,
-};
+use std::{fs, io::BufReader, mem, path::PathBuf, time::Duration};
 
 use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
@@ -27,48 +21,14 @@ use std::io::Cursor;
 ///
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
-    uri: String,
-    cacerts: Vec<PathBuf>,
-    verify_hostname: bool,
-    verify_certificate: bool,
-    timeout: u64,
+    pub(crate) uri: String,
+    pub(crate) ca_certs: Vec<PathBuf>,
+    pub(crate) verify_hostname: bool,
+    pub(crate) verify_certificate: bool,
+    pub(crate) timeout: u64,
 }
 
 impl IppClient {
-    /// Create new instance of the client
-    pub fn new(uri: &str) -> IppClient {
-        IppClient {
-            uri: uri.to_string(),
-            cacerts: Vec::new(),
-            verify_hostname: true,
-            verify_certificate: true,
-            timeout: 30,
-        }
-    }
-
-    /// Enable or disable host name validation for SSL transport. By default it is enabled.
-    pub fn set_verify_hostname(&mut self, verify: bool) {
-        self.verify_hostname = verify;
-    }
-
-    /// Enable or disable server certificate validation for SSL transport. By default it is enabled.
-    pub fn set_verify_certificate(&mut self, verify: bool) {
-        self.verify_certificate = verify;
-    }
-
-    /// Add CA certificate
-    pub fn add_root_certificate<P>(&mut self, cacert: P)
-    where
-        P: AsRef<Path>,
-    {
-        self.cacerts.push(cacert.as_ref().to_owned());
-    }
-
-    /// Set communication timeout in seconds
-    pub fn set_timeout(&mut self, timeout: u64) {
-        self.timeout = timeout;
-    }
-
     /// send IPP operation
     pub fn send<T: IppOperation>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError> + Send {
         self.send_request(operation.into_ipp_request(&self.uri))
@@ -119,7 +79,7 @@ impl IppClient {
 
         let mut builder = Client::builder();
 
-        for cert_file in &self.cacerts {
+        for cert_file in &self.ca_certs {
             let buf = match fs::read(&cert_file) {
                 Ok(buf) => buf,
                 Err(e) => return Box::new(Err(IppError::from(e)).into_future()),

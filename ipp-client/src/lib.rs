@@ -182,14 +182,13 @@ impl IppClientBuilder {
 
     /// Build the client
     pub fn build(self) -> IppClient {
-        let mut client = IppClient::new(&self.uri);
-        client.set_verify_hostname(self.verify_hostname);
-        client.set_verify_certificate(self.verify_certificate);
-        for cert in self.ca_certs {
-            client.add_root_certificate(&cert);
+        IppClient {
+            uri: self.uri,
+            ca_certs: self.ca_certs,
+            verify_hostname: self.verify_hostname,
+            verify_certificate: self.verify_certificate,
+            timeout: self.timeout,
         }
-        client.set_timeout(self.timeout);
-        client
     }
 }
 
