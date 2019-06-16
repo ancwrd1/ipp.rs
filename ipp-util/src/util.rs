@@ -41,7 +41,7 @@ fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(&cmd.uri, params);
 
     if !cmd.no_check_state {
-        let _ = runtime.block_on(client.check_ready())?;
+        runtime.block_on(client.check_ready())?;
     }
 
     runtime.block_on(new_source(&cmd).map_err(IppError::from).and_then(move |source| {

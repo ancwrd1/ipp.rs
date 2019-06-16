@@ -187,7 +187,7 @@ impl IppClient {
             .and_then(|body| {
                 let mut reader = BufReader::new(Cursor::new(body));
                 let parser = IppParser::new(&mut reader);
-                IppRequestResponse::from_parser(parser).map_err(|e| IppError::ParseError(e))
+                IppRequestResponse::from_parser(parser).map_err(IppError::ParseError)
             });
 
         Box::new(fut)

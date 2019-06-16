@@ -71,7 +71,7 @@ pub const PRINT_COLOR_MODE_SUPPORTED: &str = "print-color-mode-supported";
 const HEADER_ATTRS: [&str; 3] = [ATTRIBUTES_CHARSET, ATTRIBUTES_NATURAL_LANGUAGE, PRINTER_URI];
 
 fn is_header_attr(attr: &str) -> bool {
-    HEADER_ATTRS.into_iter().any(|&at| at == attr)
+    HEADER_ATTRS.iter().any(|&at| at == attr)
 }
 
 /// `IppAttribute` represents an IPP attribute

@@ -108,7 +108,7 @@ impl<'a> IppParser<'a> {
             // start new collection in the stack
             debug!("Begin collection");
             match value {
-                IppValue::Other { tag: _, ref data } if data.is_empty() => {}
+                IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
                     error!("Invalid begin collection attribute");
                     return Err(ParseError::InvalidCollection);
@@ -119,7 +119,7 @@ impl<'a> IppParser<'a> {
             // get collection from the stack and add it to the previous element
             debug!("End collection");
             match value {
-                IppValue::Other { tag: _, ref data } if data.is_empty() => {}
+                IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
                     error!("Invalid end collection attribute");
                     return Err(ParseError::InvalidCollection);
