@@ -54,7 +54,7 @@ pub struct IppClient {
 
 impl IppClient {
     /// Check printer ready status
-    pub fn check_ready(&self) -> impl Future<Item = (), Error = IppError> + Send {
+    pub fn check_ready(&self) -> impl Future<Item = (), Error = IppError> {
         let operation = IppOperationBuilder::get_printer_attributes()
             .attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS])
             .build();
@@ -96,7 +96,7 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError> + Send {
+    pub fn send<T: IppOperation>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError> {
         self.send_request(operation.into_ipp_request(&self.uri))
             .and_then(|resp| {
                 if resp.header().operation_status > 2 {
