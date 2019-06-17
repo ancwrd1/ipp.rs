@@ -50,8 +50,6 @@ pub mod client;
 
 pub use crate::client::IppClient;
 
-const DEFAULT_TIMEOUT: u64 = 30;
-
 /// IPP error
 #[derive(Debug)]
 pub enum IppError {
@@ -59,30 +57,16 @@ pub enum IppError {
     HttpError(reqwest::Error),
     /// Network or file I/O error
     IOError(::std::io::Error),
-    /// IPP request error
-    RequestError(String),
     /// IPP status error
     StatusError(StatusCode),
     /// Printer state error
     PrinterStateError(Vec<String>),
+    /// Printer stopped
+    PrinterStopped,
     /// Parameter error
     ParamError(String),
     /// Parsing error
     ParseError(ParseError),
-}
-
-impl IppError {
-    pub fn as_exit_code(&self) -> i32 {
-        match *self {
-            IppError::HttpError(_) => 2,
-            IppError::IOError(_) => 3,
-            IppError::RequestError(_) => 4,
-            IppError::StatusError(_) => 6,
-            IppError::ParamError(_) => 7,
-            IppError::PrinterStateError(_) => 8,
-            IppError::ParseError(_) => 9,
-        }
-    }
 }
 
 impl fmt::Display for IppError {
@@ -90,10 +74,10 @@ impl fmt::Display for IppError {
         match *self {
             IppError::HttpError(ref e) => write!(f, "{}", e),
             IppError::IOError(ref e) => write!(f, "{}", e),
-            IppError::RequestError(ref e) => write!(f, "IPP request error: {}", e),
             IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
             IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
+            IppError::PrinterStopped => write!(f, "IPP printer stopped"),
             IppError::ParseError(ref e) => write!(f, "IPP parse error: {:?}", e),
         }
     }
@@ -140,7 +124,7 @@ impl IppClientBuilder {
             ca_certs: Vec::new(),
             verify_hostname: true,
             verify_certificate: true,
-            timeout: DEFAULT_TIMEOUT,
+            timeout: 0,
         }
     }
 

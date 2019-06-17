@@ -13,7 +13,6 @@ use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{
-    header::{HeaderMap, HeaderValue},
     r#async::{Client, Decoder},
     Certificate,
 };
@@ -65,7 +64,7 @@ impl IppClient {
                     if let Some(state) = PrinterState::from_i32(*e) {
                         if state == PrinterState::Stopped {
                             debug!("Printer is stopped");
-                            return Err(IppError::PrinterStateError(vec!["stopped".to_string()]));
+                            return Err(IppError::PrinterStopped);
                         }
                     }
                 }
@@ -96,7 +95,10 @@ impl IppClient {
     }
 
     /// send IPP operation
-    pub fn send<T: IppOperation>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError> {
+    pub fn send<T>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError>
+    where
+        T: IppOperation,
+    {
         self.send_request(operation.into_ipp_request(&self.uri))
             .and_then(|resp| {
                 if resp.header().operation_status > 2 {
@@ -140,10 +142,8 @@ impl IppClient {
 
         debug!("Request URI: {}", url);
 
-        let mut headers = HeaderMap::new();
-        headers.insert("Content-Type", HeaderValue::from_static("application/ipp"));
-
-        let mut builder = Client::builder();
+        // Some printers don't support gzip
+        let mut builder = Client::builder().gzip(false).connect_timeout(Duration::from_secs(10));
 
         for cert_file in &self.ca_certs {
             let buf = match fs::read(&cert_file) {
@@ -167,8 +167,6 @@ impl IppClient {
             builder = builder.danger_accept_invalid_certs(true);
         }
 
-        builder = builder.gzip(false).connect_timeout(Duration::from_secs(10));
-
         if self.timeout > 0 {
             debug!("Setting timeout to {}", self.timeout);
             builder = builder.timeout(Duration::from_secs(self.timeout));
@@ -177,13 +175,19 @@ impl IppClient {
         let fut = builder
             .build()
             .into_future()
-            .and_then(|client| client.post(url).headers(headers).body(request.into_stream()).send())
+            .and_then(|client| {
+                client
+                    .post(url)
+                    .header("Content-Type", "application/app")
+                    .body(request.into_stream())
+                    .send()
+            })
             .and_then(|response| response.error_for_status())
             .and_then(|mut response| {
                 let body = mem::replace(response.body_mut(), Decoder::empty());
                 body.concat2()
             })
-            .map_err(|e| IppError::RequestError(e.to_string()))
+            .map_err(IppError::HttpError)
             .and_then(|body| {
                 let mut reader = BufReader::new(Cursor::new(body));
                 let parser = IppParser::new(&mut reader);

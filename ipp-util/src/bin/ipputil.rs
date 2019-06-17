@@ -16,6 +16,6 @@ fn main() {
                 eprintln!("ERROR: {}", e);
             }
         }
-        exit(e.as_exit_code());
+        exit(1);
     }
 }
