@@ -178,7 +178,7 @@ impl IppClient {
             .and_then(|client| {
                 client
                     .post(url)
-                    .header("Content-Type", "application/app")
+                    .header("Content-Type", "application/ipp")
                     .body(request.into_stream())
                     .send()
             })
