@@ -145,7 +145,7 @@ impl IppClient {
         debug!("Request URI: {}", url);
 
         // Some printers don't support gzip
-        let mut builder = Client::builder().gzip(false);
+        let mut builder = Client::builder().gzip(false).connect_timeout(Duration::from_secs(10));
 
         for cert_file in &self.ca_certs {
             let buf = match fs::read(&cert_file) {
