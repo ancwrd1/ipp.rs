@@ -12,7 +12,7 @@ pub trait IppOperation {
 /// IPP operation Print-Job
 pub struct PrintJob {
     stream: IppReadStream,
-    user_name: String,
+    user_name: Option<String>,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
 }
@@ -23,14 +23,14 @@ impl PrintJob {
     /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new<S, N>(stream: IppReadStream, user_name: S, job_name: Option<N>) -> PrintJob
+    pub fn new<U, N>(stream: IppReadStream, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
-        S: AsRef<str>,
+        U: AsRef<str>,
         N: AsRef<str>,
     {
         PrintJob {
             stream,
-            user_name: user_name.as_ref().to_string(),
+            user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
         }
@@ -46,13 +46,12 @@ impl IppOperation for PrintJob {
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
 
-        retval.set_attribute(
-            DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                REQUESTING_USER_NAME,
-                IppValue::NameWithoutLanguage(self.user_name.clone()),
-            ),
-        );
+        if let Some(ref user_name) = self.user_name {
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(REQUESTING_USER_NAME, IppValue::NameWithoutLanguage(user_name.clone())),
+            );
+        }
 
         if let Some(ref job_name) = self.job_name {
             retval.set_attribute(
@@ -157,7 +156,7 @@ impl IppOperation for CreateJob {
 pub struct SendDocument {
     job_id: i32,
     stream: IppReadStream,
-    user_name: String,
+    user_name: Option<String>,
     last: bool,
 }
 
@@ -168,14 +167,14 @@ impl SendDocument {
     /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<T>(job_id: i32, stream: IppReadStream, user_name: T, last: bool) -> SendDocument
+    pub fn new<S>(job_id: i32, stream: IppReadStream, user_name: Option<S>, last: bool) -> SendDocument
     where
-        T: AsRef<str>,
+        S: AsRef<str>,
     {
         SendDocument {
             job_id,
             stream,
-            user_name: user_name.as_ref().to_string(),
+            user_name: user_name.map(|v| v.as_ref().to_string()),
             last,
         }
     }
@@ -190,13 +189,15 @@ impl IppOperation for SendDocument {
             IppAttribute::new(JOB_ID, IppValue::Integer(self.job_id)),
         );
 
-        retval.set_attribute(
-            DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                REQUESTING_USER_NAME,
-                IppValue::NameWithoutLanguage(self.user_name.clone()),
-            ),
-        );
+        if let Some(user_name) = self.user_name {
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(
+                    REQUESTING_USER_NAME,
+                    IppValue::NameWithoutLanguage(user_name.clone()),
+                ),
+            );
+        }
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,

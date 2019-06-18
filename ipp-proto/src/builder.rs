@@ -74,7 +74,7 @@ impl PrintJobBuilder {
     pub fn build(self) -> impl IppOperation {
         let mut op = PrintJob::new(
             self.stream,
-            &self.user_name.unwrap_or_else(String::new),
+            self.user_name.as_ref(),
             self.job_title.as_ref(),
         );
         for attr in self.attributes {
@@ -187,7 +187,7 @@ impl SendDocumentBuilder {
         SendDocument::new(
             self.job_id,
             self.stream,
-            &self.user_name.unwrap_or_else(String::new),
+            self.user_name.as_ref(),
             self.is_last,
         )
     }
