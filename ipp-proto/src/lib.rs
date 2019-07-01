@@ -11,7 +11,7 @@ pub use crate::{
     builder::{
         CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
     },
-    ipp::IppVersion,
+    ipp::{IppVersion, Operation, StatusCode},
     parser::{AsyncIppParser, IppParser, ParseError},
     request::{IppRequestResponse, PayloadKind},
     value::IppValue,
@@ -109,12 +109,16 @@ impl IppHeader {
     }
 
     /// Create IPP header
-    pub fn new(version: IppVersion, status: u16, request_id: u32) -> IppHeader {
+    pub fn new(version: IppVersion, operation_status: u16, request_id: u32) -> IppHeader {
         IppHeader {
             version,
-            operation_status: status,
+            operation_status,
             request_id,
         }
+    }
+
+    pub fn operation(&self) -> Result<Operation, StatusCode> {
+        Operation::from_u16(self.operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)
     }
 }
 

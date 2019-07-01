@@ -12,27 +12,26 @@ use std::{
 
 use futures::{future::Future, stream::Stream};
 use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
-use lazy_static::lazy_static;
 use log::debug;
 use tempfile::NamedTempFile;
 
 use ipp_proto::{
     attribute::*,
     ipp::*,
-    request::{IppRequestResponse, IppRequestTrait, PayloadKind},
+    request::{IppRequestResponse, PayloadKind},
     AsyncIppParser, IppHeader, IppParser, IppValue,
 };
-use ipp_server::server::*;
-use std::time::SystemTime;
+use ipp_server::{handler::*, server::IppServerBuilder};
+use lazy_static::lazy_static;
 
-struct DummyServer {
+struct TestServer {
     name: String,
     start_time: time::SystemTime,
     printing: atomic::AtomicBool,
     spooler_dir: PathBuf,
 }
 
-impl DummyServer {
+impl TestServer {
     fn get_printer_attribute(&self, attr: &str) -> IppAttribute {
         match attr {
             PRINTER_NAME => IppAttribute::new(attr, IppValue::NameWithoutLanguage(self.name.clone())),
@@ -116,31 +115,18 @@ impl DummyServer {
     }
 }
 
-struct DummyRequest {
-    header: IppHeader,
-    attributes: IppAttributes,
-    payload: Option<PayloadKind>,
-}
-
-impl IppRequestTrait for DummyRequest {
-    fn header(&self) -> &IppHeader {
-        &self.header
-    }
-}
-
-impl IppRequestHandler for DummyServer {
-    type IppRequest = DummyRequest;
-
-    fn print_job(&mut self, mut req: Self::IppRequest) -> IppServerResult {
+impl IppRequestHandler for TestServer {
+    fn print_job(&mut self, mut req: IppRequestResponse) -> IppServerResult {
         println!("Print-Job");
         println!("{:?}", req.header());
-        println!("{:?}", req.attributes);
-        match req.payload.take() {
-            Some(PayloadKind::File(file)) => {
+        println!("{:?}", req.attributes());
+
+        match req.payload_mut().take() {
+            Some(PayloadKind::TempFile(file)) => {
                 let new_path = self.spooler_dir.join(format!(
                     "{}.spl",
                     self.start_time
-                        .duration_since(SystemTime::UNIX_EPOCH)
+                        .duration_since(time::SystemTime::UNIX_EPOCH)
                         .unwrap()
                         .as_millis()
                 ));
@@ -152,21 +138,22 @@ impl IppRequestHandler for DummyServer {
             _ => println!("No payload!"),
         }
 
-        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
+        let mut resp =
+            IppRequestResponse::new_response(self.version(), StatusCode::SuccessfulOK, req.header().request_id);
 
-        resp.set_attribute(
+        resp.attributes_mut().add(
             DelimiterTag::JobAttributes,
             IppAttribute::new(JOB_URI, IppValue::Uri("ipp://192.168.1.217/jobs/foo".to_string())),
         );
-        resp.set_attribute(
+        resp.attributes_mut().add(
             DelimiterTag::JobAttributes,
             IppAttribute::new(JOB_ID, IppValue::Integer(1)),
         );
-        resp.set_attribute(
+        resp.attributes_mut().add(
             DelimiterTag::JobAttributes,
             IppAttribute::new(JOB_STATE, IppValue::Enum(JobState::Processing as i32)),
         );
-        resp.set_attribute(
+        resp.attributes_mut().add(
             DelimiterTag::JobAttributes,
             IppAttribute::new(
                 JOB_STATE_REASONS,
@@ -179,17 +166,17 @@ impl IppRequestHandler for DummyServer {
         Ok(resp)
     }
 
-    fn validate_job(&mut self, req: Self::IppRequest) -> IppServerResult {
+    fn validate_job(&mut self, req: IppRequestResponse) -> IppServerResult {
         println!("Validate-Job");
         println!("{:?}", req.header());
-        println!("{:?}", req.attributes);
-        println!();
-        let resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
+        println!("{:?}", req.attributes());
+
+        let resp = IppRequestResponse::new_response(self.version(), StatusCode::SuccessfulOK, req.header().request_id);
 
         Ok(resp)
     }
 
-    fn get_printer_attributes(&mut self, req: Self::IppRequest) -> IppServerResult {
+    fn get_printer_attributes(&mut self, req: IppRequestResponse) -> IppServerResult {
         static SUPPORTED_ATTRIBUTES: &[&'static str] = &[
             PRINTER_URI_SUPPORTED,
             URI_SECURITY_SUPPORTED,
@@ -216,20 +203,22 @@ impl IppRequestHandler for DummyServer {
             FINISHINGS_SUPPORTED,
         ];
 
-        let mut resp = IppRequestResponse::new_response(StatusCode::SuccessfulOK as u16, req.header().request_id);
+        let mut resp =
+            IppRequestResponse::new_response(self.version(), StatusCode::SuccessfulOK, req.header().request_id);
+
         let mut requested_attributes: Vec<&str> = vec![];
+
         if let Some(attr) = req
-            .attributes
+            .attributes()
             .groups_of(DelimiterTag::OperationAttributes)
             .get(0)
             .and_then(|g| g.attributes().get(REQUESTED_ATTRIBUTES))
         {
             match *attr.value() {
-                IppValue::Keyword(ref x) => {
-                    requested_attributes = vec![x];
+                IppValue::Keyword(ref k) => {
+                    requested_attributes.push(k);
                 }
                 IppValue::ListOf(ref attrs) => {
-                    requested_attributes = vec![];
                     for i in attrs {
                         if let IppValue::Keyword(ref keyword) = *i {
                             requested_attributes.push(keyword);
@@ -247,12 +236,13 @@ impl IppRequestHandler for DummyServer {
         let attribute_list = if requested_attributes.is_empty() {
             &SUPPORTED_ATTRIBUTES
         } else {
-            &requested_attributes[..]
+            requested_attributes.as_slice()
         };
 
         for attr in attribute_list {
             if SUPPORTED_ATTRIBUTES.contains(attr) {
-                resp.set_attribute(DelimiterTag::PrinterAttributes, self.get_printer_attribute(attr));
+                resp.attributes_mut()
+                    .add(DelimiterTag::PrinterAttributes, self.get_printer_attribute(attr));
             } else {
                 println!("Unsupported attribute {}", attr);
             }
@@ -271,41 +261,21 @@ fn main() {
 
     env_logger::init();
 
-    let addr = ([0, 0, 0, 0], 7631).into();
-    let server = Server::bind(&addr).serve(|| {
-        service_fn(|mut req: Request<Body>| {
-            let mut server = DummyServer {
-                name: "foobar".to_string(),
-                start_time: time::SystemTime::now(),
-                printing: atomic::AtomicBool::new(false),
-                spooler_dir: env::args().nth(1).unwrap().into(),
-            };
+    let _ = std::fs::create_dir_all(&args[1]);
 
-            let body = mem::replace(req.body_mut(), Body::empty());
+    let test_server = TestServer {
+        name: "IPP server example".to_string(),
+        start_time: time::SystemTime::now(),
+        printing: atomic::AtomicBool::new(false),
+        spooler_dir: env::args().nth(1).unwrap().into(),
+    };
 
-            let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> =
-                Box::new(body.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())));
+    let fut = IppServerBuilder::new(([0, 0, 0, 0], 7631))
+        .handler(Box::new(test_server))
+        .build()
+        .map_err(|e| {
+            eprintln!("ERROR: {:?}", e);
+        });
 
-            AsyncIppParser::from(stream).map(move |result| {
-                debug!("Received response, payload: {}", result.payload.is_some());
-                let mut ippreq = IppRequestResponse::from_parse_result(result);
-
-                let dummy_req = DummyRequest {
-                    header: ippreq.header().clone(),
-                    attributes: ippreq.attributes().clone(),
-                    payload: ippreq.payload_mut().take(),
-                };
-
-                let mut ippresp = match server.handle_request(dummy_req) {
-                    Ok(response) => response,
-                    Err(ipp_error) => IppRequestResponse::new_response(ipp_error as u16, ippreq.header().request_id),
-                };
-                Response::new(Body::wrap_stream(ippresp.into_stream()))
-            })
-        })
-    });
-
-    hyper::rt::run(server.map_err(|e| {
-        eprintln!("server error: {}", e);
-    }));
+    hyper::rt::run(fut);
 }

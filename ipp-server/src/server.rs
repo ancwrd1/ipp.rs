@@ -1,130 +1,103 @@
-//!
-//! Basic definitions for IPP server implementation
-//!
-#![allow(unused)]
-
-use num_traits::FromPrimitive;
-
-use ipp_proto::{
-    ipp::{Operation, StatusCode},
-    request::{IppRequestResponse, IppRequestTrait},
-    IppVersion,
+use std::{
+    io, mem,
+    net::SocketAddr,
+    sync::{Arc, Mutex},
 };
 
-pub type IppServerResult = Result<IppRequestResponse, StatusCode>;
+use futures::{Future, Poll, Stream};
+use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
+use log::debug;
 
-/// A trait which defines IPP operations
-pub trait IppRequestHandler {
-    type IppRequest: IppRequestTrait;
+use ipp_proto::{AsyncIppParser, IppRequestResponse};
 
-    /// Print-Job operation
-    fn print_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
+use crate::handler::IppRequestHandler;
+
+struct DummyHandler;
+impl IppRequestHandler for DummyHandler {}
+
+#[derive(Debug)]
+pub enum ServerError {
+    HyperError(hyper::Error),
+}
+
+impl From<hyper::Error> for ServerError {
+    fn from(err: hyper::Error) -> Self {
+        ServerError::HyperError(err)
     }
+}
 
-    /// Print-Uri operation
-    fn print_uri(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
+struct IppServer {
+    inner: Box<dyn Future<Item = (), Error = ServerError> + Send>,
+}
+
+impl IppServer {
+    fn new(address: SocketAddr, handler: Box<dyn IppRequestHandler + Send>) -> IppServer {
+        let handler = Arc::new(Mutex::new(handler));
+
+        let inner = Server::bind(&address)
+            .serve(move || {
+                let handler = handler.clone();
+                service_fn(move |mut req: Request<Body>| {
+                    let body = mem::replace(req.body_mut(), Body::empty());
+
+                    let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> =
+                        Box::new(body.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())));
+
+                    let handler = handler.clone();
+
+                    AsyncIppParser::from(stream).map(move |result| {
+                        debug!("Received request, payload present: {}", result.payload.is_some());
+
+                        let request = IppRequestResponse::from_parse_result(result);
+                        let req_id = request.header().request_id;
+
+                        let mut handler = handler.lock().unwrap();
+
+                        let response = match handler.handle_request(request) {
+                            Ok(response) => response,
+                            Err(status) => IppRequestResponse::new_response(handler.version(), status, req_id),
+                        };
+                        Response::new(Body::wrap_stream(response.into_stream()))
+                    })
+                })
+            })
+            .map_err(ServerError::from);
+
+        IppServer { inner: Box::new(inner) }
     }
+}
 
-    /// Validate-Job operation
-    fn validate_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
+impl Future for IppServer {
+    type Item = ();
+    type Error = ServerError;
+
+    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
+        self.inner.poll()
     }
+}
 
-    /// Cceate-Job operation
-    fn create_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
+pub struct IppServerBuilder {
+    address: SocketAddr,
+    handler: Box<dyn IppRequestHandler + Send>,
+}
 
-    /// Send-Document operation
-    fn send_document(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Send-Uri operation
-    fn send_uri(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Cancel-Job operation
-    fn cancel_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Get-Job-Attributes operation
-    fn get_job_attributes(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Get-Jobs operation
-    fn get_jobs(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Get-Printer-Attributes operation
-    fn get_printer_attributes(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Hold-Job operation
-    fn hold_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Release-Job operation
-    fn release_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Restart-Job operation
-    fn restart_job(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Pause-Printer operation
-    fn pause_printer(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Resume-Printer operation
-    fn resume_printer(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Purge-Jobs operation
-    fn purge_jobs(&mut self, req: Self::IppRequest) -> IppServerResult {
-        Err(StatusCode::ServerErrorOperationNotSupported)
-    }
-
-    /// Returns IPP version supported by the server
-    fn get_version(&self) -> IppVersion {
-        IppVersion::Ipp11
-    }
-
-    /// IPP request dispatcher
-    fn handle_request(&mut self, req: Self::IppRequest) -> IppServerResult {
-        let operation =
-            Operation::from_u16(req.header().operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)?;
-
-        match operation {
-            Operation::PrintJob => self.print_job(req),
-            Operation::PrintUri => self.print_uri(req),
-            Operation::ValidateJob => self.validate_job(req),
-            Operation::CreateJob => self.create_job(req),
-            Operation::SendDocument => self.send_document(req),
-            Operation::SendUri => self.send_uri(req),
-            Operation::CancelJob => self.cancel_job(req),
-            Operation::GetJobAttributes => self.get_job_attributes(req),
-            Operation::GetJobs => self.get_jobs(req),
-            Operation::GetPrinterAttributes => self.get_printer_attributes(req),
-            Operation::HoldJob => self.hold_job(req),
-            Operation::ReleaseJob => self.release_job(req),
-            Operation::RestartJob => self.restart_job(req),
-            Operation::PausePrinter => self.pause_printer(req),
-            Operation::ResumePrinter => self.resume_printer(req),
-            Operation::PurgeJobs => self.purge_jobs(req),
-            _ => Err(StatusCode::ServerErrorOperationNotSupported),
+impl IppServerBuilder {
+    pub fn new<S>(address: S) -> IppServerBuilder
+    where
+        SocketAddr: From<S>,
+    {
+        IppServerBuilder {
+            address: address.into(),
+            handler: Box::new(DummyHandler),
         }
+    }
+
+    pub fn handler(mut self, handler: Box<dyn IppRequestHandler + Send>) -> Self {
+        self.handler = handler;
+        self
+    }
+
+    pub fn build(self) -> impl Future<Item = (), Error = ServerError> {
+        IppServer::new(self.address, self.handler)
     }
 }

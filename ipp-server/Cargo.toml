@@ -13,6 +13,10 @@ edition = "2018"
 [dependencies]
 num-traits = "0.2"
 ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
+hyper = "0.12"
+futures = "0.1"
+log = "0.4"
+tokio = "0.1"
 
 [dev-dependencies]
 ipp-server = { path = "../ipp-server" }

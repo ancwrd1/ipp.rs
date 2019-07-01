@@ -6,13 +6,14 @@
 //!```rust
 //! // using raw API
 //! use ipp_client::IppClientBuilder;
-//! use ipp_proto::{ipp::Operation, request::IppRequestResponse};
+//! use ipp_proto::{ipp::Operation, request::IppRequestResponse, IppVersion};
 //! use tokio::runtime::Runtime;
 //!
 //! fn main() {
-//!     let mut runtime = Runtime::new().unwrap();
+//!     use ipp_proto::IppVersion;
+//! let mut runtime = Runtime::new().unwrap();
 //!     let uri = "http://localhost:631/printers/test-printer";
-//!     let req = IppRequestResponse::new(Operation::GetPrinterAttributes, Some(uri));
+//!     let req = IppRequestResponse::new(IppVersion::Ipp11, Operation::GetPrinterAttributes, Some(uri));
 //!     let client = IppClientBuilder::new(&uri).build();
 //!     if let Ok(resp) = runtime.block_on(client.send_request(req)) {
 //!         if resp.header().operation_status <= 2 {

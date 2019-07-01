@@ -6,11 +6,11 @@ use std::io::{self, Cursor, Write};
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
+    parser::IppParseResult,
     value::*,
-    IppHeader, IppReadStream, IppWriter,
+    IppHeader, IppReadStream, IppWriter, StatusCode,
 };
 
-use crate::parser::IppParseResult;
 use bytes::Bytes;
 use futures::Stream;
 use log::debug;
@@ -18,7 +18,7 @@ use tempfile::NamedTempFile;
 
 pub enum PayloadKind {
     Stream(IppReadStream),
-    File(NamedTempFile),
+    TempFile(NamedTempFile),
 }
 
 impl PayloadKind {
@@ -29,9 +29,9 @@ impl PayloadKind {
         }
     }
 
-    pub fn as_file(&mut self) -> Option<&mut NamedTempFile> {
+    pub fn as_temp_file(&mut self) -> Option<&mut NamedTempFile> {
         match self {
-            PayloadKind::File(ref mut file) => Some(file),
+            PayloadKind::TempFile(ref mut file) => Some(file),
             _ => None,
         }
     }
@@ -47,38 +47,27 @@ pub struct IppRequestResponse {
     payload: Option<PayloadKind>,
 }
 
-pub trait IppRequestTrait {
-    fn header(&self) -> &IppHeader;
-}
-
-impl IppRequestTrait for IppRequestResponse {
-    /// Get header
-    fn header(&self) -> &IppHeader {
-        &self.header
-    }
-}
-
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: Operation, uri: Option<&str>) -> IppRequestResponse {
-        let hdr = IppHeader::new(IppVersion::Ipp11, operation as u16, 1);
+    pub fn new(version: IppVersion, operation: Operation, uri: Option<&str>) -> IppRequestResponse {
+        let hdr = IppHeader::new(version, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributes::new(),
             payload: None,
         };
 
-        retval.set_attribute(
+        retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
-        retval.set_attribute(
+        retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
         );
 
         if let Some(uri) = uri {
-            retval.set_attribute(
+            retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(PRINTER_URI, IppValue::Uri(uri.replace("http", "ipp").to_string())),
             );
@@ -88,19 +77,19 @@ impl IppRequestResponse {
     }
 
     /// Create response from status and id
-    pub fn new_response(status: u16, id: u32) -> IppRequestResponse {
-        let hdr = IppHeader::new(IppVersion::Ipp11, status, id);
+    pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> IppRequestResponse {
+        let hdr = IppHeader::new(version, status as u16, id);
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributes::new(),
             payload: None,
         };
 
-        retval.set_attribute(
+        retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
-        retval.set_attribute(
+        retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
         );
@@ -132,6 +121,11 @@ impl IppRequestResponse {
         &self.attributes
     }
 
+    /// Get attributes
+    pub fn attributes_mut(&mut self) -> &mut IppAttributes {
+        &mut self.attributes
+    }
+
     /// Get payload
     pub fn payload(&self) -> &Option<PayloadKind> {
         &self.payload
@@ -143,13 +137,8 @@ impl IppRequestResponse {
     }
 
     /// Set payload
-    pub fn set_payload(&mut self, payload: IppReadStream) {
+    pub fn add_payload(&mut self, payload: IppReadStream) {
         self.payload = Some(PayloadKind::Stream(payload))
-    }
-
-    /// Set attribute
-    pub fn set_attribute(&mut self, group: DelimiterTag, attribute: IppAttribute) {
-        self.attributes.add(group, attribute);
     }
 
     /// Serialize request into the binary stream (TCP)
