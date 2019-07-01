@@ -350,7 +350,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::IppAttribute;
+    use crate::{ipp::DelimiterTag, IppAttribute};
 
     #[test]
     fn test_value_iterator_single() {
@@ -396,7 +396,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.printer_attributes().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("coll").unwrap();
         if let IppValue::Collection(coll) = attr.value() {
             assert_eq!(

@@ -17,6 +17,7 @@ reqwest = { git = "https://github.com/seanmonstar/reqwest.git" }
 url = "1"
 log = "0.4"
 futures = "0.1"
+percent-encoding = "1.0"
 
 [dev-dependencies]
 tokio = "0.1"

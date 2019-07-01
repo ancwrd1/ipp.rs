@@ -7,12 +7,13 @@ use num_traits::FromPrimitive;
 use tokio::io::AsyncRead;
 
 pub use crate::{
-    attribute::{IppAttribute, IppAttributes},
+    attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     builder::{
         CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
     },
     ipp::IppVersion,
-    parser::{IppParser, ParseError},
+    parser::{AsyncIppParser, IppParser, ParseError},
+    request::{IppRequestResponse, PayloadKind},
     value::IppValue,
 };
 

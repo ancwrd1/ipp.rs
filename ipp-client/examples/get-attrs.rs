@@ -1,7 +1,7 @@
 use std::{env, process::exit};
 
 use ipp_client::IppClientBuilder;
-use ipp_proto::IppOperationBuilder;
+use ipp_proto::{ipp::DelimiterTag, IppOperationBuilder};
 
 pub fn main() {
     env_logger::init();
@@ -21,7 +21,10 @@ pub fn main() {
 
     let attrs = runtime.block_on(client.send(operation)).unwrap();
 
-    for v in attrs.printer_attributes().unwrap().values() {
+    for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+        .attributes()
+        .values()
+    {
         println!("{}: {}", v.name(), v.value());
     }
 }

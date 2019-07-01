@@ -14,7 +14,7 @@ use ipp_proto::{
 pub type IppServerResult = Result<IppRequestResponse, StatusCode>;
 
 /// A trait which defines IPP operations
-pub trait IppServer {
+pub trait IppRequestHandler {
     type IppRequest: IppRequestTrait;
 
     /// Print-Job operation
@@ -124,6 +124,7 @@ pub trait IppServer {
             Operation::PausePrinter => self.pause_printer(req),
             Operation::ResumePrinter => self.resume_printer(req),
             Operation::PurgeJobs => self.purge_jobs(req),
+            _ => Err(StatusCode::ServerErrorOperationNotSupported),
         }
     }
 }

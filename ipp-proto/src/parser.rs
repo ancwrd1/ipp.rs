@@ -1,27 +1,49 @@
 //!
 //! IPP stream parser
 //!
-use std::io::Read;
+use std::{
+    fmt,
+    io::{self, Read},
+};
 
 use byteorder::{BigEndian, ReadBytesExt};
+use futures::{try_ready, Async, Future, Poll, Stream};
 use log::{debug, error};
 use num_traits::FromPrimitive;
 
-use crate::{ipp::*, *};
+use crate::{ipp::*, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue, PayloadKind};
 
 #[derive(Debug)]
 pub enum ParseError {
     InvalidTag(u8),
     InvalidVersion,
     InvalidCollection,
+    Incomplete,
     IOError(io::Error),
 }
 
 impl From<io::Error> for ParseError {
     fn from(error: io::Error) -> Self {
-        ParseError::IOError(error)
+        match error.kind() {
+            io::ErrorKind::UnexpectedEof => ParseError::Incomplete,
+            _ => ParseError::IOError(error),
+        }
     }
 }
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ParseError::InvalidTag(tag) => write!(f, "Invalid tag: {}", tag),
+            ParseError::InvalidVersion => write!(f, "Invalid IPP protocol version"),
+            ParseError::InvalidCollection => write!(f, "Invalid IPP collection"),
+            ParseError::Incomplete => write!(f, "Incomplete IPP payload"),
+            ParseError::IOError(err) => write!(f, "{}", err.to_string()),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
 
 // create a single value from one-element list, list otherwise
 fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
@@ -36,18 +58,23 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 pub struct IppParseResult {
     pub header: IppHeader,
     pub attributes: IppAttributes,
+    pub payload: Option<PayloadKind>,
 }
 
 impl IppParseResult {
     fn new(header: IppHeader, attributes: IppAttributes) -> IppParseResult {
-        IppParseResult { header, attributes }
+        IppParseResult {
+            header,
+            attributes,
+            payload: None,
+        }
     }
 }
 
 /// IPP parser implementation
 pub struct IppParser<'a> {
     reader: &'a mut Read,
-    last_delimiter: DelimiterTag,
+    current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
     attributes: IppAttributes,
@@ -58,7 +85,7 @@ impl<'a> IppParser<'a> {
     pub fn new(reader: &'a mut Read) -> IppParser<'a> {
         IppParser {
             reader,
-            last_delimiter: DelimiterTag::EndOfAttributes,
+            current_group: None,
             last_name: None,
             context: vec![vec![]],
             attributes: IppAttributes::new(),
@@ -68,26 +95,32 @@ impl<'a> IppParser<'a> {
     fn add_last_attribute(&mut self) {
         if let Some(ref last_name) = self.last_name {
             if let Some(val_list) = self.context.pop() {
-                self.attributes.add(
-                    self.last_delimiter,
-                    IppAttribute::new(&last_name, list_or_value(val_list)),
-                );
+                if let Some(ref mut group) = self.current_group {
+                    group.attributes_mut().insert(
+                        last_name.clone(),
+                        IppAttribute::new(&last_name, list_or_value(val_list)),
+                    );
+                }
             }
             self.context.push(vec![]);
         }
     }
 
-    fn parse_delimiter(&mut self, tag: u8) -> Result<bool, ParseError> {
+    fn parse_delimiter(&mut self, tag: u8) -> Result<DelimiterTag, ParseError> {
         debug!("Delimiter tag: {:0x}", tag);
-        if tag == DelimiterTag::EndOfAttributes as u8 {
-            // end of stream, add last attribute
+
+        let tag = DelimiterTag::from_u8(tag).ok_or_else(|| ParseError::InvalidTag(tag))?;
+        if tag == DelimiterTag::EndOfAttributes {
             self.add_last_attribute();
-            Ok(true)
-        } else {
-            // remember delimiter tag
-            self.last_delimiter = DelimiterTag::from_u8(tag).ok_or_else(|| ParseError::InvalidTag(tag))?;
-            Ok(false)
         }
+
+        if let Some(group) = self.current_group.take() {
+            self.attributes.groups_mut().push(group);
+        }
+
+        self.current_group = Some(IppAttributeGroup::new(tag));
+
+        Ok(tag)
     }
 
     fn parse_value(&mut self, tag: u8) -> Result<(), ParseError> {
@@ -145,7 +178,7 @@ impl<'a> IppParser<'a> {
         loop {
             match self.reader.read_u8()? {
                 tag @ 0x01...0x05 => {
-                    if self.parse_delimiter(tag)? {
+                    if self.parse_delimiter(tag)? == DelimiterTag::EndOfAttributes {
                         break;
                     }
                 }
@@ -157,6 +190,100 @@ impl<'a> IppParser<'a> {
         }
 
         Ok(IppParseResult::new(header, self.attributes))
+    }
+}
+
+enum AsyncParseState {
+    Headers(Vec<u8>),
+    Payload(IppParseResult),
+}
+
+/// Asynchronous IPP parser using Streams
+pub struct AsyncIppParser<I, E> {
+    state: AsyncParseState,
+    stream: Box<dyn Stream<Item = I, Error = E> + Send>,
+}
+
+impl<I, E> Future for AsyncIppParser<I, E>
+where
+    I: AsRef<[u8]>,
+    ParseError: From<E>,
+{
+    type Item = IppParseResult;
+    type Error = ParseError;
+
+    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
+        while let Some(item) = try_ready!(self.stream.poll()) {
+            match self.state {
+                AsyncParseState::Headers(ref mut buffer) => {
+                    buffer.extend_from_slice(item.as_ref());
+                    let length = buffer.len() as u64;
+
+                    let mut reader = io::Cursor::new(buffer);
+                    let parser = IppParser::new(&mut reader);
+
+                    match parser.parse() {
+                        Ok(mut result) => {
+                            debug!("Parse ok, proceeding to payload state");
+                            if reader.position() < length {
+                                debug!("Adding residual payload from this chunk");
+                                let mut temp = tempfile::NamedTempFile::new()?;
+                                io::copy(&mut reader, &mut temp)?;
+                                result.payload = Some(PayloadKind::File(temp));
+                            }
+                            self.state = AsyncParseState::Payload(result);
+                        }
+                        Err(ParseError::Incomplete) => {
+                            debug!("Incomplete request, awaiting for more data");
+                        }
+                        Err(e) => {
+                            return Err(e);
+                        }
+                    }
+                }
+                AsyncParseState::Payload(ref mut result) => {
+                    let mut reader = io::Cursor::new(&item);
+                    match result.payload {
+                        Some(PayloadKind::File(ref mut file)) => {
+                            debug!(
+                                "Payload chunk received, appending to existing file: {}",
+                                file.path().display()
+                            );
+                            io::copy(&mut reader, file)?;
+                        }
+                        None => {
+                            let mut temp = tempfile::NamedTempFile::new()?;
+                            debug!("Payload chunk received, creating new file: {}", temp.path().display());
+                            io::copy(&mut reader, &mut temp)?;
+                            result.payload = Some(PayloadKind::File(temp));
+                        }
+                        _ => panic!("Should not happen"),
+                    }
+                }
+            }
+        }
+
+        match self.state {
+            AsyncParseState::Headers(_) => Err(ParseError::Incomplete),
+            AsyncParseState::Payload(ref mut result) => {
+                debug!("Parsing finished, payload: {}", result.payload.is_some());
+                Ok(Async::Ready(IppParseResult {
+                    header: result.header.clone(),
+                    attributes: result.attributes.clone(),
+                    payload: result.payload.take(),
+                }))
+            }
+        }
+    }
+}
+
+impl<I, E> From<Box<dyn Stream<Item = I, Error = E> + Send>> for AsyncIppParser<I, E> {
+    /// Construct asynchronous parser from the stream
+    fn from(s: Box<dyn Stream<Item = I, Error = E> + Send>) -> AsyncIppParser<I, E> {
+        AsyncIppParser {
+            state: AsyncParseState::Headers(Vec::new()),
+            stream: s,
+        }
     }
 }
 
@@ -172,9 +299,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        assert!(res.attributes.job_attributes().is_none());
-        assert!(res.attributes.printer_attributes().is_none());
-        assert!(res.attributes.operation_attributes().is_none());
+        assert!(res.attributes.groups().is_empty());
     }
 
     #[test]
@@ -186,7 +311,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.printer_attributes().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
         if let IppValue::Integer(val) = attr.value() {
             assert_eq!(*val, 0x12345678);
@@ -205,7 +330,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.printer_attributes().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
         if let IppValue::ListOf(list) = attr.value() {
             assert_eq!(
@@ -227,7 +352,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.printer_attributes().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("coll").unwrap();
         if let IppValue::Collection(coll) = attr.value() {
             assert_eq!(
@@ -238,4 +363,45 @@ mod tests {
             assert!(false);
         }
     }
+
+    #[test]
+    fn test_async_parser_with_payload() {
+        // split IPP into arbitrary chunks
+        let data = vec![
+            vec![1, 1, 0],
+            vec![0, 0, 0, 0, 0, 4],
+            vec![
+                0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+            ],
+            vec![b'f'],
+            vec![b'o', b'o'],
+        ];
+
+        let source: Box<Stream<Item = Vec<u8>, Error = io::Error> + Send> =
+            Box::new(futures::stream::iter_ok::<_, io::Error>(data));
+
+        let parser = AsyncIppParser::from(source);
+
+        let mut runtime = tokio::runtime::Runtime::new().unwrap();
+        let result = runtime.block_on(parser);
+        assert!(result.is_ok());
+
+        let res = result.ok().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
+        let attr = attrs.get("test").unwrap();
+        if let IppValue::Integer(val) = attr.value() {
+            assert_eq!(*val, 0x12345678);
+        } else {
+            assert!(false);
+        }
+
+        match res.payload {
+            Some(PayloadKind::File(f)) => {
+                let foo = std::fs::read_to_string(f.path()).unwrap();
+                assert_eq!(foo, "foo");
+            }
+            _ => panic!("Wrong payload!"),
+        }
+    }
+
 }

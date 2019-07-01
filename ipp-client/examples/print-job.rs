@@ -3,7 +3,7 @@ use std::{env, process::exit};
 use futures::Future;
 
 use ipp_client::{IppClientBuilder, IppError};
-use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
+use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
 
 pub fn main() {
     env_logger::init();
@@ -44,7 +44,7 @@ pub fn main() {
             let client = IppClientBuilder::new(&args[1]).build();
 
             client.send(operation).and_then(|attrs| {
-                for v in attrs.job_attributes().unwrap().values() {
+                for v in attrs.groups_of(DelimiterTag::JobAttributes)[0].attributes().values() {
                     println!("{}: {}", v.name(), v.value());
                 }
                 Ok(())

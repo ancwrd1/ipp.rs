@@ -3,6 +3,8 @@
 //!
 use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppReadStream, IppValue};
 
+pub mod cups;
+
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
@@ -44,7 +46,7 @@ impl PrintJob {
 
 impl IppOperation for PrintJob {
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(Operation::PrintJob, uri);
+        let mut retval = IppRequestResponse::new(Operation::PrintJob, Some(uri));
 
         if let Some(ref user_name) = self.user_name {
             retval.set_attribute(
@@ -94,7 +96,7 @@ impl GetPrinterAttributes {
 
 impl IppOperation for GetPrinterAttributes {
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
+        let mut retval = IppRequestResponse::new(Operation::GetPrinterAttributes, Some(uri));
 
         if !self.attributes.is_empty() {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
@@ -136,7 +138,7 @@ impl CreateJob {
 
 impl IppOperation for CreateJob {
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(Operation::CreateJob, uri);
+        let mut retval = IppRequestResponse::new(Operation::CreateJob, Some(uri));
 
         if let Some(ref job_name) = self.job_name {
             retval.set_attribute(
@@ -182,7 +184,7 @@ impl SendDocument {
 
 impl IppOperation for SendDocument {
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(Operation::SendDocument, uri);
+        let mut retval = IppRequestResponse::new(Operation::SendDocument, Some(uri));
 
         retval.set_attribute(
             DelimiterTag::OperationAttributes,

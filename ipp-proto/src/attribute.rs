@@ -126,52 +126,77 @@ impl IppWriter for IppAttribute {
     }
 }
 
-/// Attribute list indexed by group and name
-#[derive(Clone, Default, Debug)]
+/// Attribute group
+#[derive(Clone, Debug)]
+pub struct IppAttributeGroup {
+    /// delimiter tag
+    tag: DelimiterTag,
+    attributes: HashMap<String, IppAttribute>,
+}
+
+impl IppAttributeGroup {
+    /// Create new attribute group of a given type
+    pub fn new(tag: DelimiterTag) -> IppAttributeGroup {
+        IppAttributeGroup {
+            tag,
+            attributes: HashMap::new(),
+        }
+    }
+
+    pub fn tag(&self) -> DelimiterTag {
+        self.tag
+    }
+
+    /// Return read-only attributes
+    pub fn attributes(&self) -> &HashMap<String, IppAttribute> {
+        &self.attributes
+    }
+
+    /// Return mutable attributes
+    pub fn attributes_mut(&mut self) -> &mut HashMap<String, IppAttribute> {
+        &mut self.attributes
+    }
+}
+
+/// Attribute list
+#[derive(Clone, Debug)]
 pub struct IppAttributes {
-    attributes: HashMap<DelimiterTag, HashMap<String, IppAttribute>>,
+    groups: Vec<IppAttributeGroup>,
 }
 
 impl IppAttributes {
     /// Create attribute list
     pub fn new() -> IppAttributes {
-        IppAttributes::default()
+        IppAttributes { groups: Vec::new() }
     }
 
-    /// Add attribute to the list
-    ///
-    /// * `group` - delimiter group<br/>
-    /// * `attribute` - attribute to add<br/>
-    pub fn add(&mut self, group: DelimiterTag, attribute: IppAttribute) {
-        self.attributes
-            .entry(group)
-            .or_insert_with(HashMap::new)
-            .insert(attribute.name().to_string(), attribute);
+    /// Get all groups
+    pub fn groups(&self) -> &Vec<IppAttributeGroup> {
+        &self.groups
     }
 
-    /// Get attribute from the list
-    pub fn get(&self, group: DelimiterTag, name: &str) -> Option<&IppAttribute> {
-        self.attributes.get(&group).and_then(|attrs| attrs.get(name))
+    /// Get all mutable groups
+    pub fn groups_mut(&mut self) -> &mut Vec<IppAttributeGroup> {
+        &mut self.groups
     }
 
-    /// Get attribute list for a group
-    pub fn group(&self, group: DelimiterTag) -> Option<&HashMap<String, IppAttribute>> {
-        self.attributes.get(&group)
+    /// Get a list of attribute groups matching a given delimiter tag
+    pub fn groups_of(&self, tag: DelimiterTag) -> Vec<&IppAttributeGroup> {
+        self.groups.iter().filter(|g| g.tag == tag).collect()
     }
 
-    /// Get printer attributes
-    pub fn printer_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.group(DelimiterTag::PrinterAttributes)
-    }
-
-    /// Get job attributes
-    pub fn job_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.group(DelimiterTag::JobAttributes)
-    }
-
-    /// Get operation attributes
-    pub fn operation_attributes(&self) -> Option<&HashMap<String, IppAttribute>> {
-        self.group(DelimiterTag::OperationAttributes)
+    /// Add attribute to a given group
+    pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
+        let mut group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
+        if let Some(ref mut group) = group {
+            group.attributes_mut().insert(attribute.name().to_owned(), attribute);
+        } else {
+            let mut new_group = IppAttributeGroup::new(tag);
+            new_group
+                .attributes_mut()
+                .insert(attribute.name().to_owned(), attribute);
+            self.groups_mut().push(new_group);
+        }
     }
 }
 
@@ -183,9 +208,11 @@ impl IppWriter for IppAttributes {
 
         let mut retval = 1;
 
-        for hdr in &HEADER_ATTRS {
-            if let Some(attr) = self.get(DelimiterTag::OperationAttributes, hdr) {
-                retval += attr.write(writer)?
+        if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).get(0) {
+            for hdr in &HEADER_ATTRS {
+                if let Some(attr) = group.attributes().get(*hdr) {
+                    retval += attr.write(writer)?
+                }
             }
         }
 
@@ -195,15 +222,15 @@ impl IppWriter for IppAttributes {
             DelimiterTag::JobAttributes,
             DelimiterTag::PrinterAttributes,
         ] {
-            let group = *hdr;
-            if let Some(attrs) = self.attributes.get(&group) {
-                if group != DelimiterTag::OperationAttributes {
-                    writer.write_u8(group as u8)?;
+            if let Some(group) = self.groups_of(*hdr).get(0) {
+                if group.tag() != DelimiterTag::OperationAttributes {
+                    writer.write_u8(group.tag() as u8)?;
                     retval += 1;
                 }
-                for (_, attr) in attrs
+                for (_, attr) in group
+                    .attributes()
                     .iter()
-                    .filter(|&(_, v)| group != DelimiterTag::OperationAttributes || !is_header_attr(v.name()))
+                    .filter(|&(_, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()))
                 {
                     retval += attr.write(writer)?;
                 }

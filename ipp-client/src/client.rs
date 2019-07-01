@@ -1,19 +1,13 @@
 //!
 //! IPP client
 //!
-use std::{
-    fs,
-    io::{BufReader, Cursor},
-    mem,
-    path::PathBuf,
-    time::Duration,
-};
+use std::{borrow::Cow, fs, io, mem, path::PathBuf, time::Duration};
 
 use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{
-    r#async::{Client, Decoder},
+    r#async::{Chunk, Client, Decoder},
     Certificate,
 };
 use url::Url;
@@ -24,7 +18,7 @@ use ipp_proto::{
     ipp::{self, DelimiterTag, PrinterState},
     operation::IppOperation,
     request::IppRequestResponse,
-    IppAttributes, IppOperationBuilder, IppParser, IppValue,
+    AsyncIppParser, IppAttributes, IppOperationBuilder, IppValue,
 };
 
 const ERROR_STATES: &[&str] = &[
@@ -62,6 +56,17 @@ fn parse_uri(uri: String) -> impl Future<Item = Url, Error = IppError> {
         }
         Err(e) => Err(IppError::ParamError(e.to_string())),
     })
+}
+
+fn to_device_uri(uri: &str) -> Cow<str> {
+    match Url::parse(&uri) {
+        Ok(ref mut url) if !url.username().is_empty() => {
+            let _ = url.set_username("");
+            let _ = url.set_password(None);
+            Cow::Owned(url.to_string())
+        }
+        _ => Cow::Borrowed(uri),
+    }
 }
 
 fn parse_certs(certs: Vec<PathBuf>) -> impl Future<Item = Vec<Certificate>, Error = IppError> {
@@ -103,7 +108,11 @@ impl IppClient {
             .build();
 
         self.send(operation).and_then(|attrs| {
-            if let Some(a) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE) {
+            if let Some(a) = attrs
+                .groups_of(DelimiterTag::PrinterAttributes)
+                .get(0)
+                .and_then(|g| g.attributes().get(PRINTER_STATE))
+            {
                 if let IppValue::Enum(ref e) = *a.value() {
                     if let Some(state) = PrinterState::from_i32(*e) {
                         if state == PrinterState::Stopped {
@@ -114,7 +123,11 @@ impl IppClient {
                 }
             }
 
-            if let Some(reasons) = attrs.get(DelimiterTag::PrinterAttributes, PRINTER_STATE_REASONS) {
+            if let Some(reasons) = attrs
+                .groups_of(DelimiterTag::PrinterAttributes)
+                .get(0)
+                .and_then(|g| g.attributes().get(PRINTER_STATE_REASONS))
+            {
                 let keywords = match *reasons.value() {
                     IppValue::ListOf(ref v) => v
                         .iter()
@@ -144,7 +157,7 @@ impl IppClient {
         T: IppOperation,
     {
         debug!("Sending IPP operation");
-        self.send_request(operation.into_ipp_request(&self.uri))
+        self.send_request(operation.into_ipp_request(&to_device_uri(&self.uri)))
             .and_then(|resp| {
                 if resp.header().operation_status > 2 {
                     // IPP error
@@ -186,8 +199,6 @@ impl IppClient {
 
         parse_uri(uri).and_then(|url| {
             parse_certs(ca_certs).and_then(|certs| {
-                debug!("Request URI: {}", url);
-
                 for ca_cert in certs {
                     builder = builder.add_root_certificate(ca_cert);
                 }
@@ -195,23 +206,33 @@ impl IppClient {
                 builder
                     .build()
                     .into_future()
-                    .and_then(|client| {
-                        client
-                            .post(url)
+                    .and_then(move |client| {
+                        let mut builder = client
+                            .post(url.clone())
                             .header("Content-Type", "application/ipp")
-                            .body(request.into_stream())
-                            .send()
+                            .body(request.into_stream());
+
+                        if !url.username().is_empty() {
+                            debug!("Setting basic auth: {} ****", url.username());
+                            builder = builder.basic_auth(
+                                url.username(),
+                                url.password()
+                                    .map(|p| percent_encoding::percent_decode(p.as_bytes()).decode_utf8().unwrap()),
+                            );
+                        }
+
+                        builder.send()
                     })
                     .and_then(|response| response.error_for_status())
+                    .map_err(IppError::HttpError)
                     .and_then(|mut response| {
                         let body = mem::replace(response.body_mut(), Decoder::empty());
-                        body.concat2()
-                    })
-                    .map_err(IppError::HttpError)
-                    .and_then(|body| {
-                        let mut reader = BufReader::new(Cursor::new(body));
-                        let parser = IppParser::new(&mut reader);
-                        IppRequestResponse::from_parser(parser).map_err(IppError::ParseError)
+                        let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> =
+                            Box::new(body.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())));
+
+                        AsyncIppParser::from(stream)
+                            .map_err(IppError::from)
+                            .map(IppRequestResponse::from_parse_result)
                     })
             })
         })

@@ -6,14 +6,36 @@ use std::io::{self, Cursor, Write};
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
-    parser::{IppParser, ParseError},
     value::*,
     IppHeader, IppReadStream, IppWriter,
 };
 
+use crate::parser::IppParseResult;
 use bytes::Bytes;
 use futures::Stream;
 use log::debug;
+use tempfile::NamedTempFile;
+
+pub enum PayloadKind {
+    Stream(IppReadStream),
+    File(NamedTempFile),
+}
+
+impl PayloadKind {
+    pub fn as_stream(&mut self) -> Option<&mut IppReadStream> {
+        match self {
+            PayloadKind::Stream(ref mut stream) => Some(stream),
+            _ => None,
+        }
+    }
+
+    pub fn as_file(&mut self) -> Option<&mut NamedTempFile> {
+        match self {
+            PayloadKind::File(ref mut file) => Some(file),
+            _ => None,
+        }
+    }
+}
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
@@ -22,7 +44,7 @@ pub struct IppRequestResponse {
     /// IPP attributes
     attributes: IppAttributes,
     /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
-    payload: Option<IppReadStream>,
+    payload: Option<PayloadKind>,
 }
 
 pub trait IppRequestTrait {
@@ -38,7 +60,7 @@ impl IppRequestTrait for IppRequestResponse {
 
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new(operation: Operation, uri: &str) -> IppRequestResponse {
+    pub fn new(operation: Operation, uri: Option<&str>) -> IppRequestResponse {
         let hdr = IppHeader::new(IppVersion::Ipp11, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
@@ -55,10 +77,12 @@ impl IppRequestResponse {
             IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
         );
 
-        retval.set_attribute(
-            DelimiterTag::OperationAttributes,
-            IppAttribute::new(PRINTER_URI, IppValue::Uri(uri.replace("http", "ipp").to_string())),
-        );
+        if let Some(uri) = uri {
+            retval.set_attribute(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(PRINTER_URI, IppValue::Uri(uri.replace("http", "ipp").to_string())),
+            );
+        }
 
         retval
     }
@@ -84,15 +108,13 @@ impl IppRequestResponse {
         retval
     }
 
-    /// Create IppRequestResponse from the parser
-    pub fn from_parser(parser: IppParser) -> Result<IppRequestResponse, ParseError> {
-        let res = parser.parse()?;
-
-        Ok(IppRequestResponse {
-            header: res.header,
-            attributes: res.attributes,
-            payload: None,
-        })
+    /// Create IppRequestResponse from parse result
+    pub fn from_parse_result(result: IppParseResult) -> IppRequestResponse {
+        IppRequestResponse {
+            header: result.header,
+            attributes: result.attributes,
+            payload: result.payload,
+        }
     }
 
     /// Get IPP header
@@ -111,13 +133,18 @@ impl IppRequestResponse {
     }
 
     /// Get payload
-    pub fn payload(&self) -> &Option<IppReadStream> {
+    pub fn payload(&self) -> &Option<PayloadKind> {
         &self.payload
+    }
+
+    /// Get mutable payload
+    pub fn payload_mut(&mut self) -> &mut Option<PayloadKind> {
+        &mut self.payload
     }
 
     /// Set payload
     pub fn set_payload(&mut self, payload: IppReadStream) {
-        self.payload = Some(payload)
+        self.payload = Some(PayloadKind::Stream(payload))
     }
 
     /// Set attribute
@@ -146,8 +173,8 @@ impl IppRequestResponse {
         let headers = futures::stream::once(Ok(cursor.into_inner().into()));
 
         match self.payload {
-            Some(payload) => Box::new(headers.chain(payload)),
-            None => Box::new(headers),
+            Some(PayloadKind::Stream(payload)) => Box::new(headers.chain(payload)),
+            _ => Box::new(headers),
         }
     }
 }

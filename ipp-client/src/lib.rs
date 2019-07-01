@@ -12,7 +12,7 @@
 //! fn main() {
 //!     let mut runtime = Runtime::new().unwrap();
 //!     let uri = "http://localhost:631/printers/test-printer";
-//!     let req = IppRequestResponse::new(Operation::GetPrinterAttributes, uri);
+//!     let req = IppRequestResponse::new(Operation::GetPrinterAttributes, Some(uri));
 //!     let client = IppClientBuilder::new(&uri).build();
 //!     if let Ok(resp) = runtime.block_on(client.send_request(req)) {
 //!         if resp.header().operation_status <= 2 {
@@ -23,16 +23,17 @@
 //!```
 //!```rust
 //! // using high level API
-//! use ipp_proto::IppOperationBuilder;
+//! use ipp_proto::{IppOperationBuilder, ipp::DelimiterTag};
 //! use ipp_client::IppClientBuilder;
 //! use tokio::runtime::Runtime;
 //!
 //! fn main() {
-//!     let mut runtime = Runtime::new().unwrap();
+//!     use ipp_proto::ipp::DelimiterTag;
+//! let mut runtime = Runtime::new().unwrap();
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
 //!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
 //!     if let Ok(attrs) = runtime.block_on(client.send(operation)) {
-//!         for (_, v) in attrs.printer_attributes().unwrap() {
+//!         for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
 //!             println!("{}: {}", v.name(), v.value());
 //!         }
 //!     }
@@ -78,7 +79,7 @@ impl fmt::Display for IppError {
             IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
             IppError::PrinterStopped => write!(f, "IPP printer stopped"),
-            IppError::ParseError(ref e) => write!(f, "IPP parse error: {:?}", e),
+            IppError::ParseError(ref e) => write!(f, "{}", e),
         }
     }
 }
@@ -106,6 +107,8 @@ impl From<ParseError> for IppError {
         IppError::ParseError(error)
     }
 }
+
+impl std::error::Error for IppError {}
 
 /// Builder to create IPP client
 pub struct IppClientBuilder {

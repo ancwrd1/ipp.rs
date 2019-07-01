@@ -9,6 +9,7 @@ use structopt::StructOpt;
 use tokio::io::AsyncRead;
 
 use ipp_client::{IppClient, IppClientBuilder, IppError};
+use ipp_proto::ipp::DelimiterTag;
 use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
@@ -70,8 +71,8 @@ fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
         }
 
         client.send(builder.build()).and_then(|attrs| {
-            if let Some(group) = attrs.job_attributes() {
-                for v in group.values() {
+            if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).get(0) {
+                for v in group.attributes().values() {
                     println!("{}: {}", v.name(), v.value());
                 }
             }
@@ -90,8 +91,8 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     let mut runtime = tokio::runtime::Runtime::new().unwrap();
     let attrs = runtime.block_on(client.send(operation))?;
 
-    if let Some(group) = attrs.printer_attributes() {
-        let mut values: Vec<_> = group.values().collect();
+    if let Some(group) = attrs.groups_of(DelimiterTag::PrinterAttributes).get(0) {
+        let mut values: Vec<_> = group.attributes().values().collect();
         values.sort_by(|a, b| a.name().cmp(b.name()));
         for v in values {
             println!("{}: {}", v.name(), v.value());
