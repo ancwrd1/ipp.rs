@@ -349,8 +349,9 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::{ipp::DelimiterTag, IppAttribute};
+
+    use super::*;
 
     #[test]
     fn test_value_iterator_single() {

@@ -12,7 +12,6 @@ use reqwest::{
 };
 use url::Url;
 
-use crate::IppError;
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     ipp::{self, DelimiterTag, PrinterState},
@@ -20,6 +19,8 @@ use ipp_proto::{
     request::IppRequestResponse,
     AsyncIppParser, IppAttributes, IppOperationBuilder, IppValue,
 };
+
+use crate::IppError;
 
 const ERROR_STATES: &[&str] = &[
     "media-jam",

@@ -135,8 +135,9 @@ impl IppWriter for IppHeader {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::io::Cursor;
+
+    use super::*;
 
     #[test]
     fn test_read_header_ok() {

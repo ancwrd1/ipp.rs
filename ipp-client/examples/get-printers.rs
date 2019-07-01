@@ -3,8 +3,11 @@ use std::{env, process::exit};
 use num_traits::cast::FromPrimitive;
 
 use ipp_client::IppClientBuilder;
-use ipp_proto::ipp::PrinterState;
-use ipp_proto::{ipp::DelimiterTag, operation::cups::CupsGetPrinters, IppValue};
+use ipp_proto::{
+    ipp::{DelimiterTag, PrinterState},
+    operation::cups::CupsGetPrinters,
+    IppValue,
+};
 
 pub fn main() {
     env_logger::init();

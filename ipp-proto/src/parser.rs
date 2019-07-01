@@ -289,8 +289,9 @@ impl<I, E> From<Box<dyn Stream<Item = I, Error = E> + Send>> for AsyncIppParser<
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::io::Cursor;
+
+    use super::*;
 
     #[test]
     fn test_parse_no_attributes() {

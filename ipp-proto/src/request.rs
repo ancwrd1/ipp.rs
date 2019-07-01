@@ -3,6 +3,11 @@
 //!
 use std::io::{self, Cursor, Write};
 
+use bytes::Bytes;
+use futures::Stream;
+use log::debug;
+use tempfile::NamedTempFile;
+
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
@@ -10,11 +15,6 @@ use crate::{
     value::*,
     IppHeader, IppReadStream, IppWriter, StatusCode,
 };
-
-use bytes::Bytes;
-use futures::Stream;
-use log::debug;
-use tempfile::NamedTempFile;
 
 pub enum PayloadKind {
     Stream(IppReadStream),

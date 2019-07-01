@@ -48,9 +48,9 @@ use std::{
 
 use ipp_proto::{ipp::StatusCode, ParseError};
 
-pub mod client;
-
 pub use crate::client::IppClient;
+
+pub mod client;
 
 /// IPP error
 #[derive(Debug)]
