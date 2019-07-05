@@ -6,7 +6,7 @@ use std::{
     io::{self, Cursor},
     mem,
     path::PathBuf,
-    sync::atomic,
+    sync::{atomic, Arc},
     time,
 };
 
@@ -116,7 +116,7 @@ impl TestServer {
 }
 
 impl IppRequestHandler for TestServer {
-    fn print_job(&mut self, mut req: IppRequestResponse) -> IppServerResult {
+    fn print_job(&self, mut req: IppRequestResponse) -> IppServerResult {
         println!("Print-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes());
@@ -166,7 +166,7 @@ impl IppRequestHandler for TestServer {
         Ok(resp)
     }
 
-    fn validate_job(&mut self, req: IppRequestResponse) -> IppServerResult {
+    fn validate_job(&self, req: IppRequestResponse) -> IppServerResult {
         println!("Validate-Job");
         println!("{:?}", req.header());
         println!("{:?}", req.attributes());
@@ -176,7 +176,7 @@ impl IppRequestHandler for TestServer {
         Ok(resp)
     }
 
-    fn get_printer_attributes(&mut self, req: IppRequestResponse) -> IppServerResult {
+    fn get_printer_attributes(&self, req: IppRequestResponse) -> IppServerResult {
         static SUPPORTED_ATTRIBUTES: &[&'static str] = &[
             PRINTER_URI_SUPPORTED,
             URI_SECURITY_SUPPORTED,
@@ -271,7 +271,7 @@ fn main() {
     };
 
     let fut = IppServerBuilder::new(([0, 0, 0, 0], 7631))
-        .handler(Box::new(test_server))
+        .handler(Arc::new(test_server))
         .build()
         .map_err(|e| {
             eprintln!("ERROR: {:?}", e);

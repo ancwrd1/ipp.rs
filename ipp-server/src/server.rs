@@ -1,7 +1,7 @@
 use std::{
     io, mem,
     net::SocketAddr,
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 
 use futures::{Future, Poll, Stream};
@@ -31,8 +31,7 @@ struct IppServer {
 }
 
 impl IppServer {
-    fn new(address: SocketAddr, handler: Box<dyn IppRequestHandler + Send>) -> IppServer {
-        let handler = Arc::new(Mutex::new(handler));
+    fn new(address: SocketAddr, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> IppServer {
 
         let inner = Server::bind(&address)
             .serve(move || {
@@ -50,8 +49,6 @@ impl IppServer {
 
                         let request = IppRequestResponse::from_parse_result(result);
                         let req_id = request.header().request_id;
-
-                        let mut handler = handler.lock().unwrap();
 
                         let response = match handler.handle_request(request) {
                             Ok(response) => response,
@@ -78,7 +75,7 @@ impl Future for IppServer {
 
 pub struct IppServerBuilder {
     address: SocketAddr,
-    handler: Box<dyn IppRequestHandler + Send>,
+    handler: Arc<dyn IppRequestHandler + Send + Sync>,
 }
 
 impl IppServerBuilder {
@@ -88,11 +85,11 @@ impl IppServerBuilder {
     {
         IppServerBuilder {
             address: address.into(),
-            handler: Box::new(DummyHandler),
+            handler: Arc::new(DummyHandler),
         }
     }
 
-    pub fn handler(mut self, handler: Box<dyn IppRequestHandler + Send>) -> Self {
+    pub fn handler(mut self, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> Self {
         self.handler = handler;
         self
     }
