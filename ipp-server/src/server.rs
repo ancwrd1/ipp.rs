@@ -1,16 +1,15 @@
-use std::{
-    io, mem,
-    net::SocketAddr,
-    sync::Arc,
-};
+use std::{io, mem, net::SocketAddr, sync::Arc};
 
 use futures::{Future, Poll, Stream};
 use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
 use log::debug;
 
-use ipp_proto::{AsyncIppParser, IppRequestResponse};
+use ipp_proto::{
+    attribute::STATUS_MESSAGE, ipp::DelimiterTag, AsyncIppParser, IppAttribute, IppRequestResponse, IppValue,
+};
 
 use crate::handler::IppRequestHandler;
+use futures::future::IntoFuture;
 
 struct DummyHandler;
 impl IppRequestHandler for DummyHandler {}
@@ -18,6 +17,7 @@ impl IppRequestHandler for DummyHandler {}
 #[derive(Debug)]
 pub enum ServerError {
     HyperError(hyper::Error),
+    IOError(io::Error),
 }
 
 impl From<hyper::Error> for ServerError {
@@ -26,14 +26,19 @@ impl From<hyper::Error> for ServerError {
     }
 }
 
-struct IppServer {
+impl From<io::Error> for ServerError {
+    fn from(err: io::Error) -> Self {
+        ServerError::IOError(err)
+    }
+}
+
+pub struct IppServer {
     inner: Box<dyn Future<Item = (), Error = ServerError> + Send>,
 }
 
 impl IppServer {
-    fn new(address: SocketAddr, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> IppServer {
-
-        let inner = Server::bind(&address)
+    fn new(address: SocketAddr, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> Result<IppServer, ServerError> {
+        let inner = Server::try_bind(&address)?
             .serve(move || {
                 let handler = handler.clone();
                 service_fn(move |mut req: Request<Body>| {
@@ -52,7 +57,17 @@ impl IppServer {
 
                         let response = match handler.handle_request(request) {
                             Ok(response) => response,
-                            Err(status) => IppRequestResponse::new_response(handler.version(), status, req_id),
+                            Err(status) => {
+                                let mut response = IppRequestResponse::new_response(handler.version(), status, req_id);
+                                response.attributes_mut().add(
+                                    DelimiterTag::OperationAttributes,
+                                    IppAttribute::new(
+                                        STATUS_MESSAGE,
+                                        IppValue::TextWithoutLanguage(status.to_string()),
+                                    ),
+                                );
+                                response
+                            }
                         };
                         Response::new(Body::wrap_stream(response.into_stream()))
                     })
@@ -60,7 +75,7 @@ impl IppServer {
             })
             .map_err(ServerError::from);
 
-        IppServer { inner: Box::new(inner) }
+        Ok(IppServer { inner: Box::new(inner) })
     }
 }
 
@@ -94,7 +109,7 @@ impl IppServerBuilder {
         self
     }
 
-    pub fn build(self) -> impl Future<Item = (), Error = ServerError> {
-        IppServer::new(self.address, self.handler)
+    pub fn build(self) -> impl Future<Item = IppServer, Error = ServerError> {
+        IppServer::new(self.address, self.handler).into_future()
     }
 }

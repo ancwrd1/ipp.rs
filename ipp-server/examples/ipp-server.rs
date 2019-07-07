@@ -277,5 +277,5 @@ fn main() {
             eprintln!("ERROR: {:?}", e);
         });
 
-    hyper::rt::run(fut);
+    hyper::rt::run(fut.map(|_| ()));
 }

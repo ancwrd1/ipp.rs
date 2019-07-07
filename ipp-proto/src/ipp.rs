@@ -171,6 +171,41 @@ pub enum StatusCode {
 
 impl fmt::Display for StatusCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:0x}", *self as u16)
+        match self {
+            StatusCode::SuccessfulOK => write!(f, "No error"),
+            StatusCode::SuccessfulOKIgnoredOrSubstitutedAttributes => write!(f, "Ignored or substituted attributes"),
+            StatusCode::SuccessfulOKConflictingAttributes => write!(f, "Conflicting attributes"),
+            StatusCode::ClientErrorBadRequest => write!(f, "Bad request"),
+            StatusCode::ClientErrorForbidden => write!(f, "Forbidden"),
+            StatusCode::ClientErrorNotAuthenticated => write!(f, "Not authenticated"),
+            StatusCode::ClientErrorNotAuthorized => write!(f, "Not authorized"),
+            StatusCode::ClientErrorNotPossible => write!(f, "Not possible"),
+            StatusCode::ClientErrorTimeout => write!(f, "Timeout"),
+            StatusCode::ClientErrorNotFound => write!(f, "Not found"),
+            StatusCode::ClientErrorGone => write!(f, "Gone"),
+            StatusCode::ClientErrorRequestEntityTooLong => write!(f, "Entity too long"),
+            StatusCode::ClientErrorRequestValueTooLong => write!(f, "Request value too long"),
+            StatusCode::ClientErrorDocumentFormatNotSupported => write!(f, "Document format not supported"),
+            StatusCode::ClientErrorAttributesOrValuesNotSupported => write!(f, "Attributes or values not supported"),
+            StatusCode::ClientErrorUriSchemeNotSupported => write!(f, "Uri scheme not supported"),
+            StatusCode::ClientErrorCharsetNotSupported => write!(f, "Charset not supported"),
+            StatusCode::ClientErrorConflictingAttributes => write!(f, "Conflicting attributes"),
+            StatusCode::ClientErrorCompressionNotSupported => write!(f, "Compression not supported"),
+            StatusCode::ClientErrorCompressionError => write!(f, "Compression error"),
+            StatusCode::ClientErrorDocumentFormatError => write!(f, "Document format error"),
+            StatusCode::ClientErrorDocumentAccessError => write!(f, "Document access error"),
+            StatusCode::ServerErrorInternalError => write!(f, "Internal error"),
+            StatusCode::ServerErrorOperationNotSupported => write!(f, "Operation not supported"),
+            StatusCode::ServerErrorServiceUnavailable => write!(f, "Service unavailable"),
+            StatusCode::ServerErrorVersionNotSupported => write!(f, "Version not supported"),
+            StatusCode::ServerErrorDeviceError => write!(f, "Device error"),
+            StatusCode::ServerErrorTemporaryError => write!(f, "Temporary error"),
+            StatusCode::ServerErrorNotAcceptingJobs => write!(f, "Not accepting jobs"),
+            StatusCode::ServerErrorBusy => write!(f, "Busy"),
+            StatusCode::ServerErrorJobCanceled => write!(f, "Job canceled"),
+            StatusCode::ServerErrorMultipleDocumentJobsNotSupported => {
+                write!(f, "Multiple document jobs not supported")
+            }
+        }
     }
 }
