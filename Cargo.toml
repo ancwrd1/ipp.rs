@@ -1,2 +1,6 @@
+[profile.release]
+lto = true
+opt-level = "z"
+
 [workspace]
 members = [ "ipp-proto", "ipp-client", "ipp-server", "ipp-util" ]

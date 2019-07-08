@@ -200,9 +200,9 @@ impl IppClient {
 
         parse_uri(uri).and_then(|url| {
             parse_certs(ca_certs).and_then(|certs| {
-                for ca_cert in certs {
-                    builder = builder.add_root_certificate(ca_cert);
-                }
+                builder = certs
+                    .into_iter()
+                    .fold(builder, |builder, ca_cert| builder.add_root_certificate(ca_cert));
 
                 builder
                     .build()
