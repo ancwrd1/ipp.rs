@@ -56,7 +56,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         .get(0)
         .and_then(|g| g.attributes().get(JOB_ID))
         .and_then(|attr| attr.value().as_integer())
-        .ok_or_else(|| IppError::ParamError("Invalid or ,issing job-id!".to_owned()))?;
+        .ok_or_else(|| IppError::ParamError("Invalid or missing job-id!".to_owned()))?;
 
     println!("job id: {}", job_id);
 
