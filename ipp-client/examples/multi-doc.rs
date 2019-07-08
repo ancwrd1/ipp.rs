@@ -48,7 +48,6 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(2);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new()?;
     let create_op = IppOperationBuilder::create_job().job_name("multi-doc").build();
     let attrs = runtime.block_on(client.send(create_op))?;
     let job_id = *attrs
