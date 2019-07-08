@@ -1,15 +1,15 @@
-use std::{env, process::exit};
+use std::{env, error::Error, process::exit};
 
 use num_traits::cast::FromPrimitive;
 
-use ipp_client::IppClientBuilder;
+use ipp_client::{IppClientBuilder, IppError};
 use ipp_proto::{
     ipp::{DelimiterTag, PrinterState},
     operation::cups::CupsGetPrinters,
     IppValue,
 };
 
-pub fn main() {
+pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -19,11 +19,11 @@ pub fn main() {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let mut runtime = tokio::runtime::Runtime::new()?;
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = CupsGetPrinters::new();
 
-    let attrs = runtime.block_on(client.send(operation)).unwrap();
+    let attrs = runtime.block_on(client.send(operation))?;
 
     for group in attrs.groups_of(DelimiterTag::PrinterAttributes) {
         let name = group.attributes()["printer-name"].clone();
@@ -31,8 +31,10 @@ pub fn main() {
         let state = group.attributes()["printer-state"].value();
         let state = match state {
             IppValue::Enum(e) => PrinterState::from_i32(*e).unwrap(),
-            _ => panic!("Unexpected state"),
+            _ => return Err(IppError::ParamError("Invalid state encoding!".to_owned()).into()),
         };
         println!("{}: {} {:?}", name.value(), uri.value(), state);
     }
+
+    Ok(())
 }

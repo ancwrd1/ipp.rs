@@ -72,11 +72,11 @@ impl PrintJobBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let mut op = PrintJob::new(self.stream, self.user_name.as_ref(), self.job_title.as_ref());
-        for attr in self.attributes {
+        let op = PrintJob::new(self.stream, self.user_name.as_ref(), self.job_title.as_ref());
+        self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
-        }
-        op
+            op
+        })
     }
 }
 
@@ -140,11 +140,11 @@ impl CreateJobBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let mut op = CreateJob::new(self.job_name.as_ref());
-        for attr in self.attributes {
+        let op = CreateJob::new(self.job_name.as_ref());
+        self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
-        }
-        op
+            op
+        })
     }
 }
 

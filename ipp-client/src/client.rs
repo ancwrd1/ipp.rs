@@ -17,7 +17,7 @@ use ipp_proto::{
     ipp::{self, DelimiterTag, PrinterState},
     operation::IppOperation,
     request::IppRequestResponse,
-    AsyncIppParser, IppAttributes, IppOperationBuilder, IppValue,
+    AsyncIppParser, IppAttributes, IppOperationBuilder,
 };
 
 use crate::IppError;
@@ -109,19 +109,16 @@ impl IppClient {
             .build();
 
         self.send(operation).and_then(|attrs| {
-            if let Some(a) = attrs
+            let state = attrs
                 .groups_of(DelimiterTag::PrinterAttributes)
                 .get(0)
                 .and_then(|g| g.attributes().get(PRINTER_STATE))
-            {
-                if let IppValue::Enum(ref e) = *a.value() {
-                    if let Some(state) = PrinterState::from_i32(*e) {
-                        if state == PrinterState::Stopped {
-                            debug!("Printer is stopped");
-                            return Err(IppError::PrinterStopped);
-                        }
-                    }
-                }
+                .and_then(|attr| attr.value().as_enum())
+                .and_then(|v| PrinterState::from_i32(*v));
+
+            if let Some(PrinterState::Stopped) = state {
+                debug!("Printer is stopped");
+                return Err(IppError::PrinterStopped);
             }
 
             if let Some(reasons) = attrs
@@ -129,20 +126,13 @@ impl IppClient {
                 .get(0)
                 .and_then(|g| g.attributes().get(PRINTER_STATE_REASONS))
             {
-                let keywords = match *reasons.value() {
-                    IppValue::ListOf(ref v) => v
-                        .iter()
-                        .filter_map(|e| {
-                            if let IppValue::Keyword(ref k) = *e {
-                                Some(k.clone())
-                            } else {
-                                None
-                            }
-                        })
-                        .collect(),
-                    IppValue::Keyword(ref v) => vec![v.clone()],
-                    _ => Vec::new(),
-                };
+                let keywords = reasons
+                    .value()
+                    .into_iter()
+                    .filter_map(|e| e.as_keyword())
+                    .map(ToOwned::to_owned)
+                    .collect::<Vec<_>>();
+
                 if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
                     debug!("Printer is in error state: {:?}", keywords);
                     return Err(IppError::PrinterStateError(keywords.clone()));

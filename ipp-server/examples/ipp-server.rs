@@ -206,41 +206,22 @@ impl IppRequestHandler for TestServer {
         let mut resp =
             IppRequestResponse::new_response(self.version(), StatusCode::SuccessfulOK, req.header().request_id);
 
-        let mut requested_attributes: Vec<&str> = vec![];
-
-        if let Some(attr) = req
+        let requested_attributes = req
             .attributes()
             .groups_of(DelimiterTag::OperationAttributes)
             .get(0)
             .and_then(|g| g.attributes().get(REQUESTED_ATTRIBUTES))
-        {
-            match *attr.value() {
-                IppValue::Keyword(ref k) => {
-                    requested_attributes.push(k);
-                }
-                IppValue::ListOf(ref attrs) => {
-                    for i in attrs {
-                        if let IppValue::Keyword(ref keyword) = *i {
-                            requested_attributes.push(keyword);
-                        } else {
-                            return Err(StatusCode::ClientErrorBadRequest);
-                        }
-                    }
-                }
-                _ => {
-                    return Err(StatusCode::ClientErrorBadRequest);
-                }
-            }
-        };
+            .map(|attr| {
+                attr.value()
+                    .into_iter()
+                    .filter_map(|e| e.as_keyword())
+                    .map(AsRef::as_ref)
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or(SUPPORTED_ATTRIBUTES.to_vec());
 
-        let attribute_list = if requested_attributes.is_empty() {
-            &SUPPORTED_ATTRIBUTES
-        } else {
-            requested_attributes.as_slice()
-        };
-
-        for attr in attribute_list {
-            if SUPPORTED_ATTRIBUTES.contains(attr) {
+        for attr in requested_attributes {
+            if SUPPORTED_ATTRIBUTES.contains(&attr) {
                 resp.attributes_mut()
                     .add(DelimiterTag::PrinterAttributes, self.get_printer_attribute(attr));
             } else {

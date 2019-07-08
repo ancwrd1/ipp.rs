@@ -1,11 +1,11 @@
-use std::{env, process::exit};
+use std::{env, error::Error, process::exit};
 
 use futures::Future;
 
 use ipp_client::{IppClientBuilder, IppError};
 use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
 
-pub fn main() {
+pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -15,7 +15,7 @@ pub fn main() {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let mut runtime = tokio::runtime::Runtime::new()?;
 
     let fut = tokio::fs::File::open(args[2].to_owned())
         .map_err(IppError::from)
@@ -51,5 +51,5 @@ pub fn main() {
             })
         });
 
-    runtime.block_on(fut).unwrap();
+    Ok(runtime.block_on(fut)?)
 }

@@ -314,11 +314,7 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        if let IppValue::Integer(val) = attr.value() {
-            assert_eq!(*val, 0x12345678);
-        } else {
-            assert!(false);
-        }
+        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
     }
 
     #[test]
@@ -333,14 +329,10 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        if let IppValue::ListOf(list) = attr.value() {
-            assert_eq!(
-                *list,
-                vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)]
-            );
-        } else {
-            assert!(false);
-        }
+        assert_eq!(
+            attr.value().as_listof(),
+            Some(&vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)])
+        );
     }
 
     #[test]
@@ -355,14 +347,13 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("coll").unwrap();
-        if let IppValue::Collection(coll) = attr.value() {
-            assert_eq!(
-                *coll,
-                vec![IppValue::Integer(0x12345678), IppValue::Keyword("key".to_owned())]
-            );
-        } else {
-            assert!(false);
-        }
+        assert_eq!(
+            attr.value().as_collection(),
+            Some(&vec![
+                IppValue::Integer(0x12345678),
+                IppValue::Keyword("key".to_owned())
+            ])
+        );
     }
 
     #[test]
@@ -390,11 +381,7 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        if let IppValue::Integer(val) = attr.value() {
-            assert_eq!(*val, 0x12345678);
-        } else {
-            assert!(false);
-        }
+        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
 
         match res.payload {
             Some(PayloadKind::TempFile(f)) => {

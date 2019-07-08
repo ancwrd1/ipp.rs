@@ -1,4 +1,4 @@
-use std::{env, process::exit};
+use std::{env, error::Error, process::exit};
 
 use futures::Future;
 
@@ -10,14 +10,12 @@ use ipp_proto::{
 };
 
 fn supports_multi_doc(v: &IppValue) -> bool {
-    if let IppValue::Enum(ref v) = v {
-        *v == Operation::CreateJob as i32 || *v == Operation::SendDocument as i32
-    } else {
-        false
-    }
+    v.as_enum()
+        .map(|v| *v == Operation::CreateJob as i32 || *v == Operation::SendDocument as i32)
+        .unwrap_or(false)
 }
 
-fn main() {
+pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -29,7 +27,7 @@ fn main() {
 
     let uri = args[1].clone();
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let mut runtime = tokio::runtime::Runtime::new()?;
 
     let client = IppClientBuilder::new(&uri).build();
 
@@ -38,30 +36,28 @@ fn main() {
         .attribute(OPERATIONS_SUPPORTED)
         .build();
     let printer_attrs = runtime.block_on(client.send(get_op)).unwrap();
+
     let ops_attr = printer_attrs
         .groups_of(DelimiterTag::PrinterAttributes)
         .get(0)
         .and_then(|g| g.attributes().get(OPERATIONS_SUPPORTED))
-        .unwrap();
+        .ok_or_else(|| IppError::ParamError("Missing operations-supported!".to_owned()))?;
 
     if !ops_attr.value().into_iter().any(supports_multi_doc) {
         println!("ERROR: target printer does not support create/send operations");
         exit(2);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let mut runtime = tokio::runtime::Runtime::new()?;
     let create_op = IppOperationBuilder::create_job().job_name("multi-doc").build();
-    let attrs = runtime.block_on(client.send(create_op)).unwrap();
-    let job_id = match *attrs
+    let attrs = runtime.block_on(client.send(create_op))?;
+    let job_id = *attrs
         .groups_of(DelimiterTag::JobAttributes)
         .get(0)
         .and_then(|g| g.attributes().get(JOB_ID))
-        .unwrap()
-        .value()
-    {
-        IppValue::Integer(id) => id,
-        _ => panic!("invalid value"),
-    };
+        .and_then(|attr| attr.value().as_integer())
+        .ok_or_else(|| IppError::ParamError("Invalid or ,issing job-id!".to_owned()))?;
+
     println!("job id: {}", job_id);
 
     for (i, item) in args.iter().enumerate().skip(2) {
@@ -86,6 +82,8 @@ fn main() {
                 })
             });
 
-        runtime.block_on(fut).unwrap();
+        runtime.block_on(fut)?;
     }
+
+    Ok(())
 }

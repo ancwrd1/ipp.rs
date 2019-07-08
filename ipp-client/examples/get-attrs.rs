@@ -1,9 +1,9 @@
-use std::{env, process::exit};
+use std::{env, error::Error, process::exit};
 
 use ipp_client::IppClientBuilder;
 use ipp_proto::{ipp::DelimiterTag, IppOperationBuilder};
 
-pub fn main() {
+pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -13,13 +13,13 @@ pub fn main() {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
+    let mut runtime = tokio::runtime::Runtime::new()?;
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&args[2..])
         .build();
 
-    let attrs = runtime.block_on(client.send(operation)).unwrap();
+    let attrs = runtime.block_on(client.send(operation))?;
 
     for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
         .attributes()
@@ -27,4 +27,6 @@ pub fn main() {
     {
         println!("{}: {}", v.name(), v.value());
     }
+
+    Ok(())
 }

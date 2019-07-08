@@ -8,12 +8,13 @@ use std::{
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::Bytes;
+use enum_as_inner::EnumAsInner;
 use num_traits::FromPrimitive;
 
 use crate::{ipp::ValueTag, IppReadExt, IppWriter};
 
 /// IPP value enumeration
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, EnumAsInner)]
 pub enum IppValue {
     Integer(i32),
     Enum(i32),
@@ -399,13 +400,9 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("coll").unwrap();
-        if let IppValue::Collection(coll) = attr.value() {
-            assert_eq!(
-                *coll,
-                vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)]
-            );
-        } else {
-            assert!(false);
-        }
+        assert_eq!(
+            attr.value().as_collection(),
+            Some(&vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)])
+        );
     }
 }
