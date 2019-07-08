@@ -35,7 +35,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let get_op = IppOperationBuilder::get_printer_attributes()
         .attribute(OPERATIONS_SUPPORTED)
         .build();
-    let printer_attrs = runtime.block_on(client.send(get_op)).unwrap();
+    let printer_attrs = runtime.block_on(client.send(get_op))?;
 
     let ops_attr = printer_attrs
         .groups_of(DelimiterTag::PrinterAttributes)
