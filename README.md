@@ -6,18 +6,22 @@ IPP protocol implementation for Rust
 
 Usage example:
 
-```rust
-use ipp_proto::IppOperationBuilder;
+```rust,no_run
+use ipp_proto::{IppOperationBuilder, ipp::DelimiterTag};
 use ipp_client::IppClientBuilder;
+use tokio::runtime::Runtime;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut runtime = Runtime::new()?;
+
     let operation = IppOperationBuilder::get_printer_attributes().build();
     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
-    if let Ok(attrs) = client.send(operation) {
-        for (_, v) in attrs.printer_attributes().unwrap() {
-            println!("{}: {}", v.name(), v.value());
-        }
+    let attrs = runtime.block_on(client.send(operation))?;
+
+    for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
+        println!("{}: {}", v.name(), v.value());
     }
+    Ok(())
 }
 ```
 

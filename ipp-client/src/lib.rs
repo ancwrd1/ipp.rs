@@ -3,41 +3,39 @@
 //!
 //! Usage examples:
 //!
-//!```rust
+//!```rust,no_run
 //! // using raw API
 //! use ipp_client::IppClientBuilder;
 //! use ipp_proto::{ipp::Operation, request::IppRequestResponse, IppVersion};
 //! use tokio::runtime::Runtime;
 //!
-//! fn main() {
-//!     use ipp_proto::IppVersion;
-//! let mut runtime = Runtime::new().unwrap();
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let mut runtime = Runtime::new()?;
 //!     let uri = "http://localhost:631/printers/test-printer";
 //!     let req = IppRequestResponse::new(IppVersion::Ipp11, Operation::GetPrinterAttributes, Some(uri));
 //!     let client = IppClientBuilder::new(&uri).build();
-//!     if let Ok(resp) = runtime.block_on(client.send_request(req)) {
-//!         if resp.header().operation_status <= 2 {
-//!             println!("result: {:?}", resp.attributes());
-//!         }
+//!     let resp = runtime.block_on(client.send_request(req))?;
+//!     if resp.header().operation_status <= 2 {
+//!         println!("result: {:?}", resp.attributes());
 //!     }
+//!     Ok(())
 //! }
 //!```
-//!```rust
+//!```rust,no_run
 //! // using high level API
 //! use ipp_proto::{IppOperationBuilder, ipp::DelimiterTag};
 //! use ipp_client::IppClientBuilder;
 //! use tokio::runtime::Runtime;
 //!
-//! fn main() {
-//!     use ipp_proto::ipp::DelimiterTag;
-//! let mut runtime = Runtime::new().unwrap();
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let mut runtime = Runtime::new()?;
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
 //!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
-//!     if let Ok(attrs) = runtime.block_on(client.send(operation)) {
-//!         for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
-//!             println!("{}: {}", v.name(), v.value());
-//!         }
+//!     let attrs = runtime.block_on(client.send(operation))?;
+//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
+//!         println!("{}: {}", v.name(), v.value());
 //!     }
+//!     Ok(())
 //! }
 //!```
 
