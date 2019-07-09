@@ -1,4 +1,4 @@
-use std::{io, mem, net::SocketAddr, sync::Arc};
+use std::{io, net::SocketAddr, sync::Arc};
 
 use futures::future::IntoFuture;
 use futures::{Future, Poll, Stream};
@@ -41,11 +41,11 @@ impl IppServer {
         let inner = Server::try_bind(&address)?
             .serve(move || {
                 let handler = handler.clone();
-                service_fn(move |mut req: Request<Body>| {
-                    let body = mem::replace(req.body_mut(), Body::empty());
-
-                    let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> =
-                        Box::new(body.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())));
+                service_fn(move |req: Request<Body>| {
+                    let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> = Box::new(
+                        req.into_body()
+                            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
+                    );
 
                     let handler = handler.clone();
 

@@ -1,13 +1,13 @@
 //!
 //! IPP client
 //!
-use std::{borrow::Cow, fs, io, mem, path::PathBuf, time::Duration};
+use std::{borrow::Cow, fs, io, path::PathBuf, time::Duration};
 
 use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{
-    r#async::{Chunk, Client, Decoder},
+    r#async::{Chunk, Client},
     Certificate,
 };
 use url::Url;
@@ -216,10 +216,12 @@ impl IppClient {
                     })
                     .and_then(|response| response.error_for_status())
                     .map_err(IppError::HttpError)
-                    .and_then(|mut response| {
-                        let body = mem::replace(response.body_mut(), Decoder::empty());
-                        let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> =
-                            Box::new(body.map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())));
+                    .and_then(|response| {
+                        let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> = Box::new(
+                            response
+                                .into_body()
+                                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
+                        );
 
                         AsyncIppParser::from(stream)
                             .map_err(IppError::from)
