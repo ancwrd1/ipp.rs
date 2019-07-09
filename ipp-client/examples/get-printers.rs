@@ -6,7 +6,6 @@ use ipp_client::{IppClientBuilder, IppError};
 use ipp_proto::{
     ipp::{DelimiterTag, PrinterState},
     operation::cups::CupsGetPrinters,
-    IppValue,
 };
 
 pub fn main() -> Result<(), Box<dyn Error>> {
@@ -26,14 +25,15 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let attrs = runtime.block_on(client.send(operation))?;
 
     for group in attrs.groups_of(DelimiterTag::PrinterAttributes) {
-        let name = group.attributes()["printer-name"].clone();
-        let uri = group.attributes()["device-uri"].clone();
-        let state = group.attributes()["printer-state"].value();
-        let state = match state {
-            IppValue::Enum(e) => PrinterState::from_i32(*e).unwrap(),
-            _ => return Err(IppError::ParamError("Invalid state encoding!".to_owned()).into()),
-        };
-        println!("{}: {} {:?}", name.value(), uri.value(), state);
+        let name = group.attributes()["printer-name"].value();
+        let uri = group.attributes()["device-uri"].value();
+        let state = group.attributes()["printer-state"]
+            .value()
+            .as_enum()
+            .and_then(|v| PrinterState::from_i32(*v))
+            .ok_or(IppError::InvalidAttributeType)?;
+
+        println!("{}: {} {:?}", name, uri, state);
     }
 
     Ok(())

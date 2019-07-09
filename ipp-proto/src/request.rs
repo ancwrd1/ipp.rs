@@ -13,16 +13,16 @@ use crate::{
     ipp::{DelimiterTag, IppVersion, Operation},
     parser::IppParseResult,
     value::*,
-    IppHeader, IppReadStream, IppWriter, StatusCode,
+    IppHeader, IppJobSource, IppWriter, StatusCode,
 };
 
 pub enum PayloadKind {
-    Stream(IppReadStream),
+    Stream(IppJobSource),
     TempFile(NamedTempFile),
 }
 
 impl PayloadKind {
-    pub fn as_stream(&mut self) -> Option<&mut IppReadStream> {
+    pub fn as_stream(&mut self) -> Option<&mut IppJobSource> {
         match self {
             PayloadKind::Stream(ref mut stream) => Some(stream),
             _ => None,
@@ -137,7 +137,7 @@ impl IppRequestResponse {
     }
 
     /// Set payload
-    pub fn add_payload(&mut self, payload: IppReadStream) {
+    pub fn add_payload(&mut self, payload: IppJobSource) {
         self.payload = Some(PayloadKind::Stream(payload))
     }
 

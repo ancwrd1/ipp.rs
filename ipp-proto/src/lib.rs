@@ -26,24 +26,16 @@ pub mod request;
 pub mod value;
 
 /// Source for IPP data stream (job file)
-pub struct IppReadStream {
+pub struct IppJobSource {
     inner: Box<AsyncRead + Send>,
     buffer: Vec<u8>,
 }
 
-impl IppReadStream {
+impl IppJobSource {
     const CHUNK_SIZE: usize = 32768;
-
-    /// Create new instance using `AsyncRead`
-    pub(crate) fn from_reader(reader: Box<AsyncRead + Send>) -> IppReadStream {
-        IppReadStream {
-            inner: reader,
-            buffer: vec![0; IppReadStream::CHUNK_SIZE],
-        }
-    }
 }
 
-impl Stream for IppReadStream {
+impl Stream for IppJobSource {
     type Item = Bytes;
     type Error = io::Error;
 
@@ -57,12 +49,15 @@ impl Stream for IppReadStream {
     }
 }
 
-impl<T> From<T> for IppReadStream
+impl<T> From<T> for IppJobSource
 where
     T: 'static + AsyncRead + Send,
 {
     fn from(r: T) -> Self {
-        IppReadStream::from_reader(Box::new(r))
+        IppJobSource {
+            inner: Box::new(r),
+            buffer: vec![0; IppJobSource::CHUNK_SIZE],
+        }
     }
 }
 

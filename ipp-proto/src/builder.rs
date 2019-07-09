@@ -1,7 +1,7 @@
 use crate::{
     attribute::IppAttribute,
     operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument},
-    IppReadStream,
+    IppJobSource,
 };
 
 /// Builder to create IPP operations
@@ -9,11 +9,11 @@ pub struct IppOperationBuilder;
 
 impl IppOperationBuilder {
     /// Create PrintJob operation
-    pub fn print_job<T>(stream: T) -> PrintJobBuilder
+    pub fn print_job<T>(source: T) -> PrintJobBuilder
     where
-        IppReadStream: From<T>,
+        IppJobSource: From<T>,
     {
-        PrintJobBuilder::new(stream.into())
+        PrintJobBuilder::new(source.into())
     }
 
     /// Create GetPrinterAttributes operation
@@ -29,7 +29,7 @@ impl IppOperationBuilder {
     /// Create SendDocument operation
     pub fn send_document<T>(job_id: i32, stream: T) -> SendDocumentBuilder
     where
-        IppReadStream: From<T>,
+        IppJobSource: From<T>,
     {
         SendDocumentBuilder::new(job_id, stream.into())
     }
@@ -37,16 +37,16 @@ impl IppOperationBuilder {
 
 /// Builder to create PrintJob operation
 pub struct PrintJobBuilder {
-    stream: IppReadStream,
+    source: IppJobSource,
     user_name: Option<String>,
     job_title: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
 impl PrintJobBuilder {
-    fn new(stream: IppReadStream) -> PrintJobBuilder {
+    fn new(source: IppJobSource) -> PrintJobBuilder {
         PrintJobBuilder {
-            stream,
+            source,
             user_name: None,
             job_title: None,
             attributes: Vec::new(),
@@ -72,7 +72,7 @@ impl PrintJobBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let op = PrintJob::new(self.stream, self.user_name.as_ref(), self.job_title.as_ref());
+        let op = PrintJob::new(self.source, self.user_name.as_ref(), self.job_title.as_ref());
         self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
@@ -151,16 +151,16 @@ impl CreateJobBuilder {
 /// Builder to create SendDocument operation
 pub struct SendDocumentBuilder {
     job_id: i32,
-    stream: IppReadStream,
+    source: IppJobSource,
     user_name: Option<String>,
     is_last: bool,
 }
 
 impl SendDocumentBuilder {
-    fn new(job_id: i32, stream: IppReadStream) -> SendDocumentBuilder {
+    fn new(job_id: i32, source: IppJobSource) -> SendDocumentBuilder {
         SendDocumentBuilder {
             job_id,
-            stream,
+            source,
             user_name: None,
             is_last: true,
         }
@@ -180,6 +180,6 @@ impl SendDocumentBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        SendDocument::new(self.job_id, self.stream, self.user_name.as_ref(), self.is_last)
+        SendDocument::new(self.job_id, self.source, self.user_name.as_ref(), self.is_last)
     }
 }

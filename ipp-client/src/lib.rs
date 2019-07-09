@@ -69,6 +69,10 @@ pub enum IppError {
     ParamError(String),
     /// Parsing error
     ParseError(ParseError),
+    /// Missing attribute in response
+    MissingAttribute,
+    /// Invalid attribute type
+    InvalidAttributeType,
 }
 
 impl fmt::Display for IppError {
@@ -81,6 +85,8 @@ impl fmt::Display for IppError {
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
             IppError::PrinterStopped => write!(f, "IPP printer stopped"),
             IppError::ParseError(ref e) => write!(f, "{}", e),
+            IppError::MissingAttribute => write!(f, "Missing attribute in response"),
+            IppError::InvalidAttributeType => write!(f, "Invalid attribute type"),
         }
     }
 }

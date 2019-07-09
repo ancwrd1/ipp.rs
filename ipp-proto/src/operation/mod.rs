@@ -1,7 +1,7 @@
 //!
 //! High-level IPP operation abstractions
 //!
-use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppReadStream, IppValue};
+use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppJobSource, IppValue};
 
 pub mod cups;
 
@@ -17,7 +17,7 @@ pub trait IppOperation {
 
 /// IPP operation Print-Job
 pub struct PrintJob {
-    stream: IppReadStream,
+    stream: IppJobSource,
     user_name: Option<String>,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
@@ -29,7 +29,7 @@ impl PrintJob {
     /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new<U, N>(stream: IppReadStream, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<U, N>(stream: IppJobSource, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
         U: AsRef<str>,
         N: AsRef<str>,
@@ -161,7 +161,7 @@ impl IppOperation for CreateJob {
 /// IPP operation Send-Document
 pub struct SendDocument {
     job_id: i32,
-    stream: IppReadStream,
+    stream: IppJobSource,
     user_name: Option<String>,
     last: bool,
 }
@@ -173,7 +173,7 @@ impl SendDocument {
     /// * `stream` - `IppReadStream`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S>(job_id: i32, stream: IppReadStream, user_name: Option<S>, last: bool) -> SendDocument
+    pub fn new<S>(job_id: i32, stream: IppJobSource, user_name: Option<S>, last: bool) -> SendDocument
     where
         S: AsRef<str>,
     {

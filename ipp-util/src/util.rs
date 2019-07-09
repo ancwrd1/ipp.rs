@@ -21,16 +21,16 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
         .build()
 }
 
-struct FileSource {
+struct JobSource {
     inner: Box<AsyncRead + Send>,
 }
 
-fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = FileSource, Error = io::Error> + Send + 'static> {
+fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = JobSource, Error = io::Error> + Send + 'static> {
     match cmd.file {
         Some(ref filename) => Box::new(
-            tokio::fs::File::open(filename.to_owned()).and_then(|file| Ok(FileSource { inner: Box::new(file) })),
+            tokio::fs::File::open(filename.to_owned()).and_then(|file| Ok(JobSource { inner: Box::new(file) })),
         ),
-        None => Box::new(future::ok(FileSource {
+        None => Box::new(future::ok(JobSource {
             inner: Box::new(tokio::io::stdin()),
         })),
     }

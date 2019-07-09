@@ -41,7 +41,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         .groups_of(DelimiterTag::PrinterAttributes)
         .get(0)
         .and_then(|g| g.attributes().get(OPERATIONS_SUPPORTED))
-        .ok_or_else(|| IppError::ParamError("Missing operations-supported!".to_owned()))?;
+        .ok_or(IppError::MissingAttribute)?;
 
     if !ops_attr.value().into_iter().any(supports_multi_doc) {
         println!("ERROR: target printer does not support create/send operations");
@@ -55,7 +55,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         .get(0)
         .and_then(|g| g.attributes().get(JOB_ID))
         .and_then(|attr| attr.value().as_integer())
-        .ok_or_else(|| IppError::ParamError("Invalid or missing job-id!".to_owned()))?;
+        .ok_or(IppError::MissingAttribute)?;
 
     println!("job id: {}", job_id);
 
