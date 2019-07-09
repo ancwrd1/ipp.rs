@@ -19,7 +19,6 @@ log = "0.4"
 tokio = "0.1"
 
 [dev-dependencies]
-ipp-server = { path = "../ipp-server" }
 lazy_static = "1"
 hyper = "0.12"
 futures = "0.1"
