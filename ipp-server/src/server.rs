@@ -1,5 +1,6 @@
 use std::{io, mem, net::SocketAddr, sync::Arc};
 
+use futures::future::IntoFuture;
 use futures::{Future, Poll, Stream};
 use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
 use log::debug;
@@ -9,7 +10,6 @@ use ipp_proto::{
 };
 
 use crate::handler::IppRequestHandler;
-use futures::future::IntoFuture;
 
 struct DummyHandler;
 impl IppRequestHandler for DummyHandler {}
