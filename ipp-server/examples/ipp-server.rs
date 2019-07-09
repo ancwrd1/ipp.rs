@@ -122,7 +122,7 @@ impl IppRequestHandler for TestServer {
         println!("{:?}", req.attributes());
 
         match req.payload_mut().take() {
-            Some(PayloadKind::TempFile(file)) => {
+            Some(PayloadKind::ReceivedData(file)) => {
                 let new_path = self.spooler_dir.join(format!(
                     "{}.spl",
                     self.start_time

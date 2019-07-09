@@ -4,6 +4,7 @@
 use std::io::{self, Cursor, Write};
 
 use bytes::Bytes;
+use enum_as_inner::EnumAsInner;
 use futures::Stream;
 use log::debug;
 use tempfile::NamedTempFile;
@@ -16,25 +17,10 @@ use crate::{
     IppHeader, IppJobSource, IppWriter, StatusCode,
 };
 
+#[derive(EnumAsInner)]
 pub enum PayloadKind {
-    Stream(IppJobSource),
-    TempFile(NamedTempFile),
-}
-
-impl PayloadKind {
-    pub fn as_stream(&mut self) -> Option<&mut IppJobSource> {
-        match self {
-            PayloadKind::Stream(ref mut stream) => Some(stream),
-            _ => None,
-        }
-    }
-
-    pub fn as_temp_file(&mut self) -> Option<&mut NamedTempFile> {
-        match self {
-            PayloadKind::TempFile(ref mut file) => Some(file),
-            _ => None,
-        }
-    }
+    JobSource(IppJobSource),
+    ReceivedData(NamedTempFile),
 }
 
 /// IPP request/response struct
@@ -138,7 +124,7 @@ impl IppRequestResponse {
 
     /// Set payload
     pub fn add_payload(&mut self, payload: IppJobSource) {
-        self.payload = Some(PayloadKind::Stream(payload))
+        self.payload = Some(PayloadKind::JobSource(payload))
     }
 
     /// Serialize request into the binary stream (TCP)
@@ -162,7 +148,7 @@ impl IppRequestResponse {
         let headers = futures::stream::once(Ok(cursor.into_inner().into()));
 
         match self.payload {
-            Some(PayloadKind::Stream(payload)) => Box::new(headers.chain(payload)),
+            Some(PayloadKind::JobSource(payload)) => Box::new(headers.chain(payload)),
             _ => Box::new(headers),
         }
     }

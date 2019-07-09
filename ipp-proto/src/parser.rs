@@ -229,7 +229,7 @@ where
                                 debug!("Adding residual payload from this chunk");
                                 let mut temp = tempfile::NamedTempFile::new()?;
                                 io::copy(&mut reader, &mut temp)?;
-                                result.payload = Some(PayloadKind::TempFile(temp));
+                                result.payload = Some(PayloadKind::ReceivedData(temp));
                             }
                             self.state = AsyncParseState::Payload(result);
                         }
@@ -244,7 +244,7 @@ where
                 AsyncParseState::Payload(ref mut result) => {
                     let mut reader = io::Cursor::new(&item);
                     match result.payload {
-                        Some(PayloadKind::TempFile(ref mut file)) => {
+                        Some(PayloadKind::ReceivedData(ref mut file)) => {
                             debug!(
                                 "Payload chunk received, appending to existing file: {}",
                                 file.path().display()
@@ -255,7 +255,7 @@ where
                             let mut temp = tempfile::NamedTempFile::new()?;
                             debug!("Payload chunk received, creating new file: {}", temp.path().display());
                             io::copy(&mut reader, &mut temp)?;
-                            result.payload = Some(PayloadKind::TempFile(temp));
+                            result.payload = Some(PayloadKind::ReceivedData(temp));
                         }
                         _ => panic!("Should not happen"),
                     }
@@ -384,7 +384,7 @@ mod tests {
         assert_eq!(attr.value().as_integer(), Some(&0x12345678));
 
         match res.payload {
-            Some(PayloadKind::TempFile(f)) => {
+            Some(PayloadKind::ReceivedData(f)) => {
                 let foo = std::fs::read_to_string(f.path()).unwrap();
                 assert_eq!(foo, "foo");
             }
