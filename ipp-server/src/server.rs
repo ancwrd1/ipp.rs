@@ -14,6 +14,7 @@ use crate::handler::IppRequestHandler;
 struct DummyHandler;
 impl IppRequestHandler for DummyHandler {}
 
+/// Server-related errors
 #[derive(Debug)]
 pub enum ServerError {
     HyperError(hyper::Error),
@@ -32,6 +33,7 @@ impl From<io::Error> for ServerError {
     }
 }
 
+/// IPP server
 pub struct IppServer {
     inner: Box<dyn Future<Item = (), Error = ServerError> + Send>,
 }
@@ -88,12 +90,14 @@ impl Future for IppServer {
     }
 }
 
+/// Builder to create IPP servers
 pub struct IppServerBuilder {
     address: SocketAddr,
     handler: Arc<dyn IppRequestHandler + Send + Sync>,
 }
 
 impl IppServerBuilder {
+    /// Create builder for a given listening address
     pub fn new<S>(address: S) -> IppServerBuilder
     where
         SocketAddr: From<S>,
@@ -104,11 +108,13 @@ impl IppServerBuilder {
         }
     }
 
+    /// Set request handler
     pub fn handler(mut self, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> Self {
         self.handler = handler;
         self
     }
 
+    /// Build server
     pub fn build(self) -> impl Future<Item = IppServer, Error = ServerError> {
         IppServer::new(self.address, self.handler).into_future()
     }

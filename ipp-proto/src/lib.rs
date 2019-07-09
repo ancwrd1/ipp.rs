@@ -112,6 +112,7 @@ impl IppHeader {
         }
     }
 
+    /// Get operation_status field as Operation enum. If no match found returns error status code
     pub fn operation(&self) -> Result<Operation, StatusCode> {
         Operation::from_u16(self.operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)
     }

@@ -17,9 +17,12 @@ use crate::{
     IppHeader, IppJobSource, IppWriter, StatusCode,
 };
 
+/// Payload type inside the IppRequestResponse
 #[derive(EnumAsInner)]
 pub enum PayloadKind {
+    /// Job source for client side
     JobSource(IppJobSource),
+    /// Received data for server side
     ReceivedData(NamedTempFile),
 }
 
@@ -138,6 +141,7 @@ impl IppRequestResponse {
         Ok(retval)
     }
 
+    /// Convert request/response into Stream
     pub fn into_stream(self) -> Box<dyn Stream<Item = Bytes, Error = io::Error> + Send + 'static> {
         let mut cursor = Cursor::new(Vec::with_capacity(1024));
         let _ = self

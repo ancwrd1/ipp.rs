@@ -13,6 +13,7 @@ use num_traits::FromPrimitive;
 
 use crate::{ipp::*, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue, PayloadKind};
 
+/// Parse error enum
 #[derive(Debug)]
 pub enum ParseError {
     InvalidTag(u8),

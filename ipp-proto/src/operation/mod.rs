@@ -17,7 +17,7 @@ pub trait IppOperation {
 
 /// IPP operation Print-Job
 pub struct PrintJob {
-    stream: IppJobSource,
+    source: IppJobSource,
     user_name: Option<String>,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
@@ -26,16 +26,16 @@ pub struct PrintJob {
 impl PrintJob {
     /// Create Print-Job operation
     ///
-    /// * `stream` - `IppReadStream`<br/>
+    /// * `source` - `IppJobSource`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
-    /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new<U, N>(stream: IppJobSource, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    /// * `job_name` - job name (job-name)<br/>
+    pub fn new<U, N>(source: IppJobSource, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
         U: AsRef<str>,
         N: AsRef<str>,
     {
         PrintJob {
-            stream,
+            source,
             user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
@@ -69,7 +69,7 @@ impl IppOperation for PrintJob {
         for attr in &self.attributes {
             retval.attributes_mut().add(DelimiterTag::JobAttributes, attr.clone());
         }
-        retval.add_payload(self.stream);
+        retval.add_payload(self.source);
         retval
     }
 }
@@ -161,7 +161,7 @@ impl IppOperation for CreateJob {
 /// IPP operation Send-Document
 pub struct SendDocument {
     job_id: i32,
-    stream: IppJobSource,
+    source: IppJobSource,
     user_name: Option<String>,
     last: bool,
 }
@@ -170,7 +170,7 @@ impl SendDocument {
     /// Create Send-Document operation
     ///
     /// * `job_id` - job ID returned by Create-Job operation<br/>
-    /// * `stream` - `IppReadStream`<br/>
+    /// * `source` - `IppJobSource`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
     pub fn new<S>(job_id: i32, stream: IppJobSource, user_name: Option<S>, last: bool) -> SendDocument
@@ -179,7 +179,7 @@ impl SendDocument {
     {
         SendDocument {
             job_id,
-            stream,
+            source: stream,
             user_name: user_name.map(|v| v.as_ref().to_string()),
             last,
         }
@@ -207,7 +207,7 @@ impl IppOperation for SendDocument {
             IppAttribute::new(LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
-        retval.add_payload(self.stream);
+        retval.add_payload(self.source);
 
         retval
     }
