@@ -2,8 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use futures::Future;
 
-use ipp_client::{IppClientBuilder, IppError};
-use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
+use ipp::client::{IppClientBuilder, IppError};
+use ipp::proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();

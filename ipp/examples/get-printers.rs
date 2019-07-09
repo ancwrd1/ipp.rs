@@ -2,8 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use num_traits::cast::FromPrimitive;
 
-use ipp_client::{IppClientBuilder, IppError};
-use ipp_proto::{
+use ipp::client::{IppClientBuilder, IppError};
+use ipp::proto::{
     ipp::{DelimiterTag, PrinterState},
     operation::cups::CupsGetPrinters,
 };

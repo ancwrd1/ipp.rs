@@ -7,8 +7,8 @@ IPP protocol implementation for Rust
 Usage example:
 
 ```rust,no_run
-use ipp_proto::{IppOperationBuilder, ipp::DelimiterTag};
-use ipp_client::IppClientBuilder;
+use ipp::proto::{IppOperationBuilder, ipp::DelimiterTag};
+use ipp::client::IppClientBuilder;
 use tokio::runtime::Runtime;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -2,8 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use futures::Future;
 
-use ipp_client::{IppClientBuilder, IppError};
-use ipp_proto::{
+use ipp::client::{IppClientBuilder, IppError};
+use ipp::proto::{
     attribute::{JOB_ID, OPERATIONS_SUPPORTED},
     ipp::{DelimiterTag, Operation},
     IppOperationBuilder, IppValue,
