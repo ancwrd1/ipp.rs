@@ -114,7 +114,7 @@ pub enum ValueTag {
     Integer = 0x21,
     Boolean = 0x22,
     Enum = 0x23,
-    OctectStringUnspecified = 0x30,
+    OctetStringUnspecified = 0x30,
     DateTime = 0x31,
     Resolution = 0x32,
     RangeOfInteger = 0x33,

@@ -66,7 +66,7 @@ impl IppValue {
             IppValue::RangeOfInteger { .. } => ValueTag::RangeOfInteger,
             IppValue::Boolean(_) => ValueTag::Boolean,
             IppValue::Keyword(_) => ValueTag::Keyword,
-            IppValue::OctetString(_) => ValueTag::OctectStringUnspecified,
+            IppValue::OctetString(_) => ValueTag::OctetStringUnspecified,
             IppValue::TextWithoutLanguage(_) => ValueTag::TextWithoutLanguage,
             IppValue::NameWithoutLanguage(_) => ValueTag::NameWithoutLanguage,
             IppValue::Charset(_) => ValueTag::Charset,
@@ -105,7 +105,7 @@ impl IppValue {
                 debug_assert_eq!(vsize, 4);
                 Ok(IppValue::Enum(reader.read_i32::<BigEndian>()?))
             }
-            ValueTag::OctectStringUnspecified => Ok(IppValue::OctetString(reader.read_string(vsize as usize)?)),
+            ValueTag::OctetStringUnspecified => Ok(IppValue::OctetString(reader.read_string(vsize as usize)?)),
             ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(reader.read_string(vsize as usize)?)),
             ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(reader.read_string(vsize as usize)?)),
             ValueTag::Charset => Ok(IppValue::Charset(reader.read_string(vsize as usize)?)),
