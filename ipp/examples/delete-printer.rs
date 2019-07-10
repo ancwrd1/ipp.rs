@@ -1,7 +1,9 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::client::IppClientBuilder;
-use ipp::proto::operation::cups::CupsDeletePrinter;
+use ipp::{
+    client::IppClientBuilder,
+    proto::operation::cups::CupsDeletePrinter
+};
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();

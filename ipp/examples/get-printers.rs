@@ -2,10 +2,12 @@ use std::{env, error::Error, process::exit};
 
 use num_traits::cast::FromPrimitive;
 
-use ipp::client::{IppClientBuilder, IppError};
-use ipp::proto::{
-    ipp::{DelimiterTag, PrinterState},
-    operation::cups::CupsGetPrinters,
+use ipp::{
+    client::{IppClientBuilder, IppError},
+    proto::{
+        ipp::{DelimiterTag, PrinterState},
+        operation::cups::CupsGetPrinters,
+    },
 };
 
 pub fn main() -> Result<(), Box<dyn Error>> {
