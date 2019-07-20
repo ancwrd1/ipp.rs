@@ -13,7 +13,7 @@ edition = "2018"
 [dependencies]
 ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
 num-traits = "0.2"
-reqwest = { git = "https://github.com/seanmonstar/reqwest.git" }
+reqwest = "^0.9.19"
 url = "1"
 log = "0.4"
 futures = "0.1"
