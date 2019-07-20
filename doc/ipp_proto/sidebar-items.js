@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["attribute","Attribute-related structs"],["builder",""],["ipp","Base IPP definitions and tags"],["operation","High-level IPP operation abstractions"],["parser","IPP stream parser"],["request","IPP request"],["value","IPP value"]],"struct":[["IppHeader","IPP request and response header"],["IppJobSource","Source for IPP data stream (job file)"]]});

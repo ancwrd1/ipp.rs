@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ParseError","Parse error enum"]],"struct":[["AsyncIppParser","Asynchronous IPP parser using Streams"],["IppParseResult","IPP parsing result"],["IppParser","IPP parser implementation"]]});

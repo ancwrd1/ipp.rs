@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["IppParseResult","IPP parsing result"],["IppParser","IPP parser implementation"]]});

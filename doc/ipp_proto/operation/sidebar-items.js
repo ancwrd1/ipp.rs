@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["cups","CUPS-specific IPP operations"]],"struct":[["CreateJob","IPP operation Create-Job"],["GetPrinterAttributes","IPP operation Get-Printer-Attributes"],["PrintJob","IPP operation Print-Job"],["SendDocument","IPP operation Send-Document"]],"trait":[["IppOperation","Trait which represents a single IPP operation"]]});

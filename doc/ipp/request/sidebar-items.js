@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["IppReadAdapter","Helper class to combine IPP data and payload"],["IppRequestResponse","IPP request/response struct"]],"trait":[["IppRequestTrait",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PayloadKind","Payload type inside the IppRequestResponse"]],"struct":[["IppRequestResponse","IPP request/response struct"]]});

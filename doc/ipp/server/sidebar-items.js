@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["IppServer","A trait which defines IPP operations"]],"type":[["IppServerResult",""]]});

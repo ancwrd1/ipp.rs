@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ServerError","Server-related errors"]],"struct":[["IppServer","IPP server"],["IppServerBuilder","Builder to create IPP servers"]]});

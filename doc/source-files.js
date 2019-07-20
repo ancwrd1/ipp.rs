@@ -1,4 +1,8 @@
 var N = null;var sourcesIndex = {};
-sourcesIndex["ipp"] = {"name":"","dirs":[{"name":"consts","dirs":[],"files":["attribute.rs","operation.rs","statuscode.rs","tag.rs"]}],"files":["attribute.rs","client.rs","ffi.rs","lib.rs","operation.rs","parser.rs","request.rs","server.rs","util.rs","value.rs"]};
-sourcesIndex["ipputil"] = {"name":"","dirs":[],"files":["ipputil.rs"]};
+sourcesIndex["ipp"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["ipp_client"] = {"name":"","files":["client.rs","lib.rs"]};
+sourcesIndex["ipp_proto"] = {"name":"","dirs":[{"name":"operation","files":["cups.rs","mod.rs"]}],"files":["attribute.rs","builder.rs","ipp.rs","lib.rs","parser.rs","request.rs","value.rs"]};
+sourcesIndex["ipp_server"] = {"name":"","files":["handler.rs","lib.rs","server.rs"]};
+sourcesIndex["ipp_util"] = {"name":"","files":["lib.rs","util.rs"]};
+sourcesIndex["ipputil"] = {"name":"","files":["ipputil.rs"]};
 createSourceSidebar();
