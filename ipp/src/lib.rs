@@ -12,7 +12,11 @@
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let mut runtime = Runtime::new()?;
 //!     let uri = "http://localhost:631/printers/test-printer";
-//!     let req = IppRequestResponse::new(IppVersion::Ipp11, Operation::GetPrinterAttributes, Some(uri));
+//!     let req = IppRequestResponse::new(
+//!         IppVersion::Ipp11,
+//!         Operation::GetPrinterAttributes,
+//!         Some(uri)
+//!     );
 //!     let client = IppClientBuilder::new(&uri).build();
 //!     let resp = runtime.block_on(client.send_request(req))?;
 //!     if resp.header().operation_status <= 2 {
