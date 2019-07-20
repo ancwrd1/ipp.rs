@@ -9,6 +9,8 @@ pub struct IppOperationBuilder;
 
 impl IppOperationBuilder {
     /// Create PrintJob operation
+    ///
+    /// * `source` - `IppJobSource`
     pub fn print_job<T>(source: T) -> PrintJobBuilder
     where
         IppJobSource: From<T>,
@@ -27,11 +29,14 @@ impl IppOperationBuilder {
     }
 
     /// Create SendDocument operation
-    pub fn send_document<T>(job_id: i32, stream: T) -> SendDocumentBuilder
+    ///
+    /// * `job_id` - job id returned by Create-Job operation <br/>
+    /// * `source` - `IppJobSource` <br/>
+    pub fn send_document<T>(job_id: i32, source: T) -> SendDocumentBuilder
     where
         IppJobSource: From<T>,
     {
-        SendDocumentBuilder::new(job_id, stream.into())
+        SendDocumentBuilder::new(job_id, source.into())
     }
 }
 

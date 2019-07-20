@@ -129,7 +129,6 @@ impl IppWriter for IppAttribute {
 /// Attribute group
 #[derive(Clone, Debug)]
 pub struct IppAttributeGroup {
-    /// delimiter tag
     tag: DelimiterTag,
     attributes: HashMap<String, IppAttribute>,
 }
@@ -143,6 +142,7 @@ impl IppAttributeGroup {
         }
     }
 
+    /// Return group type tag
     pub fn tag(&self) -> DelimiterTag {
         self.tag
     }

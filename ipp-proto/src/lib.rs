@@ -53,6 +53,7 @@ impl<T> From<T> for IppJobSource
 where
     T: 'static + AsyncRead + Send,
 {
+    /// Create job source from AsyncRead
     fn from(r: T) -> Self {
         IppJobSource {
             inner: Box::new(r),

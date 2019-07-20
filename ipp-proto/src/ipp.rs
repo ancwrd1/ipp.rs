@@ -15,6 +15,7 @@ pub enum IppVersion {
     Ipp22 = 0x0202,
 }
 
+/// IPP operation constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Operation {
     PrintJob = 0x0002,
@@ -53,6 +54,7 @@ pub enum Operation {
     CupsCreateLocalPrinter = 0x4028,
 }
 
+/// printer-state constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum PrinterState {
     Idle = 3,
@@ -60,6 +62,7 @@ pub enum PrinterState {
     Stopped = 5,
 }
 
+/// paper orientation constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Orientation {
     Portrait = 3,
@@ -68,6 +71,7 @@ pub enum Orientation {
     ReversePortrait = 6,
 }
 
+/// print-quality constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum PrintQuality {
     Draft = 3,
@@ -75,6 +79,7 @@ pub enum PrintQuality {
     High = 5,
 }
 
+/// finishings constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum Finishings {
     None = 3,
@@ -86,6 +91,7 @@ pub enum Finishings {
     EdgeStitch = 9,
 }
 
+/// job-state constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum JobState {
     Pending = 3,
@@ -97,6 +103,7 @@ pub enum JobState {
     Completed = 9,
 }
 
+/// group delimiter tags
 #[derive(Primitive, Debug, Copy, Clone, PartialEq, Hash, Eq)]
 pub enum DelimiterTag {
     OperationAttributes = 0x01,
@@ -106,6 +113,7 @@ pub enum DelimiterTag {
     UnsupportedAttributes = 0x05,
 }
 
+/// IPP value tags
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum ValueTag {
     Unsupported = 0x10,
@@ -133,6 +141,7 @@ pub enum ValueTag {
     MemberAttrName = 0x4a,
 }
 
+/// IPP status codes
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum StatusCode {
     SuccessfulOK = 0x0000,

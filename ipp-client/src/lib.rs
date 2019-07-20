@@ -105,27 +105,28 @@ impl IppClientBuilder {
     }
 
     /// Add CA certificates
-    pub fn ca_certs<P>(mut self, paths: &[P]) -> Self
+    pub fn ca_certs<I, P>(mut self, paths: I) -> Self
     where
+        I: IntoIterator<Item = P>,
         P: AsRef<Path>,
     {
-        self.ca_certs.extend(paths.iter().map(|p| p.as_ref().to_owned()));
+        self.ca_certs.extend(paths.into_iter().map(|p| p.as_ref().to_owned()));
         self
     }
 
-    /// Enable or disable host name verification
+    /// Enable or disable host name verification. Default is true.
     pub fn verify_hostname(mut self, verify: bool) -> Self {
         self.verify_hostname = verify;
         self
     }
 
-    /// Enable or disable server certificate verification
+    /// Enable or disable server certificate verification. Default is true.
     pub fn verify_certificate(mut self, verify: bool) -> Self {
         self.verify_certificate = verify;
         self
     }
 
-    /// Set network timeout in seconds
+    /// Set network timeout in seconds. Default is 0 (no timeout)
     pub fn timeout(mut self, timeout: u64) -> Self {
         self.timeout = timeout;
         self

@@ -10,6 +10,7 @@ pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
     fn into_ipp_request(self, uri: &str) -> IppRequestResponse;
 
+    /// Return IPP version for this operation. Default is 1.1
     fn version(&self) -> IppVersion {
         IppVersion::Ipp11
     }
@@ -173,13 +174,13 @@ impl SendDocument {
     /// * `source` - `IppJobSource`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S>(job_id: i32, stream: IppJobSource, user_name: Option<S>, last: bool) -> SendDocument
+    pub fn new<S>(job_id: i32, source: IppJobSource, user_name: Option<S>, last: bool) -> SendDocument
     where
         S: AsRef<str>,
     {
         SendDocument {
             job_id,
-            source: stream,
+            source,
             user_name: user_name.map(|v| v.as_ref().to_string()),
             last,
         }
