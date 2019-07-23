@@ -108,7 +108,7 @@ impl IppAttribute {
 
 impl IppWriter for IppAttribute {
     /// Serialize attribute into binary stream
-    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         let mut retval = 0;
 
         writer.write_u8(self.value.to_tag() as u8)?;
@@ -202,7 +202,7 @@ impl IppAttributes {
 
 impl IppWriter for IppAttributes {
     /// Serialize attribute list into binary stream
-    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         // first send the header attributes
         writer.write_u8(DelimiterTag::OperationAttributes as u8)?;
 

@@ -22,7 +22,7 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
 }
 
 struct JobSource {
-    inner: Box<AsyncRead + Send>,
+    inner: Box<dyn AsyncRead + Send>,
 }
 
 fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = JobSource, Error = io::Error> + Send + 'static> {

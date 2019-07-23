@@ -131,7 +131,7 @@ impl IppRequestResponse {
     }
 
     /// Serialize request into the binary stream (TCP)
-    pub fn write(&mut self, writer: &mut Write) -> io::Result<usize> {
+    pub fn write(&mut self, writer: &mut dyn Write) -> io::Result<usize> {
         let mut retval = self.header.write(writer)?;
 
         retval += self.attributes.write(writer)?;

@@ -83,7 +83,7 @@ impl IppValue {
     }
 
     /// Read value from binary stream
-    pub fn read(vtag: u8, reader: &mut Read) -> io::Result<IppValue> {
+    pub fn read(vtag: u8, reader: &mut dyn Read) -> io::Result<IppValue> {
         let vsize = reader.read_u16::<BigEndian>()?;
 
         let ipptag = match ValueTag::from_u8(vtag) {
@@ -152,7 +152,7 @@ impl IppValue {
 
 impl IppWriter for IppValue {
     /// Write value to binary stream
-    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
                 writer.write_u16::<BigEndian>(4)?;

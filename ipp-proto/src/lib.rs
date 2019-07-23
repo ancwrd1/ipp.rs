@@ -27,7 +27,7 @@ pub mod value;
 
 /// Source for IPP data stream (job file)
 pub struct IppJobSource {
-    inner: Box<AsyncRead + Send>,
+    inner: Box<dyn AsyncRead + Send>,
     buffer: Vec<u8>,
 }
 
@@ -63,7 +63,7 @@ where
 }
 
 pub(crate) trait IppWriter {
-    fn write(&self, writer: &mut Write) -> io::Result<usize>;
+    fn write(&self, writer: &mut dyn Write) -> io::Result<usize>;
 }
 
 /// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
@@ -95,7 +95,7 @@ pub struct IppHeader {
 
 impl IppHeader {
     /// Create IppHeader from the reader
-    pub fn from_reader(reader: &mut Read) -> Result<IppHeader, ParseError> {
+    pub fn from_reader(reader: &mut dyn Read) -> Result<IppHeader, ParseError> {
         let retval = IppHeader::new(
             IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| ParseError::InvalidVersion)?,
             reader.read_u16::<BigEndian>()?,
@@ -121,7 +121,7 @@ impl IppHeader {
 
 impl IppWriter for IppHeader {
     /// Write header to a given writer
-    fn write(&self, writer: &mut Write) -> io::Result<usize> {
+    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         writer.write_u16::<BigEndian>(self.version as u16)?;
         writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;

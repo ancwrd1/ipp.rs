@@ -74,7 +74,7 @@ impl IppParseResult {
 
 /// IPP parser implementation
 pub struct IppParser<'a> {
-    reader: &'a mut Read,
+    reader: &'a mut dyn Read,
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
@@ -83,7 +83,7 @@ pub struct IppParser<'a> {
 
 impl<'a> IppParser<'a> {
     /// Create IPP parser using the given Read
-    pub fn new(reader: &'a mut Read) -> IppParser<'a> {
+    pub fn new(reader: &'a mut dyn Read) -> IppParser<'a> {
         IppParser {
             reader,
             current_group: None,
@@ -370,7 +370,7 @@ mod tests {
             vec![b'o', b'o'],
         ];
 
-        let source: Box<Stream<Item = Vec<u8>, Error = io::Error> + Send> =
+        let source: Box<dyn Stream<Item = Vec<u8>, Error = io::Error> + Send> =
             Box::new(futures::stream::iter_ok::<_, io::Error>(data));
 
         let parser = AsyncIppParser::from(source);
