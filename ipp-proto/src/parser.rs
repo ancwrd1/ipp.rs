@@ -178,12 +178,12 @@ impl<'a> IppParser<'a> {
 
         loop {
             match self.reader.read_u8()? {
-                tag @ 0x01...0x05 => {
+                tag @ 0x01..=0x05 => {
                     if self.parse_delimiter(tag)? == DelimiterTag::EndOfAttributes {
                         break;
                     }
                 }
-                tag @ 0x10...0x4a => self.parse_value(tag)?,
+                tag @ 0x10..=0x4a => self.parse_value(tag)?,
                 tag => {
                     return Err(ParseError::InvalidTag(tag));
                 }

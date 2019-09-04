@@ -159,7 +159,7 @@ impl IppAttributeGroup {
 }
 
 /// Attribute list
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct IppAttributes {
     groups: Vec<IppAttributeGroup>,
 }
@@ -167,7 +167,7 @@ pub struct IppAttributes {
 impl IppAttributes {
     /// Create attribute list
     pub fn new() -> IppAttributes {
-        IppAttributes { groups: Vec::new() }
+        IppAttributes { ..Default::default()}
     }
 
     /// Get all groups
