@@ -102,7 +102,7 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
 }
 
 #[derive(StructOpt)]
-#[structopt(name = "IPP print utility", about = "", author = "", rename_all = "kebab-case")]
+#[structopt(about = "IPP print utility", name = "ipputil", rename_all = "kebab-case")]
 struct IppParams {
     #[structopt(
         long = "ca-cert",
@@ -141,14 +141,14 @@ struct IppParams {
 
 #[derive(StructOpt)]
 enum IppCommand {
-    #[structopt(name = "print", about = "Print file to an IPP printer", author = "")]
+    #[structopt(name = "print", about = "Print file to an IPP printer")]
     Print(IppPrintCmd),
-    #[structopt(name = "status", about = "Get status of an IPP printer", author = "")]
+    #[structopt(name = "status", about = "Get status of an IPP printer")]
     Status(IppStatusCmd),
 }
 
 #[derive(StructOpt, Clone)]
-#[structopt(name = "IPP print utility", about = "", author = "", rename_all = "kebab-case")]
+#[structopt(rename_all = "kebab-case")]
 struct IppPrintCmd {
     #[structopt(help = "Printer URI")]
     uri: String,
@@ -182,7 +182,7 @@ struct IppPrintCmd {
 }
 
 #[derive(StructOpt, Clone)]
-#[structopt(name = "IPP print utility", about = "", author = "", rename_all = "kebab-case")]
+#[structopt(rename_all = "kebab-case")]
 struct IppStatusCmd {
     #[structopt(help = "Printer URI")]
     uri: String,

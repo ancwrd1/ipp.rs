@@ -22,7 +22,7 @@ ipp-util = { version = "0.3.0", path = "../ipp-util", optional = true }
 [dev-dependencies]
 tokio = "0.1"
 futures = "0.1"
-env_logger = "0.6"
+env_logger = "0.7"
 num-traits = "0.2"
 
 [features]

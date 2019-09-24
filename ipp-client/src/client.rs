@@ -8,9 +8,8 @@ use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{
     r#async::{Chunk, Client},
-    Certificate,
+    Certificate, Url,
 };
-use url::Url;
 
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},

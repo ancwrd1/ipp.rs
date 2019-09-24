@@ -331,7 +331,7 @@ mod tests {
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
         assert_eq!(
-            attr.value().as_listof(),
+            attr.value().as_list_of(),
             Some(&vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)])
         );
     }

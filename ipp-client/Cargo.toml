@@ -14,7 +14,6 @@ edition = "2018"
 ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
 num-traits = "0.2"
 reqwest = "^0.9.19"
-url = "1"
 log = "0.4"
 futures = "0.1"
-percent-encoding = "1.0"
+percent-encoding = "2.0"
