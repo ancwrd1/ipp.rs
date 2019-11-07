@@ -7,11 +7,13 @@ use std::{
 };
 
 use byteorder::{BigEndian, ReadBytesExt};
-use futures::{try_ready, Async, Future, Poll, Stream};
+use futures::{ready, Future, Poll, Stream};
 use log::{debug, error};
 use num_traits::FromPrimitive;
 
 use crate::{ipp::*, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue, PayloadKind};
+use futures::task::Context;
+use std::pin::Pin;
 
 /// Parse error enum
 #[derive(Debug)]
@@ -202,7 +204,63 @@ enum AsyncParseState {
 /// Asynchronous IPP parser using Streams
 pub struct AsyncIppParser<I, E> {
     state: AsyncParseState,
-    stream: Box<dyn Stream<Item = I, Error = E> + Send>,
+    stream: Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>,
+}
+
+impl<I, E> AsyncIppParser<I, E>
+where
+    I: AsRef<[u8]>,
+{
+    fn process_item(mut self: Pin<&mut Self>, item: I) -> Result<(), ParseError> {
+        match self.state {
+            AsyncParseState::Headers(ref mut buffer) => {
+                buffer.extend_from_slice(item.as_ref());
+                let length = buffer.len() as u64;
+
+                let mut reader = io::Cursor::new(buffer);
+                let parser = IppParser::new(&mut reader);
+
+                match parser.parse() {
+                    Ok(mut result) => {
+                        debug!("Parse ok, proceeding to payload state");
+                        if reader.position() < length {
+                            debug!("Adding residual payload from this chunk");
+                            let mut temp = tempfile::NamedTempFile::new()?;
+                            io::copy(&mut reader, &mut temp)?;
+                            result.payload = Some(PayloadKind::ReceivedData(temp));
+                        }
+                        self.state = AsyncParseState::Payload(result);
+                    }
+                    Err(ParseError::Incomplete) => {
+                        debug!("Incomplete request, awaiting for more data");
+                    }
+                    Err(e) => {
+                        return Err(e);
+                    }
+                }
+            }
+            AsyncParseState::Payload(ref mut result) => {
+                let mut reader = io::Cursor::new(&item);
+                match result.payload {
+                    Some(PayloadKind::ReceivedData(ref mut file)) => {
+                        debug!(
+                            "Payload chunk received, appending to existing file: {}",
+                            file.path().display()
+                        );
+                        io::copy(&mut reader, file)?;
+                    }
+                    None => {
+                        let mut temp = tempfile::NamedTempFile::new()?;
+                        debug!("Payload chunk received, creating new file: {}", temp.path().display());
+                        io::copy(&mut reader, &mut temp)?;
+                        result.payload = Some(PayloadKind::ReceivedData(temp));
+                    }
+                    _ => panic!("Should not happen"),
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 impl<I, E> Future for AsyncIppParser<I, E>
@@ -210,77 +268,39 @@ where
     I: AsRef<[u8]>,
     ParseError: From<E>,
 {
-    type Item = IppParseResult;
-    type Error = ParseError;
+    type Output = Result<IppParseResult, ParseError>;
 
-    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-        while let Some(item) = try_ready!(self.stream.poll()) {
-            match self.state {
-                AsyncParseState::Headers(ref mut buffer) => {
-                    buffer.extend_from_slice(item.as_ref());
-                    let length = buffer.len() as u64;
-
-                    let mut reader = io::Cursor::new(buffer);
-                    let parser = IppParser::new(&mut reader);
-
-                    match parser.parse() {
-                        Ok(mut result) => {
-                            debug!("Parse ok, proceeding to payload state");
-                            if reader.position() < length {
-                                debug!("Adding residual payload from this chunk");
-                                let mut temp = tempfile::NamedTempFile::new()?;
-                                io::copy(&mut reader, &mut temp)?;
-                                result.payload = Some(PayloadKind::ReceivedData(temp));
-                            }
-                            self.state = AsyncParseState::Payload(result);
-                        }
-                        Err(ParseError::Incomplete) => {
-                            debug!("Incomplete request, awaiting for more data");
-                        }
-                        Err(e) => {
-                            return Err(e);
-                        }
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        while let Some(item) = ready!(Pin::new(&mut *self.stream).poll_next(cx)) {
+            match item {
+                Ok(item) => {
+                    if let Err(e) = self.as_mut().process_item(item) {
+                        return Poll::Ready(Err(e));
                     }
                 }
-                AsyncParseState::Payload(ref mut result) => {
-                    let mut reader = io::Cursor::new(&item);
-                    match result.payload {
-                        Some(PayloadKind::ReceivedData(ref mut file)) => {
-                            debug!(
-                                "Payload chunk received, appending to existing file: {}",
-                                file.path().display()
-                            );
-                            io::copy(&mut reader, file)?;
-                        }
-                        None => {
-                            let mut temp = tempfile::NamedTempFile::new()?;
-                            debug!("Payload chunk received, creating new file: {}", temp.path().display());
-                            io::copy(&mut reader, &mut temp)?;
-                            result.payload = Some(PayloadKind::ReceivedData(temp));
-                        }
-                        _ => panic!("Should not happen"),
-                    }
+                Err(e) => {
+                    return Poll::Ready(Err(ParseError::from(e)));
                 }
             }
         }
-
-        match self.state {
+        let result = match self.state {
             AsyncParseState::Headers(_) => Err(ParseError::Incomplete),
             AsyncParseState::Payload(ref mut result) => {
                 debug!("Parsing finished, payload: {}", result.payload.is_some());
-                Ok(Async::Ready(IppParseResult {
+                Ok(IppParseResult {
                     header: result.header.clone(),
                     attributes: result.attributes.clone(),
                     payload: result.payload.take(),
-                }))
+                })
             }
-        }
+        };
+        Poll::Ready(result)
     }
 }
 
-impl<I, E> From<Box<dyn Stream<Item = I, Error = E> + Send>> for AsyncIppParser<I, E> {
+impl<I, E> From<Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>> for AsyncIppParser<I, E> {
     /// Construct asynchronous parser from the stream
-    fn from(s: Box<dyn Stream<Item = I, Error = E> + Send>) -> AsyncIppParser<I, E> {
+    fn from(s: Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>) -> AsyncIppParser<I, E> {
         AsyncIppParser {
             state: AsyncParseState::Headers(Vec::new()),
             stream: s,
@@ -370,12 +390,12 @@ mod tests {
             vec![b'o', b'o'],
         ];
 
-        let source: Box<dyn Stream<Item = Vec<u8>, Error = io::Error> + Send> =
-            Box::new(futures::stream::iter_ok::<_, io::Error>(data));
+        let source: Box<dyn Stream<Item = io::Result<Vec<u8>>> + Send + Unpin> =
+            Box::new(futures::stream::iter(data.into_iter().map(|v| Ok(v))));
 
         let parser = AsyncIppParser::from(source);
 
-        let mut runtime = tokio::runtime::Runtime::new().unwrap();
+        let runtime = tokio::runtime::Runtime::new().unwrap();
         let result = runtime.block_on(parser);
         assert!(result.is_ok());
 
@@ -392,5 +412,4 @@ mod tests {
             _ => panic!("Wrong payload!"),
         }
     }
-
 }

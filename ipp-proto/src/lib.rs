@@ -1,10 +1,11 @@
 use std::io::{self, Read, Write};
+use std::pin::Pin;
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
-use futures::{try_ready, Async, Poll, Stream};
+use futures::task::Context;
+use futures::{ready, AsyncRead, Poll, Stream};
 use num_traits::FromPrimitive;
-use tokio::io::AsyncRead;
 
 pub use crate::{
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
@@ -27,8 +28,7 @@ pub mod value;
 
 /// Source for IPP data stream (job file)
 pub struct IppJobSource {
-    inner: Box<dyn AsyncRead + Send>,
-    buffer: Vec<u8>,
+    inner: Box<dyn AsyncRead + Send + Sync + Unpin>,
 }
 
 impl IppJobSource {
@@ -36,34 +36,29 @@ impl IppJobSource {
 }
 
 impl Stream for IppJobSource {
-    type Item = Bytes;
-    type Error = io::Error;
+    type Item = io::Result<Bytes>;
 
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        let size = try_ready!(self.inner.poll_read(&mut self.buffer));
-        if size > 0 {
-            Ok(Async::Ready(Some(self.buffer[0..size].into())))
-        } else {
-            Ok(Async::Ready(None))
-        }
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        let mut buffer = [0u8; IppJobSource::CHUNK_SIZE];
+
+        let result = match ready!(Pin::new(&mut *self.inner).poll_read(cx, &mut buffer)) {
+            Err(e) => Some(Err(e)),
+            Ok(0) => None,
+            Ok(size) => Some(Ok(buffer[0..size].into())),
+        };
+
+        Poll::Ready(result)
     }
 }
 
 impl<T> From<T> for IppJobSource
 where
-    T: 'static + AsyncRead + Send,
+    T: 'static + AsyncRead + Send + Sync + Unpin,
 {
     /// Create job source from AsyncRead
     fn from(r: T) -> Self {
-        IppJobSource {
-            inner: Box::new(r),
-            buffer: vec![0; IppJobSource::CHUNK_SIZE],
-        }
+        IppJobSource { inner: Box::new(r) }
     }
-}
-
-pub(crate) trait IppWriter {
-    fn write(&self, writer: &mut dyn Write) -> io::Result<usize>;
 }
 
 /// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
@@ -117,11 +112,8 @@ impl IppHeader {
     pub fn operation(&self) -> Result<Operation, StatusCode> {
         Operation::from_u16(self.operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)
     }
-}
-
-impl IppWriter for IppHeader {
     /// Write header to a given writer
-    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
+    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         writer.write_u16::<BigEndian>(self.version as u16)?;
         writer.write_u16::<BigEndian>(self.operation_status)?;
         writer.write_u32::<BigEndian>(self.request_id)?;

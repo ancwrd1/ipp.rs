@@ -11,7 +11,7 @@ use bytes::Bytes;
 use enum_as_inner::EnumAsInner;
 use num_traits::FromPrimitive;
 
-use crate::{ipp::ValueTag, IppReadExt, IppWriter};
+use crate::{ipp::ValueTag, IppReadExt};
 
 /// IPP value enumeration
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -148,11 +148,9 @@ impl IppValue {
             }),
         }
     }
-}
 
-impl IppWriter for IppValue {
     /// Write value to binary stream
-    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
+    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
                 writer.write_u16::<BigEndian>(4)?;

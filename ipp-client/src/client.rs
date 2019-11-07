@@ -3,11 +3,10 @@
 //!
 use std::{borrow::Cow, fs, io, path::PathBuf, time::Duration};
 
-use futures::{future::IntoFuture, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{
-    r#async::{Chunk, Client},
+    Client,
     Certificate, Url,
 };
 
@@ -34,8 +33,8 @@ const ERROR_STATES: &[&str] = &[
     "shutdown",
 ];
 
-fn parse_uri(uri: String) -> impl Future<Item = Url, Error = IppError> {
-    futures::lazy(move || match Url::parse(&uri) {
+async fn parse_uri(uri: String) -> Result<Url, IppError> {
+    match Url::parse(&uri) {
         Ok(mut url) => {
             match url.scheme() {
                 "ipp" => {
@@ -55,7 +54,7 @@ fn parse_uri(uri: String) -> impl Future<Item = Url, Error = IppError> {
             Ok(url)
         }
         Err(e) => Err(IppError::ParamError(e.to_string())),
-    })
+    }
 }
 
 fn to_device_uri(uri: &str) -> Cow<str> {
@@ -69,23 +68,21 @@ fn to_device_uri(uri: &str) -> Cow<str> {
     }
 }
 
-fn parse_certs(certs: Vec<PathBuf>) -> impl Future<Item = Vec<Certificate>, Error = IppError> {
-    futures::lazy(move || {
-        let mut result = Vec::new();
+async fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> {
+    let mut result = Vec::new();
 
-        for cert_file in certs {
-            let buf = match fs::read(&cert_file) {
-                Ok(buf) => buf,
-                Err(e) => return Err(IppError::from(e)),
-            };
-            let ca_cert = match Certificate::from_der(&buf).or_else(|_| Certificate::from_pem(&buf)) {
-                Ok(ca_cert) => ca_cert,
-                Err(e) => return Err(IppError::from(e)),
-            };
-            result.push(ca_cert);
-        }
-        Ok(result)
-    })
+    for cert_file in certs {
+        let buf = match fs::read(&cert_file) {
+            Ok(buf) => buf,
+            Err(e) => return Err(IppError::from(e)),
+        };
+        let ca_cert = match Certificate::from_der(&buf).or_else(|_| Certificate::from_pem(&buf)) {
+            Ok(ca_cert) => ca_cert,
+            Err(e) => return Err(IppError::from(e)),
+        };
+        result.push(ca_cert);
+    }
+    Ok(result)
 }
 
 /// IPP client.
@@ -101,73 +98,73 @@ pub struct IppClient {
 
 impl IppClient {
     /// Check printer ready status
-    pub fn check_ready(&self) -> impl Future<Item = (), Error = IppError> {
+    pub async fn check_ready(&self) -> Result<(), IppError> {
         debug!("Checking printer status");
         let operation = IppOperationBuilder::get_printer_attributes()
             .attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS])
             .build();
 
-        self.send(operation).and_then(|attrs| {
-            let state = attrs
-                .groups_of(DelimiterTag::PrinterAttributes)
-                .get(0)
-                .and_then(|g| g.attributes().get(PRINTER_STATE))
-                .and_then(|attr| attr.value().as_enum())
-                .and_then(|v| PrinterState::from_i32(*v));
+        let attrs = self.send(operation).await?;
 
-            if let Some(PrinterState::Stopped) = state {
-                debug!("Printer is stopped");
-                return Err(IppError::PrinterStopped);
+        let state = attrs
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .get(0)
+            .and_then(|g| g.attributes().get(PRINTER_STATE))
+            .and_then(|attr| attr.value().as_enum())
+            .and_then(|v| PrinterState::from_i32(*v));
+
+        if let Some(PrinterState::Stopped) = state {
+            debug!("Printer is stopped");
+            return Err(IppError::PrinterStopped);
+        }
+
+        if let Some(reasons) = attrs
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .get(0)
+            .and_then(|g| g.attributes().get(PRINTER_STATE_REASONS))
+        {
+            let keywords = reasons
+                .value()
+                .into_iter()
+                .filter_map(|e| e.as_keyword())
+                .map(ToOwned::to_owned)
+                .collect::<Vec<_>>();
+
+            if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
+                debug!("Printer is in error state: {:?}", keywords);
+                return Err(IppError::PrinterStateError(keywords.clone()));
             }
-
-            if let Some(reasons) = attrs
-                .groups_of(DelimiterTag::PrinterAttributes)
-                .get(0)
-                .and_then(|g| g.attributes().get(PRINTER_STATE_REASONS))
-            {
-                let keywords = reasons
-                    .value()
-                    .into_iter()
-                    .filter_map(|e| e.as_keyword())
-                    .map(ToOwned::to_owned)
-                    .collect::<Vec<_>>();
-
-                if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
-                    debug!("Printer is in error state: {:?}", keywords);
-                    return Err(IppError::PrinterStateError(keywords.clone()));
-                }
-            }
-            Ok(())
-        })
+        }
+        Ok(())
     }
 
     /// send IPP operation
-    pub fn send<T>(&self, operation: T) -> impl Future<Item = IppAttributes, Error = IppError>
+    pub async fn send<T>(&self, operation: T) -> Result<IppAttributes, IppError>
     where
         T: IppOperation,
     {
         debug!("Sending IPP operation");
-        self.send_request(operation.into_ipp_request(&to_device_uri(&self.uri)))
-            .and_then(|resp| {
-                if resp.header().operation_status > 2 {
-                    // IPP error
-                    Err(IppError::StatusError(
-                        ipp::StatusCode::from_u16(resp.header().operation_status)
-                            .unwrap_or(ipp::StatusCode::ServerErrorInternalError),
-                    ))
-                } else {
-                    Ok(resp.attributes().clone())
-                }
-            })
+
+        let resp = self.send_request(operation.into_ipp_request(&to_device_uri(&self.uri))).await?;
+
+        if resp.header().operation_status > 2 {
+            // IPP error
+            Err(IppError::StatusError(
+                ipp::StatusCode::from_u16(resp.header().operation_status)
+                    .unwrap_or(ipp::StatusCode::ServerErrorInternalError),
+            ))
+        } else {
+            Ok(resp.attributes().clone())
+        }
     }
 
     /// Send request and return response
-    pub fn send_request(
+    pub async fn send_request(
         &self,
         request: IppRequestResponse,
-    ) -> impl Future<Item = IppRequestResponse, Error = IppError> + Send {
+    ) -> Result<IppRequestResponse, IppError> {
         // Some printers don't support gzip
-        let mut builder = Client::builder().gzip(false).connect_timeout(Duration::from_secs(10));
+        let mut builder = Client::builder().connect_timeout(Duration::from_secs(10));
 
         if !self.verify_hostname {
             debug!("Disabling hostname verification!");
@@ -187,46 +184,39 @@ impl IppClient {
         let uri = self.uri.clone();
         let ca_certs = self.ca_certs.clone();
 
-        parse_uri(uri).and_then(|url| {
-            parse_certs(ca_certs).and_then(|certs| {
-                builder = certs
-                    .into_iter()
-                    .fold(builder, |builder, ca_cert| builder.add_root_certificate(ca_cert));
+        let url = parse_uri(uri).await?;
+        let certs = parse_certs(ca_certs).await?;
 
-                builder
-                    .build()
-                    .into_future()
-                    .and_then(move |client| {
-                        let mut builder = client
-                            .post(url.clone())
-                            .header("Content-Type", "application/ipp")
-                            .body(request.into_stream());
+        builder = certs
+            .into_iter()
+            .fold(builder, |builder, ca_cert| builder.add_root_certificate(ca_cert));
 
-                        if !url.username().is_empty() {
-                            debug!("Setting basic auth: {} ****", url.username());
-                            builder = builder.basic_auth(
-                                url.username(),
-                                url.password()
-                                    .map(|p| percent_encoding::percent_decode(p.as_bytes()).decode_utf8().unwrap()),
-                            );
-                        }
+        let client = builder.build()?;
 
-                        builder.send()
-                    })
-                    .and_then(|response| response.error_for_status())
-                    .map_err(IppError::HttpError)
-                    .and_then(|response| {
-                        let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> = Box::new(
-                            response
-                                .into_body()
-                                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
-                        );
+        let mut builder = client
+            .post(url.clone())
+            .header("Content-Type", "application/ipp")
+            .body(request.into_stream());
 
-                        AsyncIppParser::from(stream)
-                            .map_err(IppError::from)
-                            .map(IppRequestResponse::from_parse_result)
-                    })
-            })
-        })
+        if !url.username().is_empty() {
+            debug!("Setting basic auth: {} ****", url.username());
+            builder = builder.basic_auth(
+                url.username(),
+                url.password()
+                    .map(|p| percent_encoding::percent_decode(p.as_bytes()).decode_utf8().unwrap()),
+            );
+        }
+
+        let response = builder.send().await?.error_for_status().map_err(IppError::HttpError)?;
+
+        let stream = Box::new(
+            response
+                .into_body()
+                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
+        );
+
+        AsyncIppParser::from(stream)
+            .map_err(IppError::from)
+            .map(IppRequestResponse::from_parse_result)
     }
 }

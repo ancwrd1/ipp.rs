@@ -5,7 +5,7 @@ use std::io::{self, Cursor, Write};
 
 use bytes::Bytes;
 use enum_as_inner::EnumAsInner;
-use futures::Stream;
+use futures::{Stream, StreamExt};
 use log::debug;
 use tempfile::NamedTempFile;
 
@@ -14,7 +14,7 @@ use crate::{
     ipp::{DelimiterTag, IppVersion, Operation},
     parser::IppParseResult,
     value::*,
-    IppHeader, IppJobSource, IppWriter, StatusCode,
+    IppHeader, IppJobSource, StatusCode,
 };
 
 /// Payload type inside the IppRequestResponse
@@ -142,14 +142,14 @@ impl IppRequestResponse {
     }
 
     /// Convert request/response into Stream
-    pub fn into_stream(self) -> Box<dyn Stream<Item = Bytes, Error = io::Error> + Send + 'static> {
+    pub fn into_stream(self) -> Box<dyn Stream<Item = io::Result<Bytes>> + Send + Sync + Unpin + 'static> {
         let mut cursor = Cursor::new(Vec::with_capacity(1024));
         let _ = self
             .header
             .write(&mut cursor)
             .and_then(|_| self.attributes.write(&mut cursor));
 
-        let headers = futures::stream::once(Ok(cursor.into_inner().into()));
+        let headers = futures::stream::once(Box::pin(async { Ok(cursor.into_inner().into()) }));
 
         match self.payload {
             Some(PayloadKind::JobSource(payload)) => Box::new(headers.chain(payload)),

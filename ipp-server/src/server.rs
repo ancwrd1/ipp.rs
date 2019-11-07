@@ -1,8 +1,7 @@
 use std::{io, net::SocketAddr, sync::Arc};
 
-use futures::future::IntoFuture;
-use futures::{Future, Poll, Stream};
-use hyper::{service::service_fn, Body, Chunk, Request, Response, Server};
+use futures::{Future, Poll, Stream, TryStreamExt};
+use hyper::{service::service_fn, Body, Chunk, Request, Response, Server, StatusCode};
 use log::debug;
 
 use ipp_proto::{
@@ -10,6 +9,8 @@ use ipp_proto::{
 };
 
 use crate::handler::IppRequestHandler;
+use futures::task::Context;
+use std::pin::Pin;
 
 struct DummyHandler;
 impl IppRequestHandler for DummyHandler {}
@@ -35,44 +36,53 @@ impl From<io::Error> for ServerError {
 
 /// IPP server
 pub struct IppServer {
-    inner: Box<dyn Future<Item = (), Error = ServerError> + Send>,
+    inner: Box<dyn Future<Output = Result<(), ServerError>> + Send>,
 }
 
 impl IppServer {
     fn new(address: SocketAddr, handler: Arc<dyn IppRequestHandler + Send + Sync>) -> Result<IppServer, ServerError> {
         let inner = Server::try_bind(&address)?
-            .serve(move || {
+            .serve(async move {
                 let handler = handler.clone();
                 service_fn(move |req: Request<Body>| {
-                    let stream: Box<dyn Stream<Item = Chunk, Error = io::Error> + Send> = Box::new(
-                        req.into_body()
-                            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
-                    );
+                    async {
+                        let stream: Box<dyn Stream<Item=io::Result<Chunk>> + Send + Unpin> = Box::new(
+                            req.into_body()
+                                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
+                        );
 
-                    let handler = handler.clone();
+                        let handler = handler.clone();
 
-                    AsyncIppParser::from(stream).map(move |result| {
-                        debug!("Received request, payload present: {}", result.payload.is_some());
+                        match AsyncIppParser::from(stream).await {
+                            Ok(result) => {
+                                debug!("Received request, payload present: {}", result.payload.is_some());
 
-                        let request = IppRequestResponse::from_parse_result(result);
-                        let req_id = request.header().request_id;
+                                let request = IppRequestResponse::from_parse_result(result);
+                                let req_id = request.header().request_id;
 
-                        let response = match handler.handle_request(request) {
-                            Ok(response) => response,
-                            Err(status) => {
-                                let mut response = IppRequestResponse::new_response(handler.version(), status, req_id);
-                                response.attributes_mut().add(
-                                    DelimiterTag::OperationAttributes,
-                                    IppAttribute::new(
-                                        STATUS_MESSAGE,
-                                        IppValue::TextWithoutLanguage(status.to_string()),
-                                    ),
-                                );
-                                response
+                                let response = match handler.handle_request(request) {
+                                    Ok(response) => response,
+                                    Err(status) => {
+                                        let mut response = IppRequestResponse::new_response(handler.version(), status, req_id);
+                                        response.attributes_mut().add(
+                                            DelimiterTag::OperationAttributes,
+                                            IppAttribute::new(
+                                                STATUS_MESSAGE,
+                                                IppValue::TextWithoutLanguage(status.to_string()),
+                                            ),
+                                        );
+                                        response
+                                    }
+                                };
+                                Response::new(Body::wrap_stream(response.into_stream()))
                             }
-                        };
-                        Response::new(Body::wrap_stream(response.into_stream()))
-                    })
+                            Err(e) => {
+                                let mut resp = Response::new(e.to_string().into());
+                                *resp.status_mut() = StatusCode::BAD_REQUEST;
+                                resp
+                            }
+                        }
+                    }
                 })
             })
             .map_err(ServerError::from);
@@ -82,11 +92,10 @@ impl IppServer {
 }
 
 impl Future for IppServer {
-    type Item = ();
-    type Error = ServerError;
+    type Output = Result<(), ServerError>;
 
-    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-        self.inner.poll()
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        self.inner.poll(cx)
     }
 }
 
@@ -115,7 +124,7 @@ impl IppServerBuilder {
     }
 
     /// Build server
-    pub fn build(self) -> impl Future<Item = IppServer, Error = ServerError> {
-        IppServer::new(self.address, self.handler).into_future()
+    pub async fn build(self) -> Result<IppServer, ServerError> {
+        IppServer::new(self.address, self.handler)
     }
 }

@@ -8,7 +8,7 @@ use std::{
 
 use byteorder::{BigEndian, WriteBytesExt};
 
-use crate::{ipp::*, IppValue, IppWriter};
+use crate::{ipp::*, IppValue};
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";
@@ -104,11 +104,9 @@ impl IppAttribute {
     pub fn value(&self) -> &IppValue {
         &self.value
     }
-}
 
-impl IppWriter for IppAttribute {
     /// Serialize attribute into binary stream
-    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
+    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         let mut retval = 0;
 
         writer.write_u8(self.value.to_tag() as u8)?;
@@ -167,7 +165,7 @@ pub struct IppAttributes {
 impl IppAttributes {
     /// Create attribute list
     pub fn new() -> IppAttributes {
-        IppAttributes { ..Default::default()}
+        IppAttributes { ..Default::default() }
     }
 
     /// Get all groups
@@ -198,11 +196,9 @@ impl IppAttributes {
             self.groups_mut().push(new_group);
         }
     }
-}
 
-impl IppWriter for IppAttributes {
     /// Serialize attribute list into binary stream
-    fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
+    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
         // first send the header attributes
         writer.write_u8(DelimiterTag::OperationAttributes as u8)?;
 
