@@ -1,10 +1,17 @@
 //!
 //! IPP client
 //!
-use std::{borrow::Cow, fs, io, path::PathBuf, pin::Pin, task::Poll, time::Duration};
+use std::{
+    borrow::Cow,
+    fs, io,
+    path::PathBuf,
+    pin::Pin,
+    task::{Context, Poll},
+    time::Duration,
+};
 
 use bytes::Bytes;
-use futures::{ready, task::Context, Future, Stream};
+use futures::{ready, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
 use reqwest::{Body, Certificate, Client, Response, Url};

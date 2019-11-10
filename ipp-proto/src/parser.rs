@@ -4,7 +4,8 @@
 use std::{
     fmt,
     io::{self, Read},
-    task::Poll,
+    pin::Pin,
+    task::{Context, Poll},
 };
 
 use byteorder::{BigEndian, ReadBytesExt};
@@ -13,8 +14,6 @@ use log::{debug, error};
 use num_traits::FromPrimitive;
 
 use crate::{ipp::*, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue, PayloadKind};
-use futures::task::Context;
-use std::pin::Pin;
 
 /// Parse error enum
 #[derive(Debug)]

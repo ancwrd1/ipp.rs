@@ -1,12 +1,11 @@
 use std::{
     io::{self, Read, Write},
     pin::Pin,
-    task::Poll,
+    task::{Context, Poll},
 };
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
-use futures::task::Context;
 use futures::{ready, AsyncRead, Stream};
 use num_traits::FromPrimitive;
 

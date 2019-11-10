@@ -99,7 +99,7 @@ impl IppServer {
                 let handler = handler.clone();
                 async { Ok::<_, hyper::Error>(service_fn(move |req| ipp_service(handler.clone(), req))) }
             }))
-            .map_err(|e| ServerError::HyperError(e));
+            .map_err(ServerError::from);
 
         Ok(IppServer { inner: Box::new(inner) })
     }
