@@ -16,5 +16,5 @@ ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
 pretty_env_logger = "0.3"
 structopt = "0.3"
 log = "0.4"
-futures = "0.1"
-tokio = "0.1"
+futures-preview = "0.3.0-alpha.19"
+tokio = "0.2.0-alpha.6"

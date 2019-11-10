@@ -10,7 +10,8 @@ use ipp::{
     },
 };
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -20,11 +21,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new()?;
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = CupsGetPrinters::new();
 
-    let attrs = runtime.block_on(client.send(operation))?;
+    let attrs = client.send(operation).await?;
 
     for group in attrs.groups_of(DelimiterTag::PrinterAttributes) {
         let name = group.attributes()["printer-name"].value();

@@ -2,6 +2,7 @@
 
 use std::{
     env,
+    error::Error,
     fs::OpenOptions,
     io::{self, Cursor},
     mem,
@@ -21,7 +22,10 @@ use ipp_proto::{
     request::{IppRequestResponse, PayloadKind},
     AsyncIppParser, IppHeader, IppParser, IppValue,
 };
-use ipp_server::{handler::*, server::IppServerBuilder};
+use ipp_server::{
+    handler::*,
+    server::{IppServer, IppServerBuilder},
+};
 use lazy_static::lazy_static;
 
 struct TestServer {
@@ -233,7 +237,8 @@ impl IppRequestHandler for TestServer {
     }
 }
 
-fn main() {
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn Error>> {
     let args = env::args().collect::<Vec<String>>();
     if args.len() < 2 {
         eprintln!("Usage: {} spooler_dir", args[0]);
@@ -251,12 +256,8 @@ fn main() {
         spooler_dir: env::args().nth(1).unwrap().into(),
     };
 
-    let fut = IppServerBuilder::new(([0, 0, 0, 0], 7631))
+    Ok(IppServerBuilder::new(([0, 0, 0, 0], 7631))
         .handler(Arc::new(test_server))
-        .build()
-        .map_err(|e| {
-            eprintln!("ERROR: {:?}", e);
-        });
-
-    hyper::rt::run(fut.map(|_| ()));
+        .build()?
+        .await?)
 }

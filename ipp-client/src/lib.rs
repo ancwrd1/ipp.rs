@@ -1,7 +1,11 @@
 use std::{
     fmt, io,
     path::{Path, PathBuf},
+    pin::Pin,
+    task::{Context, Poll},
 };
+
+use futures::AsyncRead;
 
 use ipp_proto::{ipp::StatusCode, ParseError};
 
@@ -141,6 +145,23 @@ impl IppClientBuilder {
             verify_certificate: self.verify_certificate,
             timeout: self.timeout,
         }
+    }
+}
+
+pub struct TokioReadAdapter(Box<dyn tokio::io::AsyncRead + Send + Sync + Unpin>);
+
+impl AsyncRead for TokioReadAdapter {
+    fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut [u8]) -> Poll<io::Result<usize>> {
+        Pin::new(&mut *self.0).poll_read(cx, buf)
+    }
+}
+
+impl TokioReadAdapter {
+    pub fn new<T>(t: T) -> TokioReadAdapter
+    where
+        T: tokio::io::AsyncRead + Send + Sync + Unpin + 'static,
+    {
+        TokioReadAdapter(Box::new(t))
     }
 }
 

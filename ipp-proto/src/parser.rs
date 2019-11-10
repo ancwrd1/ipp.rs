@@ -4,10 +4,11 @@
 use std::{
     fmt,
     io::{self, Read},
+    task::Poll,
 };
 
 use byteorder::{BigEndian, ReadBytesExt};
-use futures::{ready, Future, Poll, Stream};
+use futures::{ready, Future, Stream};
 use log::{debug, error};
 use num_traits::FromPrimitive;
 
@@ -298,12 +299,15 @@ where
     }
 }
 
-impl<I, E> From<Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>> for AsyncIppParser<I, E> {
+impl<I, E, S> From<S> for AsyncIppParser<I, E>
+where
+    S: Stream<Item = Result<I, E>> + Send + Unpin + 'static,
+{
     /// Construct asynchronous parser from the stream
-    fn from(s: Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>) -> AsyncIppParser<I, E> {
+    fn from(s: S) -> AsyncIppParser<I, E> {
         AsyncIppParser {
             state: AsyncParseState::Headers(Vec::new()),
-            stream: s,
+            stream: Box::new(s),
         }
     }
 }

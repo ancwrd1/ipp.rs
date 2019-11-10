@@ -1,14 +1,13 @@
 //!
 //! IPP client
 //!
-use std::{borrow::Cow, fs, io, path::PathBuf, time::Duration};
+use std::{borrow::Cow, fs, io, path::PathBuf, pin::Pin, task::Poll, time::Duration};
 
+use bytes::Bytes;
+use futures::{ready, task::Context, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
-use reqwest::{
-    Client,
-    Certificate, Url,
-};
+use reqwest::{Body, Certificate, Client, Response, Url};
 
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
@@ -33,7 +32,7 @@ const ERROR_STATES: &[&str] = &[
     "shutdown",
 ];
 
-async fn parse_uri(uri: String) -> Result<Url, IppError> {
+fn parse_uri(uri: String) -> Result<Url, IppError> {
     match Url::parse(&uri) {
         Ok(mut url) => {
             match url.scheme() {
@@ -68,7 +67,7 @@ fn to_device_uri(uri: &str) -> Cow<str> {
     }
 }
 
-async fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> {
+fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> {
     let mut result = Vec::new();
 
     for cert_file in certs {
@@ -83,6 +82,21 @@ async fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> 
         result.push(ca_cert);
     }
     Ok(result)
+}
+
+struct ResponseStream(Response);
+
+impl Stream for ResponseStream {
+    type Item = Result<Bytes, std::io::Error>;
+
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        let mut chunk = Box::pin(self.0.chunk());
+        match ready!(chunk.as_mut().poll(cx)) {
+            Ok(None) => Poll::Ready(None),
+            Ok(Some(bytes)) => Poll::Ready(Some(Ok(bytes))),
+            Err(e) => Poll::Ready(Some(Err(io::Error::new(io::ErrorKind::Other, e.to_string())))),
+        }
+    }
 }
 
 /// IPP client.
@@ -145,7 +159,9 @@ impl IppClient {
     {
         debug!("Sending IPP operation");
 
-        let resp = self.send_request(operation.into_ipp_request(&to_device_uri(&self.uri))).await?;
+        let resp = self
+            .send_request(operation.into_ipp_request(&to_device_uri(&self.uri)))
+            .await?;
 
         if resp.header().operation_status > 2 {
             // IPP error
@@ -159,10 +175,7 @@ impl IppClient {
     }
 
     /// Send request and return response
-    pub async fn send_request(
-        &self,
-        request: IppRequestResponse,
-    ) -> Result<IppRequestResponse, IppError> {
+    pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         // Some printers don't support gzip
         let mut builder = Client::builder().connect_timeout(Duration::from_secs(10));
 
@@ -184,8 +197,8 @@ impl IppClient {
         let uri = self.uri.clone();
         let ca_certs = self.ca_certs.clone();
 
-        let url = parse_uri(uri).await?;
-        let certs = parse_certs(ca_certs).await?;
+        let url = parse_uri(uri)?;
+        let certs = parse_certs(ca_certs)?;
 
         builder = certs
             .into_iter()
@@ -196,7 +209,7 @@ impl IppClient {
         let mut builder = client
             .post(url.clone())
             .header("Content-Type", "application/ipp")
-            .body(request.into_stream());
+            .body(Body::wrap_stream(request.into_stream()));
 
         if !url.username().is_empty() {
             debug!("Setting basic auth: {} ****", url.username());
@@ -209,13 +222,10 @@ impl IppClient {
 
         let response = builder.send().await?.error_for_status().map_err(IppError::HttpError)?;
 
-        let stream = Box::new(
-            response
-                .into_body()
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string())),
-        );
+        let stream = ResponseStream(response);
 
         AsyncIppParser::from(stream)
+            .await
             .map_err(IppError::from)
             .map(IppRequestResponse::from_parse_result)
     }

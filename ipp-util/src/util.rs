@@ -4,13 +4,11 @@
 
 use std::{ffi::OsString, io, path::PathBuf};
 
-use futures::{future, Future};
+use futures::AsyncRead;
 use structopt::StructOpt;
-use tokio::io::AsyncRead;
 
-use ipp_client::{IppClient, IppClientBuilder, IppError};
-use ipp_proto::ipp::DelimiterTag;
-use ipp_proto::{IppAttribute, IppOperationBuilder, IppValue};
+use ipp_client::{IppClient, IppClientBuilder, IppError, TokioReadAdapter};
+use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
@@ -21,75 +19,66 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
         .build()
 }
 
-struct JobSource {
-    inner: Box<dyn AsyncRead + Send>,
-}
-
-fn new_source(cmd: &IppPrintCmd) -> Box<dyn Future<Item = JobSource, Error = io::Error> + Send + 'static> {
+async fn new_reader(cmd: &IppPrintCmd) -> io::Result<impl AsyncRead> {
     match cmd.file {
-        Some(ref filename) => Box::new(
-            tokio::fs::File::open(filename.to_owned()).and_then(|file| Ok(JobSource { inner: Box::new(file) })),
-        ),
-        None => Box::new(future::ok(JobSource {
-            inner: Box::new(tokio::io::stdin()),
-        })),
+        Some(ref filename) => {
+            let file = tokio::fs::File::open(filename.to_owned()).await?;
+            Ok(TokioReadAdapter::new(Box::new(file)))
+        }
+        None => Ok(TokioReadAdapter::new(tokio::io::stdin())),
     }
 }
 
-fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
-
+async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(&cmd.uri, params);
 
     if !cmd.no_check_state {
-        runtime.block_on(client.check_ready())?;
+        client.check_ready().await?;
     }
 
-    runtime.block_on(new_source(&cmd).map_err(IppError::from).and_then(move |source| {
-        let mut builder = IppOperationBuilder::print_job(source.inner);
-        if let Some(jobname) = cmd.job_name {
-            builder = builder.job_title(&jobname);
-        }
-        if let Some(username) = cmd.user_name {
-            builder = builder.user_name(&username);
-        }
+    let reader = new_reader(&cmd).await.map_err(IppError::from)?;
 
-        for arg in cmd.options {
-            let mut kv = arg.split('=');
-            if let Some(k) = kv.next() {
-                if let Some(v) = kv.next() {
-                    let value = if let Ok(iv) = v.parse::<i32>() {
-                        IppValue::Integer(iv)
-                    } else if v == "true" || v == "false" {
-                        IppValue::Boolean(v == "true")
-                    } else {
-                        IppValue::Keyword(v.to_string())
-                    };
-                    builder = builder.attribute(IppAttribute::new(k, value));
-                }
+    let mut builder = IppOperationBuilder::print_job(reader);
+    if let Some(jobname) = cmd.job_name {
+        builder = builder.job_title(&jobname);
+    }
+    if let Some(username) = cmd.user_name {
+        builder = builder.user_name(&username);
+    }
+
+    for arg in cmd.options {
+        let mut kv = arg.split('=');
+        if let Some(k) = kv.next() {
+            if let Some(v) = kv.next() {
+                let value = if let Ok(iv) = v.parse::<i32>() {
+                    IppValue::Integer(iv)
+                } else if v == "true" || v == "false" {
+                    IppValue::Boolean(v == "true")
+                } else {
+                    IppValue::Keyword(v.to_string())
+                };
+                builder = builder.attribute(IppAttribute::new(k, value));
             }
         }
+    }
 
-        client.send(builder.build()).and_then(|attrs| {
-            if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).get(0) {
-                for v in group.attributes().values() {
-                    println!("{}: {}", v.name(), v.value());
-                }
-            }
-            Ok(())
-        })
-    }))
+    let attrs = client.send(builder.build()).await?;
+    if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).get(0) {
+        for v in group.attributes().values() {
+            println!("{}: {}", v.name(), v.value());
+        }
+    }
+    Ok(())
 }
 
-fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
+async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     let client = new_client(&cmd.uri, &params);
 
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&cmd.attributes)
         .build();
 
-    let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    let attrs = runtime.block_on(client.send(operation))?;
+    let attrs = client.send(operation).await?;
 
     if let Some(group) = attrs.groups_of(DelimiterTag::PrinterAttributes).get(0) {
         let mut values: Vec<_> = group.attributes().values().collect();
@@ -243,10 +232,12 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+
     let params = IppParams::from_iter_safe(args).map_err(|e| IppError::ParamError(e.to_string()))?;
     match params.command {
-        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone())?,
-        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone())?,
+        IppCommand::Status(ref cmd) => runtime.block_on(do_status(&params, cmd.clone()))?,
+        IppCommand::Print(ref cmd) => runtime.block_on(do_print(&params, cmd.clone()))?,
     }
     Ok(())
 }

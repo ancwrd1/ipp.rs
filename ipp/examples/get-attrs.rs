@@ -5,7 +5,8 @@ use ipp::{
     proto::{ipp::DelimiterTag, IppOperationBuilder},
 };
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -15,13 +16,12 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new()?;
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&args[2..])
         .build();
 
-    let attrs = runtime.block_on(client.send(operation))?;
+    let attrs = client.send(operation).await?;
 
     for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
         .attributes()

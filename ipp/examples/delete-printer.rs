@@ -2,7 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use ipp::{client::IppClientBuilder, proto::operation::cups::CupsDeletePrinter};
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let args: Vec<_> = env::args().collect();
@@ -12,11 +13,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let mut runtime = tokio::runtime::Runtime::new()?;
     let client = IppClientBuilder::new(&args[1]).build();
     let operation = CupsDeletePrinter::new();
 
-    runtime.block_on(client.send(operation))?;
+    client.send(operation).await?;
 
     Ok(())
 }

@@ -20,8 +20,8 @@ ipp-server = { version = "0.3.0", path = "../ipp-server", optional = true }
 ipp-util = { version = "0.3.0", path = "../ipp-util", optional = true }
 
 [dev-dependencies]
-tokio = "0.1"
-futures = "0.1"
+tokio = "0.2.0-alpha.6"
+futures-preview = "0.3.0-alpha.19"
 env_logger = "0.7"
 num-traits = "0.2"
 

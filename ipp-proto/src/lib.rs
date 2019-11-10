@@ -1,10 +1,13 @@
-use std::io::{self, Read, Write};
-use std::pin::Pin;
+use std::{
+    io::{self, Read, Write},
+    pin::Pin,
+    task::Poll,
+};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use bytes::{Bytes, BytesMut};
 use futures::task::Context;
-use futures::{ready, AsyncRead, Poll, Stream};
+use futures::{ready, AsyncRead, Stream};
 use num_traits::FromPrimitive;
 
 pub use crate::{
