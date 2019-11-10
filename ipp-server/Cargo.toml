@@ -1,6 +1,6 @@
 [package]
 name = "ipp-server"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Helpers to make IPP servers"
 license = "MIT"
@@ -11,7 +11,7 @@ keywords = ["ipp", "print", "cups", "printing", "protocol"]
 edition = "2018"
 
 [dependencies]
-ipp-proto = { version = "0.3.0", path = "../ipp-proto" }
+ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
 num-traits = "0.2"
 hyper = { version = "0.13.0-alpha.4", features = ["unstable-stream"] }
 futures-preview = "0.3.0-alpha.19"
