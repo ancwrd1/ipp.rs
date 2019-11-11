@@ -27,16 +27,17 @@ pub struct PrintJob {
 impl PrintJob {
     /// Create Print-Job operation
     ///
-    /// * `source` - `IppJobSource`<br/>
+    /// * `source` - job source<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - job name (job-name)<br/>
-    pub fn new<U, N>(source: IppJobSource, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<U, N, S>(source: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
         U: AsRef<str>,
         N: AsRef<str>,
+        S: Into<IppJobSource>
     {
         PrintJob {
-            source,
+            source: source.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
@@ -174,13 +175,14 @@ impl SendDocument {
     /// * `source` - `IppJobSource`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S>(job_id: i32, source: IppJobSource, user_name: Option<S>, last: bool) -> SendDocument
+    pub fn new<S, U>(job_id: i32, source: S, user_name: Option<U>, last: bool) -> SendDocument
     where
-        S: AsRef<str>,
+        S: Into<IppJobSource>,
+        U: AsRef<str>,
     {
         SendDocument {
             job_id,
-            source,
+            source: source.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             last,
         }
