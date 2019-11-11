@@ -7,7 +7,6 @@ use std::{
 };
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
-use bytes::Bytes;
 use enum_as_inner::EnumAsInner;
 use num_traits::FromPrimitive;
 
@@ -53,7 +52,7 @@ pub enum IppValue {
     },
     Other {
         tag: u8,
-        data: Bytes,
+        data: Vec<u8>,
     },
 }
 

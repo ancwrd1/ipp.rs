@@ -5,7 +5,6 @@ use std::{
 };
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
-use bytes::{Bytes, BytesMut};
 use futures::{ready, AsyncRead, Stream};
 use num_traits::FromPrimitive;
 
@@ -38,7 +37,7 @@ impl IppJobSource {
 }
 
 impl Stream for IppJobSource {
-    type Item = io::Result<Bytes>;
+    type Item = io::Result<Vec<u8>>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let mut buffer = [0u8; IppJobSource::CHUNK_SIZE];
@@ -69,12 +68,12 @@ pub(crate) trait IppReadExt: Read {
         Ok(String::from_utf8_lossy(&self.read_bytes(len)?).to_string())
     }
 
-    fn read_bytes(&mut self, len: usize) -> std::io::Result<Bytes> {
-        let mut buf = BytesMut::with_capacity(len);
+    fn read_bytes(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
+        let mut buf = Vec::with_capacity(len);
         buf.resize(len, 0);
         self.read_exact(&mut buf)?;
 
-        Ok(buf.freeze())
+        Ok(buf)
     }
 }
 impl<R: io::Read + ?Sized> IppReadExt for R {}

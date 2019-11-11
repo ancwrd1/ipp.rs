@@ -3,7 +3,6 @@
 //!
 use std::io::{self, Cursor, Write};
 
-use bytes::Bytes;
 use enum_as_inner::EnumAsInner;
 use futures::{Stream, StreamExt};
 use log::debug;
@@ -142,7 +141,7 @@ impl IppRequestResponse {
     }
 
     /// Convert request/response into Stream
-    pub fn into_stream(self) -> Box<dyn Stream<Item = io::Result<Bytes>> + Send + Sync + Unpin + 'static> {
+    pub fn into_stream(self) -> Box<dyn Stream<Item = io::Result<Vec<u8>>> + Send + Sync + Unpin + 'static> {
         let mut cursor = Cursor::new(Vec::with_capacity(1024));
         let _ = self
             .header

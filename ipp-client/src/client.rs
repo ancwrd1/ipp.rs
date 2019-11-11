@@ -10,7 +10,6 @@ use std::{
     time::Duration,
 };
 
-use bytes::Bytes;
 use futures::{ready, Future, Stream};
 use log::debug;
 use num_traits::FromPrimitive;
@@ -94,13 +93,13 @@ fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> {
 struct ResponseStream(Response);
 
 impl Stream for ResponseStream {
-    type Item = Result<Bytes, std::io::Error>;
+    type Item = Result<Vec<u8>, std::io::Error>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let mut chunk = Box::pin(self.0.chunk());
         match ready!(chunk.as_mut().poll(cx)) {
             Ok(None) => Poll::Ready(None),
-            Ok(Some(bytes)) => Poll::Ready(Some(Ok(bytes))),
+            Ok(Some(bytes)) => Poll::Ready(Some(Ok(bytes.to_vec()))),
             Err(e) => Poll::Ready(Some(Err(io::Error::new(io::ErrorKind::Other, e.to_string())))),
         }
     }
