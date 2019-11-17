@@ -13,8 +13,10 @@ edition = "2018"
 [dependencies]
 ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
 num-traits = "0.2"
-reqwest = { version = "0.10.0-alpha.1", features = ["unstable-stream"] }
-tokio = "0.2.0-alpha.6"
 log = "0.4"
-futures-preview = "0.3.0-alpha.19"
-percent-encoding = "2.0"
+http = "0.1"
+
+[dependencies.isahc]
+path = "/home/dmitry/devel/inforce/rust/forks/isahc"
+default-features = false
+features = ["static-curl"]

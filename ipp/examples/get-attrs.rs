@@ -5,30 +5,31 @@ use ipp::{
     proto::{ipp::DelimiterTag, IppOperationBuilder},
 };
 
-#[tokio::main]
-pub async fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
+pub fn main() -> Result<(), Box<dyn Error>> {
+    async_std::task::block_on(async {
+        env_logger::init();
 
-    let args: Vec<_> = env::args().collect();
+        let args: Vec<_> = env::args().collect();
 
-    if args.len() < 2 {
-        println!("Usage: {} uri [attrs]", args[0]);
-        exit(1);
-    }
+        if args.len() < 2 {
+            println!("Usage: {} uri [attrs]", args[0]);
+            exit(1);
+        }
 
-    let client = IppClientBuilder::new(&args[1]).build();
-    let operation = IppOperationBuilder::get_printer_attributes()
-        .attributes(&args[2..])
-        .build();
+        let client = IppClientBuilder::new(&args[1]).build();
+        let operation = IppOperationBuilder::get_printer_attributes()
+            .attributes(&args[2..])
+            .build();
 
-    let attrs = client.send(operation).await?;
+        let attrs = client.send(operation).await?;
 
-    for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
-        .attributes()
-        .values()
-    {
-        println!("{}: {}", v.name(), v.value());
-    }
+        for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+            .attributes()
+            .values()
+        {
+            println!("{}: {}", v.name(), v.value());
+        }
 
-    Ok(())
+        Ok(())
+    })
 }

@@ -9,7 +9,7 @@ use std::{
 };
 
 use byteorder::{BigEndian, ReadBytesExt};
-use futures::{ready, Future, Stream};
+use futures::{ready, AsyncRead, Future};
 use log::{debug, error};
 use num_traits::FromPrimitive;
 
@@ -202,16 +202,18 @@ enum AsyncParseState {
 }
 
 /// Asynchronous IPP parser using Streams
-pub struct AsyncIppParser<I, E> {
+pub struct AsyncIppParser {
     state: AsyncParseState,
-    stream: Box<dyn Stream<Item = Result<I, E>> + Send + Unpin>,
+    reader: Box<dyn AsyncRead + Send + Unpin>,
 }
 
-impl<I, E> AsyncIppParser<I, E>
-where
-    I: AsRef<[u8]>,
-{
-    fn process_item(mut self: Pin<&mut Self>, item: I) -> Result<(), ParseError> {
+impl AsyncIppParser {
+    const BUF_SIZE: usize = 32768;
+
+    fn process_item<I>(mut self: Pin<&mut Self>, item: I) -> Result<(), ParseError>
+    where
+        I: AsRef<[u8]>,
+    {
         match self.state {
             AsyncParseState::Headers(ref mut buffer) => {
                 buffer.extend_from_slice(item.as_ref());
@@ -263,18 +265,21 @@ where
     }
 }
 
-impl<I, E> Future for AsyncIppParser<I, E>
-where
-    I: AsRef<[u8]>,
-    ParseError: From<E>,
-{
+impl Future for AsyncIppParser {
     type Output = Result<IppParseResult, ParseError>;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        while let Some(item) = ready!(Pin::new(&mut *self.stream).poll_next(cx)) {
-            match item {
-                Ok(item) => {
-                    if let Err(e) = self.as_mut().process_item(item) {
+        let mut buf = [0u8; AsyncIppParser::BUF_SIZE];
+
+        loop {
+            match ready!(Pin::new(&mut *self.reader).poll_read(cx, &mut buf)) {
+                Ok(0) => {
+                    debug!("Channel EOF reached");
+                    break;
+                }
+                Ok(size) => {
+                    debug!("Chunk received: {}", size);
+                    if let Err(e) = self.as_mut().process_item(&buf[..size]) {
                         return Poll::Ready(Err(e));
                     }
                 }
@@ -283,6 +288,7 @@ where
                 }
             }
         }
+
         let result = match self.state {
             AsyncParseState::Headers(_) => Err(ParseError::Incomplete),
             AsyncParseState::Payload(ref mut result) => {
@@ -298,15 +304,15 @@ where
     }
 }
 
-impl<I, E, S> From<S> for AsyncIppParser<I, E>
+impl<R> From<R> for AsyncIppParser
 where
-    S: Stream<Item = Result<I, E>> + Send + Unpin + 'static,
+    R: AsyncRead + Send + Unpin + 'static,
 {
     /// Construct asynchronous parser from the stream
-    fn from(s: S) -> AsyncIppParser<I, E> {
+    fn from(r: R) -> AsyncIppParser {
         AsyncIppParser {
             state: AsyncParseState::Headers(Vec::new()),
-            stream: Box::new(s),
+            reader: Box::new(r),
         }
     }
 }
@@ -384,22 +390,13 @@ mod tests {
     fn test_async_parser_with_payload() {
         // split IPP into arbitrary chunks
         let data = vec![
-            vec![1, 1, 0],
-            vec![0, 0, 0, 0, 0, 4],
-            vec![
-                0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
-            ],
-            vec![b'f'],
-            vec![b'o', b'o'],
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+            b'f', b'o', b'o',
         ];
 
-        let source: Box<dyn Stream<Item = io::Result<Vec<u8>>> + Send + Unpin> =
-            Box::new(futures::stream::iter(data.into_iter().map(|v| Ok(v))));
+        let parser = AsyncIppParser::from(futures::io::Cursor::new(data));
 
-        let parser = AsyncIppParser::from(source);
-
-        let runtime = tokio::runtime::Runtime::new().unwrap();
-        let result = runtime.block_on(parser);
+        let result = async_std::task::block_on(parser);
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

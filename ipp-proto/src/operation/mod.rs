@@ -34,7 +34,7 @@ impl PrintJob {
     where
         U: AsRef<str>,
         N: AsRef<str>,
-        S: Into<IppJobSource>
+        S: Into<IppJobSource>,
     {
         PrintJob {
             source: source.into(),

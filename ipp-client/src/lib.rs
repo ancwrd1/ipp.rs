@@ -1,11 +1,4 @@
-use std::{
-    fmt, io,
-    path::{Path, PathBuf},
-    pin::Pin,
-    task::{Context, Poll},
-};
-
-use futures::AsyncRead;
+use std::{fmt, io};
 
 use ipp_proto::{ipp::StatusCode, ParseError};
 
@@ -16,8 +9,12 @@ pub mod client;
 /// IPP error
 #[derive(Debug)]
 pub enum IppError {
-    /// HTTP error
-    HttpError(reqwest::Error),
+    /// HTTP protocol error
+    HttpError(http::Error),
+    /// Client error
+    ClientError(isahc::Error),
+    /// HTTP request error
+    RequestError(u16),
     /// Network or file I/O error
     IOError(::std::io::Error),
     /// IPP status error
@@ -40,6 +37,8 @@ impl fmt::Display for IppError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             IppError::HttpError(ref e) => write!(f, "{}", e),
+            IppError::ClientError(ref e) => write!(f, "{}", e),
+            IppError::RequestError(ref e) => write!(f, "HTTP request failed: {}", e),
             IppError::IOError(ref e) => write!(f, "{}", e),
             IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
             IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
@@ -64,9 +63,15 @@ impl From<StatusCode> for IppError {
     }
 }
 
-impl From<reqwest::Error> for IppError {
-    fn from(error: reqwest::Error) -> Self {
+impl From<http::Error> for IppError {
+    fn from(error: http::Error) -> Self {
         IppError::HttpError(error)
+    }
+}
+
+impl From<isahc::Error> for IppError {
+    fn from(error: isahc::Error) -> Self {
+        IppError::ClientError(error)
     }
 }
 
@@ -81,9 +86,7 @@ impl std::error::Error for IppError {}
 /// Builder to create IPP client
 pub struct IppClientBuilder {
     uri: String,
-    ca_certs: Vec<PathBuf>,
-    verify_hostname: bool,
-    verify_certificate: bool,
+    ignore_tls_errors: bool,
     timeout: u64,
 }
 
@@ -92,41 +95,14 @@ impl IppClientBuilder {
     pub fn new(uri: &str) -> Self {
         IppClientBuilder {
             uri: uri.to_owned(),
-            ca_certs: Vec::new(),
-            verify_hostname: true,
-            verify_certificate: true,
+            ignore_tls_errors: false,
             timeout: 0,
         }
     }
 
-    /// Add CA certificate
-    pub fn ca_cert<P>(mut self, path: P) -> Self
-    where
-        P: AsRef<Path>,
-    {
-        self.ca_certs.push(path.as_ref().to_owned());
-        self
-    }
-
-    /// Add CA certificates
-    pub fn ca_certs<I, P>(mut self, paths: I) -> Self
-    where
-        I: IntoIterator<Item = P>,
-        P: AsRef<Path>,
-    {
-        self.ca_certs.extend(paths.into_iter().map(|p| p.as_ref().to_owned()));
-        self
-    }
-
-    /// Enable or disable host name verification. Default is true.
-    pub fn verify_hostname(mut self, verify: bool) -> Self {
-        self.verify_hostname = verify;
-        self
-    }
-
-    /// Enable or disable server certificate verification. Default is true.
-    pub fn verify_certificate(mut self, verify: bool) -> Self {
-        self.verify_certificate = verify;
+    /// Enable or disable ignoring of TLS handshake errors. Default is false.
+    pub fn ignore_tls_errors(mut self, flag: bool) -> Self {
+        self.ignore_tls_errors = flag;
         self
     }
 
@@ -140,56 +116,8 @@ impl IppClientBuilder {
     pub fn build(self) -> IppClient {
         IppClient {
             uri: self.uri,
-            ca_certs: self.ca_certs,
-            verify_hostname: self.verify_hostname,
-            verify_certificate: self.verify_certificate,
+            ignore_tls_errors: self.ignore_tls_errors,
             timeout: self.timeout,
         }
-    }
-}
-
-pub struct TokioReadAdapter(Box<dyn tokio::io::AsyncRead + Send + Sync + Unpin>);
-
-impl AsyncRead for TokioReadAdapter {
-    fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut [u8]) -> Poll<io::Result<usize>> {
-        Pin::new(&mut *self.0).poll_read(cx, buf)
-    }
-}
-
-impl TokioReadAdapter {
-    pub fn new<T>(t: T) -> TokioReadAdapter
-    where
-        T: tokio::io::AsyncRead + Send + Sync + Unpin + 'static,
-    {
-        TokioReadAdapter(Box::new(t))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_builder() {
-        let mut builder = IppClientBuilder::new("foobar");
-        assert_eq!(builder.uri, "foobar");
-
-        let cert = PathBuf::from("mycert");
-        builder = builder.ca_cert(&cert);
-        assert_eq!(builder.ca_certs, vec![cert.clone()]);
-
-        builder = builder.ca_certs(&[cert.clone()]);
-        assert_eq!(builder.ca_certs, vec![cert.clone(), cert.clone()]);
-
-        builder = builder.verify_hostname(false);
-        assert!(!builder.verify_hostname);
-
-        builder = builder.verify_certificate(false);
-        assert!(!builder.verify_certificate);
-
-        builder = builder.timeout(100);
-        assert_eq!(builder.timeout, 100);
-
-        let _ = builder.build();
     }
 }

@@ -1,11 +1,7 @@
-use std::{
-    io::{self, Read, Write},
-    pin::Pin,
-    task::{Context, Poll},
-};
+use std::io::{self, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
-use futures::{ready, AsyncRead, Stream};
+use futures::AsyncRead;
 use num_traits::FromPrimitive;
 
 pub use crate::{
@@ -29,32 +25,18 @@ pub mod value;
 
 /// Source for IPP data stream (job file)
 pub struct IppJobSource {
-    inner: Box<dyn AsyncRead + Send + Sync + Unpin>,
+    inner: Box<dyn AsyncRead + Send + Unpin>,
 }
 
 impl IppJobSource {
-    const CHUNK_SIZE: usize = 32768;
-}
-
-impl Stream for IppJobSource {
-    type Item = io::Result<Vec<u8>>;
-
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut buffer = [0u8; IppJobSource::CHUNK_SIZE];
-
-        let result = match ready!(Pin::new(&mut *self.inner).poll_read(cx, &mut buffer)) {
-            Err(e) => Some(Err(e)),
-            Ok(0) => None,
-            Ok(size) => Some(Ok(buffer[0..size].into())),
-        };
-
-        Poll::Ready(result)
+    pub fn into_reader(self) -> impl AsyncRead + Send + Unpin {
+        self.inner
     }
 }
 
 impl<T> From<T> for IppJobSource
 where
-    T: 'static + AsyncRead + Send + Sync + Unpin,
+    T: 'static + AsyncRead + Send + Unpin,
 {
     /// Create job source from AsyncRead
     fn from(r: T) -> Self {

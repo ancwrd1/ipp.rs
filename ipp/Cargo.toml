@@ -16,17 +16,17 @@ name = "ipp"
 [dependencies]
 ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
 ipp-client = { version = "0.4.0", path = "../ipp-client", optional = true }
-ipp-server = { version = "0.4.0", path = "../ipp-server", optional = true }
+#ipp-server = { version = "0.4.0", path = "../ipp-server", optional = true }
 ipp-util = { version = "0.4.0", path = "../ipp-util", optional = true }
 
 [dev-dependencies]
-tokio = "0.2.0-alpha.6"
-futures-preview = "0.3.0-alpha.19"
+futures = "0.3"
 env_logger = "0.7"
 num-traits = "0.2"
+async-std = "1"
 
 [features]
 default = ["client"]
 client = ["ipp-client"]
-server = ["ipp-server"]
+#server = ["ipp-server"]
 util = ["ipp-util"]

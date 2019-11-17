@@ -15,9 +15,9 @@ log = "0.4"
 byteorder = "1"
 enum-primitive-derive = "0.1"
 num-traits = "0.2"
-futures-preview = "0.3.0-alpha.19"
+futures = "0.3"
 tempfile = "3"
 enum-as-inner = "0.3"
 
 [dev-dependencies]
-tokio = "0.2.0-alpha.6"
+async-std = "1"

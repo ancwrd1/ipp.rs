@@ -7,26 +7,25 @@ use std::{ffi::OsString, io, path::PathBuf};
 use futures::AsyncRead;
 use structopt::StructOpt;
 
-use ipp_client::{IppClient, IppClientBuilder, IppError, TokioReadAdapter};
+use ipp_client::{IppClient, IppClientBuilder, IppError};
 use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
         .timeout(params.timeout)
-        .ca_certs(&params.ca_certs)
-        .verify_hostname(!params.no_verify_hostname)
-        .verify_certificate(!params.no_verify_certificate)
+        .ignore_tls_errors(params.ignore_tls_errors)
         .build()
 }
 
-async fn new_reader(cmd: &IppPrintCmd) -> io::Result<impl AsyncRead> {
-    match cmd.file {
+async fn new_reader(cmd: &IppPrintCmd) -> io::Result<Box<dyn AsyncRead + Send + Unpin>> {
+    let file: Box<dyn AsyncRead + Send + Unpin> = match cmd.file {
         Some(ref filename) => {
-            let file = tokio::fs::File::open(filename.to_owned()).await?;
-            Ok(TokioReadAdapter::new(Box::new(file)))
+            let file = async_std::fs::File::open(filename).await?;
+            Box::new(file)
         }
-        None => Ok(TokioReadAdapter::new(tokio::io::stdin())),
-    }
+        None => Box::new(async_std::io::stdin()),
+    };
+    Ok(file)
 }
 
 async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
@@ -94,33 +93,19 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
 #[structopt(about = "IPP print utility", name = "ipputil", rename_all = "kebab-case")]
 struct IppParams {
     #[structopt(
-        long = "ca-cert",
-        short = "c",
+        long = "ignore-tls-errors",
+        short = "i",
         global = true,
-        help = "Additional CA root certificates in PEM or DER format"
+        help = "Ignore TLS handshake errors [default: false]"
     )]
-    ca_certs: Vec<String>,
-
-    #[structopt(
-        long = "no-verify-hostname",
-        global = true,
-        help = "Disable TLS host name verification (insecure!)"
-    )]
-    no_verify_hostname: bool,
-
-    #[structopt(
-        long = "no-verify-certificate",
-        global = true,
-        help = "Disable TLS certificate verification (insecure!)"
-    )]
-    no_verify_certificate: bool,
+    ignore_tls_errors: bool,
 
     #[structopt(
         default_value = "0",
         long = "timeout",
         short = "t",
         global = true,
-        help = "IPP request timeout in seconds, 0 = no timeout"
+        help = "Connect timeout in seconds, 0 = no timeout"
     )]
     timeout: u64,
 
@@ -191,14 +176,12 @@ struct IppStatusCmd {
 ///
 /// FLAGS:
 ///     -h, --help                     Prints help information
-///     --no-verify-certificate        Disable TLS certificate verification (insecure)
-///     --no-verify-hostname           Disable TLS host name verification (insecure)
+///     -i, --ignore-tls-errors        Ignore TLS handshake errors [default: false]
 ///     -V, --version                  Prints version information
 ///
 /// OPTIONS:
 ///     -a, --attribute <attributes>...   Attributes to query, default is to get all
-///     -c, --ca-cert <ca-certs>...       Additional CA root certificates in PEM or DER format
-///     -t, --timeout <timeout>           Network timeout in seconds, 0 to disable [default: 30]
+///     -t, --timeout <timeout>           Connect timeout in seconds, 0 to disable [default: 30]
 ///
 /// ARGS:
 ///     <uri>    Printer URI
@@ -211,17 +194,15 @@ struct IppStatusCmd {
 ///
 /// FLAGS:
 ///     -h, --help                     Prints help information
+///     -i, --ignore-tls-errors        Ignore TLS handshake errors [default: false]
 ///     -n, --no-check-state           Do not check printer state before printing
-///     --no-verify-certificate        Disable TLS certificate verification (insecure)
-///     --no-verify-hostname           Disable TLS host name verification (insecure)
 ///     -V, --version                  Prints version information
 ///
 /// OPTIONS:
-///     -c, --ca-cert <ca-certs>...    Additional CA root certificates in PEM or DER format
 ///     -f, --file <file>              Input file name to print [default: standard input]
 ///     -j, --job-name <job-name>      Job name to send as job-name attribute
 ///     -o, --option <options>...      Extra IPP job attributes in key=value format
-///     -t, --timeout <timeout>        Network timeout in seconds, 0 to disable [default: 30]
+///     -t, --timeout <timeout>        Connect timeout in seconds, 0 to disable [default: 30]
 ///     -u, --user-name <user-name>    User name to send as requesting-user-name attribute
 ///
 /// ARGS:
@@ -232,12 +213,10 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    let runtime = tokio::runtime::Runtime::new().unwrap();
-
     let params = IppParams::from_iter_safe(args).map_err(|e| IppError::ParamError(e.to_string()))?;
     match params.command {
-        IppCommand::Status(ref cmd) => runtime.block_on(do_status(&params, cmd.clone()))?,
-        IppCommand::Print(ref cmd) => runtime.block_on(do_print(&params, cmd.clone()))?,
+        IppCommand::Status(ref cmd) => async_std::task::block_on(do_status(&params, cmd.clone()))?,
+        IppCommand::Print(ref cmd) => async_std::task::block_on(do_print(&params, cmd.clone()))?,
     }
     Ok(())
 }

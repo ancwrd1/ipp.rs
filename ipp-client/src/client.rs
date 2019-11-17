@@ -1,19 +1,13 @@
 //!
 //! IPP client
 //!
-use std::{
-    borrow::Cow,
-    fs, io,
-    path::PathBuf,
-    pin::Pin,
-    task::{Context, Poll},
-    time::Duration,
-};
+use std::{borrow::Cow, time::Duration};
 
-use futures::{ready, Future, Stream};
+use http::Method;
+use isahc::config::RedirectPolicy;
+use isahc::prelude::*;
 use log::debug;
 use num_traits::FromPrimitive;
-use reqwest::{Body, Certificate, Client, Response, Url};
 
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
@@ -24,6 +18,7 @@ use ipp_proto::{
 };
 
 use crate::IppError;
+use http::uri::Authority;
 
 const ERROR_STATES: &[&str] = &[
     "media-jam",
@@ -38,70 +33,28 @@ const ERROR_STATES: &[&str] = &[
     "shutdown",
 ];
 
-fn parse_uri(uri: String) -> Result<Url, IppError> {
-    match Url::parse(&uri) {
-        Ok(mut url) => {
-            match url.scheme() {
-                "ipp" => {
-                    url.set_scheme("http").unwrap();
-                    if url.port().is_none() {
-                        url.set_port(Some(631)).unwrap();
-                    }
-                }
-                "ipps" => {
-                    url.set_scheme("https").unwrap();
-                    if url.port().is_none() {
-                        url.set_port(Some(443)).unwrap();
-                    }
-                }
-                _ => {}
+// converts http://username:pwd@host:port/path?query into http://host:port/path
+fn canonicalize_uri(uri: &str) -> Cow<str> {
+    match uri.parse::<http::Uri>() {
+        Ok(new_uri) => {
+            let mut builder = http::Uri::builder();
+            if let Some(scheme) = new_uri.scheme_str() {
+                builder.scheme(scheme);
             }
-            Ok(url)
+            if let Some(authority) = new_uri.authority_part() {
+                if let Some(port) = authority.port_u16() {
+                    builder.authority(Authority::from_shared(format!("{}:{}", authority.host(), port).into()).unwrap());
+                } else {
+                    builder.authority(authority.host());
+                }
+            }
+            builder.path_and_query(new_uri.path());
+            builder
+                .build()
+                .map(|u| Cow::Owned(u.to_string()))
+                .unwrap_or_else(|_| Cow::Borrowed(uri))
         }
-        Err(e) => Err(IppError::ParamError(e.to_string())),
-    }
-}
-
-fn to_device_uri(uri: &str) -> Cow<str> {
-    match Url::parse(&uri) {
-        Ok(ref mut url) if !url.username().is_empty() => {
-            let _ = url.set_username("");
-            let _ = url.set_password(None);
-            Cow::Owned(url.to_string())
-        }
-        _ => Cow::Borrowed(uri),
-    }
-}
-
-fn parse_certs(certs: Vec<PathBuf>) -> Result<Vec<Certificate>, IppError> {
-    let mut result = Vec::new();
-
-    for cert_file in certs {
-        let buf = match fs::read(&cert_file) {
-            Ok(buf) => buf,
-            Err(e) => return Err(IppError::from(e)),
-        };
-        let ca_cert = match Certificate::from_der(&buf).or_else(|_| Certificate::from_pem(&buf)) {
-            Ok(ca_cert) => ca_cert,
-            Err(e) => return Err(IppError::from(e)),
-        };
-        result.push(ca_cert);
-    }
-    Ok(result)
-}
-
-struct ResponseStream(Response);
-
-impl Stream for ResponseStream {
-    type Item = Result<Vec<u8>, std::io::Error>;
-
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut chunk = Box::pin(self.0.chunk());
-        match ready!(chunk.as_mut().poll(cx)) {
-            Ok(None) => Poll::Ready(None),
-            Ok(Some(bytes)) => Poll::Ready(Some(Ok(bytes.to_vec()))),
-            Err(e) => Poll::Ready(Some(Err(io::Error::new(io::ErrorKind::Other, e.to_string())))),
-        }
+        Err(_) => Cow::Borrowed(uri),
     }
 }
 
@@ -110,9 +63,7 @@ impl Stream for ResponseStream {
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
     pub(crate) uri: String,
-    pub(crate) ca_certs: Vec<PathBuf>,
-    pub(crate) verify_hostname: bool,
-    pub(crate) verify_certificate: bool,
+    pub(crate) ignore_tls_errors: bool,
     pub(crate) timeout: u64,
 }
 
@@ -166,7 +117,7 @@ impl IppClient {
         debug!("Sending IPP operation");
 
         let resp = self
-            .send_request(operation.into_ipp_request(&to_device_uri(&self.uri)))
+            .send_request(operation.into_ipp_request(&canonicalize_uri(&self.uri)))
             .await?;
 
         if resp.header().operation_status > 2 {
@@ -182,57 +133,50 @@ impl IppClient {
 
     /// Send request and return response
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
-        // Some printers don't support gzip
-        let mut builder = Client::builder().connect_timeout(Duration::from_secs(10));
-
-        if !self.verify_hostname {
-            debug!("Disabling hostname verification!");
-            builder = builder.danger_accept_invalid_hostnames(true);
-        }
-
-        if !self.verify_certificate {
-            debug!("Disabling certificate verification!");
-            builder = builder.danger_accept_invalid_certs(true);
-        }
+        let mut builder = Request::builder();
+        builder.uri(&self.uri);
+        builder.connect_timeout(Duration::from_secs(10));
+        builder.header("Content-Type", "application/ipp");
+        builder.method(Method::POST);
+        builder.redirect_policy(RedirectPolicy::Limit(3));
 
         if self.timeout > 0 {
             debug!("Setting timeout to {}", self.timeout);
-            builder = builder.timeout(Duration::from_secs(self.timeout));
+            builder.timeout(Duration::from_secs(self.timeout));
         }
 
-        let uri = self.uri.clone();
-        let ca_certs = self.ca_certs.clone();
-
-        let url = parse_uri(uri)?;
-        let certs = parse_certs(ca_certs)?;
-
-        builder = certs
-            .into_iter()
-            .fold(builder, |builder, ca_cert| builder.add_root_certificate(ca_cert));
-
-        let client = builder.build()?;
-
-        let mut builder = client
-            .post(url.clone())
-            .header("Content-Type", "application/ipp")
-            .body(Body::wrap_stream(request.into_stream()));
-
-        if !url.username().is_empty() {
-            debug!("Setting basic auth: {} ****", url.username());
-            builder = builder.basic_auth(
-                url.username(),
-                url.password()
-                    .map(|p| percent_encoding::percent_decode(p.as_bytes()).decode_utf8().unwrap()),
-            );
+        if self.ignore_tls_errors {
+            builder.danger_allow_unsafe_ssl(self.ignore_tls_errors);
         }
 
-        let response = builder.send().await?.error_for_status().map_err(IppError::HttpError)?;
+        let request = builder.body(Body::reader(request.into_reader()))?;
+        let resp = request.send_async().await?;
 
-        let stream = ResponseStream(response);
+        let status = resp.status().as_u16();
+        if status != 200 {
+            return Err(IppError::RequestError(status));
+        }
 
-        AsyncIppParser::from(stream)
+        AsyncIppParser::from(resp.into_body())
             .await
             .map_err(IppError::from)
             .map(IppRequestResponse::from_parse_result)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_device_uri() {
+        assert_eq!(
+            canonicalize_uri("http://user:pass@example.com:631/path?query=val"),
+            "http://example.com:631/path"
+        );
+        assert_eq!(
+            canonicalize_uri("http://example.com/path?query=val"),
+            "http://example.com/path"
+        );
     }
 }

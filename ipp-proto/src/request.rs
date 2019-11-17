@@ -4,7 +4,7 @@
 use std::io::{self, Cursor, Write};
 
 use enum_as_inner::EnumAsInner;
-use futures::{Stream, StreamExt};
+use futures::{AsyncRead, AsyncReadExt};
 use log::debug;
 use tempfile::NamedTempFile;
 
@@ -141,18 +141,22 @@ impl IppRequestResponse {
     }
 
     /// Convert request/response into Stream
-    pub fn into_stream(self) -> Box<dyn Stream<Item = io::Result<Vec<u8>>> + Send + Sync + Unpin + 'static> {
-        let mut cursor = Cursor::new(Vec::with_capacity(1024));
+    pub fn into_reader(self) -> Box<dyn AsyncRead + Send + Unpin + 'static> {
+        let mut header = Cursor::new(Vec::with_capacity(1024));
         let _ = self
             .header
-            .write(&mut cursor)
-            .and_then(|_| self.attributes.write(&mut cursor));
+            .write(&mut header)
+            .and_then(|_| self.attributes.write(&mut header));
 
-        let headers = futures::stream::once(Box::pin(async { Ok(cursor.into_inner().into()) }));
+        let cursor = futures::io::Cursor::new(header.into_inner());
+        debug!("IPP header size: {}", cursor.get_ref().len());
 
         match self.payload {
-            Some(PayloadKind::JobSource(payload)) => Box::new(headers.chain(payload)),
-            _ => Box::new(headers),
+            Some(PayloadKind::JobSource(payload)) => {
+                debug!("Adding payload to a reader chain");
+                Box::new(cursor.chain(payload.into_reader()))
+            }
+            _ => Box::new(cursor),
         }
     }
 }
