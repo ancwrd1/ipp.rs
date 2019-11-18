@@ -17,6 +17,6 @@ log = "0.4"
 http = "0.1"
 
 [dependencies.isahc]
-path = "/home/dmitry/devel/inforce/rust/forks/isahc"
+git = "https://github.com/dremon/isahc"
 default-features = false
 features = ["static-curl"]
