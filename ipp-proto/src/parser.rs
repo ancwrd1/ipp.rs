@@ -387,6 +387,26 @@ mod tests {
     }
 
     #[test]
+    fn test_async_parser_without_payload() {
+        // split IPP into arbitrary chunks
+        let data = vec![
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+        ];
+
+        let parser = AsyncIppParser::from(futures::io::Cursor::new(data));
+
+        let result = futures::executor::block_on(parser);
+        assert!(result.is_ok());
+
+        let res = result.ok().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
+        let attr = attrs.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
+
+        assert!(res.payload.is_none());
+    }
+
+    #[test]
     fn test_async_parser_with_payload() {
         // split IPP into arbitrary chunks
         let data = vec![
