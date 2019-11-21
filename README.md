@@ -5,28 +5,45 @@ IPP protocol implementation for Rust
 [Documentation](https://docs.rs/ipp)
 
 This crate implements IPP protocol as defined in RFC 2911. Not all features are implemented yet.<br/>
-Transport is based on asynchronous HTTP client from the `reqwest` crate.
+Transport is based on asynchronous HTTP client from the `isahc` crate.
 
 Usage example:
 
 ```rust,no_run
+use std::{env, error::Error, process::exit};
+
 use ipp::{
     client::IppClientBuilder,
     proto::{ipp::DelimiterTag, IppOperationBuilder},
 };
-use tokio::runtime::Runtime;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut runtime = Runtime::new()?;
+pub fn main() -> Result<(), Box<dyn Error>> {
+    futures::executor::block_on(async {
+        env_logger::init();
 
-    let operation = IppOperationBuilder::get_printer_attributes().build();
-    let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
-    let attrs = runtime.block_on(client.send(operation))?;
+        let args: Vec<_> = env::args().collect();
 
-    for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
-        println!("{}: {}", v.name(), v.value());
-    }
-    Ok(())
+        if args.len() < 2 {
+            println!("Usage: {} uri [attrs]", args[0]);
+            exit(1);
+        }
+
+        let client = IppClientBuilder::new(&args[1]).build();
+        let operation = IppOperationBuilder::get_printer_attributes()
+            .attributes(&args[2..])
+            .build();
+
+        let attrs = client.send(operation).await?;
+
+        for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+            .attributes()
+            .values()
+        {
+            println!("{}: {}", v.name(), v.value());
+        }
+
+        Ok(())
+    })
 }
 ```
 

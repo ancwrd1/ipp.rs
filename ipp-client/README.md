@@ -1,6 +1,6 @@
 ## Asynchronous IPP client
 
-This crate contains asynchronous IPP client based on futures and tokio runtime.
+This crate contains asynchronous IPP client based on futures
 
 ## License
 
