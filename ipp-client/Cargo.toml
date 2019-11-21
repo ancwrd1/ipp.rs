@@ -17,6 +17,6 @@ log = "0.4"
 http = "0.1"
 
 [dependencies.isahc]
-git = "https://github.com/dremon/isahc"
+git = "https://github.com/sagebind/isahc"
 default-features = false
 features = ["static-curl"]

@@ -96,7 +96,7 @@ struct IppParams {
         long = "ignore-tls-errors",
         short = "i",
         global = true,
-        help = "Ignore TLS handshake errors [default: false]"
+        help = "Ignore TLS handshake errors"
     )]
     ignore_tls_errors: bool,
 
@@ -176,7 +176,7 @@ struct IppStatusCmd {
 ///
 /// FLAGS:
 ///     -h, --help                     Prints help information
-///     -i, --ignore-tls-errors        Ignore TLS handshake errors [default: false]
+///     -i, --ignore-tls-errors        Ignore TLS handshake errors
 ///     -V, --version                  Prints version information
 ///
 /// OPTIONS:
@@ -194,7 +194,7 @@ struct IppStatusCmd {
 ///
 /// FLAGS:
 ///     -h, --help                     Prints help information
-///     -i, --ignore-tls-errors        Ignore TLS handshake errors [default: false]
+///     -i, --ignore-tls-errors        Ignore TLS handshake errors
 ///     -n, --no-check-state           Do not check printer state before printing
 ///     -V, --version                  Prints version information
 ///

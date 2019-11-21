@@ -4,7 +4,7 @@ use ipp_client::IppError;
 use ipp_util::ipp_main;
 
 fn main() {
-    pretty_env_logger::init_timed();
+    env_logger::init();
 
     let result = ipp_main(env::args_os());
     if let Err(e) = result {

@@ -204,7 +204,7 @@ enum AsyncParseState {
 /// Asynchronous IPP parser using Streams
 pub struct AsyncIppParser {
     state: AsyncParseState,
-    reader: Box<dyn AsyncRead + Send + Unpin>,
+    reader: Pin<Box<dyn AsyncRead + Send>>,
 }
 
 impl AsyncIppParser {
@@ -272,7 +272,7 @@ impl Future for AsyncIppParser {
         let mut buf = [0u8; AsyncIppParser::BUF_SIZE];
 
         loop {
-            match ready!(Pin::new(&mut *self.reader).poll_read(cx, &mut buf)) {
+            match ready!(self.reader.as_mut().poll_read(cx, &mut buf)) {
                 Ok(0) => {
                     debug!("Channel EOF reached");
                     break;
@@ -306,13 +306,13 @@ impl Future for AsyncIppParser {
 
 impl<R> From<R> for AsyncIppParser
 where
-    R: AsyncRead + Send + Unpin + 'static,
+    R: AsyncRead + Send + 'static,
 {
     /// Construct asynchronous parser from the stream
     fn from(r: R) -> AsyncIppParser {
         AsyncIppParser {
             state: AsyncParseState::Headers(Vec::new()),
-            reader: Box::new(r),
+            reader: Box::pin(r),
         }
     }
 }
@@ -396,7 +396,7 @@ mod tests {
 
         let parser = AsyncIppParser::from(futures::io::Cursor::new(data));
 
-        let result = async_std::task::block_on(parser);
+        let result = futures::executor::block_on(parser);
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
