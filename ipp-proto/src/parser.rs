@@ -388,7 +388,6 @@ mod tests {
 
     #[test]
     fn test_async_parser_without_payload() {
-        // split IPP into arbitrary chunks
         let data = vec![
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
@@ -408,7 +407,6 @@ mod tests {
 
     #[test]
     fn test_async_parser_with_payload() {
-        // split IPP into arbitrary chunks
         let data = vec![
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
             b'f', b'o', b'o',
