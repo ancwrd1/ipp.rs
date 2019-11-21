@@ -4,12 +4,10 @@ matrix:
     include:
         - os: linux
         - os: osx
-
         - rust: stable
-        - rust: nightly
 
 sudo: false
-dist: trusty
+dist: bionic
 
 cache:
   apt: true
