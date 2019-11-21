@@ -3,7 +3,6 @@ matrix:
     fast_finish: true
     include:
         - os: linux
-        - os: osx
         - rust: stable
 
 sudo: false
