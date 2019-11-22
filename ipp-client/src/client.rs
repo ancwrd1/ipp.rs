@@ -4,7 +4,7 @@
 use std::{borrow::Cow, time::Duration};
 
 use http::Method;
-use isahc::config::RedirectPolicy;
+use isahc::config::{RedirectPolicy, SslOption};
 use isahc::prelude::*;
 use log::debug;
 use num_traits::FromPrimitive;
@@ -146,7 +146,11 @@ impl IppClient {
         }
 
         if self.ignore_tls_errors {
-            builder.danger_allow_unsafe_ssl(self.ignore_tls_errors);
+            builder.ssl_options(
+                SslOption::DANGER_ACCEPT_INVALID_CERTS
+                    | SslOption::DANGER_ACCEPT_REVOKED_CERTS
+                    | SslOption::DANGER_ACCEPT_INVALID_HOSTS,
+            );
         }
 
         let request = builder.body(Body::reader(request.into_reader()))?;
