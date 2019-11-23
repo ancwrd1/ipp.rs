@@ -4,6 +4,7 @@
 use std::{
     fmt,
     io::{self, Read, Write},
+    str::FromStr,
 };
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
@@ -303,6 +304,35 @@ impl fmt::Display for IppValue {
 
             IppValue::Other { tag, ref data } => write!(f, "{:0x}: {:?}", tag, data),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct ValueParseError;
+
+impl fmt::Display for ValueParseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "IPP value parse error")
+    }
+}
+impl std::error::Error for ValueParseError {}
+
+impl FromStr for IppValue {
+    type Err = ValueParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let value = match s {
+            "true" => IppValue::Boolean(true),
+            "false" => IppValue::Boolean(false),
+            other => {
+                if let Ok(iv) = other.parse::<i32>() {
+                    IppValue::Integer(iv)
+                } else {
+                    IppValue::Keyword(other.to_owned())
+                }
+            }
+        };
+        Ok(value)
     }
 }
 

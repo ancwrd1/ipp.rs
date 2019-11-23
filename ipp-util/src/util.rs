@@ -8,7 +8,7 @@ use futures::AsyncRead;
 use structopt::StructOpt;
 
 use ipp_client::{IppClient, IppClientBuilder, IppError};
-use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue};
+use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
@@ -49,14 +49,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         let mut kv = arg.split('=');
         if let Some(k) = kv.next() {
             if let Some(v) = kv.next() {
-                let value = if let Ok(iv) = v.parse::<i32>() {
-                    IppValue::Integer(iv)
-                } else if v == "true" || v == "false" {
-                    IppValue::Boolean(v == "true")
-                } else {
-                    IppValue::Keyword(v.to_string())
-                };
-                builder = builder.attribute(IppAttribute::new(k, value));
+                builder = builder.attribute(IppAttribute::new(k, v.parse()?));
             }
         }
     }

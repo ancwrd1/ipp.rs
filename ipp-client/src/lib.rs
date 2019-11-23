@@ -1,6 +1,6 @@
 use std::{fmt, io};
 
-use ipp_proto::{ipp::StatusCode, ParseError};
+use ipp_proto::{ipp::StatusCode, value::ValueParseError, ParseError};
 
 pub use crate::client::IppClient;
 
@@ -27,6 +27,8 @@ pub enum IppError {
     ParamError(String),
     /// Parsing error
     ParseError(ParseError),
+    /// Value parsing error
+    ValueParseError(ValueParseError),
     /// Missing attribute in response
     MissingAttribute,
     /// Invalid attribute type
@@ -45,6 +47,7 @@ impl fmt::Display for IppError {
             IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
             IppError::PrinterStopped => write!(f, "IPP printer stopped"),
             IppError::ParseError(ref e) => write!(f, "{}", e),
+            IppError::ValueParseError(ref e) => write!(f, "{}", e),
             IppError::MissingAttribute => write!(f, "Missing attribute in response"),
             IppError::InvalidAttributeType => write!(f, "Invalid attribute type"),
         }
@@ -78,6 +81,12 @@ impl From<isahc::Error> for IppError {
 impl From<ParseError> for IppError {
     fn from(error: ParseError) -> Self {
         IppError::ParseError(error)
+    }
+}
+
+impl From<ValueParseError> for IppError {
+    fn from(error: ValueParseError) -> Self {
+        IppError::ValueParseError(error)
     }
 }
 

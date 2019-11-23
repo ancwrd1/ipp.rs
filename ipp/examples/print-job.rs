@@ -2,7 +2,7 @@ use std::{env, error::Error, process::exit};
 
 use ipp::{
     client::IppClientBuilder,
-    proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppValue},
+    proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder},
 };
 
 pub fn main() -> Result<(), Box<dyn Error>> {
@@ -26,15 +26,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             let mut kv = arg.split('=');
             let (k, v) = (kv.next().unwrap(), kv.next().unwrap());
 
-            let value = if let Ok(iv) = v.parse::<i32>() {
-                IppValue::Integer(iv)
-            } else if v == "true" || v == "false" {
-                IppValue::Boolean(v == "true")
-            } else {
-                IppValue::Keyword(v.to_string())
-            };
-
-            builder = builder.attribute(IppAttribute::new(k, value));
+            builder = builder.attribute(IppAttribute::new(k, v.parse()?));
         }
 
         let operation = builder.build();

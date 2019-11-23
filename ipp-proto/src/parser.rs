@@ -201,22 +201,19 @@ enum AsyncParseState {
     Payload(IppParseResult),
 }
 
-/// Asynchronous IPP parser using Streams
+/// Asynchronous IPP parser using AsyncRead
 pub struct AsyncIppParser {
     state: AsyncParseState,
-    reader: Pin<Box<dyn AsyncRead + Send>>,
+    reader: Pin<Box<dyn AsyncRead>>,
 }
 
 impl AsyncIppParser {
     const BUF_SIZE: usize = 32768;
 
-    fn process_item<I>(mut self: Pin<&mut Self>, item: I) -> Result<(), ParseError>
-    where
-        I: AsRef<[u8]>,
-    {
+    fn process_chunk(mut self: Pin<&mut Self>, chunk: &[u8]) -> Result<(), ParseError> {
         match self.state {
             AsyncParseState::Headers(ref mut buffer) => {
-                buffer.extend_from_slice(item.as_ref());
+                buffer.extend_from_slice(chunk.as_ref());
                 let length = buffer.len() as u64;
 
                 let mut reader = io::Cursor::new(buffer);
@@ -242,7 +239,7 @@ impl AsyncIppParser {
                 }
             }
             AsyncParseState::Payload(ref mut result) => {
-                let mut reader = io::Cursor::new(&item);
+                let mut reader = io::Cursor::new(&chunk);
                 match result.payload {
                     Some(PayloadKind::ReceivedData(ref mut file)) => {
                         debug!(
@@ -279,7 +276,7 @@ impl Future for AsyncIppParser {
                 }
                 Ok(size) => {
                     debug!("Chunk received: {}", size);
-                    if let Err(e) = self.as_mut().process_item(&buf[..size]) {
+                    if let Err(e) = self.as_mut().process_chunk(&buf[..size]) {
                         return Poll::Ready(Err(e));
                     }
                 }
@@ -306,7 +303,7 @@ impl Future for AsyncIppParser {
 
 impl<R> From<R> for AsyncIppParser
 where
-    R: AsyncRead + Send + 'static,
+    R: AsyncRead + 'static,
 {
     /// Construct asynchronous parser from the stream
     fn from(r: R) -> AsyncIppParser {
