@@ -404,7 +404,7 @@ mod tests {
     fn test_collection_de_serialize() {
         let attr = IppAttribute::new(
             "coll",
-            IppValue::Collection(vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)]),
+            IppValue::Collection(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
         );
         let mut buf = Vec::new();
         assert!(attr.write(&mut io::Cursor::new(&mut buf)).is_ok());
@@ -429,7 +429,7 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value().as_collection(),
-            Some(&vec![IppValue::Integer(0x11111111), IppValue::Integer(0x22222222)])
+            Some(&vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)])
         );
     }
 }

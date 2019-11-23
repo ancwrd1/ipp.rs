@@ -51,8 +51,7 @@ pub(crate) trait IppReadExt: Read {
     }
 
     fn read_bytes(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
-        let mut buf = Vec::with_capacity(len);
-        buf.resize(len, 0);
+        let mut buf = vec![0; len];
         self.read_exact(&mut buf)?;
 
         Ok(buf)
@@ -121,7 +120,7 @@ mod tests {
         let header = header.ok().unwrap();
         assert_eq!(header.version, IppVersion::Ipp11);
         assert_eq!(header.operation_status, 0x1122);
-        assert_eq!(header.request_id, 0x33445566);
+        assert_eq!(header.request_id, 0x3344_5566);
     }
 
     #[test]
@@ -132,13 +131,13 @@ mod tests {
         assert!(header.is_err());
         if let Some(ParseError::InvalidVersion) = header.err() {
         } else {
-            assert!(false);
+            panic!("Shouldn't succeed");
         }
     }
 
     #[test]
     fn test_write_header() {
-        let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55aa55);
+        let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55_aa55);
         let mut buf = Vec::new();
         assert!(header.write(&mut Cursor::new(&mut buf)).is_ok());
         assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);

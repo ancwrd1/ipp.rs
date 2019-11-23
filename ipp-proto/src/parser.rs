@@ -341,7 +341,7 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
     #[test]
@@ -358,7 +358,7 @@ mod tests {
         let attr = attrs.get("test").unwrap();
         assert_eq!(
             attr.value().as_list_of(),
-            Some(&vec![IppValue::Integer(0x12345678), IppValue::Integer(0x77654321)])
+            Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
         );
     }
 
@@ -377,7 +377,7 @@ mod tests {
         assert_eq!(
             attr.value().as_collection(),
             Some(&vec![
-                IppValue::Integer(0x12345678),
+                IppValue::Integer(0x1234_5678),
                 IppValue::Keyword("key".to_owned())
             ])
         );
@@ -397,7 +397,7 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         assert!(res.payload.is_none());
     }
@@ -417,12 +417,12 @@ mod tests {
         let res = result.ok().unwrap();
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
-        assert_eq!(attr.value().as_integer(), Some(&0x12345678));
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         match res.payload {
             Some(PayloadKind::ReceivedData(f)) => {
-                let foo = std::fs::read_to_string(f.path()).unwrap();
-                assert_eq!(foo, "foo");
+                let data = std::fs::read_to_string(f.path()).unwrap();
+                assert_eq!(data, "foo");
             }
             _ => panic!("Wrong payload!"),
         }

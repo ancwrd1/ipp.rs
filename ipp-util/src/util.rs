@@ -72,13 +72,18 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
 
     let attrs = client.send(operation).await?;
 
-    if let Some(group) = attrs.groups_of(DelimiterTag::PrinterAttributes).get(0) {
-        let mut values: Vec<_> = group.attributes().values().collect();
-        values.sort_by(|a, b| a.name().cmp(b.name()));
-        for v in values {
-            println!("{}: {}", v.name(), v.value());
-        }
+    let mut values = attrs
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .iter()
+        .flat_map(|group| group.attributes().values())
+        .collect::<Vec<_>>();
+
+    values.sort_by(|a, b| a.name().cmp(b.name()));
+
+    for v in values {
+        println!("{}: {}", v.name(), v.value());
     }
+
     Ok(())
 }
 
