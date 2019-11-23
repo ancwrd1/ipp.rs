@@ -19,4 +19,4 @@ http = "0.1"
 [dependencies.isahc]
 version = "0.8"
 default-features = false
-features = ["static-curl"]
+features = ["static-curl", "http2"]

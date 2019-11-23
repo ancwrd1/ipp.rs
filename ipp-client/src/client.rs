@@ -3,9 +3,11 @@
 //!
 use std::{borrow::Cow, time::Duration};
 
-use http::Method;
-use isahc::config::{RedirectPolicy, SslOption};
-use isahc::prelude::*;
+use http::{uri::Authority, Method};
+use isahc::{
+    config::{RedirectPolicy, SslOption},
+    prelude::*,
+};
 use log::debug;
 use num_traits::FromPrimitive;
 
@@ -18,7 +20,6 @@ use ipp_proto::{
 };
 
 use crate::IppError;
-use http::uri::Authority;
 
 const ERROR_STATES: &[&str] = &[
     "media-jam",
@@ -134,11 +135,6 @@ impl IppClient {
     /// Send request and return response
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         let mut builder = Request::builder();
-        builder.uri(&self.uri);
-        builder.connect_timeout(Duration::from_secs(10));
-        builder.header("Content-Type", "application/ipp");
-        builder.method(Method::POST);
-        builder.redirect_policy(RedirectPolicy::Limit(3));
 
         if self.timeout > 0 {
             debug!("Setting timeout to {}", self.timeout);
@@ -146,6 +142,7 @@ impl IppClient {
         }
 
         if self.ignore_tls_errors {
+            debug!("Setting dangerous TLS options");
             builder.ssl_options(
                 SslOption::DANGER_ACCEPT_INVALID_CERTS
                     | SslOption::DANGER_ACCEPT_REVOKED_CERTS
@@ -153,18 +150,27 @@ impl IppClient {
             );
         }
 
-        let request = builder.body(Body::reader(request.into_reader()))?;
-        let resp = request.send_async().await?;
+        debug!("Sending request to {}", self.uri);
 
-        let status = resp.status().as_u16();
-        if status != 200 {
-            return Err(IppError::RequestError(status));
+        let response = builder
+            .uri(&self.uri)
+            .connect_timeout(Duration::from_secs(10))
+            .header("Content-Type", "application/ipp")
+            .method(Method::POST)
+            .redirect_policy(RedirectPolicy::Limit(32))
+            .body(Body::reader(request.into_reader()))?
+            .send_async()
+            .await?;
+
+        debug!("Response status: {}", response.status());
+
+        match response.status().as_u16() {
+            200 => AsyncIppParser::from(response.into_body())
+                .await
+                .map_err(IppError::from)
+                .map(IppRequestResponse::from_parse_result),
+            other => Err(IppError::RequestError(other)),
         }
-
-        AsyncIppParser::from(resp.into_body())
-            .await
-            .map_err(IppError::from)
-            .map(IppRequestResponse::from_parse_result)
     }
 }
 
