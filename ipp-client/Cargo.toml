@@ -17,6 +17,6 @@ log = "0.4"
 http = "0.1"
 
 [dependencies.isahc]
-git = "https://github.com/sagebind/isahc"
+version = "0.8"
 default-features = false
 features = ["static-curl"]
