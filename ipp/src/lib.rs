@@ -16,7 +16,7 @@
 //!         Some(uri)
 //!     );
 //!     let client = IppClientBuilder::new(&uri).build();
-//!     let resp = async_std::task::block_on(client.send_request(req))?;
+//!     let resp = futures::executor::block_on(client.send_request(req))?;
 //!     if resp.header().operation_status <= 2 {
 //!         println!("result: {:?}", resp.attributes());
 //!     }
@@ -25,13 +25,13 @@
 //!```
 //!```rust,no_run
 //! // using operations API
-//! use ipp::proto::{IppOperationBuilder, ipp::DelimiterTag};
 //! use ipp::client::IppClientBuilder;
+//! use ipp::proto::{IppOperationBuilder, ipp::DelimiterTag};
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
 //!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer").build();
-//!     let attrs = async_std::task::block_on(client.send(operation))?;
+//!     let attrs = futures::executor::block_on(client.send(operation))?;
 //!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
 //!         println!("{}: {}", v.name(), v.value());
 //!     }
