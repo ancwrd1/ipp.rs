@@ -11,9 +11,11 @@ use std::{
 use byteorder::{BigEndian, ReadBytesExt};
 use futures::{ready, AsyncRead, Future};
 use log::{debug, error};
-use num_traits::FromPrimitive;
 
-use crate::{ipp::*, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue, PayloadKind};
+use crate::{
+    ipp::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue,
+    PayloadKind,
+};
 
 /// Parse error enum
 #[derive(Debug)]

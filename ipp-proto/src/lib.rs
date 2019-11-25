@@ -2,7 +2,8 @@ use std::io::{self, Read, Write};
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use futures::AsyncRead;
-use num_traits::FromPrimitive;
+
+pub use num_traits::FromPrimitive;
 
 pub use crate::{
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},

@@ -9,14 +9,13 @@ use isahc::{
     prelude::*,
 };
 use log::debug;
-use num_traits::FromPrimitive;
 
 use ipp_proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     ipp::{self, DelimiterTag, PrinterState},
     operation::IppOperation,
     request::IppRequestResponse,
-    AsyncIppParser, IppAttributes, IppOperationBuilder,
+    AsyncIppParser, FromPrimitive as _, IppAttributes, IppOperationBuilder,
 };
 
 use crate::IppError;

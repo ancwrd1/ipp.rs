@@ -9,9 +9,8 @@ use std::{
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use enum_as_inner::EnumAsInner;
-use num_traits::FromPrimitive;
 
-use crate::{ipp::ValueTag, IppReadExt};
+use crate::{ipp::ValueTag, IppReadExt, FromPrimitive as _};
 
 /// IPP value enumeration
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]

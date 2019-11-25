@@ -1,12 +1,11 @@
 use std::{env, error::Error, process::exit};
 
-use num_traits::cast::FromPrimitive;
-
 use ipp::{
     client::{IppClientBuilder, IppError},
     proto::{
         ipp::{DelimiterTag, PrinterState},
         operation::cups::CupsGetPrinters,
+        FromPrimitive as _,
     },
 };
 

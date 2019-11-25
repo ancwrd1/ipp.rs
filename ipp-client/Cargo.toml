@@ -12,7 +12,6 @@ edition = "2018"
 
 [dependencies]
 ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
-num-traits = "0.2"
 log = "0.4"
 http = "0.1"
 
