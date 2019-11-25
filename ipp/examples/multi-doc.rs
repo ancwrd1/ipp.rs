@@ -1,13 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::{
-    client::{IppClientBuilder, IppError},
-    proto::{
-        attribute::{JOB_ID, OPERATIONS_SUPPORTED},
-        ipp::{DelimiterTag, Operation},
-        IppOperationBuilder, IppValue,
-    },
-};
+use ipp::prelude::*;
 
 fn supports_multi_doc(v: &IppValue) -> bool {
     v.as_enum()

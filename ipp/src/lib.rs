@@ -5,8 +5,7 @@
 //!
 //!```rust,no_run
 //! // using raw API
-//! use ipp::client::IppClientBuilder;
-//! use ipp::proto::{ipp::Operation, request::IppRequestResponse, IppVersion};
+//! use ipp::prelude::*;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri = "http://localhost:631/printers/test-printer";
@@ -25,8 +24,7 @@
 //!```
 //!```rust,no_run
 //! // using operations API
-//! use ipp::client::IppClientBuilder;
-//! use ipp::proto::{IppOperationBuilder, ipp::DelimiterTag};
+//! use ipp::prelude::*;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let operation = IppOperationBuilder::get_printer_attributes().build();
@@ -46,3 +44,11 @@ pub use ipp_client as client;
 
 #[cfg(feature = "util")]
 pub use ipp_util as util;
+
+pub mod prelude {
+    pub use super::client::{IppClient, IppClientBuilder, IppError};
+    pub use super::proto::{
+        attribute::*, ipp::*, request::IppRequestResponse, AsyncIppParser, FromPrimitive as _, IppAttribute,
+        IppAttributeGroup, IppAttributes, IppHeader, IppJobSource, IppOperationBuilder, IppParser, IppValue,
+    };
+}

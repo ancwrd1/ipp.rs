@@ -1,9 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::{
-    client::IppClientBuilder,
-    proto::{ipp::DelimiterTag, IppOperationBuilder},
-};
+use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     async_std::task::block_on(async {

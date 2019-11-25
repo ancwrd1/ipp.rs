@@ -1,13 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::{
-    client::{IppClientBuilder, IppError},
-    proto::{
-        ipp::{DelimiterTag, PrinterState},
-        operation::cups::CupsGetPrinters,
-        FromPrimitive as _,
-    },
-};
+use ipp::{prelude::*, proto::operation::cups::CupsGetPrinters};
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     async_std::task::block_on(async {

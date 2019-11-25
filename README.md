@@ -10,10 +10,7 @@ Transport is based on asynchronous HTTP client from the `isahc` crate.
 Usage example:
 
 ```rust,no_run
-use ipp::{
-    client::IppClientBuilder,
-    proto::{ipp::DelimiterTag, IppOperationBuilder},
-};
+use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().collect();
