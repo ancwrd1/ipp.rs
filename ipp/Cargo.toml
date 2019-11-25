@@ -21,6 +21,7 @@ ipp-util = { version = "0.4.0", path = "../ipp-util", optional = true }
 [dev-dependencies]
 env_logger = "0.7"
 async-std = "1"
+futures = "0.3"
 
 [features]
 default = ["client"]
