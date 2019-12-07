@@ -164,7 +164,8 @@ impl IppClient {
         debug!("Response status: {}", response.status());
 
         match response.status().as_u16() {
-            200 => AsyncIppParser::from(response.into_body())
+            200 => AsyncIppParser::new(response.into_body())
+                .parse()
                 .await
                 .map_err(IppError::from)
                 .map(IppRequestResponse::from_parse_result),

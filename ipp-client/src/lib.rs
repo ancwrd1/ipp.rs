@@ -1,6 +1,6 @@
 use std::{fmt, io};
 
-use ipp_proto::{ipp::StatusCode, value::ValueParseError, ParseError};
+use ipp_proto::{ipp::StatusCode, value::ValueParseError, IppParseError};
 
 pub use crate::client::IppClient;
 
@@ -26,7 +26,7 @@ pub enum IppError {
     /// Parameter error
     ParamError(String),
     /// Parsing error
-    ParseError(ParseError),
+    ParseError(IppParseError),
     /// Value parsing error
     ValueParseError(ValueParseError),
     /// Missing attribute in response
@@ -78,8 +78,8 @@ impl From<isahc::Error> for IppError {
     }
 }
 
-impl From<ParseError> for IppError {
-    fn from(error: ParseError) -> Self {
+impl From<IppParseError> for IppError {
+    fn from(error: IppParseError) -> Self {
         IppError::ParseError(error)
     }
 }

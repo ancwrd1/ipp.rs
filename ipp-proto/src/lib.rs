@@ -11,7 +11,7 @@ pub use crate::{
         CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
     },
     ipp::{IppVersion, Operation, StatusCode},
-    parser::{AsyncIppParser, IppParser, ParseError},
+    parser::{AsyncIppParser, IppParser, IppParseError},
     request::{IppRequestResponse, PayloadKind},
     value::IppValue,
 };
@@ -73,9 +73,9 @@ pub struct IppHeader {
 
 impl IppHeader {
     /// Create IppHeader from the reader
-    pub fn from_reader(reader: &mut dyn Read) -> Result<IppHeader, ParseError> {
+    pub fn from_reader(reader: &mut dyn Read) -> Result<IppHeader, IppParseError> {
         let retval = IppHeader::new(
-            IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| ParseError::InvalidVersion)?,
+            IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| IppParseError::InvalidVersion)?,
             reader.read_u16::<BigEndian>()?,
             reader.read_u32::<BigEndian>()?,
         );
@@ -130,7 +130,7 @@ mod tests {
 
         let header = IppHeader::from_reader(&mut Cursor::new(data));
         assert!(header.is_err());
-        if let Some(ParseError::InvalidVersion) = header.err() {
+        if let Some(IppParseError::InvalidVersion) = header.err() {
         } else {
             panic!("Shouldn't succeed");
         }
