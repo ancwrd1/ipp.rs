@@ -3,18 +3,16 @@
 //!
 use std::{
     fmt,
-    io::{self, Read},
-    pin::Pin,
-    task::{Context, Poll},
+    io::{self, Seek, SeekFrom, Write},
 };
 
-use byteorder::{BigEndian, ReadBytesExt};
-use futures::{ready, AsyncRead, Future};
+use bytes::Bytes;
+use futures::{AsyncRead, AsyncReadExt};
 use log::{debug, error};
 
 use crate::{
-    ipp::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppReadExt, IppValue,
-    PayloadKind,
+    ipp::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppPayload,
+    IppRequestResponse, IppValue,
 };
 
 /// Parse error enum
@@ -59,41 +57,29 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     }
 }
 
-/// IPP parsing result
-pub struct IppParseResult {
-    pub header: IppHeader,
-    pub attributes: IppAttributes,
-    pub payload: Option<PayloadKind>,
-}
-
-impl IppParseResult {
-    fn new(header: IppHeader, attributes: IppAttributes) -> IppParseResult {
-        IppParseResult {
-            header,
-            attributes,
-            payload: None,
-        }
-    }
-}
-
 /// IPP parser implementation
 pub struct IppParser<'a> {
-    reader: &'a mut dyn Read,
+    reader: &'a mut (dyn AsyncRead + Unpin),
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
     attributes: IppAttributes,
+    payload: Option<IppPayload>,
 }
 
 impl<'a> IppParser<'a> {
-    /// Create IPP parser using the given Read
-    pub fn new(reader: &'a mut dyn Read) -> IppParser<'a> {
+    /// Create IPP parser from AsyncRead
+    pub fn new<R>(reader: &'a mut R) -> IppParser<'a>
+    where
+        R: AsyncRead + Unpin,
+    {
         IppParser {
             reader,
             current_group: None,
             last_name: None,
             context: vec![vec![]],
             attributes: IppAttributes::new(),
+            payload: None,
         }
     }
 
@@ -128,15 +114,49 @@ impl<'a> IppParser<'a> {
         Ok(tag)
     }
 
-    fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
+    async fn read_u16(&mut self) -> Result<u16, IppParseError> {
+        let mut buf = [0u8; 2];
+        self.reader.read_exact(&mut buf).await?;
+
+        Ok(u16::from_be_bytes(buf))
+    }
+
+    async fn read_u8(&mut self) -> Result<u8, IppParseError> {
+        let mut buf = [0u8; 1];
+        self.reader.read_exact(&mut buf).await?;
+        Ok(buf[0])
+    }
+
+    async fn read_u32(&mut self) -> Result<u32, IppParseError> {
+        let mut buf = [0u8; 4];
+        self.reader.read_exact(&mut buf).await?;
+        Ok(u32::from_be_bytes(buf))
+    }
+
+    async fn read_string(&mut self, len: usize) -> Result<String, IppParseError> {
+        let mut buf = vec![0; len];
+        self.reader.read_exact(&mut buf).await?;
+        Ok(String::from_utf8_lossy(&buf).into_owned())
+    }
+
+    async fn read_bytes(&mut self, len: usize) -> Result<Bytes, IppParseError> {
+        let mut buf = vec![0; len];
+        self.reader.read_exact(&mut buf).await?;
+        Ok(buf.into())
+    }
+
+    async fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
         // value tag
-        let namelen = self.reader.read_u16::<BigEndian>()?;
-        let name = self.reader.read_string(namelen as usize)?;
-        let value = IppValue::read(tag, &mut self.reader)?;
+        let name_len = self.read_u16().await?;
+        let name = self.read_string(name_len as usize).await?;
+        let value_len = self.read_u16().await?;
+        let value = self.read_bytes(value_len as usize).await?;
 
-        debug!("Value tag: {:0x}: {}: {}", tag, name, value);
+        let ipp_value = IppValue::parse(tag, value)?;
 
-        if namelen > 0 {
+        debug!("Value tag: {:0x}: {}: {}", tag, name, ipp_value);
+
+        if name_len > 0 {
             // single attribute or begin of array
             self.add_last_attribute();
             // store it as a previous attribute
@@ -145,7 +165,7 @@ impl<'a> IppParser<'a> {
         if tag == ValueTag::BegCollection as u8 {
             // start new collection in the stack
             debug!("Begin collection");
-            match value {
+            match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
                     error!("Invalid begin collection attribute");
@@ -156,7 +176,7 @@ impl<'a> IppParser<'a> {
         } else if tag == ValueTag::EndCollection as u8 {
             // get collection from the stack and add it to the previous element
             debug!("End collection");
-            match value {
+            match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
                     error!("Invalid end collection attribute");
@@ -170,174 +190,61 @@ impl<'a> IppParser<'a> {
             }
         } else if let Some(val_list) = self.context.last_mut() {
             // add attribute to the current collection
-            val_list.push(value);
+            val_list.push(ipp_value);
         }
         Ok(())
     }
 
     /// Parse IPP stream
-    pub fn parse(mut self) -> Result<IppParseResult, IppParseError> {
-        let header = IppHeader::from_reader(self.reader)?;
+    pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
+        let version = IppVersion::from_u16(self.read_u16().await?).ok_or_else(|| IppParseError::InvalidVersion)?;
+        let operation_status = self.read_u16().await?;
+        let request_id = self.read_u32().await?;
+
+        let header = IppHeader::new(version, operation_status, request_id);
         debug!("IPP header: {:?}", header);
 
         loop {
-            match self.reader.read_u8()? {
+            match self.read_u8().await? {
                 tag @ 0x01..=0x05 => {
                     if self.parse_delimiter(tag)? == DelimiterTag::EndOfAttributes {
                         break;
                     }
                 }
-                tag @ 0x10..=0x4a => self.parse_value(tag)?,
+                tag @ 0x10..=0x4a => self.parse_value(tag).await?,
                 tag => {
                     return Err(IppParseError::InvalidTag(tag));
                 }
             }
         }
 
-        Ok(IppParseResult::new(header, self.attributes))
-    }
-}
-
-enum AsyncParseState {
-    Headers(Vec<u8>),
-    Payload(IppParseResult),
-}
-
-// Asynchronous IPP parser using AsyncRead
-struct IppParseFuture {
-    state: AsyncParseState,
-    reader: Pin<Box<dyn AsyncRead>>,
-}
-
-impl IppParseFuture {
-    const BUF_SIZE: usize = 32768;
-
-    fn process_chunk(mut self: Pin<&mut Self>, chunk: &[u8]) -> Result<(), IppParseError> {
-        match self.state {
-            AsyncParseState::Headers(ref mut buffer) => {
-                buffer.extend_from_slice(chunk.as_ref());
-                let length = buffer.len() as u64;
-
-                let mut reader = io::Cursor::new(buffer);
-                let parser = IppParser::new(&mut reader);
-
-                match parser.parse() {
-                    Ok(mut result) => {
-                        debug!("Parse ok, proceeding to payload state");
-                        if reader.position() < length {
-                            debug!("Adding residual payload from this chunk");
-                            let mut temp = tempfile::NamedTempFile::new()?;
-                            io::copy(&mut reader, &mut temp)?;
-                            result.payload = Some(PayloadKind::ReceivedData(temp));
-                        }
-                        self.state = AsyncParseState::Payload(result);
-                    }
-                    Err(IppParseError::Incomplete) => {
-                        debug!("Incomplete request, awaiting for more data");
-                    }
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
-            }
-            AsyncParseState::Payload(ref mut result) => {
-                let mut reader = io::Cursor::new(&chunk);
-                match result.payload {
-                    Some(PayloadKind::ReceivedData(ref mut file)) => {
-                        debug!(
-                            "Payload chunk received, appending to existing file: {}",
-                            file.path().display()
-                        );
-                        io::copy(&mut reader, file)?;
-                    }
-                    None => {
-                        let mut temp = tempfile::NamedTempFile::new()?;
-                        debug!("Payload chunk received, creating new file: {}", temp.path().display());
-                        io::copy(&mut reader, &mut temp)?;
-                        result.payload = Some(PayloadKind::ReceivedData(temp));
-                    }
-                    _ => panic!("Should not happen"),
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-impl Future for IppParseFuture {
-    type Output = Result<IppParseResult, IppParseError>;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let mut buf = [0u8; IppParseFuture::BUF_SIZE];
-
-        loop {
-            match ready!(self.reader.as_mut().poll_read(cx, &mut buf)) {
-                Ok(0) => {
-                    debug!("Channel EOF reached");
-                    break;
-                }
-                Ok(size) => {
-                    debug!("Chunk received: {}", size);
-                    if let Err(e) = self.as_mut().process_chunk(&buf[..size]) {
-                        return Poll::Ready(Err(e));
-                    }
-                }
-                Err(e) => {
-                    return Poll::Ready(Err(IppParseError::from(e)));
-                }
-            }
+        let mut buf = [0u8; 32768];
+        let size = self.reader.read(&mut buf).await?;
+        if size > 0 {
+            debug!("Parsing payload");
+            let mut temp = tempfile::NamedTempFile::new()?;
+            temp.write_all(&buf[0..size])?;
+            futures::io::copy(self.reader, &mut futures::io::AllowStdIo::new(&mut temp)).await?;
+            temp.seek(SeekFrom::Start(0))?;
+            self.payload = Some(IppPayload::from_temp_file(temp));
         }
 
-        let result = match self.state {
-            AsyncParseState::Headers(_) => Err(IppParseError::Incomplete),
-            AsyncParseState::Payload(ref mut result) => {
-                debug!("Parsing finished, payload: {}", result.payload.is_some());
-                Ok(IppParseResult {
-                    header: result.header.clone(),
-                    attributes: result.attributes.clone(),
-                    payload: result.payload.take(),
-                })
-            }
-        };
-        Poll::Ready(result)
-    }
-}
-
-/// Asynchronous IPP parser
-pub struct AsyncIppParser {
-    inner: IppParseFuture,
-}
-
-impl AsyncIppParser {
-    /// Create new parser from a given AsyncRead
-    pub fn new<R>(reader: R) -> AsyncIppParser
-    where
-        R: AsyncRead + 'static,
-    {
-        AsyncIppParser {
-            inner: IppParseFuture {
-                state: AsyncParseState::Headers(Vec::new()),
-                reader: Box::pin(reader),
-            },
-        }
-    }
-
-    /// Parse IPP stream asynchronously
-    pub async fn parse(&mut self) -> Result<IppParseResult, IppParseError> {
-        Pin::new(&mut self.inner).await
+        Ok(IppRequestResponse {
+            header,
+            attributes: self.attributes,
+            payload: self.payload,
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::Cursor;
-
     use super::*;
 
     #[test]
     fn test_parse_no_attributes() {
         let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
-        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -349,7 +256,7 @@ mod tests {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
-        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -364,7 +271,7 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
             0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
         ];
-        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -382,7 +289,7 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
             0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
-        let result = IppParser::new(&mut Cursor::new(data)).parse();
+        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -398,34 +305,13 @@ mod tests {
     }
 
     #[test]
-    fn test_async_parser_without_payload() {
-        let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
-        ];
-
-        let mut parser = AsyncIppParser::new(futures::io::Cursor::new(data));
-
-        let result = futures::executor::block_on(async { parser.parse().await });
-        assert!(result.is_ok());
-
-        let res = result.ok().unwrap();
-        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
-        let attr = attrs.get("test").unwrap();
-        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
-
-        assert!(res.payload.is_none());
-    }
-
-    #[test]
-    fn test_async_parser_with_payload() {
+    fn test_parser_with_payload() {
         let data = vec![
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
             b'f', b'o', b'o',
         ];
 
-        let mut parser = AsyncIppParser::new(futures::io::Cursor::new(data));
-
-        let result = futures::executor::block_on(async { parser.parse().await });
+        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -434,9 +320,10 @@ mod tests {
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         match res.payload {
-            Some(PayloadKind::ReceivedData(f)) => {
-                let data = std::fs::read_to_string(f.path()).unwrap();
-                assert_eq!(data, "foo");
+            Some(payload) => {
+                let mut cursor = futures::io::Cursor::new(Vec::new());
+                futures::executor::block_on(futures::io::copy(payload.into_reader(), &mut cursor)).unwrap();
+                assert_eq!(cursor.into_inner(), "foo".as_bytes());
             }
             _ => panic!("Wrong payload!"),
         }

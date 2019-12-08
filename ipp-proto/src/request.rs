@@ -1,38 +1,22 @@
 //!
 //! IPP request
 //!
-use std::io::{self, Cursor, Write};
-
-use enum_as_inner::EnumAsInner;
+use bytes::{BufMut, Bytes, BytesMut};
 use futures::{AsyncRead, AsyncReadExt};
 use log::debug;
-use tempfile::NamedTempFile;
 
 use crate::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
-    parser::IppParseResult,
     value::*,
-    IppHeader, IppJobSource, StatusCode,
+    IppHeader, IppPayload, StatusCode,
 };
-
-/// Payload type inside the IppRequestResponse
-#[derive(EnumAsInner)]
-pub enum PayloadKind {
-    /// Job source for client side
-    JobSource(IppJobSource),
-    /// Received data for server side
-    ReceivedData(NamedTempFile),
-}
 
 /// IPP request/response struct
 pub struct IppRequestResponse {
-    /// IPP header
-    header: IppHeader,
-    /// IPP attributes
-    attributes: IppAttributes,
-    /// Optional payload after IPP-encoded stream (for example binary data for Print-Job operation)
-    payload: Option<PayloadKind>,
+    pub(crate) header: IppHeader,
+    pub(crate) attributes: IppAttributes,
+    pub(crate) payload: Option<IppPayload>,
 }
 
 impl IppRequestResponse {
@@ -85,15 +69,6 @@ impl IppRequestResponse {
         retval
     }
 
-    /// Create IppRequestResponse from parse result
-    pub fn from_parse_result(result: IppParseResult) -> IppRequestResponse {
-        IppRequestResponse {
-            header: result.header,
-            attributes: result.attributes,
-            payload: result.payload,
-        }
-    }
-
     /// Get IPP header
     pub fn header(&self) -> &IppHeader {
         &self.header
@@ -115,44 +90,31 @@ impl IppRequestResponse {
     }
 
     /// Get payload
-    pub fn payload(&self) -> &Option<PayloadKind> {
-        &self.payload
+    pub fn payload(&self) -> Option<&IppPayload> {
+        self.payload.as_ref()
     }
 
     /// Get mutable payload
-    pub fn payload_mut(&mut self) -> &mut Option<PayloadKind> {
+    pub fn payload_mut(&mut self) -> &mut Option<IppPayload> {
         &mut self.payload
     }
 
-    /// Set payload
-    pub fn add_payload(&mut self, payload: IppJobSource) {
-        self.payload = Some(PayloadKind::JobSource(payload))
+    /// Write request to byte array not including payload
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
+        buffer.put(self.header.to_bytes());
+        buffer.put(self.attributes.to_bytes());
+        buffer.freeze()
     }
 
-    /// Serialize request into the binary stream (TCP)
-    pub fn write(&mut self, writer: &mut dyn Write) -> io::Result<usize> {
-        let mut retval = self.header.write(writer)?;
-
-        retval += self.attributes.write(writer)?;
-
-        debug!("Wrote {} bytes IPP stream", retval);
-
-        Ok(retval)
-    }
-
-    /// Convert request/response into Stream
+    /// Convert request/response into AsyncRead including payload
     pub fn into_reader(self) -> Box<dyn AsyncRead + Send + Unpin + 'static> {
-        let mut header = Cursor::new(Vec::with_capacity(1024));
-        let _ = self
-            .header
-            .write(&mut header)
-            .and_then(|_| self.attributes.write(&mut header));
-
-        let cursor = futures::io::Cursor::new(header.into_inner());
+        let header = self.to_bytes();
+        let cursor = futures::io::Cursor::new(header);
         debug!("IPP header size: {}", cursor.get_ref().len());
 
         match self.payload {
-            Some(PayloadKind::JobSource(payload)) => {
+            Some(payload) => {
                 debug!("Adding payload to a reader chain");
                 Box::new(cursor.chain(payload.into_reader()))
             }

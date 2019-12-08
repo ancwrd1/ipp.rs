@@ -1,7 +1,7 @@
 use crate::{
     attribute::IppAttribute,
     operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument},
-    IppJobSource,
+    IppPayload,
 };
 
 /// Builder to create IPP operations
@@ -10,12 +10,12 @@ pub struct IppOperationBuilder;
 impl IppOperationBuilder {
     /// Create PrintJob operation
     ///
-    /// * `source` - `IppJobSource`
-    pub fn print_job<T>(source: T) -> PrintJobBuilder
+    /// * `payload` - `IppPayload`
+    pub fn print_job<T>(payload: T) -> PrintJobBuilder
     where
-        IppJobSource: From<T>,
+        IppPayload: From<T>,
     {
-        PrintJobBuilder::new(source.into())
+        PrintJobBuilder::new(payload.into())
     }
 
     /// Create GetPrinterAttributes operation
@@ -31,27 +31,27 @@ impl IppOperationBuilder {
     /// Create SendDocument operation
     ///
     /// * `job_id` - job id returned by Create-Job operation <br/>
-    /// * `source` - `IppJobSource` <br/>
-    pub fn send_document<T>(job_id: i32, source: T) -> SendDocumentBuilder
+    /// * `payload` - `IppPayload` <br/>
+    pub fn send_document<T>(job_id: i32, payload: T) -> SendDocumentBuilder
     where
-        IppJobSource: From<T>,
+        IppPayload: From<T>,
     {
-        SendDocumentBuilder::new(job_id, source.into())
+        SendDocumentBuilder::new(job_id, payload.into())
     }
 }
 
 /// Builder to create PrintJob operation
 pub struct PrintJobBuilder {
-    source: IppJobSource,
+    payload: IppPayload,
     user_name: Option<String>,
     job_title: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
 impl PrintJobBuilder {
-    fn new(source: IppJobSource) -> PrintJobBuilder {
+    fn new(payload: IppPayload) -> PrintJobBuilder {
         PrintJobBuilder {
-            source,
+            payload: payload,
             user_name: None,
             job_title: None,
             attributes: Vec::new(),
@@ -77,7 +77,7 @@ impl PrintJobBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let op = PrintJob::new(self.source, self.user_name.as_ref(), self.job_title.as_ref());
+        let op = PrintJob::new(self.payload, self.user_name.as_ref(), self.job_title.as_ref());
         self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
@@ -156,16 +156,16 @@ impl CreateJobBuilder {
 /// Builder to create SendDocument operation
 pub struct SendDocumentBuilder {
     job_id: i32,
-    source: IppJobSource,
+    payload: IppPayload,
     user_name: Option<String>,
     is_last: bool,
 }
 
 impl SendDocumentBuilder {
-    fn new(job_id: i32, source: IppJobSource) -> SendDocumentBuilder {
+    fn new(job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
         SendDocumentBuilder {
             job_id,
-            source,
+            payload: payload,
             user_name: None,
             is_last: true,
         }
@@ -185,6 +185,6 @@ impl SendDocumentBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        SendDocument::new(self.job_id, self.source, self.user_name.as_ref(), self.is_last)
+        SendDocument::new(self.job_id, self.payload, self.user_name.as_ref(), self.is_last)
     }
 }

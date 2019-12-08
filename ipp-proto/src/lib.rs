@@ -1,9 +1,7 @@
-use std::io::{self, Read, Write};
-
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use bytes::{BufMut, Bytes, BytesMut};
 use futures::AsyncRead;
-
 pub use num_traits::FromPrimitive;
+use tempfile::NamedTempFile;
 
 pub use crate::{
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
@@ -11,8 +9,8 @@ pub use crate::{
         CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
     },
     ipp::{IppVersion, Operation, StatusCode},
-    parser::{AsyncIppParser, IppParser, IppParseError},
-    request::{IppRequestResponse, PayloadKind},
+    parser::{IppParseError, IppParser},
+    request::IppRequestResponse,
     value::IppValue,
 };
 
@@ -24,41 +22,42 @@ pub mod parser;
 pub mod request;
 pub mod value;
 
-/// Source for IPP data stream (job file)
-pub struct IppJobSource {
-    inner: Box<dyn AsyncRead + Send + Unpin>,
+pub(crate) enum PayloadKind {
+    Read(Box<dyn AsyncRead + Send + Unpin>),
+    TempFile(NamedTempFile),
 }
 
-impl IppJobSource {
+/// Source for IPP data stream (job file)
+pub struct IppPayload {
+    inner: PayloadKind,
+}
+
+impl IppPayload {
     pub fn into_reader(self) -> impl AsyncRead + Send + Unpin {
-        self.inner
+        match self.inner {
+            PayloadKind::Read(read) => read,
+            PayloadKind::TempFile(file) => Box::new(futures::io::AllowStdIo::new(file)),
+        }
+    }
+
+    pub fn from_temp_file(temp_file: NamedTempFile) -> IppPayload {
+        IppPayload {
+            inner: PayloadKind::TempFile(temp_file),
+        }
     }
 }
 
-impl<T> From<T> for IppJobSource
+impl<T> From<T> for IppPayload
 where
     T: 'static + AsyncRead + Send + Unpin,
 {
     /// Create job source from AsyncRead
     fn from(r: T) -> Self {
-        IppJobSource { inner: Box::new(r) }
+        IppPayload {
+            inner: PayloadKind::Read(Box::new(r)),
+        }
     }
 }
-
-/// Trait which adds two methods to Read implementations: `read_string` and `read_bytes`
-pub(crate) trait IppReadExt: Read {
-    fn read_string(&mut self, len: usize) -> std::io::Result<String> {
-        Ok(String::from_utf8_lossy(&self.read_bytes(len)?).to_string())
-    }
-
-    fn read_bytes(&mut self, len: usize) -> std::io::Result<Vec<u8>> {
-        let mut buf = vec![0; len];
-        self.read_exact(&mut buf)?;
-
-        Ok(buf)
-    }
-}
-impl<R: io::Read + ?Sized> IppReadExt for R {}
 
 /// IPP request and response header
 #[derive(Clone, Debug)]
@@ -72,16 +71,6 @@ pub struct IppHeader {
 }
 
 impl IppHeader {
-    /// Create IppHeader from the reader
-    pub fn from_reader(reader: &mut dyn Read) -> Result<IppHeader, IppParseError> {
-        let retval = IppHeader::new(
-            IppVersion::from_u16(reader.read_u16::<BigEndian>()?).ok_or_else(|| IppParseError::InvalidVersion)?,
-            reader.read_u16::<BigEndian>()?,
-            reader.read_u32::<BigEndian>()?,
-        );
-        Ok(retval)
-    }
-
     /// Create IPP header
     pub fn new(version: IppVersion, operation_status: u16, request_id: u32) -> IppHeader {
         IppHeader {
@@ -96,51 +85,24 @@ impl IppHeader {
         Operation::from_u16(self.operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)
     }
     /// Write header to a given writer
-    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
-        writer.write_u16::<BigEndian>(self.version as u16)?;
-        writer.write_u16::<BigEndian>(self.operation_status)?;
-        writer.write_u32::<BigEndian>(self.request_id)?;
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
+        buffer.put_u16(self.version as u16);
+        buffer.put_u16(self.operation_status);
+        buffer.put_u32(self.request_id);
 
-        Ok(8)
+        buffer.freeze()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::Cursor;
-
     use super::*;
 
     #[test]
-    fn test_read_header_ok() {
-        let data = &[0x01, 0x01, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66];
-
-        let header = IppHeader::from_reader(&mut Cursor::new(data));
-        assert!(header.is_ok());
-
-        let header = header.ok().unwrap();
-        assert_eq!(header.version, IppVersion::Ipp11);
-        assert_eq!(header.operation_status, 0x1122);
-        assert_eq!(header.request_id, 0x3344_5566);
-    }
-
-    #[test]
-    fn test_read_header_error() {
-        let data = &[0xff, 0, 0, 0, 0, 0, 0, 0];
-
-        let header = IppHeader::from_reader(&mut Cursor::new(data));
-        assert!(header.is_err());
-        if let Some(IppParseError::InvalidVersion) = header.err() {
-        } else {
-            panic!("Shouldn't succeed");
-        }
-    }
-
-    #[test]
-    fn test_write_header() {
+    fn test_header_to_bytes() {
         let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55_aa55);
-        let mut buf = Vec::new();
-        assert!(header.write(&mut Cursor::new(&mut buf)).is_ok());
+        let buf = header.to_bytes();
         assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
     }
 }

@@ -1,12 +1,9 @@
 //!
 //! Attribute-related structs
 //!
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-};
+use std::collections::HashMap;
 
-use byteorder::{BigEndian, WriteBytesExt};
+use bytes::{BufMut, Bytes, BytesMut};
 
 use crate::{ipp::*, IppValue};
 
@@ -105,22 +102,15 @@ impl IppAttribute {
         &self.value
     }
 
-    /// Serialize attribute into binary stream
-    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
-        let mut retval = 0;
+    /// Write attribute to byte array
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
 
-        writer.write_u8(self.value.to_tag() as u8)?;
-        retval += 1;
-
-        writer.write_u16::<BigEndian>(self.name.len() as u16)?;
-        retval += 2;
-
-        writer.write_all(self.name.as_bytes())?;
-        retval += self.name.len();
-
-        retval += self.value.write(writer)?;
-
-        Ok(retval)
+        buffer.put_u8(self.value.to_tag() as u8);
+        buffer.put_u16(self.name.len() as u16);
+        buffer.put_slice(self.name.as_bytes());
+        buffer.put(self.value.to_bytes());
+        buffer.freeze()
     }
 }
 
@@ -197,17 +187,17 @@ impl IppAttributes {
         }
     }
 
-    /// Serialize attribute list into binary stream
-    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
-        // first send the header attributes
-        writer.write_u8(DelimiterTag::OperationAttributes as u8)?;
+    /// Write attribute list to byte array
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
 
-        let mut retval = 1;
+        // first send the header attributes
+        buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
         if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).get(0) {
             for hdr in &HEADER_ATTRS {
                 if let Some(attr) = group.attributes().get(*hdr) {
-                    retval += attr.write(writer)?
+                    buffer.put(attr.to_bytes());
                 }
             }
         }
@@ -220,21 +210,19 @@ impl IppAttributes {
         ] {
             if let Some(group) = self.groups_of(*hdr).get(0) {
                 if group.tag() != DelimiterTag::OperationAttributes {
-                    writer.write_u8(group.tag() as u8)?;
-                    retval += 1;
+                    buffer.put_u8(group.tag() as u8);
                 }
                 for (_, attr) in group
                     .attributes()
                     .iter()
                     .filter(|&(_, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()))
                 {
-                    retval += attr.write(writer)?;
+                    buffer.put(attr.to_bytes());
                 }
             }
         }
-        writer.write_u8(DelimiterTag::EndOfAttributes as u8)?;
-        retval += 1;
+        buffer.put_u8(DelimiterTag::EndOfAttributes as u8);
 
-        Ok(retval)
+        buffer.freeze()
     }
 }

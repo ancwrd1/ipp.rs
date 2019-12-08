@@ -48,7 +48,7 @@ pub use ipp_util as util;
 pub mod prelude {
     pub use super::client::{IppClient, IppClientBuilder, IppError};
     pub use super::proto::{
-        attribute::*, ipp::*, request::IppRequestResponse, AsyncIppParser, FromPrimitive as _, IppAttribute,
-        IppAttributeGroup, IppAttributes, IppHeader, IppJobSource, IppOperationBuilder, IppParser, IppValue,
+        attribute::*, ipp::*, request::IppRequestResponse, FromPrimitive as _, IppAttribute, IppAttributeGroup,
+        IppAttributes, IppHeader, IppPayload, IppOperationBuilder, IppParser, IppValue,
     };
 }

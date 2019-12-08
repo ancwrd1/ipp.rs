@@ -3,6 +3,7 @@
 //!
 use std::{borrow::Cow, time::Duration};
 
+use futures::io::BufReader;
 use http::{uri::Authority, Method};
 use isahc::{
     config::{RedirectPolicy, SslOption},
@@ -15,7 +16,7 @@ use ipp_proto::{
     ipp::{self, DelimiterTag, PrinterState},
     operation::IppOperation,
     request::IppRequestResponse,
-    AsyncIppParser, FromPrimitive as _, IppAttributes, IppOperationBuilder,
+    FromPrimitive as _, IppAttributes, IppOperationBuilder, IppParser,
 };
 
 use crate::IppError;
@@ -164,11 +165,10 @@ impl IppClient {
         debug!("Response status: {}", response.status());
 
         match response.status().as_u16() {
-            200 => AsyncIppParser::new(response.into_body())
+            200 => IppParser::new(&mut BufReader::new(BufReader::new(response.into_body())))
                 .parse()
                 .await
-                .map_err(IppError::from)
-                .map(IppRequestResponse::from_parse_result),
+                .map_err(IppError::from),
             other => Err(IppError::RequestError(other)),
         }
     }

@@ -1,16 +1,12 @@
 //!
 //! IPP value
 //!
-use std::{
-    fmt,
-    io::{self, Read, Write},
-    str::FromStr,
-};
+use std::{fmt, io, str::FromStr};
 
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
-use crate::{ipp::ValueTag, IppReadExt, FromPrimitive as _};
+use crate::{ipp::ValueTag, FromPrimitive as _};
 
 /// IPP value enumeration
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -52,7 +48,7 @@ pub enum IppValue {
     },
     Other {
         tag: u8,
-        data: Vec<u8>,
+        data: Bytes,
     },
 }
 
@@ -81,91 +77,74 @@ impl IppValue {
         }
     }
 
-    /// Read value from binary stream
-    pub fn read(vtag: u8, reader: &mut dyn Read) -> io::Result<IppValue> {
-        let vsize = reader.read_u16::<BigEndian>()?;
-
+    /// Parse value from byte array
+    pub fn parse(vtag: u8, mut data: Bytes) -> io::Result<IppValue> {
         let ipptag = match ValueTag::from_u8(vtag) {
             Some(x) => x,
             None => {
-                return Ok(IppValue::Other {
-                    tag: vtag,
-                    data: reader.read_bytes(vsize as usize)?,
-                });
+                return Ok(IppValue::Other { tag: vtag, data });
             }
         };
 
         match ipptag {
-            ValueTag::Integer => {
-                debug_assert_eq!(vsize, 4);
-                Ok(IppValue::Integer(reader.read_i32::<BigEndian>()?))
-            }
-            ValueTag::Enum => {
-                debug_assert_eq!(vsize, 4);
-                Ok(IppValue::Enum(reader.read_i32::<BigEndian>()?))
-            }
-            ValueTag::OctetStringUnspecified => Ok(IppValue::OctetString(reader.read_string(vsize as usize)?)),
-            ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(reader.read_string(vsize as usize)?)),
-            ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(reader.read_string(vsize as usize)?)),
-            ValueTag::Charset => Ok(IppValue::Charset(reader.read_string(vsize as usize)?)),
-            ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(reader.read_string(vsize as usize)?)),
-            ValueTag::Uri => Ok(IppValue::Uri(reader.read_string(vsize as usize)?)),
-            ValueTag::RangeOfInteger => {
-                debug_assert_eq!(vsize, 8);
-                Ok(IppValue::RangeOfInteger {
-                    min: reader.read_i32::<BigEndian>()?,
-                    max: reader.read_i32::<BigEndian>()?,
-                })
-            }
-            ValueTag::Boolean => {
-                debug_assert_eq!(vsize, 1);
-                Ok(IppValue::Boolean(reader.read_u8()? != 0))
-            }
-            ValueTag::Keyword => Ok(IppValue::Keyword(reader.read_string(vsize as usize)?)),
-            ValueTag::MimeMediaType => Ok(IppValue::MimeMediaType(reader.read_string(vsize as usize)?)),
+            ValueTag::Integer => Ok(IppValue::Integer(data.get_i32())),
+            ValueTag::Enum => Ok(IppValue::Enum(data.get_i32())),
+            ValueTag::OctetStringUnspecified => Ok(IppValue::OctetString(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(
+                String::from_utf8_lossy(&data).into_owned(),
+            )),
+            ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(
+                String::from_utf8_lossy(&data).into_owned(),
+            )),
+            ValueTag::Charset => Ok(IppValue::Charset(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::Uri => Ok(IppValue::Uri(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::RangeOfInteger => Ok(IppValue::RangeOfInteger {
+                min: data.get_i32(),
+                max: data.get_i32(),
+            }),
+            ValueTag::Boolean => Ok(IppValue::Boolean(data.get_u8() != 0)),
+            ValueTag::Keyword => Ok(IppValue::Keyword(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::MimeMediaType => Ok(IppValue::MimeMediaType(String::from_utf8_lossy(&data).into_owned())),
             ValueTag::DateTime => Ok(IppValue::DateTime {
-                year: reader.read_u16::<BigEndian>()?,
-                month: reader.read_u8()?,
-                day: reader.read_u8()?,
-                hour: reader.read_u8()?,
-                minutes: reader.read_u8()?,
-                seconds: reader.read_u8()?,
-                deciseconds: reader.read_u8()?,
-                utcdir: reader.read_u8()? as char,
-                utchours: reader.read_u8()?,
-                utcmins: reader.read_u8()?,
+                year: data.get_u16(),
+                month: data.get_u8(),
+                day: data.get_u8(),
+                hour: data.get_u8(),
+                minutes: data.get_u8(),
+                seconds: data.get_u8(),
+                deciseconds: data.get_u8(),
+                utcdir: data.get_u8() as char,
+                utchours: data.get_u8(),
+                utcmins: data.get_u8(),
             }),
-            ValueTag::MemberAttrName => Ok(IppValue::MemberAttrName(reader.read_string(vsize as usize)?)),
+            ValueTag::MemberAttrName => Ok(IppValue::MemberAttrName(String::from_utf8_lossy(&data).into_owned())),
             ValueTag::Resolution => Ok(IppValue::Resolution {
-                crossfeed: reader.read_i32::<BigEndian>()?,
-                feed: reader.read_i32::<BigEndian>()?,
-                units: reader.read_i8()?,
+                crossfeed: data.get_i32(),
+                feed: data.get_i32(),
+                units: data.get_i8(),
             }),
-            _ => Ok(IppValue::Other {
-                tag: vtag,
-                data: reader.read_bytes(vsize as usize)?,
-            }),
+            _ => Ok(IppValue::Other { tag: vtag, data }),
         }
     }
 
-    /// Write value to binary stream
-    pub fn write(&self, writer: &mut dyn Write) -> io::Result<usize> {
+    /// Write value to byte array
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
+
         match *self {
             IppValue::Integer(i) | IppValue::Enum(i) => {
-                writer.write_u16::<BigEndian>(4)?;
-                writer.write_i32::<BigEndian>(i)?;
-                Ok(6)
+                buffer.put_u16(4);
+                buffer.put_i32(i);
             }
             IppValue::RangeOfInteger { min, max } => {
-                writer.write_u16::<BigEndian>(8)?;
-                writer.write_i32::<BigEndian>(min)?;
-                writer.write_i32::<BigEndian>(max)?;
-                Ok(10)
+                buffer.put_u16(8);
+                buffer.put_i32(min);
+                buffer.put_i32(max);
             }
             IppValue::Boolean(b) => {
-                writer.write_u16::<BigEndian>(1)?;
-                writer.write_u8(if b { 1 } else { 0 })?;
-                Ok(3)
+                buffer.put_u16(1);
+                buffer.put_u8(if b { 1 } else { 0 });
             }
             IppValue::Keyword(ref s)
             | IppValue::OctetString(ref s)
@@ -176,43 +155,33 @@ impl IppValue {
             | IppValue::Uri(ref s)
             | IppValue::MimeMediaType(ref s)
             | IppValue::MemberAttrName(ref s) => {
-                writer.write_u16::<BigEndian>(s.len() as u16)?;
-                writer.write_all(s.as_bytes())?;
-                Ok(2 + s.len())
+                buffer.put_u16(s.len() as u16);
+                buffer.put_slice(s.as_bytes());
             }
             IppValue::ListOf(ref list) => {
-                let mut retval = 0;
                 for (i, item) in list.iter().enumerate() {
-                    retval += item.write(writer)?;
+                    buffer.put(item.to_bytes());
                     if i < list.len() - 1 {
-                        writer.write_u8(self.to_tag() as u8)?;
-                        writer.write_u16::<BigEndian>(0)?;
-                        retval += 3;
+                        buffer.put_u8(self.to_tag() as u8);
+                        buffer.put_u16(0);
                     }
                 }
-                Ok(retval)
             }
             IppValue::Collection(ref list) => {
-                let mut retval = 0;
-
                 // begin collection: value size is 0
-                writer.write_u16::<BigEndian>(0)?;
-                retval += 2;
+                buffer.put_u16(0);
 
                 for item in list.iter() {
                     // item tag
-                    writer.write_u8(item.to_tag() as u8)?;
+                    buffer.put_u8(item.to_tag() as u8);
                     // name size is zero, this is a collection
-                    writer.write_u16::<BigEndian>(0)?;
-                    // write the item
-                    retval += 3 + item.write(writer)?;
+                    buffer.put_u16(0);
+
+                    buffer.put(item.to_bytes());
                 }
                 // write end collection attribute
-                writer.write_u8(ValueTag::EndCollection as u8)?;
-                writer.write_u32::<BigEndian>(0)?;
-                retval += 5;
-
-                Ok(retval)
+                buffer.put_u8(ValueTag::EndCollection as u8);
+                buffer.put_u32(0);
             }
             IppValue::DateTime {
                 year,
@@ -226,34 +195,29 @@ impl IppValue {
                 utchours,
                 utcmins,
             } => {
-                writer.write_u16::<BigEndian>(11)?;
-
-                writer.write_u16::<BigEndian>(year)?;
-                writer.write_u8(month)?;
-                writer.write_u8(day)?;
-                writer.write_u8(hour)?;
-                writer.write_u8(minutes)?;
-                writer.write_u8(seconds)?;
-                writer.write_u8(deciseconds)?;
-                writer.write_u8(utcdir as u8)?;
-                writer.write_u8(utchours)?;
-                writer.write_u8(utcmins)?;
-
-                Ok(13)
+                buffer.put_u16(year);
+                buffer.put_u8(month);
+                buffer.put_u8(day);
+                buffer.put_u8(hour);
+                buffer.put_u8(minutes);
+                buffer.put_u8(seconds);
+                buffer.put_u8(deciseconds);
+                buffer.put_u8(utcdir as u8);
+                buffer.put_u8(utchours);
+                buffer.put_u8(utcmins);
             }
             IppValue::Resolution { crossfeed, feed, units } => {
-                writer.write_u16::<BigEndian>(9)?;
-                writer.write_i32::<BigEndian>(crossfeed)?;
-                writer.write_i32::<BigEndian>(feed)?;
-                writer.write_i8(units)?;
-                Ok(9)
+                buffer.put_u16(9);
+                buffer.put_i32(crossfeed);
+                buffer.put_i32(feed);
+                buffer.put_u8(units as u8);
             }
             IppValue::Other { ref data, .. } => {
-                writer.write_u16::<BigEndian>(data.len() as u16)?;
-                writer.write_all(data)?;
-                Ok(2 + data.len())
+                buffer.put_u16(data.len() as u16);
+                buffer.put_slice(&data);
             }
         }
+        buffer.freeze()
     }
 }
 
@@ -405,8 +369,7 @@ mod tests {
             "coll",
             IppValue::Collection(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
         );
-        let mut buf = Vec::new();
-        assert!(attr.write(&mut io::Cursor::new(&mut buf)).is_ok());
+        let buf = attr.to_bytes();
 
         assert_eq!(
             vec![
@@ -420,7 +383,8 @@ mod tests {
         data.extend(buf);
         data.extend(vec![3]);
 
-        let result = crate::parser::IppParser::new(&mut io::Cursor::new(data)).parse();
+        let result =
+            futures::executor::block_on(crate::parser::IppParser::new(&mut futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

@@ -14,6 +14,7 @@ edition = "2018"
 ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
 log = "0.4"
 http = "0.1"
+futures = "0.3"
 
 [dependencies.isahc]
 version = "0.8"

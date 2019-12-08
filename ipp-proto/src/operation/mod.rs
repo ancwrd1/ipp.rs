@@ -1,7 +1,7 @@
 //!
 //! High-level IPP operation abstractions
 //!
-use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppJobSource, IppValue};
+use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppPayload, IppValue};
 
 pub mod cups;
 
@@ -18,7 +18,7 @@ pub trait IppOperation {
 
 /// IPP operation Print-Job
 pub struct PrintJob {
-    source: IppJobSource,
+    payload: IppPayload,
     user_name: Option<String>,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
@@ -27,17 +27,17 @@ pub struct PrintJob {
 impl PrintJob {
     /// Create Print-Job operation
     ///
-    /// * `source` - job source<br/>
+    /// * `payload` - job payload<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - job name (job-name)<br/>
-    pub fn new<U, N, S>(source: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<U, N, S>(payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
         U: AsRef<str>,
         N: AsRef<str>,
-        S: Into<IppJobSource>,
+        S: Into<IppPayload>,
     {
         PrintJob {
-            source: source.into(),
+            payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
@@ -71,7 +71,8 @@ impl IppOperation for PrintJob {
         for attr in &self.attributes {
             retval.attributes_mut().add(DelimiterTag::JobAttributes, attr.clone());
         }
-        retval.add_payload(self.source);
+        retval.payload_mut().replace(self.payload);
+
         retval
     }
 }
@@ -163,7 +164,7 @@ impl IppOperation for CreateJob {
 /// IPP operation Send-Document
 pub struct SendDocument {
     job_id: i32,
-    source: IppJobSource,
+    payload: IppPayload,
     user_name: Option<String>,
     last: bool,
 }
@@ -172,17 +173,17 @@ impl SendDocument {
     /// Create Send-Document operation
     ///
     /// * `job_id` - job ID returned by Create-Job operation<br/>
-    /// * `source` - `IppJobSource`<br/>
+    /// * `payload` - `IppPayload`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S, U>(job_id: i32, source: S, user_name: Option<U>, last: bool) -> SendDocument
+    pub fn new<S, U>(job_id: i32, payload: S, user_name: Option<U>, last: bool) -> SendDocument
     where
-        S: Into<IppJobSource>,
+        S: Into<IppPayload>,
         U: AsRef<str>,
     {
         SendDocument {
             job_id,
-            source: source.into(),
+            payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             last,
         }
@@ -210,7 +211,7 @@ impl IppOperation for SendDocument {
             IppAttribute::new(LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
-        retval.add_payload(self.source);
+        retval.payload_mut().replace(self.payload);
 
         retval
     }
