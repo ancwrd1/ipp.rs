@@ -1,6 +1,7 @@
 ## IPP high-level utility
 
-This crate contains `ipputil` binary.
+This crate contains `ipputil` CLI application to perform common IPP operations
+such as getting printer attributes or printing a file.
 
 ## License
 

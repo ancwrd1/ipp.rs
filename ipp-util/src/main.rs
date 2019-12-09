@@ -4,11 +4,12 @@
 
 use std::{fs, io, path::PathBuf};
 
-use futures::AsyncRead;
 use structopt::StructOpt;
 
-use ipp::client::{IppClient, IppClientBuilder, IppError};
-use ipp::proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder};
+use ipp::{
+    client::{IppClient, IppClientBuilder, IppError},
+    proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
+};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
@@ -17,15 +18,12 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
         .build()
 }
 
-async fn new_reader(cmd: &IppPrintCmd) -> io::Result<Box<dyn AsyncRead + Send + Unpin>> {
-    let file: Box<dyn AsyncRead + Send + Unpin> = match cmd.file {
-        Some(ref filename) => {
-            let file = futures::io::AllowStdIo::new(fs::File::open(filename)?);
-            Box::new(file)
-        }
-        None => Box::new(futures::io::AllowStdIo::new(io::stdin())),
+fn get_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
+    let payload = match cmd.file {
+        Some(ref filename) => futures::io::AllowStdIo::new(fs::File::open(filename)?).into(),
+        None => futures::io::AllowStdIo::new(io::stdin()).into(),
     };
-    Ok(file)
+    Ok(payload)
 }
 
 async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
@@ -35,9 +33,9 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         client.check_ready().await?;
     }
 
-    let reader = new_reader(&cmd).await.map_err(IppError::from)?;
+    let payload = get_payload(&cmd).map_err(IppError::from)?;
 
-    let mut builder = IppOperationBuilder::print_job(reader);
+    let mut builder = IppOperationBuilder::print_job(payload);
     if let Some(jobname) = cmd.job_name {
         builder = builder.job_title(&jobname);
     }
