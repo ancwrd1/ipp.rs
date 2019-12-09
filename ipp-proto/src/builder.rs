@@ -51,7 +51,7 @@ pub struct PrintJobBuilder {
 impl PrintJobBuilder {
     fn new(payload: IppPayload) -> PrintJobBuilder {
         PrintJobBuilder {
-            payload: payload,
+            payload,
             user_name: None,
             job_title: None,
             attributes: Vec::new(),
@@ -165,7 +165,7 @@ impl SendDocumentBuilder {
     fn new(job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
         SendDocumentBuilder {
             job_id,
-            payload: payload,
+            payload,
             user_name: None,
             is_last: true,
         }

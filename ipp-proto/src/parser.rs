@@ -323,7 +323,7 @@ mod tests {
             Some(payload) => {
                 let mut cursor = futures::io::Cursor::new(Vec::new());
                 futures::executor::block_on(futures::io::copy(payload.into_reader(), &mut cursor)).unwrap();
-                assert_eq!(cursor.into_inner(), "foo".as_bytes());
+                assert_eq!(cursor.into_inner(), b"foo");
             }
             _ => panic!("Wrong payload!"),
         }
