@@ -1,4 +1,4 @@
-use std::{env, error::Error, process::exit};
+use std::{env, error::Error, fs, process::exit};
 
 use ipp::prelude::*;
 
@@ -9,7 +9,7 @@ fn supports_multi_doc(v: &IppValue) -> bool {
 }
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    async_std::task::block_on(async {
+    futures::executor::block_on(async {
         env_logger::init();
 
         let args: Vec<_> = env::args().collect();
@@ -57,7 +57,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             let last = i >= (args.len() - 1);
             println!("Sending {}, last: {}", item, last);
 
-            let reader = async_std::fs::File::open(item.to_owned()).await?;
+            let reader = futures::io::AllowStdIo::new(fs::File::open(item.to_owned())?);
 
             let send_op = IppOperationBuilder::send_document(job_id, reader)
                 .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))

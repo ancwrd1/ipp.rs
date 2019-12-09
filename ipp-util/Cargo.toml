@@ -16,4 +16,3 @@ ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
 env_logger = "0.7"
 structopt = "0.3"
 futures = "0.3"
-async-std = "1"

@@ -2,7 +2,7 @@
 //! High-level utility functions to be used from external application or command-line utility
 //!
 
-use std::{ffi::OsString, io, path::PathBuf};
+use std::{ffi::OsString, fs, io, path::PathBuf};
 
 use futures::AsyncRead;
 use structopt::StructOpt;
@@ -20,10 +20,10 @@ fn new_client(uri: &str, params: &IppParams) -> IppClient {
 async fn new_reader(cmd: &IppPrintCmd) -> io::Result<Box<dyn AsyncRead + Send + Unpin>> {
     let file: Box<dyn AsyncRead + Send + Unpin> = match cmd.file {
         Some(ref filename) => {
-            let file = async_std::fs::File::open(filename).await?;
+            let file = futures::io::AllowStdIo::new(fs::File::open(filename)?);
             Box::new(file)
         }
-        None => Box::new(async_std::io::stdin()),
+        None => Box::new(futures::io::AllowStdIo::new(io::stdin())),
     };
     Ok(file)
 }
@@ -213,8 +213,8 @@ where
 {
     let params = IppParams::from_iter_safe(args).map_err(|e| IppError::ParamError(e.to_string()))?;
     match params.command {
-        IppCommand::Status(ref cmd) => async_std::task::block_on(do_status(&params, cmd.clone()))?,
-        IppCommand::Print(ref cmd) => async_std::task::block_on(do_print(&params, cmd.clone()))?,
+        IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
+        IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,
     }
     Ok(())
 }

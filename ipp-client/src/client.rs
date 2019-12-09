@@ -4,9 +4,9 @@
 use std::{borrow::Cow, time::Duration};
 
 use futures::io::BufReader;
-use http::{uri::Authority, Method};
 use isahc::{
     config::{RedirectPolicy, SslOption},
+    http::{uri::Authority, Method, Uri},
     prelude::*,
 };
 use log::debug;
@@ -36,9 +36,9 @@ const ERROR_STATES: &[&str] = &[
 
 // converts http://username:pwd@host:port/path?query into http://host:port/path
 fn canonicalize_uri(uri: &str) -> Cow<str> {
-    match uri.parse::<http::Uri>() {
+    match uri.parse::<Uri>() {
         Ok(new_uri) => {
-            let mut builder = http::Uri::builder();
+            let mut builder = Uri::builder();
             if let Some(scheme) = new_uri.scheme_str() {
                 builder.scheme(scheme);
             }

@@ -1,9 +1,9 @@
-use std::{env, error::Error, process::exit};
+use std::{env, error::Error, fs, process::exit};
 
 use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    async_std::task::block_on(async {
+    futures::executor::block_on(async {
         env_logger::init();
 
         let args: Vec<_> = env::args().collect();
@@ -13,7 +13,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             exit(1);
         }
 
-        let reader = async_std::fs::File::open(&args[2]).await?;
+        let reader = futures::io::AllowStdIo::new(fs::File::open(&args[2])?);
 
         let mut builder = IppOperationBuilder::print_job(reader)
             .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))

@@ -10,7 +10,7 @@ pub mod client;
 #[derive(Debug)]
 pub enum IppError {
     /// HTTP protocol error
-    HttpError(http::Error),
+    HttpError(isahc::http::Error),
     /// Client error
     ClientError(isahc::Error),
     /// HTTP request error
@@ -66,8 +66,8 @@ impl From<StatusCode> for IppError {
     }
 }
 
-impl From<http::Error> for IppError {
-    fn from(error: http::Error) -> Self {
+impl From<isahc::http::Error> for IppError {
+    fn from(error: isahc::http::Error) -> Self {
         IppError::HttpError(error)
     }
 }

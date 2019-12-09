@@ -3,7 +3,7 @@ use std::{env, error::Error, process::exit};
 use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    async_std::task::block_on(async {
+    futures::executor::block_on(async {
         env_logger::init();
 
         let args: Vec<_> = env::args().collect();
