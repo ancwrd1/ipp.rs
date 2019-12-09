@@ -3,6 +3,7 @@ use crate::{
     operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument},
     IppPayload,
 };
+use crate::operation::cups::{CupsGetPrinters, CupsDeletePrinter};
 
 /// Builder to create IPP operations
 pub struct IppOperationBuilder;
@@ -26,6 +27,11 @@ impl IppOperationBuilder {
     /// Create CreateJob operation
     pub fn create_job() -> CreateJobBuilder {
         CreateJobBuilder::new()
+    }
+
+    /// CUPS-specific operations builder
+    pub fn cups() -> CupsBuilder {
+        CupsBuilder::new()
     }
 
     /// Create SendDocument operation
@@ -186,5 +192,24 @@ impl SendDocumentBuilder {
     /// Build operation
     pub fn build(self) -> impl IppOperation {
         SendDocument::new(self.job_id, self.payload, self.user_name.as_ref(), self.is_last)
+    }
+}
+
+/// CUPS operations builder
+pub struct CupsBuilder;
+
+impl CupsBuilder {
+    fn new() -> CupsBuilder {
+        CupsBuilder
+    }
+
+    /// CUPS-Get-Printers operation
+    pub fn get_printers(&self) -> impl IppOperation {
+        CupsGetPrinters::new()
+    }
+
+    /// CUPS-Delete-Printer operation
+    pub fn delete_printer(&self) -> impl IppOperation {
+        CupsDeletePrinter::new()
     }
 }

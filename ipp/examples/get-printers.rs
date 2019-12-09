@@ -1,6 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::{prelude::*, proto::operation::cups::CupsGetPrinters};
+use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
@@ -13,7 +13,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let client = IppClientBuilder::new(&args[1]).build();
-    let operation = CupsGetPrinters::new();
+    let operation = IppOperationBuilder::cups().get_printers();
 
     let attrs = futures::executor::block_on(client.send(operation))?;
 

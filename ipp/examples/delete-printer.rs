@@ -1,6 +1,7 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::{client::IppClientBuilder, proto::operation::cups::CupsDeletePrinter};
+use ipp::client::IppClientBuilder;
+use ipp_proto::IppOperationBuilder;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
@@ -13,7 +14,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let client = IppClientBuilder::new(&args[1]).build();
-    let operation = CupsDeletePrinter::new();
+    let operation = IppOperationBuilder::cups().delete_printer();
 
     futures::executor::block_on(client.send(operation))?;
 
