@@ -16,8 +16,11 @@ impl CupsGetPrinters {
 }
 
 impl IppOperation for CupsGetPrinters {
-    fn into_ipp_request(self, _uri: &str) -> IppRequestResponse {
-        IppRequestResponse::new(self.version(), Operation::CupsGetPrinters, None)
+    fn into_ipp_request<S>(self, _uri: S) -> IppRequestResponse
+    where
+        S: AsRef<str>,
+    {
+        IppRequestResponse::new::<&str>(self.version(), Operation::CupsGetPrinters, None)
     }
 }
 
@@ -33,7 +36,10 @@ impl CupsDeletePrinter {
 }
 
 impl IppOperation for CupsDeletePrinter {
-    fn into_ipp_request(self, uri: &str) -> IppRequestResponse {
+    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
+    where
+        S: AsRef<str>,
+    {
         IppRequestResponse::new(self.version(), Operation::CupsDeletePrinter, Some(uri))
     }
 }

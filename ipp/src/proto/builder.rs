@@ -66,14 +66,20 @@ impl PrintJobBuilder {
         }
     }
     /// Specify requesting-user-name attribute
-    pub fn user_name(mut self, user_name: &str) -> Self {
-        self.user_name = Some(user_name.to_owned());
+    pub fn user_name<S>(mut self, user_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.user_name = Some(user_name.as_ref().to_owned());
         self
     }
 
     /// Specify job-name attribute
-    pub fn job_title(mut self, job_title: &str) -> Self {
-        self.job_title = Some(job_title.to_owned());
+    pub fn job_title<S>(mut self, job_title: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.job_title = Some(job_title.as_ref().to_owned());
         self
     }
 
@@ -104,18 +110,22 @@ impl GetPrinterAttributesBuilder {
     }
 
     /// Specify which attribute to retrieve from the printer. Can be repeated.
-    pub fn attribute(mut self, attribute: &str) -> Self {
-        self.attributes.push(attribute.to_owned());
+    pub fn attribute<S>(mut self, attribute: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.attributes.push(attribute.as_ref().to_owned());
         self
     }
 
     /// Specify which attributes to retrieve from the printer
-    pub fn attributes<T>(mut self, attributes: &[T]) -> Self
+    pub fn attributes<S, I>(mut self, attributes: I) -> Self
     where
-        T: AsRef<str>,
+        S: AsRef<str>,
+        I: IntoIterator<Item = S>,
     {
         self.attributes
-            .extend(attributes.iter().map(|s| s.as_ref().to_string()));
+            .extend(attributes.into_iter().map(|s| s.as_ref().to_string()));
         self
     }
 
@@ -140,8 +150,11 @@ impl CreateJobBuilder {
     }
 
     /// Specify job-name attribute
-    pub fn job_name(mut self, job_name: &str) -> Self {
-        self.job_name = Some(job_name.to_owned());
+    pub fn job_name<S>(mut self, job_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.job_name = Some(job_name.as_ref().to_owned());
         self
     }
 
@@ -180,8 +193,11 @@ impl SendDocumentBuilder {
     }
 
     /// Specify originating-user-name attribute
-    pub fn user_name(mut self, user_name: &str) -> Self {
-        self.user_name = Some(user_name.to_owned());
+    pub fn user_name<S>(mut self, user_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.user_name = Some(user_name.as_ref().to_owned());
         self
     }
 

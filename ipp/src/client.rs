@@ -9,12 +9,11 @@ use isahc::{
 use log::debug;
 
 use crate::proto::{
-    attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
     model::{self, DelimiterTag, PrinterState, StatusCode},
     operation::IppOperation,
     request::IppRequestResponse,
     value::ValueParseError,
-    FromPrimitive as _, IppAttributes, IppOperationBuilder, IppParseError, IppParser,
+    FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError, IppParser,
 };
 
 /// IPP error
@@ -112,9 +111,12 @@ pub struct IppClientBuilder {
 
 impl IppClientBuilder {
     /// Create a client builder for a given URI
-    pub fn new(uri: &str) -> Self {
+    pub fn new<U>(uri: U) -> Self
+    where
+        U: AsRef<str>,
+    {
         IppClientBuilder {
-            uri: uri.to_owned(),
+            uri: uri.as_ref().to_owned(),
             ignore_tls_errors: false,
             timeout: 0,
         }
@@ -194,7 +196,7 @@ impl IppClient {
     pub async fn check_ready(&self) -> Result<(), IppError> {
         debug!("Checking printer status");
         let operation = IppOperationBuilder::get_printer_attributes()
-            .attributes(&[PRINTER_STATE, PRINTER_STATE_REASONS])
+            .attributes(&[IppAttribute::PRINTER_STATE, IppAttribute::PRINTER_STATE_REASONS])
             .build();
 
         let attrs = self.send(operation).await?;
@@ -202,7 +204,7 @@ impl IppClient {
         let state = attrs
             .groups_of(DelimiterTag::PrinterAttributes)
             .get(0)
-            .and_then(|g| g.attributes().get(PRINTER_STATE))
+            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
             .and_then(|attr| attr.value().as_enum())
             .and_then(|v| PrinterState::from_i32(*v));
 
@@ -214,7 +216,7 @@ impl IppClient {
         if let Some(reasons) = attrs
             .groups_of(DelimiterTag::PrinterAttributes)
             .get(0)
-            .and_then(|g| g.attributes().get(PRINTER_STATE_REASONS))
+            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
         {
             let keywords = reasons
                 .value()

@@ -6,10 +6,9 @@ use futures::{AsyncRead, AsyncReadExt};
 use log::debug;
 
 use super::{
-    attribute::*,
     model::{DelimiterTag, IppVersion, Operation},
     value::*,
-    IppHeader, IppPayload, StatusCode,
+    IppAttribute, IppAttributes, IppHeader, IppPayload, StatusCode,
 };
 
 /// IPP request/response struct
@@ -21,7 +20,10 @@ pub struct IppRequestResponse {
 
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new(version: IppVersion, operation: Operation, uri: Option<&str>) -> IppRequestResponse {
+    pub fn new<S>(version: IppVersion, operation: Operation, uri: Option<S>) -> IppRequestResponse
+    where
+        S: AsRef<str>,
+    {
         let hdr = IppHeader::new(version, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
@@ -31,17 +33,23 @@ impl IppRequestResponse {
 
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
+            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
+            IppAttribute::new(
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage("en".to_string()),
+            ),
         );
 
         if let Some(uri) = uri {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(PRINTER_URI, IppValue::Uri(uri.replace("http", "ipp").to_string())),
+                IppAttribute::new(
+                    IppAttribute::PRINTER_URI,
+                    IppValue::Uri(uri.as_ref().replace("http", "ipp").to_string()),
+                ),
             );
         }
 
@@ -59,11 +67,14 @@ impl IppRequestResponse {
 
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
+            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(ATTRIBUTES_NATURAL_LANGUAGE, IppValue::NaturalLanguage("en".to_string())),
+            IppAttribute::new(
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage("en".to_string()),
+            ),
         );
 
         retval

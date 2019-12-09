@@ -24,14 +24,14 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes()
-        .attribute(OPERATIONS_SUPPORTED)
+        .attribute(IppAttribute::OPERATIONS_SUPPORTED)
         .build();
     let printer_attrs = futures::executor::block_on(client.send(get_op))?;
 
     let ops_attr = printer_attrs
         .groups_of(DelimiterTag::PrinterAttributes)
         .get(0)
-        .and_then(|g| g.attributes().get(OPERATIONS_SUPPORTED))
+        .and_then(|g| g.attributes().get(IppAttribute::OPERATIONS_SUPPORTED))
         .ok_or(IppError::MissingAttribute)?;
 
     if !ops_attr.value().into_iter().any(supports_multi_doc) {
@@ -44,7 +44,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let job_id = *attrs
         .groups_of(DelimiterTag::JobAttributes)
         .get(0)
-        .and_then(|g| g.attributes().get(JOB_ID))
+        .and_then(|g| g.attributes().get(IppAttribute::JOB_ID))
         .and_then(|attr| attr.value().as_integer())
         .ok_or(IppError::MissingAttribute)?;
 
