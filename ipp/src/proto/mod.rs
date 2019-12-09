@@ -2,12 +2,13 @@ use bytes::{BufMut, Bytes, BytesMut};
 use futures::AsyncRead;
 pub use num_traits::FromPrimitive;
 
-pub use crate::{
+pub use {
+    self::ipp::{IppVersion, Operation, StatusCode},
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     builder::{
-        CreateJobBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder, SendDocumentBuilder,
+        CreateJobBuilder, CupsBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder,
+        SendDocumentBuilder,
     },
-    ipp::{IppVersion, Operation, StatusCode},
     parser::{IppParseError, IppParser},
     request::IppRequestResponse,
     value::IppValue,

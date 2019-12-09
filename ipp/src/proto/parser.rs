@@ -7,7 +7,7 @@ use bytes::{Buf, Bytes};
 use futures::{AsyncRead, AsyncReadExt};
 use log::{debug, error};
 
-use crate::{
+use super::{
     ipp::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppPayload,
     IppRequestResponse, IppValue,
 };

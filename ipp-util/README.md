@@ -1,6 +1,6 @@
 ## IPP high-level utility
 
-This crate contains `ipputil` binary and a command-line utility function `ipp_main`.
+This crate contains `ipputil` binary.
 
 ## License
 

@@ -2,9 +2,7 @@
 //! CUPS-specific IPP operations
 //!
 
-use crate::ipp::Operation;
-use crate::operation::IppOperation;
-use crate::request::IppRequestResponse;
+use crate::proto::{ipp::Operation, operation::IppOperation, request::IppRequestResponse};
 
 /// IPP operation CUPS-Get-Printers
 #[derive(Default)]

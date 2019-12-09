@@ -14,9 +14,12 @@ edition = "2018"
 name = "ipp"
 
 [dependencies]
-ipp-proto = { version = "0.4.0", path = "../ipp-proto" }
-ipp-client = { version = "0.4.0", path = "../ipp-client", optional = true }
-ipp-util = { version = "0.4.0", path = "../ipp-util", optional = true }
+enum-as-inner = "0.3"
+enum-primitive-derive = "0.1"
+futures = "0.3"
+log = "0.4"
+num-traits = "0.2"
+bytes = "0.5"
 
 [dev-dependencies]
 env_logger = "0.7"
@@ -24,5 +27,10 @@ futures = "0.3"
 
 [features]
 default = ["client"]
-client = ["ipp-client"]
-util = ["ipp-util"]
+client = ["isahc"]
+
+[dependencies.isahc]
+version = "0.8"
+optional = true
+default-features = false
+features = ["static-curl", "http2"]

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 use bytes::{BufMut, Bytes, BytesMut};
 
-use crate::{ipp::*, IppValue};
+use super::{ipp::*, IppValue};
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";

@@ -1,7 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::client::IppClientBuilder;
-use ipp_proto::IppOperationBuilder;
+use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();

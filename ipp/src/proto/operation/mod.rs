@@ -1,7 +1,7 @@
 //!
 //! High-level IPP operation abstractions
 //!
-use crate::{attribute::*, ipp::*, request::IppRequestResponse, IppPayload, IppValue};
+use crate::proto::{attribute::*, ipp::*, request::IppRequestResponse, IppPayload, IppValue};
 
 pub mod cups;
 

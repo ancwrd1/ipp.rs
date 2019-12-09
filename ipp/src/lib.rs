@@ -37,18 +37,16 @@
 //! }
 //!```
 
-pub use ipp_proto as proto;
+pub mod proto;
 
 #[cfg(feature = "client")]
-pub use ipp_client as client;
-
-#[cfg(feature = "util")]
-pub use ipp_util as util;
+pub mod client;
 
 pub mod prelude {
+    #[cfg(feature = "client")]
     pub use super::client::{IppClient, IppClientBuilder, IppError};
     pub use super::proto::{
         attribute::*, ipp::*, request::IppRequestResponse, FromPrimitive as _, IppAttribute, IppAttributeGroup,
-        IppAttributes, IppHeader, IppPayload, IppOperationBuilder, IppParser, IppValue,
+        IppAttributes, IppHeader, IppOperationBuilder, IppParser, IppPayload, IppValue,
     };
 }

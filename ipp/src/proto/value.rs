@@ -6,7 +6,7 @@ use std::{fmt, io, str::FromStr};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
-use crate::{ipp::ValueTag, FromPrimitive as _};
+use super::{ipp::ValueTag, FromPrimitive as _};
 
 /// IPP value enumeration
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -340,7 +340,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ipp::DelimiterTag, IppAttribute};
+    use crate::proto::{ipp::DelimiterTag, IppAttribute};
 
     use super::*;
 
@@ -384,7 +384,7 @@ mod tests {
         data.extend(vec![3]);
 
         let result =
-            futures::executor::block_on(crate::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
+            futures::executor::block_on(crate::proto::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

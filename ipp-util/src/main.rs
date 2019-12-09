@@ -2,13 +2,13 @@
 //! High-level utility functions to be used from external application or command-line utility
 //!
 
-use std::{ffi::OsString, fs, io, path::PathBuf};
+use std::{fs, io, path::PathBuf};
 
 use futures::AsyncRead;
 use structopt::StructOpt;
 
-use ipp_client::{IppClient, IppClientBuilder, IppError};
-use ipp_proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder};
+use ipp::client::{IppClient, IppClientBuilder, IppError};
+use ipp::proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder};
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {
     IppClientBuilder::new(&uri)
@@ -163,55 +163,11 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
-/// Entry point to main utility function
-///
-/// * `args` - a list of arguments including program name as a first argument
-///
-/// Command line usage for getting printer status (will print list of printer attributes on stdout)
-/// ```text
-/// USAGE:
-///     ipputil status [FLAGS] [OPTIONS] <uri>
-///
-/// FLAGS:
-///     -h, --help                     Prints help information
-///     -i, --ignore-tls-errors        Ignore TLS handshake errors
-///     -V, --version                  Prints version information
-///
-/// OPTIONS:
-///     -a, --attribute <attributes>...   Attributes to query, default is to get all
-///     -t, --timeout <timeout>           Connect timeout in seconds, 0 to disable [default: 30]
-///
-/// ARGS:
-///     <uri>    Printer URI
-/// ```
-///
-/// Command line usage for getting printer status (will print list of printer attributes on stdout)
-/// ```text
-/// USAGE:
-///     ipputil print [FLAGS] [OPTIONS] <uri>
-///
-/// FLAGS:
-///     -h, --help                     Prints help information
-///     -i, --ignore-tls-errors        Ignore TLS handshake errors
-///     -n, --no-check-state           Do not check printer state before printing
-///     -V, --version                  Prints version information
-///
-/// OPTIONS:
-///     -f, --file <file>              Input file name to print [default: standard input]
-///     -j, --job-name <job-name>      Job name to send as job-name attribute
-///     -o, --option <options>...      Extra IPP job attributes in key=value format
-///     -t, --timeout <timeout>        Connect timeout in seconds, 0 to disable [default: 30]
-///     -u, --user-name <user-name>    User name to send as requesting-user-name attribute
-///
-/// ARGS:
-///     <uri>    Printer URI
-/// ```
-pub fn ipp_main<I, T>(args: I) -> Result<(), IppError>
-where
-    I: IntoIterator<Item = T>,
-    T: Into<OsString> + Clone,
-{
-    let params = IppParams::from_iter_safe(args).map_err(|e| IppError::ParamError(e.to_string()))?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
+    let params = IppParams::from_args();
+
     match params.command {
         IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
         IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,

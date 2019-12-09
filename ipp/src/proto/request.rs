@@ -5,7 +5,7 @@ use bytes::{BufMut, Bytes, BytesMut};
 use futures::{AsyncRead, AsyncReadExt};
 use log::debug;
 
-use crate::{
+use super::{
     attribute::*,
     ipp::{DelimiterTag, IppVersion, Operation},
     value::*,
