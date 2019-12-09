@@ -16,7 +16,7 @@ pub enum IppError {
     /// HTTP request error
     RequestError(u16),
     /// Network or file I/O error
-    IOError(::std::io::Error),
+    IOError(io::Error),
     /// IPP status error
     StatusError(StatusCode),
     /// Printer state error

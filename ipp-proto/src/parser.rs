@@ -1,10 +1,7 @@
 //!
 //! IPP stream parser
 //!
-use std::{
-    fmt,
-    io::{self, Seek, SeekFrom, Write},
-};
+use std::{fmt, io};
 
 use bytes::Bytes;
 use futures::{AsyncRead, AsyncReadExt};
@@ -58,8 +55,8 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 }
 
 /// IPP parser implementation
-pub struct IppParser<'a> {
-    reader: &'a mut (dyn AsyncRead + Unpin),
+pub struct IppParser {
+    reader: Box<dyn AsyncRead + Send + Unpin>,
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
@@ -67,14 +64,14 @@ pub struct IppParser<'a> {
     payload: Option<IppPayload>,
 }
 
-impl<'a> IppParser<'a> {
+impl IppParser {
     /// Create IPP parser from AsyncRead
-    pub fn new<R>(reader: &'a mut R) -> IppParser<'a>
+    pub fn new<R>(reader: R) -> IppParser
     where
-        R: AsyncRead + Unpin,
+        R: AsyncRead + Send + Unpin + 'static,
     {
         IppParser {
-            reader,
+            reader: Box::new(reader),
             current_group: None,
             last_name: None,
             context: vec![vec![]],
@@ -222,11 +219,8 @@ impl<'a> IppParser<'a> {
         let size = self.reader.read(&mut buf).await?;
         if size > 0 {
             debug!("Parsing payload");
-            let mut temp = tempfile::NamedTempFile::new()?;
-            temp.write_all(&buf[0..size])?;
-            futures::io::copy(self.reader, &mut futures::io::AllowStdIo::new(&mut temp)).await?;
-            temp.seek(SeekFrom::Start(0))?;
-            self.payload = Some(IppPayload::from_temp_file(temp));
+            let cursor = futures::io::Cursor::new(buf[..size].to_vec());
+            self.payload = Some(cursor.chain(self.reader).into());
         }
 
         Ok(IppRequestResponse {
@@ -244,7 +238,7 @@ mod tests {
     #[test]
     fn test_parse_no_attributes() {
         let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
-        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -256,7 +250,7 @@ mod tests {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -271,7 +265,7 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
             0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -289,7 +283,7 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
             0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -311,7 +305,7 @@ mod tests {
             b'f', b'o', b'o',
         ];
 
-        let result = futures::executor::block_on(IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -322,7 +316,7 @@ mod tests {
         match res.payload {
             Some(payload) => {
                 let mut cursor = futures::io::Cursor::new(Vec::new());
-                futures::executor::block_on(futures::io::copy(payload.into_reader(), &mut cursor)).unwrap();
+                futures::executor::block_on(futures::io::copy(payload.into_inner(), &mut cursor)).unwrap();
                 assert_eq!(cursor.into_inner(), b"foo");
             }
             _ => panic!("Wrong payload!"),

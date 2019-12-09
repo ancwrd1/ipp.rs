@@ -116,7 +116,7 @@ impl IppRequestResponse {
         match self.payload {
             Some(payload) => {
                 debug!("Adding payload to a reader chain");
-                Box::new(cursor.chain(payload.into_reader()))
+                Box::new(cursor.chain(payload.into_inner()))
             }
             _ => Box::new(cursor),
         }

@@ -1,7 +1,6 @@
 use bytes::{BufMut, Bytes, BytesMut};
 use futures::AsyncRead;
 pub use num_traits::FromPrimitive;
-use tempfile::NamedTempFile;
 
 pub use crate::{
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
@@ -22,28 +21,23 @@ pub mod parser;
 pub mod request;
 pub mod value;
 
-pub(crate) enum PayloadKind {
-    Read(Box<dyn AsyncRead + Send + Unpin>),
-    TempFile(NamedTempFile),
-}
-
-/// Source for IPP data stream (job file)
+/// IPP payload
 pub struct IppPayload {
-    inner: PayloadKind,
+    inner: Box<dyn AsyncRead + Send + Unpin>,
 }
 
 impl IppPayload {
-    pub fn into_reader(self) -> impl AsyncRead + Send + Unpin {
-        match self.inner {
-            PayloadKind::Read(read) => read,
-            PayloadKind::TempFile(file) => Box::new(futures::io::AllowStdIo::new(file)),
-        }
+    /// Consumes the payload and returns an inner AsyncRead
+    pub fn into_inner(self) -> impl AsyncRead + Send + Unpin {
+        self.inner
     }
 
-    pub fn from_temp_file(temp_file: NamedTempFile) -> IppPayload {
-        IppPayload {
-            inner: PayloadKind::TempFile(temp_file),
-        }
+    /// Create a payload from the AsyncRead instance
+    pub fn new<R>(r: R) -> IppPayload
+    where
+        R: 'static + AsyncRead + Send + Unpin,
+    {
+        IppPayload { inner: Box::new(r) }
     }
 }
 
@@ -53,9 +47,7 @@ where
 {
     /// Create job source from AsyncRead
     fn from(r: T) -> Self {
-        IppPayload {
-            inner: PayloadKind::Read(Box::new(r)),
-        }
+        IppPayload::new(r)
     }
 }
 

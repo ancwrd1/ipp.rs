@@ -384,7 +384,7 @@ mod tests {
         data.extend(vec![3]);
 
         let result =
-            futures::executor::block_on(crate::parser::IppParser::new(&mut futures::io::Cursor::new(data)).parse());
+            futures::executor::block_on(crate::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
