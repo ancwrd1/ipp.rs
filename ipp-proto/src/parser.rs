@@ -3,7 +3,7 @@
 //!
 use std::{fmt, io};
 
-use bytes::Bytes;
+use bytes::{Buf, Bytes};
 use futures::{AsyncRead, AsyncReadExt};
 use log::{debug, error};
 
@@ -111,35 +111,28 @@ impl IppParser {
         Ok(tag)
     }
 
-    async fn read_u16(&mut self) -> Result<u16, IppParseError> {
-        let mut buf = [0u8; 2];
-        self.reader.read_exact(&mut buf).await?;
-
-        Ok(u16::from_be_bytes(buf))
-    }
-
-    async fn read_u8(&mut self) -> Result<u8, IppParseError> {
-        let mut buf = [0u8; 1];
-        self.reader.read_exact(&mut buf).await?;
-        Ok(buf[0])
-    }
-
-    async fn read_u32(&mut self) -> Result<u32, IppParseError> {
-        let mut buf = [0u8; 4];
-        self.reader.read_exact(&mut buf).await?;
-        Ok(u32::from_be_bytes(buf))
-    }
-
-    async fn read_string(&mut self, len: usize) -> Result<String, IppParseError> {
-        let mut buf = vec![0; len];
-        self.reader.read_exact(&mut buf).await?;
-        Ok(String::from_utf8_lossy(&buf).into_owned())
-    }
-
     async fn read_bytes(&mut self, len: usize) -> Result<Bytes, IppParseError> {
         let mut buf = vec![0; len];
         self.reader.read_exact(&mut buf).await?;
         Ok(buf.into())
+    }
+
+    async fn read_string(&mut self, len: usize) -> Result<String, IppParseError> {
+        self.read_bytes(len)
+            .await
+            .map(|b| String::from_utf8_lossy(&b).into_owned())
+    }
+
+    async fn read_u16(&mut self) -> Result<u16, IppParseError> {
+        self.read_bytes(2).await.map(|mut b| b.get_u16())
+    }
+
+    async fn read_u8(&mut self) -> Result<u8, IppParseError> {
+        self.read_bytes(1).await.map(|mut b| b.get_u8())
+    }
+
+    async fn read_u32(&mut self) -> Result<u32, IppParseError> {
+        self.read_bytes(4).await.map(|mut b| b.get_u32())
     }
 
     async fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
@@ -218,7 +211,7 @@ impl IppParser {
         let mut buf = [0u8; 32768];
         let size = self.reader.read(&mut buf).await?;
         if size > 0 {
-            debug!("Parsing payload");
+            debug!("Payload detected");
             let cursor = futures::io::Cursor::new(buf[..size].to_vec());
             self.payload = Some(cursor.chain(self.reader).into());
         }
