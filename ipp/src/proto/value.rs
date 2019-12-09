@@ -6,7 +6,7 @@ use std::{fmt, io, str::FromStr};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
-use super::{ipp::ValueTag, FromPrimitive as _};
+use super::{model::ValueTag, FromPrimitive as _};
 
 /// IPP value enumeration
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -340,7 +340,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::proto::{ipp::DelimiterTag, IppAttribute};
+    use crate::proto::{model::DelimiterTag, IppAttribute};
 
     use super::*;
 

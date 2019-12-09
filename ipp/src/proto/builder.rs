@@ -31,7 +31,7 @@ impl IppOperationBuilder {
         CreateJobBuilder::new()
     }
 
-    /// CUPS-specific operations builder
+    /// Create CUPS-specific operations
     pub fn cups() -> CupsBuilder {
         CupsBuilder::new()
     }

@@ -3,7 +3,7 @@ use futures::AsyncRead;
 pub use num_traits::FromPrimitive;
 
 pub use {
-    self::ipp::{IppVersion, Operation, StatusCode},
+    self::model::{IppVersion, Operation, StatusCode},
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     builder::{
         CreateJobBuilder, CupsBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder,
@@ -16,7 +16,7 @@ pub use {
 
 pub mod attribute;
 pub mod builder;
-pub mod ipp;
+pub mod model;
 pub mod operation;
 pub mod parser;
 pub mod request;
@@ -46,7 +46,6 @@ impl<T> From<T> for IppPayload
 where
     T: 'static + AsyncRead + Send + Unpin,
 {
-    /// Create job source from AsyncRead
     fn from(r: T) -> Self {
         IppPayload::new(r)
     }
@@ -73,10 +72,6 @@ impl IppHeader {
         }
     }
 
-    /// Get operation_status field as Operation enum. If no match found returns error status code
-    pub fn operation(&self) -> Result<Operation, StatusCode> {
-        Operation::from_u16(self.operation_status).ok_or(StatusCode::ServerErrorOperationNotSupported)
-    }
     /// Write header to a given writer
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();

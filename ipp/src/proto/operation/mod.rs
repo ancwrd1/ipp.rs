@@ -1,7 +1,12 @@
 //!
 //! High-level IPP operation abstractions
 //!
-use crate::proto::{attribute::*, ipp::*, request::IppRequestResponse, IppPayload, IppValue};
+use crate::proto::{
+    attribute::{JOB_ID, JOB_NAME, LAST_DOCUMENT, REQUESTED_ATTRIBUTES, REQUESTING_USER_NAME},
+    model::DelimiterTag,
+    request::IppRequestResponse,
+    IppAttribute, IppPayload, IppValue, IppVersion, Operation,
+};
 
 pub mod cups;
 

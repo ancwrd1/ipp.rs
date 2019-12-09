@@ -8,8 +8,9 @@ use futures::{AsyncRead, AsyncReadExt};
 use log::{debug, error};
 
 use super::{
-    ipp::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppPayload,
-    IppRequestResponse, IppValue,
+    model::{DelimiterTag, IppVersion, ValueTag},
+    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppPayload, IppRequestResponse,
+    IppValue,
 };
 
 /// Parse error enum
@@ -54,7 +55,7 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     }
 }
 
-/// IPP parser implementation
+/// Asynchronous IPP parser
 pub struct IppParser {
     reader: Box<dyn AsyncRead + Send + Unpin>,
     current_group: Option<IppAttributeGroup>,

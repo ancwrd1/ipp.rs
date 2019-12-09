@@ -8,7 +8,7 @@ use structopt::StructOpt;
 
 use ipp::{
     client::{IppClient, IppClientBuilder, IppError},
-    proto::{ipp::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
+    proto::{model::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
 };
 
 fn new_client(uri: &str, params: &IppParams) -> IppClient {

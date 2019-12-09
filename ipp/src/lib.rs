@@ -46,7 +46,7 @@ pub mod prelude {
     #[cfg(feature = "client")]
     pub use super::client::{IppClient, IppClientBuilder, IppError};
     pub use super::proto::{
-        attribute::*, ipp::*, request::IppRequestResponse, FromPrimitive as _, IppAttribute, IppAttributeGroup,
-        IppAttributes, IppHeader, IppOperationBuilder, IppParser, IppPayload, IppValue,
+        attribute::*, model::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader,
+        IppOperationBuilder, IppParser, IppPayload, IppRequestResponse, IppValue,
     };
 }

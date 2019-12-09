@@ -7,7 +7,7 @@ use log::debug;
 
 use super::{
     attribute::*,
-    ipp::{DelimiterTag, IppVersion, Operation},
+    model::{DelimiterTag, IppVersion, Operation},
     value::*,
     IppHeader, IppPayload, StatusCode,
 };

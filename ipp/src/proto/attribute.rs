@@ -5,7 +5,9 @@ use std::collections::HashMap;
 
 use bytes::{BufMut, Bytes, BytesMut};
 
-use super::{ipp::*, IppValue};
+use crate::proto::model::DelimiterTag;
+
+use super::IppValue;
 
 pub const ATTRIBUTES_CHARSET: &str = "attributes-charset";
 pub const ATTRIBUTES_NATURAL_LANGUAGE: &str = "attributes-natural-language";

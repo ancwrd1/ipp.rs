@@ -10,7 +10,7 @@ use log::debug;
 
 use crate::proto::{
     attribute::{PRINTER_STATE, PRINTER_STATE_REASONS},
-    ipp::{self, DelimiterTag, PrinterState, StatusCode},
+    model::{self, DelimiterTag, PrinterState, StatusCode},
     operation::IppOperation,
     request::IppRequestResponse,
     value::ValueParseError,
@@ -245,8 +245,8 @@ impl IppClient {
         if resp.header().operation_status > 2 {
             // IPP error
             Err(IppError::StatusError(
-                ipp::StatusCode::from_u16(resp.header().operation_status)
-                    .unwrap_or(ipp::StatusCode::ServerErrorInternalError),
+                model::StatusCode::from_u16(resp.header().operation_status)
+                    .unwrap_or(model::StatusCode::ServerErrorInternalError),
             ))
         } else {
             Ok(resp.attributes().clone())
