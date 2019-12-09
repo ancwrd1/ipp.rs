@@ -3,21 +3,19 @@ use std::{env, error::Error, process::exit};
 use ipp::{client::IppClientBuilder, proto::operation::cups::CupsDeletePrinter};
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    futures::executor::block_on(async {
-        env_logger::init();
+    env_logger::init();
 
-        let args: Vec<_> = env::args().collect();
+    let args: Vec<_> = env::args().collect();
 
-        if args.len() < 2 {
-            println!("Usage: {} uri", args[0]);
-            exit(1);
-        }
+    if args.len() < 2 {
+        println!("Usage: {} uri", args[0]);
+        exit(1);
+    }
 
-        let client = IppClientBuilder::new(&args[1]).build();
-        let operation = CupsDeletePrinter::new();
+    let client = IppClientBuilder::new(&args[1]).build();
+    let operation = CupsDeletePrinter::new();
 
-        client.send(operation).await?;
+    futures::executor::block_on(client.send(operation))?;
 
-        Ok(())
-    })
+    Ok(())
 }
