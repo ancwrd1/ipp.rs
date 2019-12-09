@@ -108,17 +108,15 @@ impl IppRequestResponse {
     }
 
     /// Convert request/response into AsyncRead including payload
-    pub fn into_reader(self) -> Box<dyn AsyncRead + Send + Unpin + 'static> {
+    pub fn into_reader(self) -> impl AsyncRead + Send + Unpin + 'static {
         let header = self.to_bytes();
-        let cursor = futures::io::Cursor::new(header);
-        debug!("IPP header size: {}", cursor.get_ref().len());
+        debug!(
+            "IPP header size: {}, has payload: {}",
+            header.len(),
+            self.payload.is_some()
+        );
 
-        match self.payload {
-            Some(payload) => {
-                debug!("Adding payload to a reader chain");
-                Box::new(cursor.chain(payload.into_inner()))
-            }
-            _ => Box::new(cursor),
-        }
+        let payload = self.payload.unwrap_or_else(|| futures::io::empty().into());
+        futures::io::Cursor::new(header).chain(payload.into_inner())
     }
 }
