@@ -1,9 +1,11 @@
 use crate::{
     attribute::IppAttribute,
-    operation::{CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument},
+    operation::{
+        cups::{CupsDeletePrinter, CupsGetPrinters},
+        CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument,
+    },
     IppPayload,
 };
-use crate::operation::cups::{CupsGetPrinters, CupsDeletePrinter};
 
 /// Builder to create IPP operations
 pub struct IppOperationBuilder;
