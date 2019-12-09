@@ -4,7 +4,7 @@
 use std::{fmt, io};
 
 use bytes::{Buf, Bytes};
-use futures::{AsyncRead, AsyncReadExt};
+use futures_util::io::{AsyncRead, AsyncReadExt};
 use log::{debug, error};
 
 use super::{
@@ -213,7 +213,7 @@ impl IppParser {
         let size = self.reader.read(&mut buf).await?;
         if size > 0 {
             debug!("Payload detected");
-            let cursor = futures::io::Cursor::new(buf[..size].to_vec());
+            let cursor = futures_util::io::Cursor::new(buf[..size].to_vec());
             self.payload = Some(cursor.chain(self.reader).into());
         }
 

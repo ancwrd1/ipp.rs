@@ -1,6 +1,6 @@
 use std::{borrow::Cow, fmt, io, time::Duration};
 
-use futures::io::BufReader;
+use futures_util::io::BufReader;
 use isahc::{
     config::{RedirectPolicy, SslOption},
     http::{uri::Authority, Method, Uri},

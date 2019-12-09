@@ -16,7 +16,7 @@ name = "ipp"
 [dependencies]
 enum-as-inner = "0.3"
 enum-primitive-derive = "0.1"
-futures = "0.3"
+futures-util = {version = "0.3", default-features = false, features = ["io"] }
 log = "0.4"
 num-traits = "0.2"
 bytes = "0.5"

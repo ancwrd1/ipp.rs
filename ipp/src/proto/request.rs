@@ -2,7 +2,7 @@
 //! IPP request
 //!
 use bytes::{BufMut, Bytes, BytesMut};
-use futures::{AsyncRead, AsyncReadExt};
+use futures_util::io::{AsyncRead, AsyncReadExt};
 use log::debug;
 
 use super::{
@@ -127,7 +127,7 @@ impl IppRequestResponse {
             self.payload.is_some()
         );
 
-        let payload = self.payload.unwrap_or_else(|| futures::io::empty().into());
-        futures::io::Cursor::new(header).chain(payload.into_inner())
+        let payload = self.payload.unwrap_or_else(|| futures_util::io::empty().into());
+        futures_util::io::Cursor::new(header).chain(payload.into_inner())
     }
 }

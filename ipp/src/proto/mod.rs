@@ -1,5 +1,5 @@
 use bytes::{BufMut, Bytes, BytesMut};
-use futures::AsyncRead;
+use futures_util::io::AsyncRead;
 pub use num_traits::FromPrimitive;
 
 pub use {
