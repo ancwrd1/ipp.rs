@@ -196,6 +196,7 @@ impl IppValue {
                 utchours,
                 utcmins,
             } => {
+                buffer.put_u16(11);
                 buffer.put_u16(year);
                 buffer.put_u8(month);
                 buffer.put_u8(day);
@@ -345,6 +346,51 @@ mod tests {
 
     use super::*;
 
+    fn value_check(value: IppValue) {
+        let mut b = value.to_bytes();
+        b.advance(2);
+        assert_eq!(IppValue::parse(value.to_tag() as u8, b.to_bytes()).unwrap(), value);
+    }
+
+    #[test]
+    fn test_value_single() {
+        value_check(IppValue::Integer(1234));
+        value_check(IppValue::Enum(4321));
+        value_check(IppValue::OctetString("octet-string".to_owned()));
+        value_check(IppValue::TextWithoutLanguage("text-without".to_owned()));
+        value_check(IppValue::NameWithoutLanguage("name-without".to_owned()));
+        value_check(IppValue::Charset("charset".to_owned()));
+        value_check(IppValue::Charset("natural".to_owned()));
+        value_check(IppValue::Charset("uri".to_owned()));
+        value_check(IppValue::RangeOfInteger { min: -12, max: 45 });
+        value_check(IppValue::Boolean(true));
+        value_check(IppValue::Boolean(false));
+        value_check(IppValue::Keyword("keyword".to_owned()));
+        value_check(IppValue::MimeMediaType("mime".to_owned()));
+        value_check(IppValue::DateTime {
+            year: 2020,
+            month: 02,
+            day: 13,
+            hour: 12,
+            minutes: 34,
+            seconds: 22,
+            deciseconds: 1,
+            utcdir: 'c',
+            utchours: 1,
+            utcmins: 30,
+        });
+        value_check(IppValue::MemberAttrName("member".to_owned()));
+        value_check(IppValue::Resolution {
+            crossfeed: 800,
+            feed: 600,
+            units: 2,
+        });
+        value_check(IppValue::Other {
+            tag: ValueTag::Unknown as u8,
+            data: "foo".into(),
+        });
+    }
+
     #[test]
     fn test_value_iterator_single() {
         let val = IppValue::Integer(1234);
@@ -365,7 +411,40 @@ mod tests {
     }
 
     #[test]
-    fn test_collection_de_serialize() {
+    fn test_array() {
+        let attr = IppAttribute::new(
+            "list",
+            IppValue::Array(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
+        );
+        let buf = attr.to_bytes().to_vec();
+
+        assert_eq!(
+            buf,
+            vec![
+                0x21, 0, 4, b'l', b'i', b's', b't', 0, 4, 0x11, 0x11, 0x11, 0x11, 0x21, 0, 0, 0, 4, 0x22, 0x22, 0x22,
+                0x22
+            ],
+        );
+
+        let mut data = vec![1, 1, 0, 0, 0, 0, 0, 0, 4];
+        data.extend(buf);
+        data.extend(vec![3]);
+
+        let result =
+            futures::executor::block_on(crate::proto::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
+        assert!(result.is_ok());
+
+        let res = result.ok().unwrap();
+        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
+        let attr = attrs.get("list").unwrap();
+        assert_eq!(
+            attr.value().as_array(),
+            Some(&vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)])
+        );
+    }
+
+    #[test]
+    fn test_collection() {
         let attr = IppAttribute::new(
             "coll",
             IppValue::Collection(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
