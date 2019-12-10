@@ -34,11 +34,11 @@ impl PrintJob {
     /// * `payload` - job payload<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - job name (job-name)<br/>
-    pub fn new<U, N, S>(payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<S, U, N>(payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
+        S: Into<IppPayload>,
         U: AsRef<str>,
         N: AsRef<str>,
-        S: Into<IppPayload>,
     {
         PrintJob {
             payload: payload.into(),
