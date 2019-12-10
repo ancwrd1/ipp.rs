@@ -360,8 +360,8 @@ mod tests {
         value_check(IppValue::TextWithoutLanguage("text-without".to_owned()));
         value_check(IppValue::NameWithoutLanguage("name-without".to_owned()));
         value_check(IppValue::Charset("charset".to_owned()));
-        value_check(IppValue::Charset("natural".to_owned()));
-        value_check(IppValue::Charset("uri".to_owned()));
+        value_check(IppValue::NaturalLanguage("natural".to_owned()));
+        value_check(IppValue::Uri("uri".to_owned()));
         value_check(IppValue::RangeOfInteger { min: -12, max: 45 });
         value_check(IppValue::Boolean(true));
         value_check(IppValue::Boolean(false));
