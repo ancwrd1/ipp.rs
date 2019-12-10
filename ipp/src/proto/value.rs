@@ -8,7 +8,7 @@ use enum_as_inner::EnumAsInner;
 
 use super::{model::ValueTag, FromPrimitive as _};
 
-/// IPP value enumeration
+/// IPP value enumeration. Values can be extracted with as_xx methods (via EnumAsInner derive macro)
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
 pub enum IppValue {
     Integer(i32),

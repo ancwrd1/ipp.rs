@@ -1,6 +1,6 @@
 # ipp.rs
 
-IPP protocol implementation for Rust
+Asynchronous IPP protocol implementation for Rust
 
 [Documentation](https://docs.rs/ipp)
 
