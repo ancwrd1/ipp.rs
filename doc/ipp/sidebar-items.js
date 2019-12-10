@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"mod":[["client",""],["prelude",""],["proto",""]]});

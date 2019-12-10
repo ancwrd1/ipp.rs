@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["IppError","IPP error"]],"struct":[["IppClient","IPP client."],["IppClientBuilder","Builder to create IPP client"]]});

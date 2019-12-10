@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["IppError","IPP error"]],"mod":[["client","IPP client"]],"struct":[["IppClientBuilder","Builder to create IPP client"]]});

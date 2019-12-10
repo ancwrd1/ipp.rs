@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["CreateJobBuilder","Builder to create CreateJob operation"],["GetPrinterAttributesBuilder","Builder to create GetPrinterAttributes operation"],["IppOperationBuilder","Builder to create IPP operations"],["PrintJobBuilder","Builder to create PrintJob operation"],["SendDocumentBuilder","Builder to create SendDocument operation"]]});

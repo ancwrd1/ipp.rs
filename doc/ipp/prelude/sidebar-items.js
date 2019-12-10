@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["_","A generic trait for converting a number to a value."]]});
