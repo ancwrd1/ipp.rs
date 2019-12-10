@@ -8,7 +8,8 @@ use enum_as_inner::EnumAsInner;
 
 use super::{model::ValueTag, FromPrimitive as _};
 
-/// IPP value enumeration. Values can be extracted with as_xx methods (via EnumAsInner derive macro)
+/// IPP value enumeration. Values can be also extracted with `as_xxx` methods (via `EnumAsInner` derive macro)
+/// Attribute values are defined in https://tools.ietf.org/html/rfc8010
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
 pub enum IppValue {
     Integer(i32),
@@ -25,7 +26,7 @@ pub enum IppValue {
     },
     Boolean(bool),
     Keyword(String),
-    ListOf(Vec<IppValue>),
+    Array(Vec<IppValue>),
     Collection(Vec<IppValue>),
     MimeMediaType(String),
     DateTime {
@@ -68,7 +69,7 @@ impl IppValue {
             IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage,
             IppValue::Uri(_) => ValueTag::Uri,
             IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
-            IppValue::ListOf(ref list) => list[0].to_tag(),
+            IppValue::Array(ref array) => array[0].to_tag(),
             IppValue::Collection(_) => ValueTag::BegCollection,
             IppValue::DateTime { .. } => ValueTag::DateTime,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
@@ -144,7 +145,7 @@ impl IppValue {
             }
             IppValue::Boolean(b) => {
                 buffer.put_u16(1);
-                buffer.put_u8(if b { 1 } else { 0 });
+                buffer.put_u8(b as u8);
             }
             IppValue::Keyword(ref s)
             | IppValue::OctetString(ref s)
@@ -158,7 +159,7 @@ impl IppValue {
                 buffer.put_u16(s.len() as u16);
                 buffer.put_slice(s.as_bytes());
             }
-            IppValue::ListOf(ref list) => {
+            IppValue::Array(ref list) => {
                 for (i, item) in list.iter().enumerate() {
                     buffer.put(item.to_bytes());
                     if i < list.len() - 1 {
@@ -237,12 +238,12 @@ impl fmt::Display for IppValue {
             | IppValue::Uri(ref s)
             | IppValue::MimeMediaType(ref s)
             | IppValue::MemberAttrName(ref s) => write!(f, "{}", s),
-            IppValue::ListOf(ref list) => {
-                let s: Vec<String> = list.iter().map(|v| format!("{}", v)).collect();
+            IppValue::Array(ref array) => {
+                let s: Vec<String> = array.iter().map(|v| format!("{}", v)).collect();
                 write!(f, "[{}]", s.join(", "))
             }
-            IppValue::Collection(ref list) => {
-                let s: Vec<String> = list.iter().map(|v| format!("{}", v)).collect();
+            IppValue::Collection(ref coll) => {
+                let s: Vec<String> = coll.iter().map(|v| format!("{}", v)).collect();
                 write!(f, "<{}>", s.join(", "))
             }
             IppValue::DateTime {
@@ -318,10 +319,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.value {
-            IppValue::ListOf(ref list) | IppValue::Collection(ref list) => {
-                if self.index < list.len() {
+            IppValue::Array(ref array) | IppValue::Collection(ref array) => {
+                if self.index < array.len() {
                     self.index += 1;
-                    Some(&list[self.index - 1])
+                    Some(&array[self.index - 1])
                 } else {
                     None
                 }
@@ -356,7 +357,7 @@ mod tests {
     #[test]
     fn test_value_iterator_multiple() {
         let list = vec![IppValue::Integer(1234), IppValue::Integer(5678)];
-        let val = IppValue::ListOf(list.clone());
+        let val = IppValue::Array(list.clone());
 
         for v in val.into_iter().enumerate() {
             assert_eq!(*v.1, list[v.0]);

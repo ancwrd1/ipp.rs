@@ -122,7 +122,7 @@ impl IppOperation for GetPrinterAttributes {
             let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::ListOf(vals)),
+                IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::Array(vals)),
             );
         }
 

@@ -51,7 +51,7 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
     if list.len() == 1 {
         list.remove(0)
     } else {
-        IppValue::ListOf(list)
+        IppValue::Array(list)
     }
 }
 
@@ -254,7 +254,7 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_list() {
+    fn test_parse_array() {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
             0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
@@ -266,7 +266,7 @@ mod tests {
         let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
         let attr = attrs.get("test").unwrap();
         assert_eq!(
-            attr.value().as_list_of(),
+            attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
         );
     }
