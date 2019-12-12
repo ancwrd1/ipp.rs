@@ -1,3 +1,6 @@
+//!
+//! IPP operation builders
+//!
 use super::{
     attribute::IppAttribute,
     operation::{
