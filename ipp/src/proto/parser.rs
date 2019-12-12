@@ -209,6 +209,7 @@ impl IppParser {
             }
         }
 
+        // somewhat arbitrary buffer, TODO: constant or better payload detection
         let mut buf = [0u8; 32768];
         let size = self.reader.read(&mut buf).await?;
         if size > 0 {
