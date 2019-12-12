@@ -4,8 +4,9 @@ Asynchronous IPP protocol implementation for Rust
 
 [Documentation](https://docs.rs/ipp)
 
-This crate implements IPP protocol as defined in [RFC 8011](https://tools.ietf.org/html/rfc8011). Not all features are implemented yet.<br/>
-Transport is based on asynchronous HTTP client from the `isahc` crate.
+This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
+
+Not all features are implemented yet. Transport is based on asynchronous HTTP client from the `isahc` crate.
 
 Usage example:
 
