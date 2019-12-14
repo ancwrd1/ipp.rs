@@ -82,13 +82,11 @@ impl IppParser {
     }
 
     fn add_last_attribute(&mut self) {
-        if let Some(ref last_name) = self.last_name {
+        if let Some(last_name) = self.last_name.take() {
             if let Some(val_list) = self.context.pop() {
                 if let Some(ref mut group) = self.current_group {
-                    group.attributes_mut().insert(
-                        last_name.clone(),
-                        IppAttribute::new(&last_name, list_or_value(val_list)),
-                    );
+                    let attr = IppAttribute::new(&last_name, list_or_value(val_list));
+                    group.attributes_mut().insert(last_name, attr);
                 }
             }
             self.context.push(vec![]);

@@ -251,7 +251,7 @@ impl IppClient {
                     .unwrap_or(model::StatusCode::ServerErrorInternalError),
             ))
         } else {
-            Ok(resp.attributes().clone())
+            Ok(resp.attributes)
         }
     }
 

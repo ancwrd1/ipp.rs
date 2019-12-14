@@ -61,25 +61,25 @@ impl IppOperation for PrintJob {
     {
         let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(uri));
 
-        if let Some(ref user_name) = self.user_name {
+        if let Some(user_name) = self.user_name {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(
                     IppAttribute::REQUESTING_USER_NAME,
-                    IppValue::NameWithoutLanguage(user_name.clone()),
+                    IppValue::NameWithoutLanguage(user_name),
                 ),
             );
         }
 
-        if let Some(ref job_name) = self.job_name {
+        if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name.clone())),
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
-        for attr in &self.attributes {
-            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr.clone());
+        for attr in self.attributes {
+            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr);
         }
         retval.payload_mut().replace(self.payload);
 
@@ -119,7 +119,7 @@ impl IppOperation for GetPrinterAttributes {
         let mut retval = IppRequestResponse::new(self.version(), Operation::GetPrinterAttributes, Some(uri));
 
         if !self.attributes.is_empty() {
-            let vals: Vec<IppValue> = self.attributes.iter().map(|a| IppValue::Keyword(a.clone())).collect();
+            let vals: Vec<IppValue> = self.attributes.into_iter().map(|a| IppValue::Keyword(a)).collect();
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::Array(vals)),
@@ -163,15 +163,15 @@ impl IppOperation for CreateJob {
     {
         let mut retval = IppRequestResponse::new(self.version(), Operation::CreateJob, Some(uri));
 
-        if let Some(ref job_name) = self.job_name {
+        if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name.clone())),
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
-        for attr in &self.attributes {
-            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr.clone());
+        for attr in self.attributes {
+            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr);
         }
         retval
     }
@@ -223,7 +223,7 @@ impl IppOperation for SendDocument {
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(
                     IppAttribute::REQUESTING_USER_NAME,
-                    IppValue::NameWithoutLanguage(user_name.clone()),
+                    IppValue::NameWithoutLanguage(user_name),
                 ),
             );
         }
