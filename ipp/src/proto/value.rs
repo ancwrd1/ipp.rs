@@ -394,7 +394,7 @@ mod tests {
         });
         value_check(IppValue::NoValue);
         value_check(IppValue::Other {
-            tag: ValueTag::Unknown as u8,
+            tag: ValueTag::Unsupported as u8,
             data: "foo".into(),
         });
     }
