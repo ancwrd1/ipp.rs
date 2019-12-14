@@ -47,6 +47,7 @@ pub enum IppValue {
         feed: i32,
         units: i8,
     },
+    NoValue,
     Other {
         tag: u8,
         data: Bytes,
@@ -76,6 +77,7 @@ impl IppValue {
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
             IppValue::Resolution { .. } => ValueTag::Resolution,
             IppValue::Other { .. } => ValueTag::Unknown,
+            IppValue::NoValue => ValueTag::NoValue,
         }
     }
 
@@ -88,28 +90,24 @@ impl IppValue {
             }
         };
 
-        match ipptag {
-            ValueTag::Integer => Ok(IppValue::Integer(data.get_i32())),
-            ValueTag::Enum => Ok(IppValue::Enum(data.get_i32())),
-            ValueTag::OctetStringUnspecified => Ok(IppValue::OctetString(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::TextWithoutLanguage => Ok(IppValue::TextWithoutLanguage(
-                String::from_utf8_lossy(&data).into_owned(),
-            )),
-            ValueTag::NameWithoutLanguage => Ok(IppValue::NameWithoutLanguage(
-                String::from_utf8_lossy(&data).into_owned(),
-            )),
-            ValueTag::Charset => Ok(IppValue::Charset(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::Uri => Ok(IppValue::Uri(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::UriScheme => Ok(IppValue::UriScheme(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::RangeOfInteger => Ok(IppValue::RangeOfInteger {
+        let value = match ipptag {
+            ValueTag::Integer => IppValue::Integer(data.get_i32()),
+            ValueTag::Enum => IppValue::Enum(data.get_i32()),
+            ValueTag::OctetStringUnspecified => IppValue::OctetString(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::TextWithoutLanguage => IppValue::TextWithoutLanguage(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::NameWithoutLanguage => IppValue::NameWithoutLanguage(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::Charset => IppValue::Charset(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::NaturalLanguage => IppValue::NaturalLanguage(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::Uri => IppValue::Uri(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::UriScheme => IppValue::UriScheme(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::RangeOfInteger => IppValue::RangeOfInteger {
                 min: data.get_i32(),
                 max: data.get_i32(),
-            }),
-            ValueTag::Boolean => Ok(IppValue::Boolean(data.get_u8() != 0)),
-            ValueTag::Keyword => Ok(IppValue::Keyword(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::MimeMediaType => Ok(IppValue::MimeMediaType(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::DateTime => Ok(IppValue::DateTime {
+            },
+            ValueTag::Boolean => IppValue::Boolean(data.get_u8() != 0),
+            ValueTag::Keyword => IppValue::Keyword(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::MimeMediaType => IppValue::MimeMediaType(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::DateTime => IppValue::DateTime {
                 year: data.get_u16(),
                 month: data.get_u8(),
                 day: data.get_u8(),
@@ -120,15 +118,17 @@ impl IppValue {
                 utcdir: data.get_u8() as char,
                 utchours: data.get_u8(),
                 utcmins: data.get_u8(),
-            }),
-            ValueTag::MemberAttrName => Ok(IppValue::MemberAttrName(String::from_utf8_lossy(&data).into_owned())),
-            ValueTag::Resolution => Ok(IppValue::Resolution {
+            },
+            ValueTag::MemberAttrName => IppValue::MemberAttrName(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::Resolution => IppValue::Resolution {
                 crossfeed: data.get_i32(),
                 feed: data.get_i32(),
                 units: data.get_i8(),
-            }),
-            _ => Ok(IppValue::Other { tag: vtag, data }),
-        }
+            },
+            ValueTag::NoValue => IppValue::NoValue,
+            _ => IppValue::Other { tag: vtag, data },
+        };
+        Ok(value)
     }
 
     /// Write value to byte array
@@ -217,6 +217,7 @@ impl IppValue {
                 buffer.put_i32(feed);
                 buffer.put_u8(units as u8);
             }
+            IppValue::NoValue => buffer.put_u16(0),
             IppValue::Other { ref data, .. } => {
                 buffer.put_u16(data.len() as u16);
                 buffer.put_slice(&data);
@@ -271,6 +272,7 @@ impl fmt::Display for IppValue {
                 write!(f, "{}x{}{}", crossfeed, feed, if units == 3 { "in" } else { "cm" })
             }
 
+            IppValue::NoValue => Ok(()),
             IppValue::Other { tag, ref data } => write!(f, "{:0x}: {:?}", tag, data),
         }
     }
@@ -390,6 +392,7 @@ mod tests {
             feed: 600,
             units: 2,
         });
+        value_check(IppValue::NoValue);
         value_check(IppValue::Other {
             tag: ValueTag::Unknown as u8,
             data: "foo".into(),
