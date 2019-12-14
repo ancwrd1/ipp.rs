@@ -1,5 +1,5 @@
 //!
-//! CUPS-specific IPP operations
+//! CUPS-specific IPP operations. For operations which require user authentication the URI may include authority part.
 //!
 
 use crate::proto::{model::Operation, operation::IppOperation, request::IppRequestResponse};
