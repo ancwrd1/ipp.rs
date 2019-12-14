@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::io::AsyncRead;
 pub use num_traits::FromPrimitive;
@@ -24,27 +26,27 @@ pub mod value;
 
 /// IPP payload
 pub struct IppPayload {
-    inner: Box<dyn AsyncRead + Send + Unpin>,
+    inner: Pin<Box<dyn AsyncRead + Send>>,
 }
 
 impl IppPayload {
     /// Consumes the payload and returns an inner AsyncRead
-    pub fn into_inner(self) -> impl AsyncRead + Send + Unpin {
+    pub fn into_inner(self) -> impl AsyncRead + Send {
         self.inner
     }
 
     /// Create a payload from the AsyncRead instance
     pub fn new<R>(r: R) -> IppPayload
     where
-        R: 'static + AsyncRead + Send + Unpin,
+        R: 'static + AsyncRead + Send,
     {
-        IppPayload { inner: Box::new(r) }
+        IppPayload { inner: Box::pin(r) }
     }
 }
 
 impl<T> From<T> for IppPayload
 where
-    T: 'static + AsyncRead + Send + Unpin,
+    T: 'static + AsyncRead + Send,
 {
     fn from(r: T) -> Self {
         IppPayload::new(r)
