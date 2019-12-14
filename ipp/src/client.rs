@@ -172,8 +172,8 @@ fn canonicalize_uri(uri: &str) -> Cow<str> {
                     builder.authority(authority.host());
                 }
             }
-            builder.path_and_query(new_uri.path());
             builder
+                .path_and_query(new_uri.path())
                 .build()
                 .map(|u| Cow::Owned(u.to_string()))
                 .unwrap_or_else(|_| Cow::Borrowed(uri))
