@@ -76,7 +76,7 @@ impl IppValue {
             IppValue::DateTime { .. } => ValueTag::DateTime,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
             IppValue::Resolution { .. } => ValueTag::Resolution,
-            IppValue::Other { .. } => ValueTag::Unknown,
+            IppValue::Other { tag, .. } => ValueTag::from_u8(tag).unwrap_or(ValueTag::Unknown),
             IppValue::NoValue => ValueTag::NoValue,
         }
     }
