@@ -19,6 +19,7 @@ pub enum IppValue {
     Charset(String),
     NaturalLanguage(String),
     Uri(String),
+    UriScheme(String),
     RangeOfInteger {
         min: i32,
         max: i32,
@@ -67,8 +68,9 @@ impl IppValue {
             IppValue::Charset(_) => ValueTag::Charset,
             IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage,
             IppValue::Uri(_) => ValueTag::Uri,
+            IppValue::UriScheme(_) => ValueTag::UriScheme,
             IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
-            IppValue::Array(ref array) => array[0].to_tag(),
+            IppValue::Array(ref array) => array.get(0).map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown),
             IppValue::Collection(_) => ValueTag::BegCollection,
             IppValue::DateTime { .. } => ValueTag::DateTime,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
@@ -99,6 +101,7 @@ impl IppValue {
             ValueTag::Charset => Ok(IppValue::Charset(String::from_utf8_lossy(&data).into_owned())),
             ValueTag::NaturalLanguage => Ok(IppValue::NaturalLanguage(String::from_utf8_lossy(&data).into_owned())),
             ValueTag::Uri => Ok(IppValue::Uri(String::from_utf8_lossy(&data).into_owned())),
+            ValueTag::UriScheme => Ok(IppValue::UriScheme(String::from_utf8_lossy(&data).into_owned())),
             ValueTag::RangeOfInteger => Ok(IppValue::RangeOfInteger {
                 min: data.get_i32(),
                 max: data.get_i32(),
@@ -153,6 +156,7 @@ impl IppValue {
             | IppValue::Charset(ref s)
             | IppValue::NaturalLanguage(ref s)
             | IppValue::Uri(ref s)
+            | IppValue::UriScheme(ref s)
             | IppValue::MimeMediaType(ref s)
             | IppValue::MemberAttrName(ref s) => {
                 buffer.put_u16(s.len() as u16);
@@ -236,6 +240,7 @@ impl fmt::Display for IppValue {
             | IppValue::Charset(ref s)
             | IppValue::NaturalLanguage(ref s)
             | IppValue::Uri(ref s)
+            | IppValue::UriScheme(ref s)
             | IppValue::MimeMediaType(ref s)
             | IppValue::MemberAttrName(ref s) => write!(f, "{}", s),
             IppValue::Array(ref array) => {
@@ -361,6 +366,7 @@ mod tests {
         value_check(IppValue::Charset("charset".to_owned()));
         value_check(IppValue::NaturalLanguage("natural".to_owned()));
         value_check(IppValue::Uri("uri".to_owned()));
+        value_check(IppValue::UriScheme("urischeme".to_owned()));
         value_check(IppValue::RangeOfInteger { min: -12, max: 45 });
         value_check(IppValue::Boolean(true));
         value_check(IppValue::Boolean(false));
