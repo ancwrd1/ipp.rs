@@ -2,15 +2,15 @@ use std::pin::Pin;
 
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::io::AsyncRead;
-pub use num_traits::FromPrimitive;
 
 pub use {
-    self::model::{IppVersion, Operation, StatusCode},
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     builder::{
         CreateJobBuilder, CupsBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder,
         SendDocumentBuilder,
     },
+    model::{IppVersion, Operation, StatusCode},
+    num_traits::FromPrimitive,
     parser::{IppParseError, IppParser},
     request::IppRequestResponse,
     value::IppValue,
