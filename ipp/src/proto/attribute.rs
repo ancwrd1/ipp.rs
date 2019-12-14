@@ -115,7 +115,7 @@ impl IppAttribute {
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 
-        buffer.put_u8(self.value.to_tag() as u8);
+        buffer.put_u8(self.value.to_tag());
         buffer.put_u16(self.name.len() as u16);
         buffer.put_slice(self.name.as_bytes());
         buffer.put(self.value.to_bytes());

@@ -56,28 +56,28 @@ pub enum IppValue {
 
 impl IppValue {
     /// Convert to binary tag
-    pub fn to_tag(&self) -> ValueTag {
+    pub fn to_tag(&self) -> u8 {
         match *self {
-            IppValue::Integer(_) => ValueTag::Integer,
-            IppValue::Enum(_) => ValueTag::Enum,
-            IppValue::RangeOfInteger { .. } => ValueTag::RangeOfInteger,
-            IppValue::Boolean(_) => ValueTag::Boolean,
-            IppValue::Keyword(_) => ValueTag::Keyword,
-            IppValue::OctetString(_) => ValueTag::OctetStringUnspecified,
-            IppValue::TextWithoutLanguage(_) => ValueTag::TextWithoutLanguage,
-            IppValue::NameWithoutLanguage(_) => ValueTag::NameWithoutLanguage,
-            IppValue::Charset(_) => ValueTag::Charset,
-            IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage,
-            IppValue::Uri(_) => ValueTag::Uri,
-            IppValue::UriScheme(_) => ValueTag::UriScheme,
-            IppValue::MimeMediaType(_) => ValueTag::MimeMediaType,
-            IppValue::Array(ref array) => array.get(0).map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown),
-            IppValue::Collection(_) => ValueTag::BegCollection,
-            IppValue::DateTime { .. } => ValueTag::DateTime,
-            IppValue::MemberAttrName(_) => ValueTag::MemberAttrName,
-            IppValue::Resolution { .. } => ValueTag::Resolution,
-            IppValue::Other { tag, .. } => ValueTag::from_u8(tag).unwrap_or(ValueTag::Unknown),
-            IppValue::NoValue => ValueTag::NoValue,
+            IppValue::Integer(_) => ValueTag::Integer as u8,
+            IppValue::Enum(_) => ValueTag::Enum as u8,
+            IppValue::RangeOfInteger { .. } => ValueTag::RangeOfInteger as u8,
+            IppValue::Boolean(_) => ValueTag::Boolean as u8,
+            IppValue::Keyword(_) => ValueTag::Keyword as u8,
+            IppValue::OctetString(_) => ValueTag::OctetStringUnspecified as u8,
+            IppValue::TextWithoutLanguage(_) => ValueTag::TextWithoutLanguage as u8,
+            IppValue::NameWithoutLanguage(_) => ValueTag::NameWithoutLanguage as u8,
+            IppValue::Charset(_) => ValueTag::Charset as u8,
+            IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage as u8,
+            IppValue::Uri(_) => ValueTag::Uri as u8,
+            IppValue::UriScheme(_) => ValueTag::UriScheme as u8,
+            IppValue::MimeMediaType(_) => ValueTag::MimeMediaType as u8,
+            IppValue::Array(ref array) => array.get(0).map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown as u8),
+            IppValue::Collection(_) => ValueTag::BegCollection as u8,
+            IppValue::DateTime { .. } => ValueTag::DateTime as u8,
+            IppValue::MemberAttrName(_) => ValueTag::MemberAttrName as u8,
+            IppValue::Resolution { .. } => ValueTag::Resolution as u8,
+            IppValue::Other { tag, .. } => tag,
+            IppValue::NoValue => ValueTag::NoValue as u8,
         }
     }
 
@@ -394,7 +394,7 @@ mod tests {
         });
         value_check(IppValue::NoValue);
         value_check(IppValue::Other {
-            tag: ValueTag::Unsupported as u8,
+            tag: 123,
             data: "foo".into(),
         });
     }
