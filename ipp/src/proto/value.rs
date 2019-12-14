@@ -352,7 +352,7 @@ mod tests {
 
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();
-        b.advance(2);
+        b.advance(2); // skip value size
         assert_eq!(IppValue::parse(value.to_tag() as u8, b.to_bytes()).unwrap(), value);
     }
 
@@ -374,7 +374,7 @@ mod tests {
         value_check(IppValue::MimeMediaType("mime".to_owned()));
         value_check(IppValue::DateTime {
             year: 2020,
-            month: 02,
+            month: 2,
             day: 13,
             hour: 12,
             minutes: 34,

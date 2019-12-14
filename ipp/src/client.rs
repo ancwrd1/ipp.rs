@@ -227,7 +227,7 @@ impl IppClient {
 
             if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
                 debug!("Printer is in error state: {:?}", keywords);
-                return Err(IppError::PrinterStateError(keywords.clone()));
+                return Err(IppError::PrinterStateError(keywords));
             }
         }
         Ok(())

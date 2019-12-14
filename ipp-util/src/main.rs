@@ -1,5 +1,5 @@
 //!
-//! High-level utility functions to be used from external application or command-line utility
+//! Command-line IPP utility to print a document or get printer status
 //!
 
 use std::{fs, io, path::PathBuf};
@@ -101,7 +101,7 @@ struct IppParams {
         long = "timeout",
         short = "t",
         global = true,
-        help = "Connect timeout in seconds, 0 = no timeout"
+        help = "Request timeout in seconds, 0 = no timeout"
     )]
     timeout: u64,
 
