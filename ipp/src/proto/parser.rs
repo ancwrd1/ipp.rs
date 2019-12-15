@@ -1,7 +1,7 @@
 //!
 //! IPP stream parser
 //!
-use std::{fmt, io, pin::Pin};
+use std::{fmt, io};
 
 use bytes::{Buf, Bytes};
 use futures_util::io::{AsyncRead, AsyncReadExt};
@@ -57,7 +57,7 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 
 /// Asynchronous IPP parser
 pub struct IppParser {
-    reader: Pin<Box<dyn AsyncRead + Send>>,
+    reader: Box<dyn AsyncRead + Send + Unpin>,
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
@@ -69,10 +69,10 @@ impl IppParser {
     /// Create IPP parser from AsyncRead
     pub fn new<R>(reader: R) -> IppParser
     where
-        R: AsyncRead + Send + 'static,
+        R: AsyncRead + Send + Unpin + 'static,
     {
         IppParser {
-            reader: Box::pin(reader),
+            reader: Box::new(reader),
             current_group: None,
             last_name: None,
             context: vec![vec![]],
