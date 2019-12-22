@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["IppValue","IPP value enumeration. Values can be also extracted with `as_xxx` methods (via `EnumAsInner` derive macro) Attribute values are defined in https://tools.ietf.org/html/rfc8010"]],"struct":[["IppValueIterator",""],["ValueParseError",""]]});
+initSidebarItems({"enum":[["IppValue","IPP attribute values as defined in RFC 8010"]],"struct":[["IppValueIterator",""],["ValueParseError",""]]});
