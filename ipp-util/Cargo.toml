@@ -1,6 +1,6 @@
 [package]
 name = "ipp-util"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP command line print utility"
 license = "MIT"
@@ -15,7 +15,7 @@ name = "ipputil"
 path = "src/main.rs"
 
 [dependencies]
-ipp = { version = "1.0.0", path = "../ipp" }
+ipp = { version = "1.0.1", path = "../ipp" }
 env_logger = "0.7"
 structopt = "0.3"
 futures = "0.3"

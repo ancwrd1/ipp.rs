@@ -57,7 +57,7 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 
 /// Asynchronous IPP parser
 pub struct IppParser {
-    reader: Box<dyn AsyncRead + Send + Unpin>,
+    reader: Box<dyn AsyncRead + Send + Sync + Unpin>,
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
@@ -69,7 +69,7 @@ impl IppParser {
     /// Create IPP parser from AsyncRead
     pub fn new<R>(reader: R) -> IppParser
     where
-        R: AsyncRead + Send + Unpin + 'static,
+        R: AsyncRead + Send + Sync + Unpin + 'static,
     {
         IppParser {
             reader: Box::new(reader),

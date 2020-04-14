@@ -163,13 +163,14 @@ fn canonicalize_uri(uri: &str) -> Cow<str> {
         Ok(new_uri) => {
             let mut builder = Uri::builder();
             if let Some(scheme) = new_uri.scheme_str() {
-                builder.scheme(scheme);
+                builder = builder.scheme(scheme);
             }
-            if let Some(authority) = new_uri.authority_part() {
+            if let Some(authority) = new_uri.authority() {
                 if let Some(port) = authority.port_u16() {
-                    builder.authority(Authority::from_shared(format!("{}:{}", authority.host(), port).into()).unwrap());
+                    builder = builder
+                        .authority(Authority::from_maybe_shared(format!("{}:{}", authority.host(), port)).unwrap());
                 } else {
-                    builder.authority(authority.host());
+                    builder = builder.authority(authority.host());
                 }
             }
             builder
@@ -261,12 +262,12 @@ impl IppClient {
 
         if self.timeout > 0 {
             debug!("Setting timeout to {}", self.timeout);
-            builder.timeout(Duration::from_secs(self.timeout));
+            builder = builder.timeout(Duration::from_secs(self.timeout));
         }
 
         if self.ignore_tls_errors {
             debug!("Setting dangerous TLS options");
-            builder.ssl_options(
+            builder = builder.ssl_options(
                 SslOption::DANGER_ACCEPT_INVALID_CERTS
                     | SslOption::DANGER_ACCEPT_REVOKED_CERTS
                     | SslOption::DANGER_ACCEPT_INVALID_HOSTS,
@@ -281,7 +282,7 @@ impl IppClient {
             .header("Content-Type", "application/ipp")
             .method(Method::POST)
             .redirect_policy(RedirectPolicy::Limit(32))
-            .body(Body::reader(request.into_reader()))?
+            .body(Body::from_reader(request.into_reader()))?
             .send_async()
             .await?;
 

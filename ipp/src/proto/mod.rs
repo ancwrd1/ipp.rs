@@ -24,19 +24,19 @@ pub mod value;
 
 /// IPP payload
 pub struct IppPayload {
-    inner: Box<dyn AsyncRead + Send + Unpin>,
+    inner: Box<dyn AsyncRead + Send + Sync + Unpin>,
 }
 
 impl IppPayload {
     /// Consumes the payload and returns an inner AsyncRead
-    pub fn into_inner(self) -> impl AsyncRead + Send {
+    pub fn into_inner(self) -> impl AsyncRead + Send + Sync {
         self.inner
     }
 
     /// Create a payload from the AsyncRead instance
     pub fn new<R>(r: R) -> IppPayload
     where
-        R: 'static + AsyncRead + Send + Unpin,
+        R: 'static + AsyncRead + Send + Sync + Unpin,
     {
         IppPayload { inner: Box::new(r) }
     }
@@ -44,7 +44,7 @@ impl IppPayload {
 
 impl<T> From<T> for IppPayload
 where
-    T: 'static + AsyncRead + Send + Unpin,
+    T: 'static + AsyncRead + Send + Sync + Unpin,
 {
     fn from(r: T) -> Self {
         IppPayload::new(r)

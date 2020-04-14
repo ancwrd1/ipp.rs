@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Asynchronous IPP print protocol implementation"
 license = "MIT"
@@ -30,7 +30,7 @@ default = ["client"]
 client = ["isahc"]
 
 [dependencies.isahc]
-version = "0.8"
+version = "0.9"
 optional = true
 default-features = false
-features = ["static-curl", "http2"]
+features = ["static-curl"]
