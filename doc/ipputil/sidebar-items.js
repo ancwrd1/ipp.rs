@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"enum":[["IppCommand",""]],"fn":[["do_print",""],["do_status",""],["get_payload",""],["main",""],["new_client",""]],"struct":[["IppParams",""],["IppPrintCmd",""],["IppStatusCmd",""]]});
