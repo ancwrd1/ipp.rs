@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "1.0.1"
+version = "2.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Asynchronous IPP print protocol implementation"
 license = "MIT"
@@ -15,22 +15,31 @@ name = "ipp"
 
 [dependencies]
 enum-as-inner = "0.3"
-enum-primitive-derive = "0.1"
+enum-primitive-derive = "0.2"
 futures-util = {version = "0.3", default-features = false, features = ["io"] }
 log = "0.4"
 num-traits = "0.2"
 bytes = "0.5"
+http = { version = "0.2", optional = true }
+pin-project = { version = "0.4", optional = true }
 
 [dev-dependencies]
 env_logger = "0.7"
 futures = "0.3"
 
 [features]
-default = ["client"]
-client = ["isahc"]
+default = ["client-isahc"]
+client-isahc = ["isahc", "http"]
+client-reqwest = ["reqwest", "http", "pin-project"]
 
 [dependencies.isahc]
 version = "0.9"
 optional = true
 default-features = false
 features = ["static-curl"]
+
+[dependencies.reqwest]
+version = "0.10"
+optional = true
+default-features = false
+features = ["native-tls", "stream"]

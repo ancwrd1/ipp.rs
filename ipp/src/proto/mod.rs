@@ -19,6 +19,7 @@ pub mod builder;
 pub mod model;
 pub mod operation;
 pub mod parser;
+pub mod reader;
 pub mod request;
 pub mod value;
 
@@ -75,7 +76,7 @@ impl IppHeader {
     /// Write header to a given writer
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
-        buffer.put_u16(self.version as u16);
+        buffer.put_u16(self.version.0);
         buffer.put_u16(self.operation_status);
         buffer.put_u32(self.request_id);
 
@@ -89,7 +90,7 @@ mod tests {
 
     #[test]
     fn test_header_to_bytes() {
-        let header = IppHeader::new(IppVersion::Ipp21, 0x1234, 0xaa55_aa55);
+        let header = IppHeader::new(IppVersion::v2_1(), 0x1234, 0xaa55_aa55);
         let buf = header.to_bytes();
         assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
     }

@@ -348,6 +348,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::proto::reader::IppReader;
     use crate::proto::{model::DelimiterTag, IppAttribute};
 
     use super::*;
@@ -438,8 +439,9 @@ mod tests {
         data.extend(buf);
         data.extend(vec![3]);
 
-        let result =
-            futures::executor::block_on(crate::proto::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(
+            crate::proto::parser::IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse(),
+        );
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -471,8 +473,9 @@ mod tests {
         data.extend(buf);
         data.extend(vec![3]);
 
-        let result =
-            futures::executor::block_on(crate::proto::parser::IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result = futures::executor::block_on(
+            crate::proto::parser::IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse(),
+        );
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

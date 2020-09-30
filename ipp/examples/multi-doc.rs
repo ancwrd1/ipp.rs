@@ -18,9 +18,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let uri = args[1].clone();
+    let uri: Uri = args[1].parse()?;
 
-    let client = IppClientBuilder::new(&uri).build();
+    let client = IppClientBuilder::new(uri.clone()).build();
 
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes()
@@ -51,7 +51,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     println!("job id: {}", job_id);
 
     for (i, item) in args.iter().enumerate().skip(2) {
-        let client = IppClientBuilder::new(&uri).build();
+        let client = IppClientBuilder::new(uri.clone()).build();
 
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);

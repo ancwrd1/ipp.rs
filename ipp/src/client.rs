@@ -1,28 +1,40 @@
-use std::{borrow::Cow, fmt, io, time::Duration};
+use std::{fmt, io, time::Duration};
 
-use futures_util::io::BufReader;
-use isahc::{
-    config::{RedirectPolicy, SslOption},
-    http::{uri::Authority, Method, Uri},
-    prelude::*,
+use http::{
+    uri::{Authority, InvalidUri},
+    Uri,
 };
 use log::debug;
+
+#[cfg(all(feature = "client-isahc", not(feature = "client-reqwest")))]
+use isahc_client::{ClientError, IsahcClient as ClientImpl};
+
+#[cfg(all(feature = "client-reqwest"))]
+use reqwest_client::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
     model::{self, DelimiterTag, PrinterState, StatusCode},
     operation::IppOperation,
     request::IppRequestResponse,
     value::ValueParseError,
-    FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError, IppParser,
+    FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError,
 };
+
+#[cfg(feature = "client-isahc")]
+mod isahc_client;
+
+#[cfg(feature = "client-reqwest")]
+mod reqwest_client;
+
+pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// IPP error
 #[derive(Debug)]
 pub enum IppError {
     /// HTTP protocol error
-    HttpError(isahc::http::Error),
+    HttpError(http::Error),
     /// Client error
-    ClientError(isahc::Error),
+    ClientError(ClientError),
     /// HTTP request error
     RequestError(u16),
     /// Network or file I/O error
@@ -43,6 +55,8 @@ pub enum IppError {
     MissingAttribute,
     /// Invalid attribute type
     InvalidAttributeType,
+    /// Invalid URI
+    InvalidUri(InvalidUri),
 }
 
 impl fmt::Display for IppError {
@@ -60,6 +74,7 @@ impl fmt::Display for IppError {
             IppError::ValueParseError(ref e) => write!(f, "{}", e),
             IppError::MissingAttribute => write!(f, "Missing attribute in response"),
             IppError::InvalidAttributeType => write!(f, "Invalid attribute type"),
+            IppError::InvalidUri(ref e) => write!(f, "{}", e),
         }
     }
 }
@@ -76,14 +91,14 @@ impl From<StatusCode> for IppError {
     }
 }
 
-impl From<isahc::http::Error> for IppError {
-    fn from(error: isahc::http::Error) -> Self {
+impl From<http::Error> for IppError {
+    fn from(error: http::Error) -> Self {
         IppError::HttpError(error)
     }
 }
 
-impl From<isahc::Error> for IppError {
-    fn from(error: isahc::Error) -> Self {
+impl From<ClientError> for IppError {
+    fn from(error: ClientError) -> Self {
         IppError::ClientError(error)
     }
 }
@@ -100,25 +115,28 @@ impl From<ValueParseError> for IppError {
     }
 }
 
+impl From<InvalidUri> for IppError {
+    fn from(error: InvalidUri) -> Self {
+        IppError::InvalidUri(error)
+    }
+}
+
 impl std::error::Error for IppError {}
 
 /// Builder to create IPP client
 pub struct IppClientBuilder {
-    uri: String,
+    uri: Uri,
     ignore_tls_errors: bool,
-    timeout: u64,
+    timeout: Option<Duration>,
 }
 
 impl IppClientBuilder {
     /// Create a client builder for a given URI
-    pub fn new<U>(uri: U) -> Self
-    where
-        U: AsRef<str>,
-    {
+    pub fn new(uri: Uri) -> Self {
         IppClientBuilder {
-            uri: uri.as_ref().to_owned(),
+            uri,
             ignore_tls_errors: false,
-            timeout: 0,
+            timeout: None,
         }
     }
 
@@ -129,8 +147,8 @@ impl IppClientBuilder {
     }
 
     /// Set network timeout in seconds. Default is 0 (no timeout)
-    pub fn timeout(mut self, timeout: u64) -> Self {
-        self.timeout = timeout;
+    pub fn timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = Some(timeout);
         self
     }
 
@@ -158,38 +176,31 @@ const ERROR_STATES: &[&str] = &[
 ];
 
 // converts http://username:pwd@host:port/path?query into http://host:port/path
-fn canonicalize_uri(uri: &str) -> Cow<str> {
-    match uri.parse::<Uri>() {
-        Ok(new_uri) => {
-            let mut builder = Uri::builder();
-            if let Some(scheme) = new_uri.scheme_str() {
-                builder = builder.scheme(scheme);
-            }
-            if let Some(authority) = new_uri.authority() {
-                if let Some(port) = authority.port_u16() {
-                    builder = builder
-                        .authority(Authority::from_maybe_shared(format!("{}:{}", authority.host(), port)).unwrap());
-                } else {
-                    builder = builder.authority(authority.host());
-                }
-            }
-            builder
-                .path_and_query(new_uri.path())
-                .build()
-                .map(|u| Cow::Owned(u.to_string()))
-                .unwrap_or_else(|_| Cow::Borrowed(uri))
-        }
-        Err(_) => Cow::Borrowed(uri),
+fn canonicalize_uri(uri: &Uri) -> Uri {
+    let mut builder = Uri::builder();
+    if let Some(scheme) = uri.scheme_str() {
+        builder = builder.scheme(scheme);
     }
+    if let Some(authority) = uri.authority() {
+        if let Some(port) = authority.port_u16() {
+            builder = builder.authority(format!("{}:{}", authority.host(), port).parse::<Authority>().unwrap());
+        } else {
+            builder = builder.authority(authority.host());
+        }
+    }
+    builder
+        .path_and_query(uri.path())
+        .build()
+        .unwrap_or_else(|_| uri.to_owned())
 }
 
 /// IPP client.
 ///
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
-    pub(crate) uri: String,
+    pub(crate) uri: Uri,
     pub(crate) ignore_tls_errors: bool,
-    pub(crate) timeout: u64,
+    pub(crate) timeout: Option<Duration>,
 }
 
 impl IppClient {
@@ -242,7 +253,7 @@ impl IppClient {
         debug!("Sending IPP operation");
 
         let resp = self
-            .send_request(operation.into_ipp_request(&canonicalize_uri(&self.uri)))
+            .send_request(operation.into_ipp_request(&canonicalize_uri(&self.uri).to_string()))
             .await?;
 
         if resp.header().operation_status > 2 {
@@ -258,43 +269,12 @@ impl IppClient {
 
     /// Send request and return response
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
-        let mut builder = Request::builder();
-
-        if self.timeout > 0 {
-            debug!("Setting timeout to {}", self.timeout);
-            builder = builder.timeout(Duration::from_secs(self.timeout));
-        }
-
-        if self.ignore_tls_errors {
-            debug!("Setting dangerous TLS options");
-            builder = builder.ssl_options(
-                SslOption::DANGER_ACCEPT_INVALID_CERTS
-                    | SslOption::DANGER_ACCEPT_REVOKED_CERTS
-                    | SslOption::DANGER_ACCEPT_INVALID_HOSTS,
-            );
-        }
-
-        debug!("Sending request to {}", self.uri);
-
-        let response = builder
-            .uri(&self.uri)
-            .connect_timeout(Duration::from_secs(10))
-            .header("Content-Type", "application/ipp")
-            .method(Method::POST)
-            .redirect_policy(RedirectPolicy::Limit(32))
-            .body(Body::from_reader(request.into_reader()))?
-            .send_async()
-            .await?;
-
-        debug!("Response status: {}", response.status());
-
-        match response.status().as_u16() {
-            200 => IppParser::new(BufReader::new(response.into_body()))
-                .parse()
-                .await
-                .map_err(IppError::from),
-            other => Err(IppError::RequestError(other)),
-        }
+        let imp = ClientImpl {
+            uri: self.uri.clone(),
+            ignore_tls_errors: self.ignore_tls_errors,
+            timeout: self.timeout,
+        };
+        imp.send_request(request).await
     }
 }
 
@@ -305,11 +285,11 @@ mod tests {
     #[test]
     fn test_to_device_uri() {
         assert_eq!(
-            canonicalize_uri("http://user:pass@example.com:631/path?query=val"),
+            canonicalize_uri(&"http://user:pass@example.com:631/path?query=val".parse().unwrap()),
             "http://example.com:631/path"
         );
         assert_eq!(
-            canonicalize_uri("http://example.com/path?query=val"),
+            canonicalize_uri(&"http://example.com/path?query=val".parse().unwrap()),
             "http://example.com/path"
         );
     }

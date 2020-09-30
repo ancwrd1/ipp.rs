@@ -12,7 +12,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let client = IppClientBuilder::new(&args[1]).build();
+    let client = IppClientBuilder::new(args[1].parse()?).build();
     let operation = IppOperationBuilder::cups().get_printers();
 
     let attrs = futures::executor::block_on(client.send(operation))?;

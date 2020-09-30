@@ -16,7 +16,7 @@ pub trait IppOperation {
 
     /// Return IPP version for this operation. Default is 1.1
     fn version(&self) -> IppVersion {
-        IppVersion::Ipp11
+        IppVersion::v1_1()
     }
 }
 

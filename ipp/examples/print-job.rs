@@ -27,7 +27,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let operation = builder.build();
 
-    let client = IppClientBuilder::new(&args[1]).build();
+    let client = IppClientBuilder::new(args[1].parse()?).build();
 
     let attrs = futures::executor::block_on(client.send(operation))?;
 

@@ -3,15 +3,14 @@
 //!
 use std::{fmt, io};
 
-use bytes::{Buf, Bytes};
-use futures_util::io::{AsyncRead, AsyncReadExt};
+use futures_util::io::AsyncRead;
 use log::{debug, error};
 
 use super::{
-    model::{DelimiterTag, IppVersion, ValueTag},
-    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppPayload, IppRequestResponse,
-    IppValue,
+    model::{DelimiterTag, ValueTag},
+    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppPayload, IppRequestResponse, IppValue,
 };
+use crate::proto::reader::IppReader;
 
 /// Parse error enum
 #[derive(Debug)]
@@ -56,8 +55,8 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 }
 
 /// Asynchronous IPP parser
-pub struct IppParser {
-    reader: Box<dyn AsyncRead + Send + Sync + Unpin>,
+pub struct IppParser<R> {
+    reader: IppReader<R>,
     current_group: Option<IppAttributeGroup>,
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
@@ -65,14 +64,14 @@ pub struct IppParser {
     payload: Option<IppPayload>,
 }
 
-impl IppParser {
-    /// Create IPP parser from AsyncRead
-    pub fn new<R>(reader: R) -> IppParser
-    where
-        R: AsyncRead + Send + Sync + Unpin + 'static,
-    {
+impl<R> IppParser<R>
+where
+    R: 'static + AsyncRead + Send + Sync + Unpin,
+{
+    /// Create IPP parser from AsyncIppReader
+    pub fn new(reader: IppReader<R>) -> IppParser<R> {
         IppParser {
-            reader: Box::new(reader),
+            reader,
             current_group: None,
             last_name: None,
             context: vec![vec![]],
@@ -110,42 +109,16 @@ impl IppParser {
         Ok(tag)
     }
 
-    async fn read_bytes(&mut self, len: usize) -> Result<Bytes, IppParseError> {
-        let mut buf = vec![0; len];
-        self.reader.read_exact(&mut buf).await?;
-        Ok(buf.into())
-    }
-
-    async fn read_string(&mut self, len: usize) -> Result<String, IppParseError> {
-        self.read_bytes(len)
-            .await
-            .map(|b| String::from_utf8_lossy(&b).into_owned())
-    }
-
-    async fn read_u16(&mut self) -> Result<u16, IppParseError> {
-        self.read_bytes(2).await.map(|mut b| b.get_u16())
-    }
-
-    async fn read_u8(&mut self) -> Result<u8, IppParseError> {
-        self.read_bytes(1).await.map(|mut b| b.get_u8())
-    }
-
-    async fn read_u32(&mut self) -> Result<u32, IppParseError> {
-        self.read_bytes(4).await.map(|mut b| b.get_u32())
-    }
-
     async fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
         // value tag
-        let name_len = self.read_u16().await?;
-        let name = self.read_string(name_len as usize).await?;
-        let value_len = self.read_u16().await?;
-        let value = self.read_bytes(value_len as usize).await?;
+        let name = self.reader.read_name().await?;
+        let value = self.reader.read_value().await?;
 
         let ipp_value = IppValue::parse(tag, value)?;
 
         debug!("Value tag: {:0x}: {}: {}", tag, name, ipp_value);
 
-        if name_len > 0 {
+        if !name.is_empty() {
             // single attribute or begin of array
             self.add_last_attribute();
             // store it as a previous attribute
@@ -186,15 +159,11 @@ impl IppParser {
 
     /// Parse IPP stream
     pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
-        let version = IppVersion::from_u16(self.read_u16().await?).ok_or_else(|| IppParseError::InvalidVersion)?;
-        let operation_status = self.read_u16().await?;
-        let request_id = self.read_u32().await?;
-
-        let header = IppHeader::new(version, operation_status, request_id);
+        let header = self.reader.read_header().await?;
         debug!("IPP header: {:?}", header);
 
         loop {
-            match self.read_u8().await? {
+            match self.reader.read_tag().await? {
                 tag @ 0x01..=0x05 => {
                     if self.parse_delimiter(tag)? == DelimiterTag::EndOfAttributes {
                         break;
@@ -207,14 +176,7 @@ impl IppParser {
             }
         }
 
-        // somewhat arbitrary buffer, TODO: constant or better payload detection
-        let mut buf = [0u8; 32768];
-        let size = self.reader.read(&mut buf).await?;
-        if size > 0 {
-            debug!("Payload detected");
-            let cursor = futures_util::io::Cursor::new(buf[..size].to_vec());
-            self.payload = Some(cursor.chain(self.reader).into());
-        }
+        self.payload = self.reader.into_payload().await?;
 
         Ok(IppRequestResponse {
             header,
@@ -231,7 +193,8 @@ mod tests {
     #[test]
     fn test_parse_no_attributes() {
         let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
-        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result =
+            futures::executor::block_on(IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -243,7 +206,8 @@ mod tests {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result =
+            futures::executor::block_on(IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -258,7 +222,8 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
             0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result =
+            futures::executor::block_on(IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -276,7 +241,8 @@ mod tests {
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
             0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
-        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result =
+            futures::executor::block_on(IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -298,7 +264,8 @@ mod tests {
             b'f', b'o', b'o',
         ];
 
-        let result = futures::executor::block_on(IppParser::new(futures::io::Cursor::new(data)).parse());
+        let result =
+            futures::executor::block_on(IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse());
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

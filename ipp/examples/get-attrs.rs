@@ -12,7 +12,8 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let client = IppClientBuilder::new(&args[1]).build();
+    let uri = args[1].parse()?;
+    let client = IppClientBuilder::new(uri).build();
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&args[2..])
         .build();

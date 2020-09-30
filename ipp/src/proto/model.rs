@@ -6,13 +6,25 @@ use std::fmt;
 use enum_primitive_derive::Primitive;
 
 /// IPP protocol version
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
-pub enum IppVersion {
-    Ipp10 = 0x0100,
-    Ipp11 = 0x0101,
-    Ipp20 = 0x0200,
-    Ipp21 = 0x0201,
-    Ipp22 = 0x0202,
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct IppVersion(pub u16);
+
+impl IppVersion {
+    pub fn v1_0() -> Self {
+        IppVersion(0x0100)
+    }
+    pub fn v1_1() -> Self {
+        IppVersion(0x0101)
+    }
+    pub fn v2_0() -> Self {
+        IppVersion(0x0200)
+    }
+    pub fn v2_1() -> Self {
+        IppVersion(0x0201)
+    }
+    pub fn v2_2() -> Self {
+        IppVersion(0x0202)
+    }
 }
 
 /// IPP operation constants

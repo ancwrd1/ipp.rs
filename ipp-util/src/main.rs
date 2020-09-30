@@ -2,20 +2,21 @@
 //! Command-line IPP utility to print a document or get printer status
 //!
 
-use std::{fs, io, path::PathBuf};
+use std::{fs, io, path::PathBuf, time::Duration};
 
 use structopt::StructOpt;
 
 use ipp::{
-    client::{IppClient, IppClientBuilder, IppError},
+    prelude::*,
     proto::{model::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
 };
 
-fn new_client(uri: &str, params: &IppParams) -> IppClient {
-    IppClientBuilder::new(&uri)
-        .timeout(params.timeout)
-        .ignore_tls_errors(params.ignore_tls_errors)
-        .build()
+fn new_client(uri: Uri, params: &IppParams) -> IppClient {
+    let mut builder = IppClientBuilder::new(uri).ignore_tls_errors(params.ignore_tls_errors);
+    if let Some(timeout) = params.timeout {
+        builder = builder.timeout(Duration::from_secs(timeout));
+    }
+    builder.build()
 }
 
 fn get_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
@@ -27,7 +28,7 @@ fn get_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
 }
 
 async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
-    let client = new_client(&cmd.uri, params);
+    let client = new_client(cmd.uri.parse()?, params);
 
     if !cmd.no_check_state {
         client.check_ready().await?;
@@ -62,7 +63,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
 }
 
 async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
-    let client = new_client(&cmd.uri, &params);
+    let client = new_client(cmd.uri.parse()?, &params);
 
     let operation = IppOperationBuilder::get_printer_attributes()
         .attributes(&cmd.attributes)
@@ -76,7 +77,7 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
         .flat_map(|group| group.attributes().values())
         .collect::<Vec<_>>();
 
-    values.sort_by(|a, b| a.name().cmp(b.name()));
+    values.sort_by_key(|&a| a.name());
 
     for v in values {
         println!("{}: {}", v.name(), v.value());
@@ -97,13 +98,12 @@ struct IppParams {
     ignore_tls_errors: bool,
 
     #[structopt(
-        default_value = "0",
         long = "timeout",
         short = "t",
         global = true,
-        help = "Request timeout in seconds, 0 = no timeout"
+        help = "Request timeout in seconds, default = no timeout"
     )]
-    timeout: u64,
+    timeout: Option<u64>,
 
     #[structopt(subcommand)]
     command: IppCommand,
@@ -161,14 +161,15 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
     let params = IppParams::from_args();
 
     match params.command {
-        IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
-        IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,
+        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone()).await?,
+        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone()).await?,
     }
     Ok(())
 }
