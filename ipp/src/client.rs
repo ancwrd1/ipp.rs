@@ -9,7 +9,7 @@ use log::debug;
 #[cfg(all(feature = "client-isahc", not(feature = "client-reqwest")))]
 use isahc_client::{ClientError, IsahcClient as ClientImpl};
 
-#[cfg(all(feature = "client-reqwest"))]
+#[cfg(all(not(feature = "client-isahc"), feature = "client-reqwest"))]
 use reqwest_client::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
@@ -20,10 +20,10 @@ use crate::proto::{
     FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError,
 };
 
-#[cfg(feature = "client-isahc")]
+#[cfg(all(feature = "client-isahc", not(feature = "client-reqwest")))]
 mod isahc_client;
 
-#[cfg(feature = "client-reqwest")]
+#[cfg(all(not(feature = "client-isahc"), feature = "client-reqwest"))]
 mod reqwest_client;
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);

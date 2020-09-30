@@ -10,7 +10,7 @@
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
 //!     let req = IppRequestResponse::new(
-//!         IppVersion::Ipp11,
+//!         IppVersion::v1_1(),
 //!         Operation::GetPrinterAttributes,
 //!         Some(uri.to_string())
 //!     );
@@ -47,7 +47,7 @@ pub mod prelude {
     pub use super::client::{IppClient, IppClientBuilder, IppError};
     pub use super::proto::{
         model::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppOperationBuilder,
-        IppParser, IppPayload, IppRequestResponse, IppValue,
+        IppParser, IppPayload, IppRequestResponse, IppValue, IppVersion,
     };
     #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
     pub use http::Uri;
