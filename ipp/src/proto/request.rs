@@ -48,7 +48,7 @@ impl IppRequestResponse {
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(
                     IppAttribute::PRINTER_URI,
-                    IppValue::Uri(uri.as_ref().replace("http", "ipp").to_string()),
+                    IppValue::Uri(uri.as_ref().replace("http", "ipp")),
                 ),
             );
         }

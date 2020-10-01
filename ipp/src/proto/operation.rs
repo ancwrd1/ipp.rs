@@ -119,7 +119,7 @@ impl IppOperation for GetPrinterAttributes {
         let mut retval = IppRequestResponse::new(self.version(), Operation::GetPrinterAttributes, Some(uri));
 
         if !self.attributes.is_empty() {
-            let vals: Vec<IppValue> = self.attributes.into_iter().map(|a| IppValue::Keyword(a)).collect();
+            let vals: Vec<IppValue> = self.attributes.into_iter().map(IppValue::Keyword).collect();
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::Array(vals)),

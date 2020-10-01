@@ -6,11 +6,14 @@ Asynchronous IPP protocol implementation for Rust
 
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
-Not all features are implemented yet. Transport is based on asynchronous HTTP client from the `isahc` crate.
+To add a transport support please choose one of the feature options: `client-isahc` or `client-reqwest`.
+By default the http client support is not enabled.  
 
-Usage example:
+Note: for `reqwest` client a runtime is needed such as `tokio`. 
 
-```rust,no_run
+Usage example (no runtime, simple future blocking):
+
+```rust
 use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -18,24 +21,21 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if args.len() < 2 {
         println!("Usage: {} uri [attrs]", args[0]);
-        std::process::exit(1);
+    } else {
+        let client = IppClientBuilder::new(args[1].parse()?).build();
+        let operation = IppOperationBuilder::get_printer_attributes()
+            .attributes(&args[2..])
+            .build();
+    
+        let attrs = futures::executor::block_on(client.send(operation))?;
+    
+        for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+            .attributes()
+            .values()
+        {
+            println!("{}: {}", v.name(), v.value());
+        }
     }
-
-    let client = IppClientBuilder::new(&args[1]).build();
-    let operation = IppOperationBuilder::get_printer_attributes()
-        .attributes(&args[2..])
-        .build();
-
-    let attrs = futures::executor::block_on(client.send(operation))?;
-
-    for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
-        .attributes()
-        .values()
-    {
-        println!("{}: {}", v.name(), v.value());
-    }
-
-    Ok(())
 }
 ```
 

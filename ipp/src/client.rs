@@ -6,11 +6,17 @@ use http::{
 };
 use log::debug;
 
-#[cfg(all(feature = "client-isahc", not(feature = "client-reqwest")))]
-use isahc_client::{ClientError, IsahcClient as ClientImpl};
+#[cfg(feature = "client-isahc")]
+mod client_isahc;
 
-#[cfg(all(not(feature = "client-isahc"), feature = "client-reqwest"))]
-use reqwest_client::{ClientError, ReqwestClient as ClientImpl};
+#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
+mod client_reqwest;
+
+#[cfg(feature = "client-isahc")]
+use client_isahc::{ClientError, IsahcClient as ClientImpl};
+
+#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
+use client_reqwest::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
     model::{self, DelimiterTag, PrinterState, StatusCode},
@@ -19,12 +25,6 @@ use crate::proto::{
     value::ValueParseError,
     FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError,
 };
-
-#[cfg(all(feature = "client-isahc", not(feature = "client-reqwest")))]
-mod isahc_client;
-
-#[cfg(all(not(feature = "client-isahc"), feature = "client-reqwest"))]
-mod reqwest_client;
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 

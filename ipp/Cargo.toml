@@ -4,7 +4,7 @@ version = "2.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Asynchronous IPP print protocol implementation"
 license = "MIT"
-repository = "https://github.com/dremon/ipp.rs"
+repository = "https://github.com/ancwrd1/ipp.rs"
 documentation = "https://docs.rs/ipp"
 readme = "README.md"
 keywords = ["ipp", "print", "cups", "printing", "protocol"]
@@ -28,7 +28,7 @@ env_logger = "0.7"
 futures = "0.3"
 
 [features]
-default = ["client-isahc"]
+default = []
 client-isahc = ["isahc", "http"]
 client-reqwest = ["reqwest", "http", "pin-project"]
 

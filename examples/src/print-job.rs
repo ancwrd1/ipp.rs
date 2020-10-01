@@ -3,8 +3,6 @@ use std::{env, error::Error, fs, process::exit};
 use ipp::prelude::*;
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
-
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {

@@ -54,13 +54,13 @@ where
         self.read_u8().await
     }
 
-    /// Read IPP name: (len, name)
+    /// Read IPP name from [len; name] element
     pub async fn read_name(&mut self) -> io::Result<String> {
         let name_len = self.read_u16().await?;
         self.read_string(name_len as usize).await
     }
 
-    /// Read IPP value: (len, value)
+    /// Read IPP value from [len; value] element
     pub async fn read_value(&mut self) -> io::Result<Bytes> {
         let value_len = self.read_u16().await?;
         self.read_bytes(value_len as usize).await

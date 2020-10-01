@@ -1,3 +1,2 @@
 [workspace]
-members = [ "ipp", "ipp-util" ]
-default-members = [ "ipp", "ipp-util" ]
+members = [ "ipp", "ipp-util", "examples" ]

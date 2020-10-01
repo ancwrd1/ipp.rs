@@ -19,7 +19,7 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     builder.build()
 }
 
-fn get_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
+fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     let payload = match cmd.file {
         Some(ref filename) => futures::io::AllowStdIo::new(fs::File::open(filename)?).into(),
         None => futures::io::AllowStdIo::new(io::stdin()).into(),
@@ -34,7 +34,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         client.check_ready().await?;
     }
 
-    let payload = get_payload(&cmd).map_err(IppError::from)?;
+    let payload = new_payload(&cmd).map_err(IppError::from)?;
 
     let mut builder = IppOperationBuilder::print_job(payload);
     if let Some(jobname) = cmd.job_name {

@@ -9,8 +9,6 @@ fn supports_multi_doc(v: &IppValue) -> bool {
 }
 
 pub fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
-
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
