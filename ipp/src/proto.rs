@@ -1,3 +1,9 @@
+use std::{
+    io,
+    pin::Pin,
+    task::{Context, Poll},
+};
+
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::io::AsyncRead;
 
@@ -29,13 +35,15 @@ pub struct IppPayload {
 }
 
 impl IppPayload {
-    /// Consumes the payload and returns an inner AsyncRead
-    pub fn into_inner(self) -> impl AsyncRead + Send + Sync {
-        self.inner
+    /// Create empty payload
+    pub fn empty() -> Self {
+        IppPayload {
+            inner: Box::new(futures_util::io::empty()),
+        }
     }
 
     /// Create a payload from the AsyncRead instance
-    pub fn new<R>(r: R) -> IppPayload
+    pub fn new<R>(r: R) -> Self
     where
         R: 'static + AsyncRead + Send + Sync + Unpin,
     {
@@ -43,12 +51,9 @@ impl IppPayload {
     }
 }
 
-impl<T> From<T> for IppPayload
-where
-    T: 'static + AsyncRead + Send + Sync + Unpin,
-{
-    fn from(r: T) -> Self {
-        IppPayload::new(r)
+impl AsyncRead for IppPayload {
+    fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut [u8]) -> Poll<io::Result<usize>> {
+        Pin::new(&mut self.inner).poll_read(cx, buf)
     }
 }
 

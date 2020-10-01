@@ -21,8 +21,8 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
 
 fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     let payload = match cmd.file {
-        Some(ref filename) => futures::io::AllowStdIo::new(fs::File::open(filename)?).into(),
-        None => futures::io::AllowStdIo::new(io::stdin()).into(),
+        Some(ref filename) => IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(filename)?)),
+        None => IppPayload::new(futures::io::AllowStdIo::new(io::stdin())),
     };
     Ok(payload)
 }

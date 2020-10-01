@@ -15,7 +15,7 @@ use super::{
 pub struct IppRequestResponse {
     pub(crate) header: IppHeader,
     pub(crate) attributes: IppAttributes,
-    pub(crate) payload: Option<IppPayload>,
+    pub(crate) payload: IppPayload,
 }
 
 impl IppRequestResponse {
@@ -28,7 +28,7 @@ impl IppRequestResponse {
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributes::new(),
-            payload: None,
+            payload: IppPayload::empty(),
         };
 
         retval.attributes_mut().add(
@@ -62,7 +62,7 @@ impl IppRequestResponse {
         let mut retval = IppRequestResponse {
             header: hdr,
             attributes: IppAttributes::new(),
-            payload: None,
+            payload: IppPayload::empty(),
         };
 
         retval.attributes_mut().add(
@@ -101,12 +101,12 @@ impl IppRequestResponse {
     }
 
     /// Get payload
-    pub fn payload(&self) -> Option<&IppPayload> {
-        self.payload.as_ref()
+    pub fn payload(&self) -> &IppPayload {
+        &self.payload
     }
 
     /// Get mutable payload
-    pub fn payload_mut(&mut self) -> &mut Option<IppPayload> {
+    pub fn payload_mut(&mut self) -> &mut IppPayload {
         &mut self.payload
     }
 
@@ -121,13 +121,8 @@ impl IppRequestResponse {
     /// Convert request/response into AsyncRead including payload
     pub fn into_reader(self) -> impl AsyncRead + Send + Sync + 'static {
         let header = self.to_bytes();
-        debug!(
-            "IPP header size: {}, has payload: {}",
-            header.len(),
-            self.payload.is_some()
-        );
+        debug!("IPP header size: {}", header.len(),);
 
-        let payload = self.payload.unwrap_or_else(|| futures_util::io::empty().into());
-        futures_util::io::Cursor::new(header).chain(payload.into_inner())
+        futures_util::io::Cursor::new(header).chain(self.payload)
     }
 }

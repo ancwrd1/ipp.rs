@@ -54,9 +54,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
 
-        let reader = futures::io::AllowStdIo::new(fs::File::open(item.to_owned())?);
+        let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(item.to_owned())?));
 
-        let send_op = IppOperationBuilder::send_document(job_id, reader)
+        let send_op = IppOperationBuilder::send_document(job_id, payload)
             .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
             .last(last)
             .build();

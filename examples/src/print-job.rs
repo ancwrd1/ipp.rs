@@ -10,9 +10,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let reader = futures::io::AllowStdIo::new(fs::File::open(&args[2])?);
+    let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(&args[2])?));
 
-    let mut builder = IppOperationBuilder::print_job(reader)
+    let mut builder = IppOperationBuilder::print_job(payload)
         .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
         .job_title(&args[1]);
 

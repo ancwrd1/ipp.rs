@@ -1,7 +1,7 @@
 use std::io;
 
 use bytes::Bytes;
-use futures_util::io::{AsyncRead, AsyncReadExt, Cursor};
+use futures_util::io::{AsyncRead, AsyncReadExt};
 
 use crate::proto::{IppHeader, IppPayload, IppVersion};
 
@@ -76,14 +76,7 @@ where
     }
 
     /// Convert the remaining inner stream into IppPayload
-    pub async fn into_payload(mut self) -> io::Result<Option<IppPayload>> {
-        let mut buf = [0u8; 4096];
-        let size = self.inner.read(&mut buf).await?;
-        if size > 0 {
-            let cursor = Cursor::new(buf[..size].to_vec());
-            Ok(Some(cursor.chain(self.inner).into()))
-        } else {
-            Ok(None)
-        }
+    pub fn into_payload(self) -> IppPayload {
+        IppPayload::new(self.inner)
     }
 }

@@ -81,7 +81,7 @@ impl IppOperation for PrintJob {
         for attr in self.attributes {
             retval.attributes_mut().add(DelimiterTag::JobAttributes, attr);
         }
-        retval.payload_mut().replace(self.payload);
+        *retval.payload_mut() = self.payload;
 
         retval
     }
@@ -233,7 +233,7 @@ impl IppOperation for SendDocument {
             IppAttribute::new(IppAttribute::LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
-        retval.payload_mut().replace(self.payload);
+        *retval.payload_mut() = self.payload;
 
         retval
     }

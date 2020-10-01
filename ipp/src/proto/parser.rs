@@ -6,11 +6,12 @@ use std::{fmt, io};
 use futures_util::io::AsyncRead;
 use log::{debug, error};
 
+use crate::proto::reader::IppReader;
+
 use super::{
     model::{DelimiterTag, ValueTag},
-    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppPayload, IppRequestResponse, IppValue,
+    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppRequestResponse, IppValue,
 };
-use crate::proto::reader::IppReader;
 
 /// Parse error enum
 #[derive(Debug)]
@@ -61,7 +62,6 @@ pub struct IppParser<R> {
     last_name: Option<String>,
     context: Vec<Vec<IppValue>>,
     attributes: IppAttributes,
-    payload: Option<IppPayload>,
 }
 
 impl<R> IppParser<R>
@@ -76,7 +76,6 @@ where
             last_name: None,
             context: vec![vec![]],
             attributes: IppAttributes::new(),
-            payload: None,
         }
     }
 
@@ -176,12 +175,10 @@ where
             }
         }
 
-        self.payload = self.reader.into_payload().await?;
-
         Ok(IppRequestResponse {
             header,
             attributes: self.attributes,
-            payload: self.payload,
+            payload: self.reader.into_payload(),
         })
     }
 }
@@ -273,13 +270,8 @@ mod tests {
         let attr = attrs.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
-        match res.payload {
-            Some(payload) => {
-                let mut cursor = futures::io::Cursor::new(Vec::new());
-                futures::executor::block_on(futures::io::copy(payload.into_inner(), &mut cursor)).unwrap();
-                assert_eq!(cursor.into_inner(), b"foo");
-            }
-            _ => panic!("Wrong payload!"),
-        }
+        let mut cursor = futures::io::Cursor::new(Vec::new());
+        futures::executor::block_on(futures::io::copy(res.payload, &mut cursor)).unwrap();
+        assert_eq!(cursor.into_inner(), b"foo");
     }
 }

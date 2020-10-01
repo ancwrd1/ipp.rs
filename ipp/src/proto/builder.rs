@@ -17,11 +17,8 @@ impl IppOperationBuilder {
     /// Create PrintJob operation
     ///
     /// * `payload` - `IppPayload`
-    pub fn print_job<T>(payload: T) -> PrintJobBuilder
-    where
-        IppPayload: From<T>,
-    {
-        PrintJobBuilder::new(payload.into())
+    pub fn print_job(payload: IppPayload) -> PrintJobBuilder {
+        PrintJobBuilder::new(payload)
     }
 
     /// Create GetPrinterAttributes operation
@@ -43,11 +40,8 @@ impl IppOperationBuilder {
     ///
     /// * `job_id` - job id returned by Create-Job operation <br/>
     /// * `payload` - `IppPayload` <br/>
-    pub fn send_document<T>(job_id: i32, payload: T) -> SendDocumentBuilder
-    where
-        IppPayload: From<T>,
-    {
-        SendDocumentBuilder::new(job_id, payload.into())
+    pub fn send_document(job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
+        SendDocumentBuilder::new(job_id, payload)
     }
 }
 
