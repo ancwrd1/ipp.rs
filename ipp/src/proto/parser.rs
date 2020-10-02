@@ -49,9 +49,12 @@ where
     R: 'static + AsyncRead + Send + Sync + Unpin,
 {
     /// Create IPP parser from AsyncIppReader
-    pub fn new(reader: IppReader<R>) -> IppParser<R> {
+    pub fn new<T>(reader: T) -> IppParser<R>
+    where
+        T: Into<IppReader<R>>,
+    {
         IppParser {
-            reader,
+            reader: reader.into(),
             current_group: None,
             last_name: None,
             context: vec![vec![]],

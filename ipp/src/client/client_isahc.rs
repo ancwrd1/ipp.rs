@@ -12,7 +12,7 @@ use log::debug;
 
 use crate::{
     client::{IppError, CONNECT_TIMEOUT},
-    proto::{reader::IppReader, IppParser, IppRequestResponse},
+    proto::{IppParser, IppRequestResponse},
 };
 
 pub(super) type ClientError = isahc::Error;
@@ -56,7 +56,7 @@ impl IsahcClient {
         debug!("Response status: {}", response.status());
 
         match response.status().as_u16() {
-            200 => IppParser::new(IppReader::new(BufReader::new(response.into_body())))
+            200 => IppParser::new(BufReader::new(response.into_body()))
                 .parse()
                 .await
                 .map_err(IppError::from),

@@ -7,7 +7,7 @@ use reqwest::{Body, ClientBuilder};
 
 use crate::{
     client::{IppError, CONNECT_TIMEOUT},
-    proto::{reader::IppReader, IppParser, IppRequestResponse},
+    proto::{IppParser, IppRequestResponse},
 };
 
 pub(super) type ClientError = reqwest::Error;
@@ -47,12 +47,10 @@ impl ReqwestClient {
         debug!("Response status: {}", response.status());
 
         match response.status().as_u16() {
-            200 => IppParser::new(IppReader::new(BufReader::new(util::StreamReader::new(
-                response.bytes_stream(),
-            ))))
-            .parse()
-            .await
-            .map_err(IppError::from),
+            200 => IppParser::new(BufReader::new(util::StreamReader::new(response.bytes_stream())))
+                .parse()
+                .await
+                .map_err(IppError::from),
             other => Err(IppError::RequestError(other)),
         }
     }

@@ -23,4 +23,3 @@ futures = "0.3"
 [dependencies.ipp]
 version = "2.0.0"
 path = "../ipp"
-features = ["client-reqwest"]

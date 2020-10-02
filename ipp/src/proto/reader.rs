@@ -83,3 +83,12 @@ where
         IppPayload::new(self.inner)
     }
 }
+
+impl<R> From<R> for IppReader<R>
+where
+    R: 'static + AsyncRead + Send + Sync + Unpin,
+{
+    fn from(r: R) -> Self {
+        IppReader::new(r)
+    }
+}
