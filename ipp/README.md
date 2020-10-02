@@ -6,10 +6,12 @@ Asynchronous IPP protocol implementation for Rust
 
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
-Not all features are implemented yet. Transport is based on `isahc` client or `reqwest` client depending on the selected feature.
-Note: for `reqwest` client a runtime is needed such as `tokio`. 
+To add a transport support please choose one of the feature options: `client-isahc` or `client-reqwest`.
+If both or none features are selected the `isahc` client will be used.
 
-Usage example:
+Note: for the `reqwest` client a runtime is needed such as `tokio`.
+
+Usage example (no runtime, simple future blocking):
 
 ```rust
 use ipp::prelude::*;

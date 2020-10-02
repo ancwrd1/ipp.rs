@@ -48,7 +48,7 @@ impl IsahcClient {
             .connect_timeout(CONNECT_TIMEOUT)
             .header("Content-Type", "application/ipp")
             .method(Method::POST)
-            .redirect_policy(RedirectPolicy::Limit(32))
+            .redirect_policy(RedirectPolicy::Limit(10))
             .body(Body::from_reader(request.into_reader()))?
             .send_async()
             .await?;

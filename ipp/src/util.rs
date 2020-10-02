@@ -1,5 +1,7 @@
 #![cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
-
+///!
+///! High-level utility functions
+///!
 use std::{fs::File, path::Path};
 
 use futures_util::io::AllowStdIo;
@@ -23,11 +25,7 @@ const ERROR_STATES: &[&str] = &[
 /// Check printer ready status
 pub async fn check_printer_state(client: &IppClient) -> Result<(), IppError> {
     debug!("Checking printer status");
-    let operation = IppOperationBuilder::get_printer_attributes()
-        .attributes(&[IppAttribute::PRINTER_STATE, IppAttribute::PRINTER_STATE_REASONS])
-        .build();
-
-    let attrs = client.send(operation).await?;
+    let attrs = get_printer_attributes(client).await?;
 
     let state = attrs
         .groups_of(DelimiterTag::PrinterAttributes)

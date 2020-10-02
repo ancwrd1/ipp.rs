@@ -1,3 +1,6 @@
+///!
+///! IPP client
+///!
 use std::{io, time::Duration};
 
 use http::{
@@ -26,6 +29,25 @@ use crate::proto::{
 };
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+
+// converts http://username:pwd@host:port/path?query into http://host:port/path
+fn canonicalize_uri(uri: &Uri) -> Uri {
+    let mut builder = Uri::builder();
+    if let Some(scheme) = uri.scheme_str() {
+        builder = builder.scheme(scheme);
+    }
+    if let Some(authority) = uri.authority() {
+        if let Some(port) = authority.port_u16() {
+            builder = builder.authority(format!("{}:{}", authority.host(), port).parse::<Authority>().unwrap());
+        } else {
+            builder = builder.authority(authority.host());
+        }
+    }
+    builder
+        .path_and_query(uri.path())
+        .build()
+        .unwrap_or_else(|_| uri.to_owned())
+}
 
 /// IPP error
 #[derive(Debug, thiserror::Error)]
@@ -116,25 +138,6 @@ impl IppClientBuilder {
             timeout: self.timeout,
         }
     }
-}
-
-// converts http://username:pwd@host:port/path?query into http://host:port/path
-fn canonicalize_uri(uri: &Uri) -> Uri {
-    let mut builder = Uri::builder();
-    if let Some(scheme) = uri.scheme_str() {
-        builder = builder.scheme(scheme);
-    }
-    if let Some(authority) = uri.authority() {
-        if let Some(port) = authority.port_u16() {
-            builder = builder.authority(format!("{}:{}", authority.host(), port).parse::<Authority>().unwrap());
-        } else {
-            builder = builder.authority(authority.host());
-        }
-    }
-    builder
-        .path_and_query(uri.path())
-        .build()
-        .unwrap_or_else(|_| uri.to_owned())
 }
 
 /// IPP client.

@@ -12,7 +12,7 @@
 //!     let req = IppRequestResponse::new(
 //!         IppVersion::v1_1(),
 //!         Operation::GetPrinterAttributes,
-//!         Some(uri.to_string())
+//!         Some(uri.clone())
 //!     );
 //!     let client = IppClientBuilder::new(uri).build();
 //!     let resp = futures::executor::block_on(client.send_request(req))?;
