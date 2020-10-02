@@ -1,6 +1,8 @@
 //!
 //! High-level IPP operation abstractions
 //!
+use http::Uri;
+
 use crate::proto::{
     model::DelimiterTag, request::IppRequestResponse, IppAttribute, IppPayload, IppValue, IppVersion, Operation,
 };
@@ -10,9 +12,7 @@ pub mod cups;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
-    where
-        S: AsRef<str>;
+    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse;
 
     /// Return IPP version for this operation. Default is 1.1
     fn version(&self) -> IppVersion {
@@ -55,10 +55,7 @@ impl PrintJob {
 }
 
 impl IppOperation for PrintJob {
-    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
-    where
-        S: AsRef<str>,
-    {
+    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(uri));
 
         if let Some(user_name) = self.user_name {
@@ -112,10 +109,7 @@ impl GetPrinterAttributes {
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
-    where
-        S: AsRef<str>,
-    {
+    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(self.version(), Operation::GetPrinterAttributes, Some(uri));
 
         if !self.attributes.is_empty() {
@@ -157,10 +151,7 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
-    where
-        S: AsRef<str>,
-    {
+    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(self.version(), Operation::CreateJob, Some(uri));
 
         if let Some(job_name) = self.job_name {
@@ -207,10 +198,7 @@ impl SendDocument {
 }
 
 impl IppOperation for SendDocument {
-    fn into_ipp_request<S>(self, uri: S) -> IppRequestResponse
-    where
-        S: AsRef<str>,
-    {
+    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(self.version(), Operation::SendDocument, Some(uri));
 
         retval.attributes_mut().add(

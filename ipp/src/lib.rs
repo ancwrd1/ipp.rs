@@ -41,6 +41,7 @@ pub mod proto;
 
 #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
 pub mod client;
+pub mod util;
 
 pub mod prelude {
     #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]

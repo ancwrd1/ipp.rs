@@ -7,6 +7,7 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
 use super::{model::ValueTag, FromPrimitive as _};
+use std::convert::Infallible;
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -278,18 +279,8 @@ impl fmt::Display for IppValue {
     }
 }
 
-#[derive(Debug)]
-pub struct ValueParseError;
-
-impl fmt::Display for ValueParseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "IPP value parse error")
-    }
-}
-impl std::error::Error for ValueParseError {}
-
 impl FromStr for IppValue {
-    type Err = ValueParseError;
+    type Err = Infallible;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let value = match s {

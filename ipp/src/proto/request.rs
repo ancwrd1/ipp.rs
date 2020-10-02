@@ -3,6 +3,7 @@
 //!
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::io::{AsyncRead, AsyncReadExt};
+use http::Uri;
 use log::debug;
 
 use super::{
@@ -20,10 +21,7 @@ pub struct IppRequestResponse {
 
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new<S>(version: IppVersion, operation: Operation, uri: Option<S>) -> IppRequestResponse
-    where
-        S: AsRef<str>,
-    {
+    pub fn new(version: IppVersion, operation: Operation, uri: Option<Uri>) -> IppRequestResponse {
         let hdr = IppHeader::new(version, operation as u16, 1);
         let mut retval = IppRequestResponse {
             header: hdr,
@@ -48,7 +46,7 @@ impl IppRequestResponse {
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(
                     IppAttribute::PRINTER_URI,
-                    IppValue::Uri(uri.as_ref().replace("http", "ipp")),
+                    IppValue::Uri(uri.to_string().replace("http", "ipp")),
                 ),
             );
         }

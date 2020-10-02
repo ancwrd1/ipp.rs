@@ -1,7 +1,7 @@
 //!
 //! IPP stream parser
 //!
-use std::{fmt, io};
+use std::io;
 
 use futures_util::io::AsyncRead;
 use log::{debug, error};
@@ -14,37 +14,17 @@ use super::{
 };
 
 /// Parse error enum
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum IppParseError {
+    #[error("Invalid tag: {0}")]
     InvalidTag(u8),
-    InvalidVersion,
+
+    #[error("Invalid IPP collection")]
     InvalidCollection,
-    Incomplete,
-    IOError(io::Error),
-}
 
-impl From<io::Error> for IppParseError {
-    fn from(error: io::Error) -> Self {
-        match error.kind() {
-            io::ErrorKind::UnexpectedEof => IppParseError::Incomplete,
-            _ => IppParseError::IOError(error),
-        }
-    }
+    #[error(transparent)]
+    IOError(#[from] io::Error),
 }
-
-impl fmt::Display for IppParseError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            IppParseError::InvalidTag(tag) => write!(f, "Invalid tag: {}", tag),
-            IppParseError::InvalidVersion => write!(f, "Invalid IPP protocol version"),
-            IppParseError::InvalidCollection => write!(f, "Invalid IPP collection"),
-            IppParseError::Incomplete => write!(f, "Incomplete IPP payload"),
-            IppParseError::IOError(err) => write!(f, "{}", err.to_string()),
-        }
-    }
-}
-
-impl std::error::Error for IppParseError {}
 
 // create a single value from one-element list, list otherwise
 fn list_or_value(mut list: Vec<IppValue>) -> IppValue {

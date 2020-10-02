@@ -9,6 +9,7 @@ use structopt::StructOpt;
 use ipp::{
     prelude::*,
     proto::{model::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
+    util::check_printer_state,
 };
 
 fn new_client(uri: Uri, params: &IppParams) -> IppClient {
@@ -31,7 +32,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
     let client = new_client(cmd.uri.parse()?, params);
 
     if !cmd.no_check_state {
-        client.check_ready().await?;
+        check_printer_state(&client).await?;
     }
 
     let payload = new_payload(&cmd).map_err(IppError::from)?;
@@ -48,7 +49,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         let mut kv = arg.split('=');
         if let Some(k) = kv.next() {
             if let Some(v) = kv.next() {
-                builder = builder.attribute(IppAttribute::new(k, v.parse()?));
+                builder = builder.attribute(IppAttribute::new(k, v.parse().unwrap()));
             }
         }
     }

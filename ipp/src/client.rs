@@ -1,4 +1,4 @@
-use std::{fmt, io, time::Duration};
+use std::{io, time::Duration};
 
 use http::{
     uri::{Authority, InvalidUri},
@@ -19,109 +19,65 @@ use client_isahc::{ClientError, IsahcClient as ClientImpl};
 use client_reqwest::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
-    model::{self, DelimiterTag, PrinterState, StatusCode},
+    model::{self, StatusCode},
     operation::IppOperation,
     request::IppRequestResponse,
-    value::ValueParseError,
-    FromPrimitive as _, IppAttribute, IppAttributes, IppOperationBuilder, IppParseError,
+    FromPrimitive as _, IppAttributes, IppParseError,
 };
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// IPP error
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum IppError {
+    #[error(transparent)]
     /// HTTP protocol error
-    HttpError(http::Error),
+    HttpError(#[from] http::Error),
+
+    #[error(transparent)]
     /// Client error
-    ClientError(ClientError),
+    ClientError(#[from] ClientError),
+
+    #[error("HTTP request error: {0}")]
     /// HTTP request error
     RequestError(u16),
+
+    #[error(transparent)]
     /// Network or file I/O error
-    IOError(io::Error),
+    IOError(#[from] io::Error),
+
+    #[error("IPP status error: {0}")]
     /// IPP status error
     StatusError(StatusCode),
+
+    #[error("Printer state error: {0:?}")]
     /// Printer state error
     PrinterStateError(Vec<String>),
+
+    #[error("Printer stopped")]
     /// Printer stopped
     PrinterStopped,
+
+    #[error("IPP parameter error: {0}")]
     /// Parameter error
     ParamError(String),
+
+    #[error(transparent)]
     /// Parsing error
-    ParseError(IppParseError),
-    /// Value parsing error
-    ValueParseError(ValueParseError),
+    ParseError(#[from] IppParseError),
+
+    #[error("Missing attribute in response")]
     /// Missing attribute in response
     MissingAttribute,
+
+    #[error("Invalid attribute type")]
     /// Invalid attribute type
     InvalidAttributeType,
+
+    #[error(transparent)]
     /// Invalid URI
-    InvalidUri(InvalidUri),
+    InvalidUri(#[from] InvalidUri),
 }
-
-impl fmt::Display for IppError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            IppError::HttpError(ref e) => write!(f, "{}", e),
-            IppError::ClientError(ref e) => write!(f, "{}", e),
-            IppError::RequestError(ref e) => write!(f, "HTTP request failed: {}", e),
-            IppError::IOError(ref e) => write!(f, "{}", e),
-            IppError::StatusError(ref e) => write!(f, "IPP status error: {}", e),
-            IppError::ParamError(ref e) => write!(f, "IPP param error: {}", e),
-            IppError::PrinterStateError(ref e) => write!(f, "IPP printer state error: {:?}", e),
-            IppError::PrinterStopped => write!(f, "IPP printer stopped"),
-            IppError::ParseError(ref e) => write!(f, "{}", e),
-            IppError::ValueParseError(ref e) => write!(f, "{}", e),
-            IppError::MissingAttribute => write!(f, "Missing attribute in response"),
-            IppError::InvalidAttributeType => write!(f, "Invalid attribute type"),
-            IppError::InvalidUri(ref e) => write!(f, "{}", e),
-        }
-    }
-}
-
-impl From<io::Error> for IppError {
-    fn from(error: io::Error) -> Self {
-        IppError::IOError(error)
-    }
-}
-
-impl From<StatusCode> for IppError {
-    fn from(code: StatusCode) -> Self {
-        IppError::StatusError(code)
-    }
-}
-
-impl From<http::Error> for IppError {
-    fn from(error: http::Error) -> Self {
-        IppError::HttpError(error)
-    }
-}
-
-impl From<ClientError> for IppError {
-    fn from(error: ClientError) -> Self {
-        IppError::ClientError(error)
-    }
-}
-
-impl From<IppParseError> for IppError {
-    fn from(error: IppParseError) -> Self {
-        IppError::ParseError(error)
-    }
-}
-
-impl From<ValueParseError> for IppError {
-    fn from(error: ValueParseError) -> Self {
-        IppError::ValueParseError(error)
-    }
-}
-
-impl From<InvalidUri> for IppError {
-    fn from(error: InvalidUri) -> Self {
-        IppError::InvalidUri(error)
-    }
-}
-
-impl std::error::Error for IppError {}
 
 /// Builder to create IPP client
 pub struct IppClientBuilder {
@@ -162,19 +118,6 @@ impl IppClientBuilder {
     }
 }
 
-const ERROR_STATES: &[&str] = &[
-    "media-jam",
-    "toner-empty",
-    "spool-area-full",
-    "cover-open",
-    "door-open",
-    "input-tray-missing",
-    "output-tray-missing",
-    "marker-supply-empty",
-    "paused",
-    "shutdown",
-];
-
 // converts http://username:pwd@host:port/path?query into http://host:port/path
 fn canonicalize_uri(uri: &Uri) -> Uri {
     let mut builder = Uri::builder();
@@ -204,47 +147,6 @@ pub struct IppClient {
 }
 
 impl IppClient {
-    /// Check printer ready status
-    pub async fn check_ready(&self) -> Result<(), IppError> {
-        debug!("Checking printer status");
-        let operation = IppOperationBuilder::get_printer_attributes()
-            .attributes(&[IppAttribute::PRINTER_STATE, IppAttribute::PRINTER_STATE_REASONS])
-            .build();
-
-        let attrs = self.send(operation).await?;
-
-        let state = attrs
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .get(0)
-            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
-            .and_then(|attr| attr.value().as_enum())
-            .and_then(|v| PrinterState::from_i32(*v));
-
-        if let Some(PrinterState::Stopped) = state {
-            debug!("Printer is stopped");
-            return Err(IppError::PrinterStopped);
-        }
-
-        if let Some(reasons) = attrs
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .get(0)
-            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
-        {
-            let keywords = reasons
-                .value()
-                .into_iter()
-                .filter_map(|e| e.as_keyword())
-                .map(ToOwned::to_owned)
-                .collect::<Vec<_>>();
-
-            if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
-                debug!("Printer is in error state: {:?}", keywords);
-                return Err(IppError::PrinterStateError(keywords));
-            }
-        }
-        Ok(())
-    }
-
     /// send IPP operation
     pub async fn send<T>(&self, operation: T) -> Result<IppAttributes, IppError>
     where
@@ -253,7 +155,7 @@ impl IppClient {
         debug!("Sending IPP operation");
 
         let resp = self
-            .send_request(operation.into_ipp_request(&canonicalize_uri(&self.uri).to_string()))
+            .send_request(operation.into_ipp_request(canonicalize_uri(&self.uri)))
             .await?;
 
         if resp.header().operation_status > 2 {

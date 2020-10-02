@@ -20,6 +20,7 @@ futures-util = {version = "0.3", default-features = false, features = ["io"] }
 log = "0.4"
 num-traits = "0.2"
 bytes = "0.5"
+thiserror = "1"
 http = { version = "0.2", optional = true }
 pin-project = { version = "0.4", optional = true }
 
