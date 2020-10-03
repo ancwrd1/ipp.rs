@@ -17,7 +17,7 @@ pub fn canonicalize_uri(uri: &Uri) -> Uri {
 }
 
 #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
-pub use client_util::{check_printer_state, get_printer_attributes, print_job};
+pub use client_util::{check_printer_state, get_printer_attributes, print_file};
 
 #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
 mod client_util {
@@ -41,7 +41,8 @@ mod client_util {
         "shutdown",
     ];
 
-    /// Check printer ready status
+    /// Check printer ready status. Checks printer-state and printer-state-reasons attributes.
+    /// Returns Ok if no fatal errors are detected, IppError otherwise.
     pub async fn check_printer_state(client: &IppClient) -> Result<(), IppError> {
         debug!("Checking printer status");
         let attrs = get_printer_attributes(client).await?;
@@ -78,12 +79,12 @@ mod client_util {
         Ok(())
     }
 
-    /// Print job
-    pub async fn print_job<P>(client: &IppClient, job_path: P) -> Result<IppAttributes, IppError>
+    /// Print a file
+    pub async fn print_file<P>(client: &IppClient, path: P) -> Result<IppAttributes, IppError>
     where
         P: AsRef<Path>,
     {
-        let payload = IppPayload::new(AllowStdIo::new(File::open(job_path.as_ref())?));
+        let payload = IppPayload::new(AllowStdIo::new(File::open(path.as_ref())?));
         let operation = IppOperationBuilder::print_job(client.uri().clone(), payload).build();
         client.send(operation).await
     }
