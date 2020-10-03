@@ -37,6 +37,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("{}: {}", v.name(), v.value());
         }
     }
+    Ok(())
 }
 ```
 
