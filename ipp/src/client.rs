@@ -57,10 +57,6 @@ pub enum IppError {
     /// Printer stopped
     PrinterStopped,
 
-    #[error("IPP parameter error: {0}")]
-    /// Parameter error
-    ParamError(String),
-
     #[error(transparent)]
     /// Parsing error
     ParseError(#[from] IppParseError),
