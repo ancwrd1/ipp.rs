@@ -1,13 +1,12 @@
 //!
 //! IPP value
 //!
-use std::{fmt, io, str::FromStr};
+use std::{convert::Infallible, fmt, io, str::FromStr};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
 use super::{model::ValueTag, FromPrimitive as _};
-use std::convert::Infallible;
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -339,10 +338,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        proto::reader::IppReader,
-        proto::{attribute::IppAttribute, model::DelimiterTag},
-    };
+    use crate::proto::{attribute::IppAttribute, model::DelimiterTag, reader::IppReader};
 
     use super::*;
 
