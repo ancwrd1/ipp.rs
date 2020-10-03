@@ -20,10 +20,7 @@ use client_isahc::{ClientError, IsahcClient as ClientImpl};
 use client_reqwest::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
-    attribute::IppAttributes,
-    model::{self, StatusCode},
-    operation::IppOperation,
-    parser::IppParseError,
+    attribute::IppAttributes, model::StatusCode, operation::IppOperation, parser::IppParseError,
     request::IppRequestResponse,
 };
 
@@ -159,8 +156,7 @@ impl IppClient {
         if resp.header().operation_status > 2 {
             // IPP error
             Err(IppError::StatusError(
-                model::StatusCode::from_u16(resp.header().operation_status)
-                    .unwrap_or(model::StatusCode::ServerErrorInternalError),
+                StatusCode::from_u16(resp.header().operation_status).unwrap_or(StatusCode::ServerErrorInternalError),
             ))
         } else {
             Ok(resp.attributes)
