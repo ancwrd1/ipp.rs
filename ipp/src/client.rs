@@ -1,5 +1,5 @@
 //!
-//! IPP client
+//! IPP client, selected by `client-isahc` or `client-reqwest` feature
 //!
 use std::{io, time::Duration};
 

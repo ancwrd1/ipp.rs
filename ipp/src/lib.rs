@@ -1,10 +1,22 @@
 //!
-//! IPP print protocol implementation for Rust
+//! IPP print protocol implementation for Rust. This crate can be used in several ways:
+//! * using the low-level request/response API and building the requests manually.
+//! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
+//! * using the built-in IPP client based on `reqwest` or `isahc` crates.
+//! (selected via `client-isahc` or `client-reqwest`) features.
+//! * using any third-party HTTP client and send the serialized request manually.
+//!
+//! Implementation notes:
+//! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
+//! * the **Accept-Encoding** HTTP header seems to cause problems with some older printers,
+//! therefore it is disabled by default.
+//! * this crate is also suitable for building IPP servers, however the example is not provided yet.
+//! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.
 //!
 //! Usage examples:
 //!
 //!```rust,no_run
-//! // using raw API
+//! // using low-level API
 //! use ipp::prelude::*;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
