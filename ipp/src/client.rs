@@ -78,7 +78,7 @@ pub enum IppError {
 pub struct IppClientBuilder {
     uri: Uri,
     ignore_tls_errors: bool,
-    timeout: Option<Duration>,
+    request_timeout: Option<Duration>,
 }
 
 impl IppClientBuilder {
@@ -86,7 +86,7 @@ impl IppClientBuilder {
         IppClientBuilder {
             uri,
             ignore_tls_errors: false,
-            timeout: None,
+            request_timeout: None,
         }
     }
 
@@ -96,9 +96,9 @@ impl IppClientBuilder {
         self
     }
 
-    /// Set network timeout in seconds. Default is 0 (no timeout)
-    pub fn timeout(mut self, timeout: Duration) -> Self {
-        self.timeout = Some(timeout);
+    /// Set network request timeout. Default is no timeout.
+    pub fn request_timeout(mut self, duration: Duration) -> Self {
+        self.request_timeout = Some(duration);
         self
     }
 
@@ -107,7 +107,7 @@ impl IppClientBuilder {
         IppClient {
             uri: self.uri,
             ignore_tls_errors: self.ignore_tls_errors,
-            timeout: self.timeout,
+            request_timeout: self.request_timeout,
         }
     }
 }
@@ -118,7 +118,7 @@ impl IppClientBuilder {
 pub struct IppClient {
     pub(crate) uri: Uri,
     pub(crate) ignore_tls_errors: bool,
-    pub(crate) timeout: Option<Duration>,
+    pub(crate) request_timeout: Option<Duration>,
 }
 
 impl IppClient {
@@ -127,7 +127,7 @@ impl IppClient {
         IppClient {
             uri,
             ignore_tls_errors: false,
-            timeout: None,
+            request_timeout: None,
         }
     }
 

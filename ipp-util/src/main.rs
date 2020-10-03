@@ -11,7 +11,7 @@ use ipp::{prelude::*, util::check_printer_state};
 fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
     if let Some(timeout) = params.timeout {
-        builder = builder.timeout(Duration::from_secs(timeout));
+        builder = builder.request_timeout(Duration::from_secs(timeout));
     }
     builder.build()
 }

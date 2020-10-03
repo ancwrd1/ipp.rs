@@ -17,8 +17,8 @@ impl<'a> ReqwestClient<'a> {
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         let mut builder = ClientBuilder::new().connect_timeout(CONNECT_TIMEOUT);
 
-        if let Some(timeout) = self.0.timeout {
-            debug!("Setting timeout to {:?}", timeout);
+        if let Some(timeout) = self.0.request_timeout {
+            debug!("Setting request timeout to {:?}", timeout);
             builder = builder.timeout(timeout);
         }
 

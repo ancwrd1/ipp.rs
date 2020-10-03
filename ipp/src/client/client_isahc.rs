@@ -22,8 +22,8 @@ impl<'a> IsahcClient<'a> {
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         let mut builder = Request::builder();
 
-        if let Some(timeout) = self.0.timeout {
-            debug!("Setting timeout to {:?}", timeout);
+        if let Some(timeout) = self.0.request_timeout {
+            debug!("Setting request timeout to {:?}", timeout);
             builder = builder.timeout(timeout);
         }
 
