@@ -7,7 +7,7 @@ use crate::{
     proto::{parser::IppParser, request::IppRequestResponse},
 };
 
-pub(crate) const USER_AGENT: &str = concat!("ipp.rs/", env!("CARGO_PKG_VERSION"), ";reqwest");
+const USER_AGENT: &str = concat!("ipp.rs/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
 pub(super) type ClientError = reqwest::Error;
 
