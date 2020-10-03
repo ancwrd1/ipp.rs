@@ -109,9 +109,10 @@ mod util {
                     chunk.advance(len);
                     return Poll::Ready(Ok(len));
                 } else {
-                    match futures_util::ready!(self.as_mut().project().inner.poll_next(cx)) {
+                    let me = self.as_mut().project();
+                    match futures_util::ready!(me.inner.poll_next(cx)) {
                         Some(Ok(chunk)) if chunk.remaining() > 0 => {
-                            *self.as_mut().project().chunk = Some(chunk);
+                            *me.chunk = Some(chunk);
                         }
                         Some(Err(err)) => {
                             return Poll::Ready(Err(io::Error::new(io::ErrorKind::BrokenPipe, err.into())))
