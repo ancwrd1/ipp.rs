@@ -22,18 +22,15 @@ pub struct IppRequestResponse {
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
     pub fn new(version: IppVersion, operation: Operation, uri: Option<Uri>) -> IppRequestResponse {
-        let hdr = IppHeader::new(version, operation as u16, 1);
-        let mut retval = IppRequestResponse {
-            header: hdr,
-            attributes: IppAttributes::new(),
-            payload: IppPayload::empty(),
-        };
+        let header = IppHeader::new(version, operation as u16, 1);
+        let mut attributes = IppAttributes::new();
 
-        retval.attributes_mut().add(
+        attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
-        retval.attributes_mut().add(
+
+        attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
                 IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
@@ -42,16 +39,20 @@ impl IppRequestResponse {
         );
 
         if let Some(uri) = uri {
-            retval.attributes_mut().add(
+            attributes.add(
                 DelimiterTag::OperationAttributes,
                 IppAttribute::new(
                     IppAttribute::PRINTER_URI,
-                    IppValue::Uri(uri.to_string().replace("http", "ipp")),
+                    IppValue::Uri(crate::util::canonicalize_uri(&uri).to_string()),
                 ),
             );
         }
 
-        retval
+        IppRequestResponse {
+            header,
+            attributes,
+            payload: IppPayload::empty(),
+        }
     }
 
     /// Create response from status and id

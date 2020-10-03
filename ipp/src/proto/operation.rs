@@ -12,7 +12,7 @@ pub mod cups;
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse;
+    fn into_ipp_request(self) -> IppRequestResponse;
 
     /// Return IPP version for this operation. Default is 1.1
     fn version(&self) -> IppVersion {
@@ -22,6 +22,7 @@ pub trait IppOperation {
 
 /// IPP operation Print-Job
 pub struct PrintJob {
+    printer_uri: Uri,
     payload: IppPayload,
     user_name: Option<String>,
     job_name: Option<String>,
@@ -31,16 +32,18 @@ pub struct PrintJob {
 impl PrintJob {
     /// Create Print-Job operation
     ///
+    /// * `printer_uri` - printer URI<br/>
     /// * `payload` - job payload<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `job_name` - job name (job-name)<br/>
-    pub fn new<S, U, N>(payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<S, U, N>(printer_uri: Uri, payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
     where
         S: Into<IppPayload>,
         U: AsRef<str>,
         N: AsRef<str>,
     {
         PrintJob {
+            printer_uri,
             payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
@@ -55,8 +58,8 @@ impl PrintJob {
 }
 
 impl IppOperation for PrintJob {
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(uri));
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(self.printer_uri));
 
         if let Some(user_name) = self.user_name {
             retval.attributes_mut().add(
@@ -85,32 +88,42 @@ impl IppOperation for PrintJob {
 }
 
 /// IPP operation Get-Printer-Attributes
-#[derive(Default)]
 pub struct GetPrinterAttributes {
+    printer_uri: Uri,
     attributes: Vec<String>,
 }
 
 impl GetPrinterAttributes {
     /// Create Get-Printer-Attributes operation
     ///
-    pub fn new() -> GetPrinterAttributes {
-        GetPrinterAttributes::default()
+    /// * `printer_uri` - printer URI
+    pub fn new(printer_uri: Uri) -> GetPrinterAttributes {
+        GetPrinterAttributes {
+            printer_uri,
+            attributes: Vec::new(),
+        }
     }
 
-    /// Set attributes to request from the printer
-    pub fn with_attributes<T>(attributes: &[T]) -> GetPrinterAttributes
+    /// Create Get-Printer-Attributes operation for a given list of attributes
+    ///
+    /// * `printer_uri` - printer URI
+    /// * `attributes` - list of attribute names to request from the printer
+    pub fn with_attributes<I, T>(printer_uri: Uri, attributes: I) -> GetPrinterAttributes
     where
+        I: IntoIterator<Item = T>,
         T: AsRef<str>,
     {
         GetPrinterAttributes {
-            attributes: attributes.iter().map(|a| a.as_ref().to_string()).collect(),
+            printer_uri,
+            attributes: attributes.into_iter().map(|a| a.as_ref().to_string()).collect(),
         }
     }
 }
 
 impl IppOperation for GetPrinterAttributes {
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(self.version(), Operation::GetPrinterAttributes, Some(uri));
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval =
+            IppRequestResponse::new(self.version(), Operation::GetPrinterAttributes, Some(self.printer_uri));
 
         if !self.attributes.is_empty() {
             let vals: Vec<IppValue> = self.attributes.into_iter().map(IppValue::Keyword).collect();
@@ -126,6 +139,7 @@ impl IppOperation for GetPrinterAttributes {
 
 /// IPP operation Create-Job
 pub struct CreateJob {
+    printer_uri: Uri,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
 }
@@ -133,12 +147,14 @@ pub struct CreateJob {
 impl CreateJob {
     /// Create Create-Job operation
     ///
+    /// * `printer_uri` - printer URI
     /// * `job_name` - optional job name (job-name)<br/>
-    pub fn new<T>(job_name: Option<T>) -> CreateJob
+    pub fn new<T>(printer_uri: Uri, job_name: Option<T>) -> CreateJob
     where
         T: AsRef<str>,
     {
         CreateJob {
+            printer_uri,
             job_name: job_name.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
         }
@@ -151,8 +167,8 @@ impl CreateJob {
 }
 
 impl IppOperation for CreateJob {
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(self.version(), Operation::CreateJob, Some(uri));
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::CreateJob, Some(self.printer_uri));
 
         if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
@@ -170,6 +186,7 @@ impl IppOperation for CreateJob {
 
 /// IPP operation Send-Document
 pub struct SendDocument {
+    printer_uri: Uri,
     job_id: i32,
     payload: IppPayload,
     user_name: Option<String>,
@@ -179,16 +196,18 @@ pub struct SendDocument {
 impl SendDocument {
     /// Create Send-Document operation
     ///
+    /// * `printer_uri` - printer URI<br/>
     /// * `job_id` - job ID returned by Create-Job operation<br/>
     /// * `payload` - `IppPayload`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S, U>(job_id: i32, payload: S, user_name: Option<U>, last: bool) -> SendDocument
+    pub fn new<S, U>(printer_uri: Uri, job_id: i32, payload: S, user_name: Option<U>, last: bool) -> SendDocument
     where
         S: Into<IppPayload>,
         U: AsRef<str>,
     {
         SendDocument {
+            printer_uri,
             job_id,
             payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
@@ -198,8 +217,8 @@ impl SendDocument {
 }
 
 impl IppOperation for SendDocument {
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
-        let mut retval = IppRequestResponse::new(self.version(), Operation::SendDocument, Some(uri));
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::SendDocument, Some(self.printer_uri));
 
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,

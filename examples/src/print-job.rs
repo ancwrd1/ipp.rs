@@ -10,9 +10,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
+    let uri: Uri = args[1].parse()?;
     let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(&args[2])?));
 
-    let mut builder = IppOperationBuilder::print_job(payload)
+    let mut builder = IppOperationBuilder::print_job(uri.clone(), payload)
         .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
         .job_title(&args[1]);
 
@@ -25,7 +26,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let operation = builder.build();
 
-    let client = IppClientBuilder::new(args[1].parse()?).build();
+    let client = IppClient::new(uri);
 
     let attrs = futures::executor::block_on(client.send(operation))?;
 

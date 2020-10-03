@@ -6,8 +6,8 @@ Asynchronous IPP protocol implementation for Rust
 
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
-To add a transport support please choose one of the feature options: `client-isahc` or `client-reqwest`.
-If both or none features are selected the `isahc` client will be used.
+Transport support can be selected by feature options: `client-isahc` or `client-reqwest`.
+The default client is `isahc`.
 
 Note: for the `reqwest` client a runtime is needed such as `tokio`.
 
@@ -22,7 +22,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() < 2 {
         println!("Usage: {} uri [attrs]", args[0]);
     } else {
-        let client = IppClientBuilder::new(args[1].parse()?).build();
+        let uri = args[1].parse()?;
+        let client = IppClient::new(uri);
         let operation = IppOperationBuilder::get_printer_attributes()
             .attributes(&args[2..])
             .build();

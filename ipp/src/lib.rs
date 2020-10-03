@@ -14,7 +14,7 @@
 //!         Operation::GetPrinterAttributes,
 //!         Some(uri.clone())
 //!     );
-//!     let client = IppClientBuilder::new(uri).build();
+//!     let client = IppClient::new(uri);
 //!     let resp = futures::executor::block_on(client.send_request(req))?;
 //!     if resp.header().operation_status <= 2 {
 //!         println!("result: {:?}", resp.attributes());
@@ -27,8 +27,9 @@
 //! use ipp::prelude::*;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let operation = IppOperationBuilder::get_printer_attributes().build();
-//!     let client = IppClientBuilder::new("http://localhost:631/printers/test-printer".parse()?).build();
+//!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
+//!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
+//!     let client = IppClient::new(uri);
 //!     let attrs = futures::executor::block_on(client.send(operation))?;
 //!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
 //!         println!("{}: {}", v.name(), v.value());
@@ -44,12 +45,12 @@ pub mod client;
 pub mod util;
 
 pub mod prelude {
-    #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
-    pub use super::client::{IppClient, IppClientBuilder, IppError};
-    pub use super::proto::{
-        model::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppHeader, IppOperationBuilder,
-        IppParser, IppPayload, IppRequestResponse, IppValue, IppVersion,
-    };
-    #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
     pub use http::Uri;
+
+    #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
+    pub use super::client::{IppClient, IppError};
+    pub use super::proto::{
+        model::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppOperationBuilder, IppPayload,
+        IppRequestResponse, IppValue, IppVersion,
+    };
 }

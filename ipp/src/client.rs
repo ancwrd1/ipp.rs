@@ -1,12 +1,9 @@
-///!
-///! IPP client
-///!
+//!
+//! IPP client
+//!
 use std::{io, time::Duration};
 
-use http::{
-    uri::{Authority, InvalidUri},
-    Uri,
-};
+use http::{uri::InvalidUri, Uri};
 use log::debug;
 
 #[cfg(feature = "client-isahc")]
@@ -29,25 +26,6 @@ use crate::proto::{
 };
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
-
-// converts http://username:pwd@host:port/path?query into http://host:port/path
-fn canonicalize_uri(uri: &Uri) -> Uri {
-    let mut builder = Uri::builder();
-    if let Some(scheme) = uri.scheme_str() {
-        builder = builder.scheme(scheme);
-    }
-    if let Some(authority) = uri.authority() {
-        if let Some(port) = authority.port_u16() {
-            builder = builder.authority(format!("{}:{}", authority.host(), port).parse::<Authority>().unwrap());
-        } else {
-            builder = builder.authority(authority.host());
-        }
-    }
-    builder
-        .path_and_query(uri.path())
-        .build()
-        .unwrap_or_else(|_| uri.to_owned())
-}
 
 /// IPP error
 #[derive(Debug, thiserror::Error)]
@@ -109,8 +87,7 @@ pub struct IppClientBuilder {
 }
 
 impl IppClientBuilder {
-    /// Create a client builder for a given URI
-    pub fn new(uri: Uri) -> Self {
+    fn new(uri: Uri) -> Self {
         IppClientBuilder {
             uri,
             ignore_tls_errors: false,
@@ -150,6 +127,24 @@ pub struct IppClient {
 }
 
 impl IppClient {
+    /// Create IPP client with default options
+    pub fn new(uri: Uri) -> Self {
+        IppClient {
+            uri,
+            ignore_tls_errors: false,
+            timeout: None,
+        }
+    }
+
+    /// Create IPP client builder for setting extra options
+    pub fn builder(uri: Uri) -> IppClientBuilder {
+        IppClientBuilder::new(uri)
+    }
+
+    /// Return client URI
+    pub fn uri(&self) -> &Uri {
+        &self.uri
+    }
     /// send IPP operation
     pub async fn send<T>(&self, operation: T) -> Result<IppAttributes, IppError>
     where
@@ -157,9 +152,7 @@ impl IppClient {
     {
         debug!("Sending IPP operation");
 
-        let resp = self
-            .send_request(operation.into_ipp_request(canonicalize_uri(&self.uri)))
-            .await?;
+        let resp = self.send_request(operation.into_ipp_request()).await?;
 
         if resp.header().operation_status > 2 {
             // IPP error
@@ -174,28 +167,6 @@ impl IppClient {
 
     /// Send request and return response
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
-        let imp = ClientImpl {
-            uri: self.uri.clone(),
-            ignore_tls_errors: self.ignore_tls_errors,
-            timeout: self.timeout,
-        };
-        imp.send_request(request).await
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_to_device_uri() {
-        assert_eq!(
-            canonicalize_uri(&"http://user:pass@example.com:631/path?query=val".parse().unwrap()),
-            "http://example.com:631/path"
-        );
-        assert_eq!(
-            canonicalize_uri(&"http://example.com/path?query=val".parse().unwrap()),
-            "http://example.com/path"
-        );
+        ClientImpl(&self).send_request(request).await
     }
 }

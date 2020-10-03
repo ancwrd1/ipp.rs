@@ -17,11 +17,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let uri: Uri = args[1].parse()?;
-
-    let client = IppClientBuilder::new(uri.clone()).build();
+    let client = IppClient::new(uri.clone());
 
     // check if printer supports create/send operations
-    let get_op = IppOperationBuilder::get_printer_attributes()
+    let get_op = IppOperationBuilder::get_printer_attributes(uri.clone())
         .attribute(IppAttribute::OPERATIONS_SUPPORTED)
         .build();
     let printer_attrs = futures::executor::block_on(client.send(get_op))?;
@@ -37,7 +36,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(2);
     }
 
-    let create_op = IppOperationBuilder::create_job().job_name("multi-doc").build();
+    let create_op = IppOperationBuilder::create_job(uri.clone())
+        .job_name("multi-doc")
+        .build();
     let attrs = futures::executor::block_on(client.send(create_op))?;
     let job_id = *attrs
         .groups_of(DelimiterTag::JobAttributes)
@@ -49,14 +50,14 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     println!("job id: {}", job_id);
 
     for (i, item) in args.iter().enumerate().skip(2) {
-        let client = IppClientBuilder::new(uri.clone()).build();
+        let client = IppClient::new(uri.clone());
 
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
 
         let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(item.to_owned())?));
 
-        let send_op = IppOperationBuilder::send_document(job_id, payload)
+        let send_op = IppOperationBuilder::send_document(uri.clone(), job_id, payload)
             .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
             .last(last)
             .build();

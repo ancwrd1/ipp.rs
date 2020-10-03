@@ -18,24 +18,23 @@ impl CupsGetPrinters {
 }
 
 impl IppOperation for CupsGetPrinters {
-    fn into_ipp_request(self, _uri: Uri) -> IppRequestResponse {
+    fn into_ipp_request(self) -> IppRequestResponse {
         IppRequestResponse::new(self.version(), Operation::CupsGetPrinters, None)
     }
 }
 
 /// IPP operation CUPS-Delete-Printer
-#[derive(Default)]
-pub struct CupsDeletePrinter;
+pub struct CupsDeletePrinter(Uri);
 
 impl CupsDeletePrinter {
     /// Create CUPS-Get-Printers operation
-    pub fn new() -> CupsDeletePrinter {
-        CupsDeletePrinter::default()
+    pub fn new(printer_uri: Uri) -> CupsDeletePrinter {
+        CupsDeletePrinter(printer_uri)
     }
 }
 
 impl IppOperation for CupsDeletePrinter {
-    fn into_ipp_request(self, uri: Uri) -> IppRequestResponse {
-        IppRequestResponse::new(self.version(), Operation::CupsDeletePrinter, Some(uri))
+    fn into_ipp_request(self) -> IppRequestResponse {
+        IppRequestResponse::new(self.version(), Operation::CupsDeletePrinter, Some(self.0))
     }
 }

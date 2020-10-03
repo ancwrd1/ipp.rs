@@ -13,7 +13,7 @@ use ipp::{
 };
 
 fn new_client(uri: Uri, params: &IppParams) -> IppClient {
-    let mut builder = IppClientBuilder::new(uri).ignore_tls_errors(params.ignore_tls_errors);
+    let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
     if let Some(timeout) = params.timeout {
         builder = builder.timeout(Duration::from_secs(timeout));
     }
@@ -37,7 +37,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
 
     let payload = new_payload(&cmd).map_err(IppError::from)?;
 
-    let mut builder = IppOperationBuilder::print_job(payload);
+    let mut builder = IppOperationBuilder::print_job(client.uri().clone(), payload);
     if let Some(jobname) = cmd.job_name {
         builder = builder.job_title(&jobname);
     }
@@ -66,7 +66,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
 async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, &params);
 
-    let operation = IppOperationBuilder::get_printer_attributes()
+    let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
         .attributes(&cmd.attributes)
         .build();
 
@@ -162,6 +162,7 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
+#[cfg(feature = "client-isahc")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
@@ -170,6 +171,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match params.command {
         IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
         IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,
+    }
+    Ok(())
+}
+
+#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
+    let params = IppParams::from_args();
+
+    match params.command {
+        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone()).await?,
+        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone()).await?,
     }
     Ok(())
 }

@@ -1,44 +1,37 @@
-use std::time::Duration;
-
 use futures_util::io::BufReader;
-use http::Uri;
 use log::debug;
 use reqwest::{Body, ClientBuilder};
 
 use crate::{
-    client::{IppError, CONNECT_TIMEOUT},
+    client::{IppClient, IppError, CONNECT_TIMEOUT},
     proto::{IppParser, IppRequestResponse},
 };
 
 pub(super) type ClientError = reqwest::Error;
 
-pub(super) struct ReqwestClient {
-    pub(super) uri: Uri,
-    pub(super) timeout: Option<Duration>,
-    pub(super) ignore_tls_errors: bool,
-}
+pub(super) struct ReqwestClient<'a>(pub(super) &'a IppClient);
 
-impl ReqwestClient {
+impl<'a> ReqwestClient<'a> {
     pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
         let mut builder = ClientBuilder::new().connect_timeout(CONNECT_TIMEOUT);
 
-        if let Some(timeout) = self.timeout {
+        if let Some(timeout) = self.0.timeout {
             debug!("Setting timeout to {:?}", timeout);
             builder = builder.timeout(timeout);
         }
 
-        if self.ignore_tls_errors {
+        if self.0.ignore_tls_errors {
             debug!("Setting dangerous TLS options");
             builder = builder
                 .danger_accept_invalid_hostnames(true)
                 .danger_accept_invalid_certs(true);
         }
 
-        debug!("Sending request to {}", self.uri);
+        debug!("Sending request to {}", self.0.uri);
 
         let response = builder
             .build()?
-            .post(&self.uri.to_string())
+            .post(&self.0.uri.to_string())
             .header("Content-Type", "application/ipp")
             .body(Body::wrap_stream(util::ReaderStream::new(request.into_reader())))
             .send()

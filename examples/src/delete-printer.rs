@@ -10,8 +10,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let client = IppClientBuilder::new(args[1].parse()?).build();
-    let operation = IppOperationBuilder::cups().delete_printer();
+    let uri: Uri = args[1].parse()?;
+    let client = IppClient::new(uri.clone());
+    let operation = IppOperationBuilder::cups().delete_printer(uri);
 
     futures::executor::block_on(client.send(operation))?;
 

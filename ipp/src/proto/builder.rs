@@ -1,6 +1,8 @@
 //!
 //! IPP operation builders
 //!
+use http::Uri;
+
 use super::{
     attribute::IppAttribute,
     operation::{
@@ -16,19 +18,24 @@ pub struct IppOperationBuilder;
 impl IppOperationBuilder {
     /// Create PrintJob operation
     ///
+    /// * `printer_uri` - printer URI<br/>
     /// * `payload` - `IppPayload`
-    pub fn print_job(payload: IppPayload) -> PrintJobBuilder {
-        PrintJobBuilder::new(payload)
+    pub fn print_job(printer_uri: Uri, payload: IppPayload) -> PrintJobBuilder {
+        PrintJobBuilder::new(printer_uri, payload)
     }
 
     /// Create GetPrinterAttributes operation
-    pub fn get_printer_attributes() -> GetPrinterAttributesBuilder {
-        GetPrinterAttributesBuilder::new()
+    ///
+    /// * `printer_uri` - printer URI
+    pub fn get_printer_attributes(printer_uri: Uri) -> GetPrinterAttributesBuilder {
+        GetPrinterAttributesBuilder::new(printer_uri)
     }
 
     /// Create CreateJob operation
-    pub fn create_job() -> CreateJobBuilder {
-        CreateJobBuilder::new()
+    ///
+    /// * `printer_uri` - printer URI
+    pub fn create_job(printer_uri: Uri) -> CreateJobBuilder {
+        CreateJobBuilder::new(printer_uri)
     }
 
     /// Create CUPS-specific operations
@@ -38,15 +45,17 @@ impl IppOperationBuilder {
 
     /// Create SendDocument operation
     ///
+    /// * `printer_uri` - printer URI<br/>
     /// * `job_id` - job id returned by Create-Job operation <br/>
-    /// * `payload` - `IppPayload` <br/>
-    pub fn send_document(job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
-        SendDocumentBuilder::new(job_id, payload)
+    /// * `payload` - `IppPayload`
+    pub fn send_document(printer_uri: Uri, job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
+        SendDocumentBuilder::new(printer_uri, job_id, payload)
     }
 }
 
 /// Builder to create PrintJob operation
 pub struct PrintJobBuilder {
+    printer_uri: Uri,
     payload: IppPayload,
     user_name: Option<String>,
     job_title: Option<String>,
@@ -54,8 +63,9 @@ pub struct PrintJobBuilder {
 }
 
 impl PrintJobBuilder {
-    fn new(payload: IppPayload) -> PrintJobBuilder {
+    fn new(printer_uri: Uri, payload: IppPayload) -> PrintJobBuilder {
         PrintJobBuilder {
+            printer_uri,
             payload,
             user_name: None,
             job_title: None,
@@ -86,9 +96,23 @@ impl PrintJobBuilder {
         self
     }
 
+    /// Specify custom job attributes
+    pub fn attributes<I>(mut self, attributes: I) -> Self
+    where
+        I: IntoIterator<Item = IppAttribute>,
+    {
+        self.attributes.extend(attributes.into_iter());
+        self
+    }
+
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let op = PrintJob::new(self.payload, self.user_name.as_ref(), self.job_title.as_ref());
+        let op = PrintJob::new(
+            self.printer_uri,
+            self.payload,
+            self.user_name.as_ref(),
+            self.job_title.as_ref(),
+        );
         self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
@@ -98,12 +122,16 @@ impl PrintJobBuilder {
 
 /// Builder to create GetPrinterAttributes operation
 pub struct GetPrinterAttributesBuilder {
+    printer_uri: Uri,
     attributes: Vec<String>,
 }
 
 impl GetPrinterAttributesBuilder {
-    fn new() -> GetPrinterAttributesBuilder {
-        GetPrinterAttributesBuilder { attributes: Vec::new() }
+    fn new(printer_uri: Uri) -> GetPrinterAttributesBuilder {
+        GetPrinterAttributesBuilder {
+            printer_uri,
+            attributes: Vec::new(),
+        }
     }
 
     /// Specify which attribute to retrieve from the printer. Can be repeated.
@@ -128,19 +156,21 @@ impl GetPrinterAttributesBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        GetPrinterAttributes::with_attributes(&self.attributes)
+        GetPrinterAttributes::with_attributes(self.printer_uri, &self.attributes)
     }
 }
 
 /// Builder to create CreateJob operation
 pub struct CreateJobBuilder {
+    printer_uri: Uri,
     job_name: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
 impl CreateJobBuilder {
-    fn new() -> CreateJobBuilder {
+    fn new(printer_uri: Uri) -> CreateJobBuilder {
         CreateJobBuilder {
+            printer_uri,
             job_name: None,
             attributes: Vec::new(),
         }
@@ -161,9 +191,18 @@ impl CreateJobBuilder {
         self
     }
 
+    /// Specify custom job attributes
+    pub fn attributes<I>(mut self, attributes: I) -> Self
+    where
+        I: IntoIterator<Item = IppAttribute>,
+    {
+        self.attributes.extend(attributes.into_iter());
+        self
+    }
+
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        let op = CreateJob::new(self.job_name.as_ref());
+        let op = CreateJob::new(self.printer_uri, self.job_name.as_ref());
         self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
@@ -173,6 +212,7 @@ impl CreateJobBuilder {
 
 /// Builder to create SendDocument operation
 pub struct SendDocumentBuilder {
+    printer_uri: Uri,
     job_id: i32,
     payload: IppPayload,
     user_name: Option<String>,
@@ -180,8 +220,9 @@ pub struct SendDocumentBuilder {
 }
 
 impl SendDocumentBuilder {
-    fn new(job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
+    fn new(printer_uri: Uri, job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
         SendDocumentBuilder {
+            printer_uri,
             job_id,
             payload,
             user_name: None,
@@ -206,7 +247,13 @@ impl SendDocumentBuilder {
 
     /// Build operation
     pub fn build(self) -> impl IppOperation {
-        SendDocument::new(self.job_id, self.payload, self.user_name.as_ref(), self.is_last)
+        SendDocument::new(
+            self.printer_uri,
+            self.job_id,
+            self.payload,
+            self.user_name.as_ref(),
+            self.is_last,
+        )
     }
 }
 
@@ -224,7 +271,7 @@ impl CupsBuilder {
     }
 
     /// CUPS-Delete-Printer operation
-    pub fn delete_printer(&self) -> impl IppOperation {
-        CupsDeletePrinter::new()
+    pub fn delete_printer(&self, printer_uri: Uri) -> impl IppOperation {
+        CupsDeletePrinter::new(printer_uri)
     }
 }

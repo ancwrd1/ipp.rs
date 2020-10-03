@@ -10,9 +10,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let uri = args[1].parse()?;
-    let client = IppClientBuilder::new(uri).build();
-    let operation = IppOperationBuilder::get_printer_attributes()
+    let uri: Uri = args[1].parse()?;
+    let client = IppClient::new(uri.clone());
+    let operation = IppOperationBuilder::get_printer_attributes(uri)
         .attributes(&args[2..])
         .build();
 

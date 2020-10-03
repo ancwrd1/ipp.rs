@@ -1,3 +1,6 @@
+//!
+//! IPP protocol implementation
+//!
 use std::{
     io,
     pin::Pin,
