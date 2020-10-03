@@ -6,11 +6,7 @@ use std::{fs, io, path::PathBuf, time::Duration};
 
 use structopt::StructOpt;
 
-use ipp::{
-    prelude::*,
-    proto::{model::DelimiterTag, IppAttribute, IppOperationBuilder, IppPayload},
-    util::check_printer_state,
-};
+use ipp::{prelude::*, util::check_printer_state};
 
 fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);

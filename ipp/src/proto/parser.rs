@@ -9,8 +9,11 @@ use log::{debug, error};
 use crate::proto::reader::IppReader;
 
 use super::{
+    attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     model::{DelimiterTag, ValueTag},
-    FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppRequestResponse, IppValue,
+    request::IppRequestResponse,
+    value::IppValue,
+    FromPrimitive as _,
 };
 
 /// Parse error enum

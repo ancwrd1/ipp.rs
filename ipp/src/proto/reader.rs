@@ -6,7 +6,7 @@ use std::io;
 use bytes::Bytes;
 use futures_util::io::{AsyncRead, AsyncReadExt};
 
-use crate::proto::{IppHeader, IppPayload, IppVersion};
+use crate::proto::{model::IppVersion, IppHeader, IppPayload};
 
 /// IPP reader contains a set of methods to read from IPP data stream
 pub struct IppReader<R> {

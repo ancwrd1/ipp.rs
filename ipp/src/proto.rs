@@ -9,19 +9,9 @@ use std::{
 
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::io::AsyncRead;
+use num_traits::FromPrimitive;
 
-pub use {
-    attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
-    builder::{
-        CreateJobBuilder, CupsBuilder, GetPrinterAttributesBuilder, IppOperationBuilder, PrintJobBuilder,
-        SendDocumentBuilder,
-    },
-    model::{IppVersion, Operation, StatusCode},
-    num_traits::FromPrimitive,
-    parser::{IppParseError, IppParser},
-    request::IppRequestResponse,
-    value::IppValue,
-};
+use crate::proto::model::IppVersion;
 
 pub mod attribute;
 pub mod builder;
@@ -55,7 +45,7 @@ impl IppPayload {
 }
 
 impl AsyncRead for IppPayload {
-    fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut [u8]) -> Poll<io::Result<usize>> {
+    fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context, buf: &mut [u8]) -> Poll<io::Result<usize>> {
         Pin::new(&mut self.inner).poll_read(cx, buf)
     }
 }

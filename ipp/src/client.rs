@@ -5,6 +5,7 @@ use std::{io, time::Duration};
 
 use http::{uri::InvalidUri, Uri};
 use log::debug;
+use num_traits::FromPrimitive as _;
 
 #[cfg(feature = "client-isahc")]
 mod client_isahc;
@@ -19,10 +20,11 @@ use client_isahc::{ClientError, IsahcClient as ClientImpl};
 use client_reqwest::{ClientError, ReqwestClient as ClientImpl};
 
 use crate::proto::{
+    attribute::IppAttributes,
     model::{self, StatusCode},
     operation::IppOperation,
+    parser::IppParseError,
     request::IppRequestResponse,
-    FromPrimitive as _, IppAttributes, IppParseError,
 };
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);

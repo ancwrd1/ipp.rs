@@ -4,7 +4,11 @@
 use http::Uri;
 
 use crate::proto::{
-    model::DelimiterTag, request::IppRequestResponse, IppAttribute, IppPayload, IppValue, IppVersion, Operation,
+    attribute::IppAttribute,
+    model::{DelimiterTag, IppVersion, Operation},
+    request::IppRequestResponse,
+    value::IppValue,
+    IppPayload,
 };
 
 pub mod cups;

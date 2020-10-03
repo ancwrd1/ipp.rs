@@ -7,9 +7,11 @@ use http::Uri;
 use log::debug;
 
 use super::{
+    attribute::{IppAttribute, IppAttributes},
+    model::StatusCode,
     model::{DelimiterTag, IppVersion, Operation},
     value::*,
-    IppAttribute, IppAttributes, IppHeader, IppPayload, StatusCode,
+    IppHeader, IppPayload,
 };
 
 /// IPP request/response struct

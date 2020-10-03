@@ -45,12 +45,20 @@ pub mod client;
 pub mod util;
 
 pub mod prelude {
+    //!
+    //! Common imports
+    //!
     pub use http::Uri;
+    pub use num_traits::FromPrimitive as _;
 
     #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
     pub use super::client::{IppClient, IppError};
     pub use super::proto::{
-        model::*, FromPrimitive as _, IppAttribute, IppAttributeGroup, IppAttributes, IppOperationBuilder, IppPayload,
-        IppRequestResponse, IppValue, IppVersion,
+        attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
+        builder::IppOperationBuilder,
+        model::*,
+        request::IppRequestResponse,
+        value::IppValue,
+        IppHeader, IppPayload,
     };
 }

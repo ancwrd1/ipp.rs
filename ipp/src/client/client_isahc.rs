@@ -9,7 +9,7 @@ use log::debug;
 
 use crate::{
     client::{IppClient, IppError, CONNECT_TIMEOUT},
-    proto::{IppParser, IppRequestResponse},
+    proto::{parser::IppParser, request::IppRequestResponse},
 };
 
 pub(super) type ClientError = isahc::Error;

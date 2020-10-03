@@ -339,8 +339,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::proto::reader::IppReader;
-    use crate::proto::{model::DelimiterTag, IppAttribute};
+    use crate::{
+        proto::reader::IppReader,
+        proto::{attribute::IppAttribute, model::DelimiterTag},
+    };
 
     use super::*;
 
