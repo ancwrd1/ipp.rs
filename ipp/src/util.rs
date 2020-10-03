@@ -1,14 +1,14 @@
 //!
 //! IPP helper functions
 //!
-use http::{uri::Authority, Uri};
+use http::Uri;
 
 /// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
 pub fn canonicalize_uri(uri: &Uri) -> Uri {
     let mut builder = Uri::builder().scheme("ipp").path_and_query(uri.path());
     if let Some(authority) = uri.authority() {
         if let Some(port) = authority.port_u16() {
-            builder = builder.authority(format!("{}:{}", authority.host(), port).parse::<Authority>().unwrap());
+            builder = builder.authority(format!("{}:{}", authority.host(), port).as_str());
         } else {
             builder = builder.authority(authority.host());
         }
