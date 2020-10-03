@@ -12,6 +12,8 @@ use crate::{
     proto::{parser::IppParser, request::IppRequestResponse},
 };
 
+pub(crate) const USER_AGENT: &str = concat!("ipp.rs/", env!("CARGO_PKG_VERSION"), ";isahc");
+
 pub(super) type ClientError = isahc::Error;
 
 pub(super) struct IsahcClient<'a>(pub(super) &'a IppClient);
@@ -36,15 +38,18 @@ impl<'a> IsahcClient<'a> {
 
         debug!("Sending request to {}", self.0.uri);
 
-        let response = builder
+        let request = builder
             .uri(&self.0.uri)
+            // disable accept-encoding header because it breaks some IPP implementations (older Xerox)
+            .automatic_decompression(false)
             .connect_timeout(CONNECT_TIMEOUT)
-            .header("Content-Type", "application/ipp")
+            .header("content-type", "application/ipp")
+            .header("user-agent", USER_AGENT)
             .method(Method::POST)
             .redirect_policy(RedirectPolicy::Limit(10))
-            .body(Body::from_reader(request.into_reader()))?
-            .send_async()
-            .await?;
+            .body(Body::from_reader(request.into_reader()))?;
+
+        let response = request.send_async().await?;
 
         debug!("Response status: {}", response.status());
 

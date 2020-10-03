@@ -4,8 +4,10 @@ use reqwest::{Body, ClientBuilder};
 
 use crate::{
     client::{IppClient, IppError, CONNECT_TIMEOUT},
-    proto::{IppParser, IppRequestResponse},
+    proto::{parser::IppParser, request::IppRequestResponse},
 };
+
+pub(crate) const USER_AGENT: &str = concat!("ipp.rs/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
 pub(super) type ClientError = reqwest::Error;
 
@@ -30,9 +32,10 @@ impl<'a> ReqwestClient<'a> {
         debug!("Sending request to {}", self.0.uri);
 
         let response = builder
+            .user_agent(USER_AGENT)
             .build()?
             .post(&self.0.uri.to_string())
-            .header("Content-Type", "application/ipp")
+            .header("content-type", "application/ipp")
             .body(Body::wrap_stream(util::ReaderStream::new(request.into_reader())))
             .send()
             .await?;
