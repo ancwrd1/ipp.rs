@@ -22,9 +22,9 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() < 2 {
         println!("Usage: {} uri [attrs]", args[0]);
     } else {
-        let uri = args[1].parse()?;
-        let client = IppClient::new(uri);
-        let operation = IppOperationBuilder::get_printer_attributes()
+        let uri: Uri = args[1].parse()?;
+        let client = IppClient::new(uri.clone());
+        let operation = IppOperationBuilder::get_printer_attributes(uri)
             .attributes(&args[2..])
             .build();
     
