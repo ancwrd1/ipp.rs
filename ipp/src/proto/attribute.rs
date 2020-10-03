@@ -168,7 +168,7 @@ impl IppAttributes {
     }
 
     /// Get all groups
-    pub fn groups(&self) -> &Vec<IppAttributeGroup> {
+    pub fn groups(&self) -> &[IppAttributeGroup] {
         &self.groups
     }
 

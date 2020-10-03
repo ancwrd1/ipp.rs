@@ -47,7 +47,7 @@ impl ReqwestClient {
         debug!("Response status: {}", response.status());
 
         match response.status().as_u16() {
-            200 => IppParser::new(BufReader::new(util::StreamReader::new(response.bytes_stream())))
+            200..=202 => IppParser::new(BufReader::new(util::StreamReader::new(response.bytes_stream())))
                 .parse()
                 .await
                 .map_err(IppError::from),

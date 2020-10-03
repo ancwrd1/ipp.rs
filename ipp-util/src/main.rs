@@ -162,15 +162,14 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
     let params = IppParams::from_args();
 
     match params.command {
-        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone()).await?,
-        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone()).await?,
+        IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
+        IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,
     }
     Ok(())
 }
