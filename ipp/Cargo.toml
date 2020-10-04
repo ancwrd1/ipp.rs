@@ -21,7 +21,7 @@ log = "0.4"
 num-traits = "0.2"
 bytes = "0.5"
 thiserror = "1"
-http = { version = "0.2", optional = true }
+http = "0.2"
 pin-project = { version = "0.4", optional = true }
 
 [dev-dependencies]
@@ -31,8 +31,8 @@ futures = "0.3"
 [features]
 default = ["default-client"]
 default-client = ["client-isahc"]
-client-isahc = ["isahc", "http"]
-client-reqwest = ["reqwest", "http", "pin-project"]
+client-isahc = ["isahc"]
+client-reqwest = ["reqwest", "pin-project"]
 
 [dependencies.isahc]
 version = "0.9"
