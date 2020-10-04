@@ -30,7 +30,7 @@ futures = "0.3"
 
 [features]
 default = ["default-client"]
-default-client = ["client-reqwest"]
+default-client = ["client-isahc"]
 client-isahc = ["isahc", "http"]
 client-reqwest = ["reqwest", "http", "pin-project"]
 
