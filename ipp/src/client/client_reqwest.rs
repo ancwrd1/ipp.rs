@@ -111,13 +111,13 @@ mod util {
                 } else {
                     let me = self.as_mut().project();
                     match futures_util::ready!(me.inner.poll_next(cx)) {
-                        Some(Ok(chunk)) if chunk.remaining() > 0 => {
+                        Some(Ok(chunk)) => {
                             *me.chunk = Some(chunk);
                         }
                         Some(Err(err)) => {
                             return Poll::Ready(Err(io::Error::new(io::ErrorKind::BrokenPipe, err.into())))
                         }
-                        _ => return Poll::Ready(Ok(0)),
+                        None => return Poll::Ready(Ok(0)),
                     }
                 }
             }
@@ -151,5 +151,42 @@ mod util {
                 Err(e) => Poll::Ready(Some(Err(e))),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use bytes::Bytes;
+    use futures_util::{io::AsyncReadExt, stream::iter};
+
+    #[test]
+    fn test_stream_reader() {
+        let _ = futures::executor::block_on(async {
+            let stream = iter(vec![
+                Result::Ok::<_, reqwest::Error>(Bytes::from_static(&[])),
+                Ok(Bytes::from_static(&[0, 1, 2, 3])),
+                Ok(Bytes::from_static(&[])),
+                Ok(Bytes::from_static(&[4, 5, 6, 7])),
+                Ok(Bytes::from_static(&[])),
+                Ok(Bytes::from_static(&[8, 9, 10, 11])),
+                Ok(Bytes::from_static(&[])),
+            ]);
+
+            let mut read = super::util::StreamReader::new(stream);
+
+            let mut buf = [0; 5];
+            read.read_exact(&mut buf).await?;
+            assert_eq!(buf, [0, 1, 2, 3, 4]);
+
+            assert_eq!(read.read(&mut buf).await?, 3);
+            assert_eq!(&buf[..3], [5, 6, 7]);
+
+            assert_eq!(read.read(&mut buf).await?, 4);
+            assert_eq!(&buf[..4], [8, 9, 10, 11]);
+
+            assert_eq!(read.read(&mut buf).await?, 0);
+
+            Ok::<(), std::io::Error>(())
+        });
     }
 }
