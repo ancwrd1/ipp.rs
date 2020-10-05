@@ -14,7 +14,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(&args[2])?));
 
     let mut builder = IppOperationBuilder::print_job(uri.clone(), payload)
-        .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+        .user_name(&env::var("USER").unwrap_or_else(|_| "noname".to_owned()))
         .job_title(&args[1]);
 
     for arg in &args[3..] {
