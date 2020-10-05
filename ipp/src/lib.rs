@@ -43,7 +43,7 @@
 //!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
 //!     let client = IppClient::new(uri);
 //!     let attrs = futures::executor::block_on(client.send(operation))?;
-//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {
+//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
 //!         println!("{}: {}", v.name(), v.value());
 //!     }
 //!     Ok(())
