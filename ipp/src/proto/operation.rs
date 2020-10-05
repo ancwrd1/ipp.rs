@@ -24,6 +24,12 @@ pub trait IppOperation {
     }
 }
 
+impl<T: IppOperation> From<T> for IppRequestResponse {
+    fn from(op: T) -> Self {
+        op.into_ipp_request()
+    }
+}
+
 /// IPP operation Print-Job
 pub struct PrintJob {
     printer_uri: Uri,

@@ -140,6 +140,7 @@ impl IppClient {
     pub fn uri(&self) -> &Uri {
         &self.uri
     }
+
     /// send IPP operation
     pub async fn send<T>(&self, operation: T) -> Result<IppAttributes, IppError>
     where
@@ -147,7 +148,7 @@ impl IppClient {
     {
         debug!("Sending IPP operation");
 
-        let resp = self.send_request(operation.into_ipp_request()).await?;
+        let resp = self.send_request(operation.into()).await?;
 
         if resp.header().operation_status > 2 {
             // IPP error
