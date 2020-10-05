@@ -1,7 +1,7 @@
 use futures_util::io::BufReader;
+use http::Method;
 use isahc::{
     config::{RedirectPolicy, SslOption},
-    http::Method,
     prelude::*,
     Body,
 };
