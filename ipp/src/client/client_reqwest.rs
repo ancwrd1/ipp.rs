@@ -48,7 +48,7 @@ impl<'a> ReqwestClient<'a> {
             200..=202 => IppParser::new(BufReader::new(
                 response
                     .bytes_stream()
-                    .map_err(|e| io::Error::new(io::ErrorKind::BrokenPipe, e))
+                    .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
                     .into_async_read(),
             ))
             .parse()
