@@ -49,7 +49,7 @@ mod client_util {
 
         let state = attrs
             .groups_of(DelimiterTag::PrinterAttributes)
-            .get(0)
+            .next()
             .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
             .and_then(|attr| attr.value().as_enum())
             .and_then(|v| PrinterState::from_i32(*v));
@@ -61,7 +61,7 @@ mod client_util {
 
         if let Some(reasons) = attrs
             .groups_of(DelimiterTag::PrinterAttributes)
-            .get(0)
+            .next()
             .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
         {
             let keywords = reasons

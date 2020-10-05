@@ -30,7 +30,13 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let attrs = futures::executor::block_on(client.send(operation))?;
 
-    for v in attrs.groups_of(DelimiterTag::JobAttributes)[0].attributes().values() {
+    for v in attrs
+        .groups_of(DelimiterTag::JobAttributes)
+        .next()
+        .unwrap()
+        .attributes()
+        .values()
+    {
         println!("{}: {}", v.name(), v.value());
     }
 

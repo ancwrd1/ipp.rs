@@ -27,7 +27,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let ops_attr = printer_attrs
         .groups_of(DelimiterTag::PrinterAttributes)
-        .get(0)
+        .next()
         .and_then(|g| g.attributes().get(IppAttribute::OPERATIONS_SUPPORTED))
         .ok_or(IppError::MissingAttribute)?;
 
@@ -42,7 +42,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let attrs = futures::executor::block_on(client.send(create_op))?;
     let job_id = *attrs
         .groups_of(DelimiterTag::JobAttributes)
-        .get(0)
+        .next()
         .and_then(|g| g.attributes().get(IppAttribute::JOB_ID))
         .and_then(|attr| attr.value().as_integer())
         .ok_or(IppError::MissingAttribute)?;
@@ -63,7 +63,13 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             .build();
 
         let attrs = futures::executor::block_on(client.send(send_op))?;
-        for v in attrs.groups_of(DelimiterTag::JobAttributes)[0].attributes().values() {
+        for v in attrs
+            .groups_of(DelimiterTag::JobAttributes)
+            .next()
+            .unwrap()
+            .attributes()
+            .values()
+        {
             println!("{}: {}", v.name(), v.value());
         }
     }

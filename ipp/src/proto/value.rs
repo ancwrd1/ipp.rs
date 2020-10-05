@@ -434,7 +434,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
+        let attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
         let attr = attrs.get("list").unwrap();
         assert_eq!(
             attr.value().as_array(),
@@ -468,7 +473,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res.attributes.groups_of(DelimiterTag::PrinterAttributes)[0].attributes();
+        let attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value().as_collection(),

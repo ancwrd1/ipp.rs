@@ -51,7 +51,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
     }
 
     let attrs = client.send(builder.build()).await?;
-    if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).get(0) {
+    if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).next() {
         for v in group.attributes().values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -70,7 +70,6 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
 
     let mut values = attrs
         .groups_of(DelimiterTag::PrinterAttributes)
-        .iter()
         .flat_map(|group| group.attributes().values())
         .collect::<Vec<_>>();
 

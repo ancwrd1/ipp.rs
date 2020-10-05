@@ -18,7 +18,10 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let attrs = futures::executor::block_on(client.send(operation))?;
 
-    for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+    for v in attrs
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .next()
+        .unwrap()
         .attributes()
         .values()
     {

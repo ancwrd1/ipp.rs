@@ -176,14 +176,14 @@ impl IppAttributes {
     }
 
     /// Get a list of attribute groups matching a given delimiter tag
-    pub fn groups_of(&self, tag: DelimiterTag) -> Vec<&IppAttributeGroup> {
-        self.groups.iter().filter(|g| g.tag == tag).collect()
+    pub fn groups_of(&self, tag: DelimiterTag) -> impl Iterator<Item = &IppAttributeGroup> {
+        self.groups.iter().filter(move |g| g.tag == tag)
     }
 
     /// Add attribute to a given group
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
-        let mut group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
-        if let Some(ref mut group) = group {
+        let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
+        if let Some(group) = group {
             group.attributes_mut().insert(attribute.name().to_owned(), attribute);
         } else {
             let mut new_group = IppAttributeGroup::new(tag);
@@ -201,7 +201,7 @@ impl IppAttributes {
         // first send the header attributes
         buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
-        if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).get(0) {
+        if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).next() {
             for hdr in &IppAttribute::HEADER_ATTRS {
                 if let Some(attr) = group.attributes().get(*hdr) {
                     buffer.put(attr.to_bytes());
@@ -215,15 +215,16 @@ impl IppAttributes {
             DelimiterTag::JobAttributes,
             DelimiterTag::PrinterAttributes,
         ] {
-            if let Some(group) = self.groups_of(*hdr).get(0) {
+            if let Some(group) = self.groups_of(*hdr).next() {
                 if group.tag() != DelimiterTag::OperationAttributes {
                     buffer.put_u8(group.tag() as u8);
                 }
-                for (_, attr) in group
+                let attrs = group
                     .attributes()
                     .iter()
-                    .filter(|&(_, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()))
-                {
+                    .filter(|&(_, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()));
+
+                for (_, attr) in attrs {
                     buffer.put(attr.to_bytes());
                 }
             }
