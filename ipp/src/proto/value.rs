@@ -81,7 +81,7 @@ impl IppValue {
         }
     }
 
-    /// Parse value from byte array
+    /// Parse value from byte array which does not include the value length field
     pub fn parse(vtag: u8, mut data: Bytes) -> io::Result<IppValue> {
         let ipptag = match ValueTag::from_u8(vtag) {
             Some(x) => x,
@@ -131,7 +131,7 @@ impl IppValue {
         Ok(value)
     }
 
-    /// Write value to byte array
+    /// Write value to byte array, including leading value length field
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 
