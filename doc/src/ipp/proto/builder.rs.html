@@ -234,10 +234,53 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! IPP operation builders</span>
 <span class="doccomment">//!</span>
+<span class="kw">use</span> <span class="ident">http</span>::<span class="ident">Uri</span>;
+
 <span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">attribute</span>::<span class="ident">IppAttribute</span>,
     <span class="ident">operation</span>::{
@@ -253,22 +296,24 @@
 <span class="kw">impl</span> <span class="ident">IppOperationBuilder</span> {
     <span class="doccomment">/// Create PrintJob operation</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
     <span class="doccomment">/// * `payload` - `IppPayload`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print_job</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">payload</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span>
-    <span class="kw">where</span>
-        <span class="ident">IppPayload</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    {
-        <span class="ident">PrintJobBuilder</span>::<span class="ident">new</span>(<span class="ident">payload</span>.<span class="ident">into</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span> {
+        <span class="ident">PrintJobBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>, <span class="ident">payload</span>)
     }
 
     <span class="doccomment">/// Create GetPrinterAttributes operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
-        <span class="ident">GetPrinterAttributesBuilder</span>::<span class="ident">new</span>()
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `printer_uri` - printer URI</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
+        <span class="ident">GetPrinterAttributesBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
     }
 
     <span class="doccomment">/// Create CreateJob operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_job</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
-        <span class="ident">CreateJobBuilder</span>::<span class="ident">new</span>()
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// * `printer_uri` - printer URI</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
+        <span class="ident">CreateJobBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
     }
 
     <span class="doccomment">/// Create CUPS-specific operations</span>
@@ -278,18 +323,17 @@
 
     <span class="doccomment">/// Create SendDocument operation</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
     <span class="doccomment">/// * `job_id` - job id returned by Create-Job operation &lt;br/&gt;</span>
-    <span class="doccomment">/// * `payload` - `IppPayload` &lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">send_document</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span>
-    <span class="kw">where</span>
-        <span class="ident">IppPayload</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    {
-        <span class="ident">SendDocumentBuilder</span>::<span class="ident">new</span>(<span class="ident">job_id</span>, <span class="ident">payload</span>.<span class="ident">into</span>())
+    <span class="doccomment">/// * `payload` - `IppPayload`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">send_document</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span> {
+        <span class="ident">SendDocumentBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>, <span class="ident">job_id</span>, <span class="ident">payload</span>)
     }
 }
 
 <span class="doccomment">/// Builder to create PrintJob operation</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrintJobBuilder</span> {
+    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
     <span class="ident">payload</span>: <span class="ident">IppPayload</span>,
     <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">job_title</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -297,8 +341,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrintJobBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span> {
         <span class="ident">PrintJobBuilder</span> {
+            <span class="ident">printer_uri</span>,
             <span class="ident">payload</span>,
             <span class="ident">user_name</span>: <span class="prelude-val">None</span>,
             <span class="ident">job_title</span>: <span class="prelude-val">None</span>,
@@ -329,9 +374,23 @@
         <span class="self">self</span>
     }
 
+    <span class="doccomment">/// Specify custom job attributes</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">IppAttribute</span><span class="op">&gt;</span>,
+    {
+        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">extend</span>(<span class="ident">attributes</span>.<span class="ident">into_iter</span>());
+        <span class="self">self</span>
+    }
+
     <span class="doccomment">/// Build operation</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">PrintJob</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">payload</span>, <span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">as_ref</span>(), <span class="self">self</span>.<span class="ident">job_title</span>.<span class="ident">as_ref</span>());
+        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">PrintJob</span>::<span class="ident">new</span>(
+            <span class="self">self</span>.<span class="ident">printer_uri</span>,
+            <span class="self">self</span>.<span class="ident">payload</span>,
+            <span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">as_ref</span>(),
+            <span class="self">self</span>.<span class="ident">job_title</span>.<span class="ident">as_ref</span>(),
+        );
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">fold</span>(<span class="ident">op</span>, <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">op</span>, <span class="ident">attr</span><span class="op">|</span> {
             <span class="ident">op</span>.<span class="ident">add_attribute</span>(<span class="ident">attr</span>);
             <span class="ident">op</span>
@@ -341,12 +400,16 @@
 
 <span class="doccomment">/// Builder to create GetPrinterAttributes operation</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetPrinterAttributesBuilder</span> {
+    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
     <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">GetPrinterAttributesBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
-        <span class="ident">GetPrinterAttributesBuilder</span> { <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>() }
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
+        <span class="ident">GetPrinterAttributesBuilder</span> {
+            <span class="ident">printer_uri</span>,
+            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+        }
     }
 
     <span class="doccomment">/// Specify which attribute to retrieve from the printer. Can be repeated.</span>
@@ -371,19 +434,21 @@
 
     <span class="doccomment">/// Build operation</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>)
+        <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>)
     }
 }
 
 <span class="doccomment">/// Builder to create CreateJob operation</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CreateJobBuilder</span> {
+    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
     <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">CreateJobBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
         <span class="ident">CreateJobBuilder</span> {
+            <span class="ident">printer_uri</span>,
             <span class="ident">job_name</span>: <span class="prelude-val">None</span>,
             <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
         }
@@ -404,9 +469,18 @@
         <span class="self">self</span>
     }
 
+    <span class="doccomment">/// Specify custom job attributes</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">IppAttribute</span><span class="op">&gt;</span>,
+    {
+        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">extend</span>(<span class="ident">attributes</span>.<span class="ident">into_iter</span>());
+        <span class="self">self</span>
+    }
+
     <span class="doccomment">/// Build operation</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">CreateJob</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">job_name</span>.<span class="ident">as_ref</span>());
+        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">CreateJob</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="self">self</span>.<span class="ident">job_name</span>.<span class="ident">as_ref</span>());
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">fold</span>(<span class="ident">op</span>, <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">op</span>, <span class="ident">attr</span><span class="op">|</span> {
             <span class="ident">op</span>.<span class="ident">add_attribute</span>(<span class="ident">attr</span>);
             <span class="ident">op</span>
@@ -416,6 +490,7 @@
 
 <span class="doccomment">/// Builder to create SendDocument operation</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SendDocumentBuilder</span> {
+    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
     <span class="ident">job_id</span>: <span class="ident">i32</span>,
     <span class="ident">payload</span>: <span class="ident">IppPayload</span>,
     <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -423,8 +498,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">SendDocumentBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span> {
         <span class="ident">SendDocumentBuilder</span> {
+            <span class="ident">printer_uri</span>,
             <span class="ident">job_id</span>,
             <span class="ident">payload</span>,
             <span class="ident">user_name</span>: <span class="prelude-val">None</span>,
@@ -449,7 +525,13 @@
 
     <span class="doccomment">/// Build operation</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">SendDocument</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">job_id</span>, <span class="self">self</span>.<span class="ident">payload</span>, <span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">as_ref</span>(), <span class="self">self</span>.<span class="ident">is_last</span>)
+        <span class="ident">SendDocument</span>::<span class="ident">new</span>(
+            <span class="self">self</span>.<span class="ident">printer_uri</span>,
+            <span class="self">self</span>.<span class="ident">job_id</span>,
+            <span class="self">self</span>.<span class="ident">payload</span>,
+            <span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">as_ref</span>(),
+            <span class="self">self</span>.<span class="ident">is_last</span>,
+        )
     }
 }
 
@@ -467,9 +549,9 @@
     }
 
     <span class="doccomment">/// CUPS-Delete-Printer operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_printer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">CupsDeletePrinter</span>::<span class="ident">new</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_printer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="ident">CupsDeletePrinter</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "ipp";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "ipp";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

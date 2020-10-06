@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IppReader","IPP reader contains a set of methods to read from IPP data stream"]]});

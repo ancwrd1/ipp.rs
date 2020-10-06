@@ -218,6 +218,18 @@
 <span id="218">218</span>
 <span id="219">219</span>
 <span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Base IPP definitions and tags</span>
@@ -227,13 +239,25 @@
 <span class="kw">use</span> <span class="ident">enum_primitive_derive</span>::<span class="ident">Primitive</span>;
 
 <span class="doccomment">/// IPP protocol version</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IppVersion</span> {
-    <span class="ident">Ipp10</span> <span class="op">=</span> <span class="number">0x0100</span>,
-    <span class="ident">Ipp11</span> <span class="op">=</span> <span class="number">0x0101</span>,
-    <span class="ident">Ipp20</span> <span class="op">=</span> <span class="number">0x0200</span>,
-    <span class="ident">Ipp21</span> <span class="op">=</span> <span class="number">0x0201</span>,
-    <span class="ident">Ipp22</span> <span class="op">=</span> <span class="number">0x0202</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppVersion</span>(<span class="kw">pub</span> <span class="ident">u16</span>);
+
+<span class="kw">impl</span> <span class="ident">IppVersion</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v1_0</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">IppVersion</span>(<span class="number">0x0100</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v1_1</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">IppVersion</span>(<span class="number">0x0101</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_0</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">IppVersion</span>(<span class="number">0x0200</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_1</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">IppVersion</span>(<span class="number">0x0201</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_2</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">IppVersion</span>(<span class="number">0x0202</span>)
+    }
 }
 
 <span class="doccomment">/// IPP operation constants</span>
@@ -440,4 +464,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "ipp";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "ipp";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

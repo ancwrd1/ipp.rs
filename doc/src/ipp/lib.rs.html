@@ -50,24 +50,60 @@
 <span id="50">50</span>
 <span id="51">51</span>
 <span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
-<span class="doccomment">//! IPP print protocol implementation for Rust</span>
+<span class="doccomment">//! IPP print protocol implementation for Rust. This crate can be used in several ways:</span>
+<span class="doccomment">//! * using the low-level request/response API and building the requests manually.</span>
+<span class="doccomment">//! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.</span>
+<span class="doccomment">//! * using the built-in IPP client based on `reqwest` or `isahc` crates.</span>
+<span class="doccomment">//! (selected via `client-isahc` or `client-reqwest`) features.</span>
+<span class="doccomment">//! * using any third-party HTTP client and send the serialized request manually.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Implementation notes:</span>
+<span class="doccomment">//! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.</span>
+<span class="doccomment">//! * the **Accept-Encoding** HTTP header seems to cause problems with some older printers,</span>
+<span class="doccomment">//! therefore it is disabled by default.</span>
+<span class="doccomment">//! * this crate is also suitable for building IPP servers, however the example is not provided yet.</span>
+<span class="doccomment">//! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Usage examples:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!```rust,no_run</span>
-<span class="doccomment">//! // using raw API</span>
+<span class="doccomment">//! // using low-level API</span>
 <span class="doccomment">//! use ipp::prelude::*;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {</span>
-<span class="doccomment">//!     let uri = &quot;http://localhost:631/printers/test-printer&quot;;</span>
+<span class="doccomment">//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;</span>
 <span class="doccomment">//!     let req = IppRequestResponse::new(</span>
-<span class="doccomment">//!         IppVersion::Ipp11,</span>
+<span class="doccomment">//!         IppVersion::v1_1(),</span>
 <span class="doccomment">//!         Operation::GetPrinterAttributes,</span>
-<span class="doccomment">//!         Some(uri)</span>
+<span class="doccomment">//!         Some(uri.clone())</span>
 <span class="doccomment">//!     );</span>
-<span class="doccomment">//!     let client = IppClientBuilder::new(&amp;uri).build();</span>
+<span class="doccomment">//!     let client = IppClient::new(uri);</span>
 <span class="doccomment">//!     let resp = futures::executor::block_on(client.send_request(req))?;</span>
 <span class="doccomment">//!     if resp.header().operation_status &lt;= 2 {</span>
 <span class="doccomment">//!         println!(&quot;result: {:?}&quot;, resp.attributes());</span>
@@ -80,10 +116,11 @@
 <span class="doccomment">//! use ipp::prelude::*;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {</span>
-<span class="doccomment">//!     let operation = IppOperationBuilder::get_printer_attributes().build();</span>
-<span class="doccomment">//!     let client = IppClientBuilder::new(&quot;http://localhost:631/printers/test-printer&quot;).build();</span>
+<span class="doccomment">//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;</span>
+<span class="doccomment">//!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();</span>
+<span class="doccomment">//!     let client = IppClient::new(uri);</span>
 <span class="doccomment">//!     let attrs = futures::executor::block_on(client.send(operation))?;</span>
-<span class="doccomment">//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes)[0].attributes() {</span>
+<span class="doccomment">//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {</span>
 <span class="doccomment">//!         println!(&quot;{}: {}&quot;, v.name(), v.value());</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//!     Ok(())</span>
@@ -92,16 +129,27 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">proto</span>;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-isahc&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-reqwest&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">client</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">util</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">client</span>::{<span class="ident">IppClient</span>, <span class="ident">IppClientBuilder</span>, <span class="ident">IppError</span>};
+    <span class="doccomment">//!</span>
+    <span class="doccomment">//! Common imports</span>
+    <span class="doccomment">//!</span>
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">http</span>::<span class="ident">Uri</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">FromPrimitive</span> <span class="kw">as</span> <span class="kw">_</span>;
+
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-isahc&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-reqwest&quot;</span>))]</span>
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">client</span>::{<span class="ident">IppClient</span>, <span class="ident">IppError</span>};
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">proto</span>::{
-        <span class="ident">model</span>::<span class="kw-2">*</span>, <span class="ident">FromPrimitive</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">IppAttribute</span>, <span class="ident">IppAttributeGroup</span>, <span class="ident">IppAttributes</span>, <span class="ident">IppHeader</span>, <span class="ident">IppOperationBuilder</span>,
-        <span class="ident">IppParser</span>, <span class="ident">IppPayload</span>, <span class="ident">IppRequestResponse</span>, <span class="ident">IppValue</span>,
+        <span class="ident">attribute</span>::{<span class="ident">IppAttribute</span>, <span class="ident">IppAttributeGroup</span>, <span class="ident">IppAttributes</span>},
+        <span class="ident">builder</span>::<span class="ident">IppOperationBuilder</span>,
+        <span class="ident">model</span>::<span class="kw-2">*</span>,
+        <span class="ident">request</span>::<span class="ident">IppRequestResponse</span>,
+        <span class="ident">value</span>::<span class="ident">IppValue</span>,
+        <span class="ident">IppHeader</span>, <span class="ident">IppPayload</span>,
     };
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["ipp"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/futures-io/0.3.5/futures_io/if_std/trait.AsyncRead.html\" title=\"trait futures_io::if_std::AsyncRead\">AsyncRead</a> for <a class=\"struct\" href=\"ipp/proto/struct.IppPayload.html\" title=\"struct ipp::proto::IppPayload\">IppPayload</a>","synthetic":false,"types":["ipp::proto::IppPayload"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

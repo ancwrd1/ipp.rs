@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["client",""],["prelude",""],["proto",""]]});
+initSidebarItems({"mod":[["client","IPP client, selected by `client-isahc` or `client-reqwest` feature"],["prelude","Common imports"],["proto","IPP protocol implementation"],["util","IPP helper functions"]]});
