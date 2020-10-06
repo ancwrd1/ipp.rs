@@ -101,7 +101,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_to_device_uri() {
+    fn test_canonicalize_uri() {
         assert_eq!(
             canonicalize_uri(&"http://user:pass@example.com:631/path?query=val".parse().unwrap()),
             "ipp://example.com:631/path"
