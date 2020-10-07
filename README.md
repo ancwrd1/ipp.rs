@@ -9,7 +9,7 @@ This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.o
 Transport support can be selected by feature options: `client-isahc` or `client-reqwest`.
 The default client is `isahc`.
 
-Note: for the `reqwest` client a runtime is needed such as `tokio`.
+Note: for the `reqwest` client a runtime is needed such as `tokio` and `default-features = false` flag.
 
 Usage example (no runtime, simple future blocking):
 
@@ -30,7 +30,9 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     
         let attrs = futures::executor::block_on(client.send(operation))?;
     
-        for v in attrs.groups_of(DelimiterTag::PrinterAttributes)[0]
+        for v in attrs.groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
             .attributes()
             .values()
         {
