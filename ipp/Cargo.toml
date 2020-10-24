@@ -19,13 +19,13 @@ enum-primitive-derive = "0.2"
 futures-util = {version = "0.3", default-features = false, features = ["io"] }
 log = "0.4"
 num-traits = "0.2"
-bytes = "0.5"
+bytes = "0.6"
 thiserror = "1"
 http = "0.2"
-pin-project = { version = "0.4", optional = true }
+pin-project = { version = "1", optional = true }
 
 [dev-dependencies]
-env_logger = "0.7"
+env_logger = "0.8"
 futures = "0.3"
 
 [features]

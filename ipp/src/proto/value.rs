@@ -345,7 +345,7 @@ mod tests {
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();
         b.advance(2); // skip value size
-        assert_eq!(IppValue::parse(value.to_tag() as u8, b.to_bytes()).unwrap(), value);
+        assert_eq!(IppValue::parse(value.to_tag() as u8, b).unwrap(), value);
     }
 
     #[test]

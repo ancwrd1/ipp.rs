@@ -4,7 +4,7 @@
 
 use std::{fs, io, path::PathBuf, time::Duration};
 
-use structopt::StructOpt;
+use clap::Clap;
 
 use ipp::{prelude::*, util::check_printer_state};
 
@@ -82,78 +82,82 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
     Ok(())
 }
 
-#[derive(StructOpt)]
-#[structopt(about = "IPP print utility", name = "ipputil", rename_all = "kebab-case")]
+#[derive(Clap)]
+#[clap(about = "IPP print utility", name = "ipputil", rename_all = "kebab-case")]
 struct IppParams {
-    #[structopt(
+    #[clap(
         long = "ignore-tls-errors",
-        short = "i",
+        short = 'i',
         global = true,
-        help = "Ignore TLS handshake errors"
+        about = "Ignore TLS handshake errors"
     )]
     ignore_tls_errors: bool,
 
-    #[structopt(
+    #[clap(
         long = "timeout",
-        short = "t",
+        short = 't',
         global = true,
-        help = "Request timeout in seconds, default = no timeout"
+        about = "Request timeout in seconds, default = no timeout"
     )]
     timeout: Option<u64>,
 
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     command: IppCommand,
 }
 
-#[derive(StructOpt)]
+#[derive(Clap)]
 enum IppCommand {
-    #[structopt(name = "print", about = "Print file to an IPP printer")]
+    #[clap(name = "print", about = "Print file to an IPP printer")]
     Print(IppPrintCmd),
-    #[structopt(name = "status", about = "Get status of an IPP printer")]
+    #[clap(name = "status", about = "Get status of an IPP printer")]
     Status(IppStatusCmd),
 }
 
-#[derive(StructOpt, Clone)]
-#[structopt(rename_all = "kebab-case")]
+#[derive(Clap, Clone)]
+#[clap(rename_all = "kebab-case")]
 struct IppPrintCmd {
-    #[structopt(help = "Printer URI")]
+    #[clap(about = "Printer URI")]
     uri: String,
 
-    #[structopt(
+    #[clap(
         long = "no-check-state",
-        short = "n",
-        help = "Do not check printer state before printing"
+        short = 'n',
+        about = "Do not check printer state before printing"
     )]
     no_check_state: bool,
 
-    #[structopt(
+    #[clap(
         long = "file",
-        short = "f",
-        help = "Input file name to print [default: standard input]"
+        short = 'f',
+        about = "Input file name to print [default: standard input]"
     )]
     file: Option<PathBuf>,
 
-    #[structopt(long = "job-name", short = "j", help = "Job name to send as job-name attribute")]
+    #[clap(long = "job-name", short = 'j', about = "Job name to send as job-name attribute")]
     job_name: Option<String>,
 
-    #[structopt(
+    #[clap(
         long = "user-name",
-        short = "u",
-        help = "User name to send as requesting-user-name attribute"
+        short = 'u',
+        about = "User name to send as requesting-user-name attribute"
     )]
     user_name: Option<String>,
 
-    #[structopt(long = "option", short = "o", help = "Extra IPP job attributes in key=value format")]
+    #[clap(long = "option", short = 'o', about = "Extra IPP job attributes in key=value format")]
     options: Vec<String>,
 }
 
-#[derive(StructOpt, Clone)]
-#[structopt(rename_all = "kebab-case")]
+#[derive(Clap, Clone)]
+#[clap(rename_all = "kebab-case")]
 struct IppStatusCmd {
-    #[structopt(help = "Printer URI")]
+    #[clap(about = "Printer URI")]
     uri: String,
 
-    #[structopt(long = "attribute", short = "a", help = "Attributes to query, default is to get all")]
+    #[clap(
+        long = "attribute",
+        short = 'a',
+        about = "Attributes to query, default is to get all"
+    )]
     attributes: Vec<String>,
 }
 
@@ -161,7 +165,7 @@ struct IppStatusCmd {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
-    let params = IppParams::from_args();
+    let params = IppParams::parse();
 
     match params.command {
         IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
