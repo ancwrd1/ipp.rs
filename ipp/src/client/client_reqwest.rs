@@ -3,6 +3,7 @@ use std::io;
 use futures_util::{io::BufReader, stream::TryStreamExt};
 use log::debug;
 use reqwest::{Body, ClientBuilder};
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 
 use crate::{
     client::{IppClient, IppError, CONNECT_TIMEOUT},
@@ -38,7 +39,9 @@ impl<'a> ReqwestClient<'a> {
             .build()?
             .post(&self.0.uri.to_string())
             .header("content-type", "application/ipp")
-            .body(Body::wrap_stream(util::ReaderStream::new(request.into_reader())))
+            .body(Body::wrap_stream(tokio_util::io::ReaderStream::new(
+                request.into_reader().compat(),
+            )))
             .send()
             .await?;
 
@@ -55,48 +58,6 @@ impl<'a> ReqwestClient<'a> {
             .await
             .map_err(IppError::from),
             other => Err(IppError::RequestError(other)),
-        }
-    }
-}
-
-mod util {
-    use std::{
-        io,
-        pin::Pin,
-        task::{Context, Poll},
-    };
-
-    use futures_util::{io::AsyncRead, stream::Stream};
-    use pin_project::pin_project;
-
-    const CHUNK_SIZE: usize = 32768;
-
-    #[pin_project]
-    pub(super) struct ReaderStream<R> {
-        #[pin]
-        inner: R,
-        buf: Vec<u8>,
-    }
-
-    impl<R> ReaderStream<R> {
-        pub fn new(reader: R) -> ReaderStream<R> {
-            ReaderStream {
-                inner: reader,
-                buf: vec![0u8; CHUNK_SIZE],
-            }
-        }
-    }
-
-    impl<R: AsyncRead> Stream for ReaderStream<R> {
-        type Item = io::Result<Vec<u8>>;
-
-        fn poll_next(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
-            let mut me = self.project();
-            match futures_util::ready!(me.inner.poll_read(cx, &mut me.buf)) {
-                Ok(0) => Poll::Ready(None),
-                Ok(size) => Poll::Ready(Some(Ok(me.buf[0..size].into()))),
-                Err(e) => Poll::Ready(Some(Err(e))),
-            }
         }
     }
 }

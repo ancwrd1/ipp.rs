@@ -1,9 +1,8 @@
 use futures_util::io::BufReader;
 use http::Method;
 use isahc::{
-    config::{RedirectPolicy, SslOption},
-    prelude::*,
-    Body,
+    config::{Configurable, RedirectPolicy, SslOption},
+    AsyncBody, Request, RequestExt,
 };
 use log::debug;
 
@@ -47,7 +46,7 @@ impl<'a> IsahcClient<'a> {
             .header("user-agent", USER_AGENT)
             .method(Method::POST)
             .redirect_policy(RedirectPolicy::Limit(10))
-            .body(Body::from_reader(request.into_reader()))?;
+            .body(AsyncBody::from_reader(request.into_reader()))?;
 
         let response = request.send_async().await?;
 

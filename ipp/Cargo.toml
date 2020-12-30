@@ -19,10 +19,9 @@ enum-primitive-derive = "0.2"
 futures-util = {version = "0.3", default-features = false, features = ["io"] }
 log = "0.4"
 num-traits = "0.2"
-bytes = "0.6"
+bytes = "1"
 thiserror = "1"
 http = "0.2"
-pin-project = { version = "1", optional = true }
 
 [dev-dependencies]
 env_logger = "0.8"
@@ -30,18 +29,23 @@ futures = "0.3"
 
 [features]
 default = ["default-client"]
-default-client = ["client-isahc"]
+default-client = ["client-reqwest"]
 client-isahc = ["isahc"]
-client-reqwest = ["reqwest", "pin-project"]
+client-reqwest = ["reqwest", "tokio-util"]
 
 [dependencies.isahc]
-version = "0.9"
+version = "1"
 optional = true
 default-features = false
 features = ["static-curl"]
 
 [dependencies.reqwest]
-version = "0.10"
+git = "https://github.com/seanmonstar/reqwest.git"
 optional = true
 default-features = false
 features = ["native-tls", "stream"]
+
+[dependencies.tokio-util]
+version = "0.6"
+optional = true
+features = ["io", "compat"]
