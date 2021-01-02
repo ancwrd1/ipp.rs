@@ -14,18 +14,9 @@ edition = "2018"
 name = "ipputil"
 path = "src/main.rs"
 
-[features]
-default = ["client-isahc"]
-client-isahc = ["ipp/client-isahc"]
-client-reqwest = ["ipp/client-reqwest", "tokio"]
-
 [dependencies]
+ipp = { path = "../ipp", version = "2.0.0" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 env_logger = "0.8"
 clap = "3.0.0-beta.2"
 futures = "0.3"
-tokio = { version = "1", features = ["macros"], optional = true }
-
-[dependencies.ipp]
-version = "2.0.0"
-path = "../ipp"
-default-features = false

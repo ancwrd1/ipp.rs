@@ -161,25 +161,11 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
-#[cfg(feature = "client-isahc")]
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    env_logger::init();
-
-    let params = IppParams::parse();
-
-    match params.command {
-        IppCommand::Status(ref cmd) => futures::executor::block_on(do_status(&params, cmd.clone()))?,
-        IppCommand::Print(ref cmd) => futures::executor::block_on(do_print(&params, cmd.clone()))?,
-    }
-    Ok(())
-}
-
-#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
-    let params = IppParams::from_args();
+    let params = IppParams::parse();
 
     match params.command {
         IppCommand::Status(ref cmd) => do_status(&params, cmd.clone()).await?,

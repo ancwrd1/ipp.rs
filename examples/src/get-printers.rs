@@ -2,7 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use ipp::prelude::*;
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 2 {
@@ -13,7 +14,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let client = IppClient::new(args[1].parse()?);
     let operation = IppOperationBuilder::cups().get_printers();
 
-    let attrs = futures::executor::block_on(client.send(operation))?;
+    let attrs = client.send(operation).await?;
 
     for group in attrs.groups_of(DelimiterTag::PrinterAttributes) {
         let name = group.attributes()["printer-name"].value();

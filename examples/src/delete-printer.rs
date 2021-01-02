@@ -2,7 +2,8 @@ use std::{env, error::Error, process::exit};
 
 use ipp::prelude::*;
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 2 {
@@ -14,7 +15,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let client = IppClient::new(uri.clone());
     let operation = IppOperationBuilder::cups().delete_printer(uri);
 
-    futures::executor::block_on(client.send(operation))?;
+    client.send(operation).await?;
 
     Ok(())
 }

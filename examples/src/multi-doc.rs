@@ -8,7 +8,8 @@ fn supports_multi_doc(v: &IppValue) -> bool {
         .unwrap_or(false)
 }
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
@@ -23,7 +24,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let get_op = IppOperationBuilder::get_printer_attributes(uri.clone())
         .attribute(IppAttribute::OPERATIONS_SUPPORTED)
         .build();
-    let printer_attrs = futures::executor::block_on(client.send(get_op))?;
+    let printer_attrs = client.send(get_op).await?;
 
     let ops_attr = printer_attrs
         .groups_of(DelimiterTag::PrinterAttributes)
@@ -39,7 +40,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
     let create_op = IppOperationBuilder::create_job(uri.clone())
         .job_name("multi-doc")
         .build();
-    let attrs = futures::executor::block_on(client.send(create_op))?;
+    let attrs = client.send(create_op).await?;
     let job_id = *attrs
         .groups_of(DelimiterTag::JobAttributes)
         .next()
@@ -62,7 +63,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             .last(last)
             .build();
 
-        let attrs = futures::executor::block_on(client.send(send_op))?;
+        let attrs = client.send(send_op).await?;
         for v in attrs
             .groups_of(DelimiterTag::JobAttributes)
             .next()

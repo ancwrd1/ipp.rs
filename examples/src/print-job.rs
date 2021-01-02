@@ -2,7 +2,8 @@ use std::{env, error::Error, fs, process::exit};
 
 use ipp::prelude::*;
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
@@ -28,7 +29,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
     let client = IppClient::new(uri);
 
-    let attrs = futures::executor::block_on(client.send(operation))?;
+    let attrs = client.send(operation).await?;
 
     for v in attrs
         .groups_of(DelimiterTag::JobAttributes)
