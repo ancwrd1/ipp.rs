@@ -40,7 +40,7 @@ default-features = false
 features = ["static-curl"]
 
 [dependencies.reqwest]
-git = "https://github.com/seanmonstar/reqwest.git"
+version = "0.11"
 optional = true
 default-features = false
 features = ["native-tls", "stream"]
