@@ -437,7 +437,7 @@ mod tests {
 
         let mut data = vec![1, 1, 0, 0, 0, 0, 0, 0, 4];
         data.extend(buf);
-        data.extend(vec![3]);
+        data.push(3);
 
         let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
@@ -474,7 +474,7 @@ mod tests {
 
         let mut data = vec![1, 1, 0, 0, 0, 0, 0, 0, 4];
         data.extend(buf);
-        data.extend(vec![3]);
+        data.push(3);
 
         let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
