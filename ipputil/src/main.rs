@@ -10,7 +10,6 @@ use std::{
 };
 
 use clap::Clap;
-use futures::io::AllowStdIo;
 
 use ipp::{prelude::*, util::check_printer_state};
 
@@ -24,8 +23,8 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
 
 fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     let payload = match cmd.file {
-        Some(ref filename) => IppPayload::new_async(AllowStdIo::new(BufReader::new(fs::File::open(filename)?))),
-        None => IppPayload::new_async(AllowStdIo::new(io::stdin())),
+        Some(ref filename) => IppPayload::new(BufReader::new(fs::File::open(filename)?)),
+        None => IppPayload::new(BufReader::new(io::stdin())),
     };
     Ok(payload)
 }
