@@ -4,7 +4,7 @@
 
 use http::Uri;
 
-use crate::proto::{model::Operation, operation::IppOperation, request::IppRequestResponse};
+use crate::{model::Operation, operation::IppOperation, request::IppRequestResponse};
 
 /// IPP operation CUPS-Get-Printers
 #[derive(Default)]

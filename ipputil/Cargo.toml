@@ -1,5 +1,5 @@
 [package]
-name = "ipp-util"
+name = "ipputil"
 version = "3.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP command line print utility"

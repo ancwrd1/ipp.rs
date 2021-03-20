@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 use bytes::{BufMut, Bytes, BytesMut};
 
-use crate::proto::{model::DelimiterTag, value::IppValue};
+use crate::{model::DelimiterTag, value::IppValue};
 
 fn is_header_attr(attr: &str) -> bool {
     IppAttribute::HEADER_ATTRS.iter().any(|&at| at == attr)

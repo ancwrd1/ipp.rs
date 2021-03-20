@@ -3,6 +3,9 @@
 //!
 use http::Uri;
 
+#[cfg(feature = "client")]
+pub use client_util::{check_printer_state, get_printer_attributes, print_file};
+
 /// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
 pub fn canonicalize_uri(uri: &Uri) -> Uri {
     let mut builder = Uri::builder().scheme("ipp").path_and_query(uri.path());
@@ -16,12 +19,9 @@ pub fn canonicalize_uri(uri: &Uri) -> Uri {
     builder.build().unwrap_or_else(|_| uri.to_owned())
 }
 
-#[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
-pub use client_util::{check_printer_state, get_printer_attributes, print_file};
-
-#[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
+#[cfg(feature = "client")]
 mod client_util {
-    use std::{fs::File, path::Path};
+    use std::{fs::File, io::BufReader, path::Path};
 
     use futures_util::io::AllowStdIo;
     use log::debug;
@@ -45,9 +45,15 @@ mod client_util {
     /// Returns Ok if no fatal errors are detected, IppError otherwise.
     pub async fn check_printer_state(client: &IppClient) -> Result<(), IppError> {
         debug!("Checking printer status");
-        let attrs = get_printer_attributes(client).await?;
+        let response = get_printer_attributes(client).await?;
 
-        let state = attrs
+        let status = response.header().get_status_code();
+        if !status.is_success() {
+            return Err(IppError::StatusError(status));
+        }
+
+        let state = response
+            .attributes()
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
             .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
@@ -59,7 +65,8 @@ mod client_util {
             return Err(IppError::PrinterStopped);
         }
 
-        if let Some(reasons) = attrs
+        if let Some(reasons) = response
+            .attributes()
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
             .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
@@ -80,17 +87,17 @@ mod client_util {
     }
 
     /// Print a file
-    pub async fn print_file<P>(client: &IppClient, path: P) -> Result<IppAttributes, IppError>
+    pub async fn print_file<P>(client: &IppClient, path: P) -> Result<IppRequestResponse, IppError>
     where
         P: AsRef<Path>,
     {
-        let payload = IppPayload::new(AllowStdIo::new(File::open(path.as_ref())?));
+        let payload = IppPayload::new_async(AllowStdIo::new(BufReader::new(File::open(path.as_ref())?)));
         let operation = IppOperationBuilder::print_job(client.uri().clone(), payload).build();
         client.send(operation).await
     }
 
     /// Get printer attributes
-    pub async fn get_printer_attributes(client: &IppClient) -> Result<IppAttributes, IppError> {
+    pub async fn get_printer_attributes(client: &IppClient) -> Result<IppRequestResponse, IppError> {
         let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
         client.send(operation).await
     }

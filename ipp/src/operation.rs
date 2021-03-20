@@ -3,12 +3,12 @@
 //!
 use http::Uri;
 
-use crate::proto::{
+use crate::{
     attribute::IppAttribute,
     model::{DelimiterTag, IppVersion, Operation},
+    payload::IppPayload,
     request::IppRequestResponse,
     value::IppValue,
-    IppPayload,
 };
 
 pub mod cups;

@@ -16,28 +16,18 @@ name = "ipp"
 [dependencies]
 enum-as-inner = "0.3"
 enum-primitive-derive = "0.2"
-futures-util = {version = "0.3", default-features = false, features = ["io"] }
+futures-executor = { version = "0.3", optional = true }
 log = "0.4"
 num-traits = "0.2"
 bytes = "1"
 thiserror = "1"
 http = "0.2"
 
-[dev-dependencies]
-env_logger = "0.8"
-futures = "0.3"
-
-[features]
-default = ["default-client"]
-default-client = ["client-reqwest"]
-client-isahc = ["isahc"]
-client-reqwest = ["reqwest", "tokio-util"]
-
-[dependencies.isahc]
-version = "1"
+[dependencies.futures-util]
+version = "0.3"
 optional = true
 default-features = false
-features = ["static-curl"]
+features = ["io"]
 
 [dependencies.reqwest]
 version = "0.11"
@@ -49,3 +39,12 @@ features = ["native-tls", "stream"]
 version = "0.6"
 optional = true
 features = ["io", "compat"]
+
+[dev-dependencies]
+env_logger = "0.8"
+tokio = { version = "1", features = ["macros"] }
+
+[features]
+default = ["client"]
+client = ["async", "reqwest", "tokio-util"]
+async = ["futures-util", "futures-executor"]

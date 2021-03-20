@@ -1,30 +1,23 @@
 //!
-//! IPP client, selected by `client-isahc` or `client-reqwest` feature
+//! IPP client
 //!
 use std::{io, time::Duration};
 
+use futures_util::{io::BufReader, stream::TryStreamExt};
 use http::{uri::InvalidUri, Uri};
 use log::debug;
-use num_traits::FromPrimitive as _;
+use reqwest::{Body, ClientBuilder};
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 
-#[cfg(feature = "client-isahc")]
-mod client_isahc;
-
-#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
-mod client_reqwest;
-
-#[cfg(feature = "client-isahc")]
-use client_isahc::{ClientError, IsahcClient as ClientImpl};
-
-#[cfg(all(feature = "client-reqwest", not(feature = "client-isahc")))]
-use client_reqwest::{ClientError, ReqwestClient as ClientImpl};
-
-use crate::proto::{
-    attribute::IppAttributes, model::StatusCode, operation::IppOperation, parser::IppParseError,
+use crate::{
+    model::StatusCode,
+    parser::{AsyncIppParser, IppParseError},
     request::IppRequestResponse,
 };
 
 pub(crate) const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+
+const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";hyper");
 
 /// IPP error
 #[derive(Debug, thiserror::Error)]
@@ -35,7 +28,7 @@ pub enum IppError {
 
     #[error(transparent)]
     /// Client error
-    ClientError(#[from] ClientError),
+    ClientError(#[from] reqwest::Error),
 
     #[error("HTTP request error: {0}")]
     /// HTTP request error
@@ -141,27 +134,50 @@ impl IppClient {
         &self.uri
     }
 
-    /// send IPP operation
-    pub async fn send<T>(&self, operation: T) -> Result<IppAttributes, IppError>
+    /// Send IPP request to the server
+    pub async fn send<R>(&self, request: R) -> Result<IppRequestResponse, IppError>
     where
-        T: IppOperation,
+        R: Into<IppRequestResponse>,
     {
-        debug!("Sending IPP operation");
+        let mut builder = ClientBuilder::new().connect_timeout(CONNECT_TIMEOUT);
 
-        let resp = self.send_request(operation.into()).await?;
-
-        if resp.header().operation_status > 2 {
-            // IPP error
-            Err(IppError::StatusError(
-                StatusCode::from_u16(resp.header().operation_status).unwrap_or(StatusCode::ServerErrorInternalError),
-            ))
-        } else {
-            Ok(resp.attributes)
+        if let Some(timeout) = self.request_timeout {
+            debug!("Setting request timeout to {:?}", timeout);
+            builder = builder.timeout(timeout);
         }
-    }
 
-    /// Send request and return response
-    pub async fn send_request(&self, request: IppRequestResponse) -> Result<IppRequestResponse, IppError> {
-        ClientImpl(&self).send_request(request).await
+        if self.ignore_tls_errors {
+            debug!("Setting dangerous TLS options");
+            builder = builder
+                .danger_accept_invalid_hostnames(true)
+                .danger_accept_invalid_certs(true);
+        }
+
+        debug!("Sending request to {}", self.uri);
+
+        let response = builder
+            .user_agent(USER_AGENT)
+            .build()?
+            .post(&self.uri.to_string())
+            .header("content-type", "application/ipp")
+            .body(Body::wrap_stream(tokio_util::io::ReaderStream::new(
+                request.into().into_async_read().compat(),
+            )))
+            .send()
+            .await?;
+
+        debug!("Response status: {}", response.status());
+
+        if response.status().is_success() {
+            let parser = AsyncIppParser::new(BufReader::new(
+                response
+                    .bytes_stream()
+                    .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+                    .into_async_read(),
+            ));
+            parser.parse().await.map_err(IppError::from)
+        } else {
+            Err(IppError::RequestError(response.status().as_u16()))
+        }
     }
 }

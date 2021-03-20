@@ -2,9 +2,15 @@
 //! Command-line IPP utility to print a document or get printer status
 //!
 
-use std::{fs, io, path::PathBuf, time::Duration};
+use std::{
+    fs,
+    io::{self, BufReader},
+    path::PathBuf,
+    time::Duration,
+};
 
 use clap::Clap;
+use futures::io::AllowStdIo;
 
 use ipp::{prelude::*, util::check_printer_state};
 
@@ -18,8 +24,8 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
 
 fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     let payload = match cmd.file {
-        Some(ref filename) => IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(filename)?)),
-        None => IppPayload::new(futures::io::AllowStdIo::new(io::stdin())),
+        Some(ref filename) => IppPayload::new_async(AllowStdIo::new(BufReader::new(fs::File::open(filename)?))),
+        None => IppPayload::new_async(AllowStdIo::new(io::stdin())),
     };
     Ok(payload)
 }
@@ -50,8 +56,14 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         }
     }
 
-    let attrs = client.send(builder.build()).await?;
-    if let Some(group) = attrs.groups_of(DelimiterTag::JobAttributes).next() {
+    let response = client.send(builder.build()).await?;
+
+    let status = response.header().get_status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    if let Some(group) = response.attributes().groups_of(DelimiterTag::JobAttributes).next() {
         for v in group.attributes().values() {
             println!("{}: {}", v.name(), v.value());
         }
@@ -66,9 +78,15 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
         .attributes(&cmd.attributes)
         .build();
 
-    let attrs = client.send(operation).await?;
+    let response = client.send(operation).await?;
 
-    let mut values = attrs
+    let status = response.header().get_status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    let mut values = response
+        .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .flat_map(|group| group.attributes().values())
         .collect::<Vec<_>>();

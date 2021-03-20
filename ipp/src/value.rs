@@ -6,7 +6,7 @@ use std::{convert::Infallible, fmt, io, str::FromStr};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
-use super::{model::ValueTag, FromPrimitive as _};
+use crate::{model::ValueTag, FromPrimitive as _};
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -36,14 +36,14 @@ pub enum IppValue {
         hour: u8,
         minutes: u8,
         seconds: u8,
-        deciseconds: u8,
-        utcdir: char,
-        utchours: u8,
-        utcmins: u8,
+        deci_seconds: u8,
+        utc_dir: char,
+        utc_hours: u8,
+        utc_mins: u8,
     },
     MemberAttrName(String),
     Resolution {
-        crossfeed: i32,
+        cross_feed: i32,
         feed: i32,
         units: i8,
     },
@@ -82,15 +82,15 @@ impl IppValue {
     }
 
     /// Parse value from byte array which does not include the value length field
-    pub fn parse(vtag: u8, mut data: Bytes) -> io::Result<IppValue> {
-        let ipptag = match ValueTag::from_u8(vtag) {
+    pub fn parse(value_tag: u8, mut data: Bytes) -> io::Result<IppValue> {
+        let ipp_tag = match ValueTag::from_u8(value_tag) {
             Some(x) => x,
             None => {
-                return Ok(IppValue::Other { tag: vtag, data });
+                return Ok(IppValue::Other { tag: value_tag, data });
             }
         };
 
-        let value = match ipptag {
+        let value = match ipp_tag {
             ValueTag::Integer => IppValue::Integer(data.get_i32()),
             ValueTag::Enum => IppValue::Enum(data.get_i32()),
             ValueTag::OctetStringUnspecified => IppValue::OctetString(String::from_utf8_lossy(&data).into_owned()),
@@ -114,19 +114,19 @@ impl IppValue {
                 hour: data.get_u8(),
                 minutes: data.get_u8(),
                 seconds: data.get_u8(),
-                deciseconds: data.get_u8(),
-                utcdir: data.get_u8() as char,
-                utchours: data.get_u8(),
-                utcmins: data.get_u8(),
+                deci_seconds: data.get_u8(),
+                utc_dir: data.get_u8() as char,
+                utc_hours: data.get_u8(),
+                utc_mins: data.get_u8(),
             },
             ValueTag::MemberAttrName => IppValue::MemberAttrName(String::from_utf8_lossy(&data).into_owned()),
             ValueTag::Resolution => IppValue::Resolution {
-                crossfeed: data.get_i32(),
+                cross_feed: data.get_i32(),
                 feed: data.get_i32(),
                 units: data.get_i8(),
             },
             ValueTag::NoValue => IppValue::NoValue,
-            _ => IppValue::Other { tag: vtag, data },
+            _ => IppValue::Other { tag: value_tag, data },
         };
         Ok(value)
     }
@@ -194,10 +194,10 @@ impl IppValue {
                 hour,
                 minutes,
                 seconds,
-                deciseconds,
-                utcdir,
-                utchours,
-                utcmins,
+                deci_seconds,
+                utc_dir,
+                utc_hours,
+                utc_mins,
             } => {
                 buffer.put_u16(11);
                 buffer.put_u16(year);
@@ -206,14 +206,18 @@ impl IppValue {
                 buffer.put_u8(hour);
                 buffer.put_u8(minutes);
                 buffer.put_u8(seconds);
-                buffer.put_u8(deciseconds);
-                buffer.put_u8(utcdir as u8);
-                buffer.put_u8(utchours);
-                buffer.put_u8(utcmins);
+                buffer.put_u8(deci_seconds);
+                buffer.put_u8(utc_dir as u8);
+                buffer.put_u8(utc_hours);
+                buffer.put_u8(utc_mins);
             }
-            IppValue::Resolution { crossfeed, feed, units } => {
+            IppValue::Resolution {
+                cross_feed,
+                feed,
+                units,
+            } => {
                 buffer.put_u16(9);
-                buffer.put_i32(crossfeed);
+                buffer.put_i32(cross_feed);
                 buffer.put_i32(feed);
                 buffer.put_u8(units as u8);
             }
@@ -259,17 +263,21 @@ impl fmt::Display for IppValue {
                 hour,
                 minutes,
                 seconds,
-                deciseconds,
-                utcdir,
-                utchours,
+                deci_seconds,
+                utc_dir,
+                utc_hours,
                 ..
             } => write!(
                 f,
                 "{}-{}-{},{}:{}:{}.{},{}{}utc",
-                year, month, day, hour, minutes, seconds, deciseconds, utcdir as char, utchours
+                year, month, day, hour, minutes, seconds, deci_seconds, utc_dir as char, utc_hours
             ),
-            IppValue::Resolution { crossfeed, feed, units } => {
-                write!(f, "{}x{}{}", crossfeed, feed, if units == 3 { "in" } else { "cm" })
+            IppValue::Resolution {
+                cross_feed,
+                feed,
+                units,
+            } => {
+                write!(f, "{}x{}{}", cross_feed, feed, if units == 3 { "in" } else { "cm" })
             }
 
             IppValue::NoValue => Ok(()),
@@ -338,7 +346,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::proto::{attribute::IppAttribute, model::DelimiterTag, reader::IppReader};
+    use crate::attribute::IppAttribute;
+    use crate::model::DelimiterTag;
+    use crate::parser::IppParser;
+    use crate::reader::IppReader;
 
     use super::*;
 
@@ -371,14 +382,14 @@ mod tests {
             hour: 12,
             minutes: 34,
             seconds: 22,
-            deciseconds: 1,
-            utcdir: 'c',
-            utchours: 1,
-            utcmins: 30,
+            deci_seconds: 1,
+            utc_dir: 'c',
+            utc_hours: 1,
+            utc_mins: 30,
         });
         value_check(IppValue::MemberAttrName("member".to_owned()));
         value_check(IppValue::Resolution {
-            crossfeed: 800,
+            cross_feed: 800,
             feed: 600,
             units: 2,
         });
@@ -428,9 +439,7 @@ mod tests {
         data.extend(buf);
         data.extend(vec![3]);
 
-        let result = futures::executor::block_on(
-            crate::proto::parser::IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse(),
-        );
+        let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -467,9 +476,7 @@ mod tests {
         data.extend(buf);
         data.extend(vec![3]);
 
-        let result = futures::executor::block_on(
-            crate::proto::parser::IppParser::new(IppReader::new(futures::io::Cursor::new(data))).parse(),
-        );
+        let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

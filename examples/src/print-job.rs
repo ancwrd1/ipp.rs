@@ -12,7 +12,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let uri: Uri = args[1].parse()?;
-    let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(&args[2])?));
+    let payload = IppPayload::new(fs::File::open(&args[2])?);
 
     let mut builder = IppOperationBuilder::print_job(uri.clone(), payload)
         .user_name(&env::var("USER").unwrap_or_else(|_| "noname".to_owned()))
@@ -29,9 +29,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = IppClient::new(uri);
 
-    let attrs = client.send(operation).await?;
+    let response = client.send(operation).await?;
 
-    for v in attrs
+    println!("IPP status code: {}", response.header().get_status_code());
+
+    for v in response
+        .attributes()
         .groups_of(DelimiterTag::JobAttributes)
         .next()
         .unwrap()

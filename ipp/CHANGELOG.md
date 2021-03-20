@@ -3,7 +3,8 @@
 ## 3.0.0
 
 - Upgraded to tokio 1.0
-- `request` is now a default client
+- Added `async` feature to enable or disable async operations (enabled by default). 
+- `reqwest` is now the only client
 
 ## 2.0.0
 

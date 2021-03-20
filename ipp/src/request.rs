@@ -1,17 +1,20 @@
 //!
 //! IPP request
 //!
+use std::io::{self, Read};
+
 use bytes::{BufMut, Bytes, BytesMut};
+#[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
 use http::Uri;
 use log::debug;
 
-use super::{
+use crate::{
     attribute::{IppAttribute, IppAttributes},
-    model::StatusCode,
-    model::{DelimiterTag, IppVersion, Operation},
+    model::{DelimiterTag, IppVersion, Operation, StatusCode},
+    payload::IppPayload,
     value::*,
-    IppHeader, IppPayload,
+    IppHeader,
 };
 
 /// IPP request/response struct
@@ -119,11 +122,20 @@ impl IppRequestResponse {
         buffer.freeze()
     }
 
+    #[cfg(feature = "async")]
     /// Convert request/response into AsyncRead including payload
-    pub fn into_reader(self) -> impl AsyncRead + Send + Sync + 'static {
+    pub fn into_async_read(self) -> impl AsyncRead + Send + Sync + 'static {
         let header = self.to_bytes();
         debug!("IPP header size: {}", header.len(),);
 
         futures_util::io::Cursor::new(header).chain(self.payload)
+    }
+
+    /// Convert request/response into Read including payload
+    pub fn into_read(self) -> impl Read + Send + Sync + 'static {
+        let header = self.to_bytes();
+        debug!("IPP header size: {}", header.len(),);
+
+        io::Cursor::new(header).chain(self.payload)
     }
 }

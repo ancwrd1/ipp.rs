@@ -17,9 +17,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .attributes(&args[2..])
         .build();
 
-    let attrs = client.send(operation).await?;
+    let response = client.send(operation).await?;
+    println!("IPP status code: {}", response.header().get_status_code());
 
-    for v in attrs
+    for v in response
+        .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .next()
         .unwrap()

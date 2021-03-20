@@ -3,13 +3,13 @@
 //!
 use http::Uri;
 
-use super::{
+use crate::{
     attribute::IppAttribute,
     operation::{
         cups::{CupsDeletePrinter, CupsGetPrinters},
         CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument,
     },
-    IppPayload,
+    payload::IppPayload,
 };
 
 /// Builder to create IPP operations

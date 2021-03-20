@@ -2,14 +2,14 @@
 //! IPP print protocol implementation for Rust. This crate can be used in several ways:
 //! * using the low-level request/response API and building the requests manually.
 //! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
-//! * using the built-in IPP client based on `reqwest` or `isahc` crates.
-//! (selected via `client-isahc` or `client-reqwest`) features.
+//! * using the built-in IPP client based on `reqwest` crate.
 //! * using any third-party HTTP client and send the serialized request manually.
+//!
+//! This crate supports both synchronous and asynchronous operations. Asynchronous API is selected
+//! via `async` feature and is enabled by default.
 //!
 //! Implementation notes:
 //! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
-//! * the **Accept-Encoding** HTTP header seems to cause problems with some older printers,
-//! therefore it is disabled by default.
 //! * this crate is also suitable for building IPP servers, however the example is not provided yet.
 //! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.
 //!
@@ -19,7 +19,8 @@
 //! // using low-level API
 //! use ipp::prelude::*;
 //!
-//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
 //!     let req = IppRequestResponse::new(
 //!         IppVersion::v1_1(),
@@ -27,8 +28,8 @@
 //!         Some(uri.clone())
 //!     );
 //!     let client = IppClient::new(uri);
-//!     let resp = futures::executor::block_on(client.send_request(req))?;
-//!     if resp.header().operation_status <= 2 {
+//!     let resp = client.send(req).await?;
+//!     if resp.header().get_status_code().is_success() {
 //!         println!("result: {:?}", resp.attributes());
 //!     }
 //!     Ok(())
@@ -38,23 +39,38 @@
 //! // using operations API
 //! use ipp::prelude::*;
 //!
-//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
 //!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
 //!     let client = IppClient::new(uri);
-//!     let attrs = futures::executor::block_on(client.send(operation))?;
-//!     for (_, v) in attrs.groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
-//!         println!("{}: {}", v.name(), v.value());
+//!     let resp = client.send(operation).await?;
+//!     if resp.header().get_status_code().is_success() {
+//!         for (_, v) in resp.attributes().groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
+//!             println!("{}: {}", v.name(), v.value());
+//!         }
 //!     }
 //!     Ok(())
 //! }
 //!```
 
-pub mod proto;
+use bytes::{BufMut, Bytes, BytesMut};
+use num_traits::FromPrimitive;
 
-#[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
+use crate::model::{IppVersion, StatusCode};
+
+pub mod attribute;
+pub mod builder;
+#[cfg(feature = "client")]
 pub mod client;
+pub mod model;
+pub mod operation;
+pub mod parser;
+pub mod payload;
+pub mod reader;
+pub mod request;
 pub mod util;
+pub mod value;
 
 pub mod prelude {
     //!
@@ -63,14 +79,65 @@ pub mod prelude {
     pub use http::Uri;
     pub use num_traits::FromPrimitive as _;
 
-    #[cfg(any(feature = "client-isahc", feature = "client-reqwest"))]
-    pub use super::client::{IppClient, IppError};
-    pub use super::proto::{
+    pub use crate::{
         attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
         builder::IppOperationBuilder,
         model::*,
+        payload::IppPayload,
         request::IppRequestResponse,
         value::IppValue,
-        IppHeader, IppPayload,
     };
+
+    #[cfg(feature = "client")]
+    pub use super::client::{IppClient, IppError};
+
+    pub use super::IppHeader;
+}
+
+/// IPP request and response header
+#[derive(Clone, Debug)]
+pub struct IppHeader {
+    /// IPP protocol version
+    pub version: IppVersion,
+    /// Operation tag for requests, status for responses
+    pub operation_status: u16,
+    /// ID of the request
+    pub request_id: u32,
+}
+
+impl IppHeader {
+    /// Create IPP header
+    pub fn new(version: IppVersion, operation_status: u16, request_id: u32) -> IppHeader {
+        IppHeader {
+            version,
+            operation_status,
+            request_id,
+        }
+    }
+
+    /// Write header to a given writer
+    pub fn to_bytes(&self) -> Bytes {
+        let mut buffer = BytesMut::new();
+        buffer.put_u16(self.version.0);
+        buffer.put_u16(self.operation_status);
+        buffer.put_u32(self.request_id);
+
+        buffer.freeze()
+    }
+
+    pub fn get_status_code(&self) -> StatusCode {
+        StatusCode::from_u16(self.operation_status).unwrap_or(StatusCode::UnknownError)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_header_to_bytes() {
+        let header = IppHeader::new(IppVersion::v2_1(), 0x1234, 0xaa55_aa55);
+        let buf = header.to_bytes();
+        assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
+    }
 }

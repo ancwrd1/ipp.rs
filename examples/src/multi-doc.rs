@@ -24,9 +24,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let get_op = IppOperationBuilder::get_printer_attributes(uri.clone())
         .attribute(IppAttribute::OPERATIONS_SUPPORTED)
         .build();
-    let printer_attrs = client.send(get_op).await?;
+    let response = client.send(get_op).await?;
 
-    let ops_attr = printer_attrs
+    let ops_attr = response
+        .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .next()
         .and_then(|g| g.attributes().get(IppAttribute::OPERATIONS_SUPPORTED))
@@ -40,8 +41,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let create_op = IppOperationBuilder::create_job(uri.clone())
         .job_name("multi-doc")
         .build();
-    let attrs = client.send(create_op).await?;
-    let job_id = *attrs
+    let response = client.send(create_op).await?;
+    let job_id = *response
+        .attributes()
         .groups_of(DelimiterTag::JobAttributes)
         .next()
         .and_then(|g| g.attributes().get(IppAttribute::JOB_ID))
@@ -56,15 +58,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let last = i >= (args.len() - 1);
         println!("Sending {}, last: {}", item, last);
 
-        let payload = IppPayload::new(futures::io::AllowStdIo::new(fs::File::open(item.to_owned())?));
+        let payload = IppPayload::new(fs::File::open(item.to_owned())?);
 
         let send_op = IppOperationBuilder::send_document(uri.clone(), job_id, payload)
             .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
             .last(last)
             .build();
 
-        let attrs = client.send(send_op).await?;
-        for v in attrs
+        let response = client.send(send_op).await?;
+        println!("IPP status code: {}", response.header().get_status_code());
+
+        for v in response
+            .attributes()
             .groups_of(DelimiterTag::JobAttributes)
             .next()
             .unwrap()
