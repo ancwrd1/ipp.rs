@@ -3,7 +3,7 @@
 This crate contains `ipputil` CLI application to perform common IPP operations
 such as getting printer attributes or printing a file.
 
-To install it run `cargo install ipp-util`. For command line use usage run `ipputil --help`.
+To install it run `cargo install ipputil`. For command line use usage run `ipputil --help`.
 
 ## License
 
