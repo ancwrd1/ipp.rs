@@ -131,7 +131,7 @@ impl IppValue {
         Ok(value)
     }
 
-    /// Write value to byte array, including leading value length field
+    /// Write value to byte array, including leading value length field, excluding value tag
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 

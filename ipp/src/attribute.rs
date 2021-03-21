@@ -79,10 +79,12 @@ impl IppAttribute {
     pub const COLOR_MODE_SUPPORTED: &'static str = "color-mode-supported";
     pub const PRINT_COLOR_MODE_SUPPORTED: &'static str = "print-color-mode-supported";
 
-    const HEADER_ATTRS: [&'static str; 3] = [
+    // Per section 4.1.4. Character Set and Natural Language Operation Attributes
+    // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
+    // in every IPP request and response, as part of the initial Operation Attributes group of the IPP message
+    const HEADER_ATTRS: [&'static str; 2] = [
         IppAttribute::ATTRIBUTES_CHARSET,
         IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-        IppAttribute::PRINTER_URI,
     ];
 
     /// Create new instance of the attribute
@@ -198,7 +200,7 @@ impl IppAttributes {
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 
-        // first send the header attributes
+        // put the required attributes first as described in section 4.1.4 of RFC8011
         buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
         if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).next() {
