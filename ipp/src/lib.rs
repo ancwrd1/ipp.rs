@@ -30,7 +30,7 @@
 //!     let client = IppClient::new(uri);
 //!     let resp = client.send(req).await?;
 //!     if resp.header().status_code().is_success() {
-//!         println!("result: {:?}", resp.attributes());
+//!         println!("{:?}", resp.attributes());
 //!     }
 //!     Ok(())
 //! }
@@ -46,9 +46,7 @@
 //!     let client = IppClient::new(uri);
 //!     let resp = client.send(operation).await?;
 //!     if resp.header().status_code().is_success() {
-//!         for (_, v) in resp.attributes().groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
-//!             println!("{}: {}", v.name(), v.value());
-//!         }
+//!         println!("{:?}", resp.attributes());
 //!     }
 //!     Ok(())
 //! }
