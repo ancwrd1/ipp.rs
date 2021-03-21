@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `ipp/src/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ipp/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ipp/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -112,11 +115,21 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! IPP helper functions</span>
 <span class="doccomment">//!</span>
 <span class="kw">use</span> <span class="ident">http</span>::<span class="ident">Uri</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">client_util</span>::{<span class="ident">check_printer_state</span>, <span class="ident">get_printer_attributes</span>, <span class="ident">print_file</span>};
 
 <span class="doccomment">/// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalize_uri</span>(<span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Uri</span> {
@@ -131,12 +144,9 @@
     <span class="ident">builder</span>.<span class="ident">build</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">uri</span>.<span class="ident">to_owned</span>())
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-isahc&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-reqwest&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">client_util</span>::{<span class="ident">check_printer_state</span>, <span class="ident">get_printer_attributes</span>, <span class="ident">print_file</span>};
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-isahc&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client-reqwest&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">client_util</span> {
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>::<span class="ident">File</span>, <span class="ident">path</span>::<span class="ident">Path</span>};
+    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>::<span class="ident">File</span>, <span class="ident">io</span>::<span class="ident">BufReader</span>, <span class="ident">path</span>::<span class="ident">Path</span>};
 
     <span class="kw">use</span> <span class="ident">futures_util</span>::<span class="ident">io</span>::<span class="ident">AllowStdIo</span>;
     <span class="kw">use</span> <span class="ident">log</span>::<span class="ident">debug</span>;
@@ -160,9 +170,15 @@
     <span class="doccomment">/// Returns Ok if no fatal errors are detected, IppError otherwise.</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">check_printer_state</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span> {
         <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Checking printer status&quot;</span>);
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">attrs</span>
+        <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">header</span>().<span class="ident">status_code</span>();
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">status</span>.<span class="ident">is_success</span>() {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError</span>::<span class="ident">StatusError</span>(<span class="ident">status</span>));
+        }
+
+        <span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">response</span>
+            .<span class="ident">attributes</span>()
             .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>)
             .<span class="ident">next</span>()
             .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">attributes</span>().<span class="ident">get</span>(<span class="ident">IppAttribute</span>::<span class="ident">PRINTER_STATE</span>))
@@ -174,7 +190,8 @@
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError</span>::<span class="ident">PrinterStopped</span>);
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reasons</span>) <span class="op">=</span> <span class="ident">attrs</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reasons</span>) <span class="op">=</span> <span class="ident">response</span>
+            .<span class="ident">attributes</span>()
             .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag</span>::<span class="ident">PrinterAttributes</span>)
             .<span class="ident">next</span>()
             .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">attributes</span>().<span class="ident">get</span>(<span class="ident">IppAttribute</span>::<span class="ident">PRINTER_STATE_REASONS</span>))
@@ -186,7 +203,7 @@
                 .<span class="ident">map</span>(<span class="ident">ToOwned</span>::<span class="ident">to_owned</span>)
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-            <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ERROR_STATES</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="kw-2">&amp;</span><span class="ident">k</span>[..])) {
+            <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ERROR_STATES</span>.<span class="ident">contains</span>(<span class="op">&amp;&amp;</span><span class="ident">k</span>[..])) {
                 <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Printer is in error state: {:?}&quot;</span>, <span class="ident">keywords</span>);
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError</span>::<span class="ident">PrinterStateError</span>(<span class="ident">keywords</span>));
             }
@@ -195,17 +212,17 @@
     }
 
     <span class="doccomment">/// Print a file</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">print_file</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppAttributes</span>, <span class="ident">IppError</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">print_file</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppError</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
     {
-        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">IppPayload</span>::<span class="ident">new</span>(<span class="ident">AllowStdIo</span>::<span class="ident">new</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>));
+        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">IppPayload</span>::<span class="ident">new_async</span>(<span class="ident">AllowStdIo</span>::<span class="ident">new</span>(<span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>)));
         <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">IppOperationBuilder</span>::<span class="ident">print_job</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>(), <span class="ident">payload</span>).<span class="ident">build</span>();
         <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="kw">await</span>
     }
 
     <span class="doccomment">/// Get printer attributes</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppAttributes</span>, <span class="ident">IppError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">IppOperationBuilder</span>::<span class="ident">get_printer_attributes</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>()).<span class="ident">build</span>();
         <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="kw">await</span>
     }
