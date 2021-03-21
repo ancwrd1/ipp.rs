@@ -5,7 +5,7 @@ This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.o
 
 Usage example:
 
-```rust,no_run
+```rust
 use ipp::prelude::*;
 
 #[tokio::main]
@@ -21,6 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
+```
 
 ## License
 
