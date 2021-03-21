@@ -57,7 +57,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
 
     let response = client.send(builder.build()).await?;
 
-    let status = response.header().get_status_code();
+    let status = response.header().status_code();
     if !status.is_success() {
         return Err(IppError::StatusError(status));
     }
@@ -79,7 +79,7 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
 
     let response = client.send(operation).await?;
 
-    let status = response.header().get_status_code();
+    let status = response.header().status_code();
     if !status.is_success() {
         return Err(IppError::StatusError(status));
     }

@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let operation = IppOperationBuilder::cups().get_printers();
 
     let response = client.send(operation).await?;
-    println!("IPP status code: {}", response.header().get_status_code());
+    println!("IPP status code: {}", response.header().status_code());
 
     for group in response.attributes().groups_of(DelimiterTag::PrinterAttributes) {
         let name = group.attributes()["printer-name"].value();

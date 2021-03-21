@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let response = client.send(operation).await?;
 
-    println!("IPP status code: {}", response.header().get_status_code());
+    println!("IPP status code: {}", response.header().status_code());
 
     for v in response
         .attributes()

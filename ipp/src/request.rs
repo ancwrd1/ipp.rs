@@ -62,18 +62,18 @@ impl IppRequestResponse {
 
     /// Create response from status and id
     pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> IppRequestResponse {
-        let hdr = IppHeader::new(version, status as u16, id);
-        let mut retval = IppRequestResponse {
-            header: hdr,
+        let header = IppHeader::new(version, status as u16, id);
+        let mut response = IppRequestResponse {
+            header,
             attributes: IppAttributes::new(),
             payload: IppPayload::empty(),
         };
 
-        retval.attributes_mut().add(
+        response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
         );
-        retval.attributes_mut().add(
+        response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
                 IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
@@ -81,7 +81,7 @@ impl IppRequestResponse {
             ),
         );
 
-        retval
+        response
     }
 
     /// Get IPP header

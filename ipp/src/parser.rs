@@ -249,26 +249,26 @@ where
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_async_parse_no_attributes() {
+    #[tokio::test]
+    async fn test_async_parse_no_attributes() {
         let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
-        let result = futures_executor::block_on(
-            AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data))).parse(),
-        );
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
+            .await;
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
         assert!(res.attributes.groups().is_empty());
     }
 
-    #[test]
-    fn test_async_parse_single_value() {
+    #[tokio::test]
+    async fn test_async_parse_single_value() {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
         ];
-        let result = futures_executor::block_on(
-            AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data))).parse(),
-        );
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
+            .await;
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -282,15 +282,15 @@ mod tests {
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
-    #[test]
-    fn test_async_parse_array() {
+    #[tokio::test]
+    async fn test_async_parse_array() {
         let data = &[
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78,
             0x21, 0x00, 0x00, 0x00, 0x04, 0x77, 0x65, 0x43, 0x21, 3,
         ];
-        let result = futures_executor::block_on(
-            AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data))).parse(),
-        );
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
+            .await;
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -307,15 +307,15 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_async_parse_collection() {
+    #[tokio::test]
+    async fn test_async_parse_collection() {
         let data = vec![
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
             0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
-        let result = futures_executor::block_on(
-            AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data))).parse(),
-        );
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
+            .await;
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
@@ -335,16 +335,16 @@ mod tests {
         );
     }
 
-    #[test]
-    fn test_async_parse_with_payload() {
+    #[tokio::test]
+    async fn test_async_parse_with_payload() {
         let data = vec![
             1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
             b'f', b'o', b'o',
         ];
 
-        let result = futures_executor::block_on(
-            AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data))).parse(),
-        );
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
+            .await;
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();

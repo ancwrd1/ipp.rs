@@ -47,7 +47,7 @@ mod client_util {
         debug!("Checking printer status");
         let response = get_printer_attributes(client).await?;
 
-        let status = response.header().get_status_code();
+        let status = response.header().status_code();
         if !status.is_success() {
             return Err(IppError::StatusError(status));
         }

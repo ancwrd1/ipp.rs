@@ -188,7 +188,7 @@ pub enum StatusCode {
     ServerErrorBusy = 0x0507,
     ServerErrorJobCanceled = 0x0508,
     ServerErrorMultipleDocumentJobsNotSupported = 0x0509,
-    UnknownError = 0xffff,
+    UnknownStatusCode = 0xffff,
 }
 
 impl StatusCode {
@@ -239,7 +239,7 @@ impl fmt::Display for StatusCode {
             StatusCode::ServerErrorMultipleDocumentJobsNotSupported => {
                 write!(f, "Multiple document jobs not supported")
             }
-            StatusCode::UnknownError => write!(f, "Unknown error"),
+            StatusCode::UnknownStatusCode => write!(f, "Unknown status code"),
         }
     }
 }

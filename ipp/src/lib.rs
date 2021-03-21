@@ -29,7 +29,7 @@
 //!     );
 //!     let client = IppClient::new(uri);
 //!     let resp = client.send(req).await?;
-//!     if resp.header().get_status_code().is_success() {
+//!     if resp.header().status_code().is_success() {
 //!         println!("result: {:?}", resp.attributes());
 //!     }
 //!     Ok(())
@@ -45,7 +45,7 @@
 //!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
 //!     let client = IppClient::new(uri);
 //!     let resp = client.send(operation).await?;
-//!     if resp.header().get_status_code().is_success() {
+//!     if resp.header().status_code().is_success() {
 //!         for (_, v) in resp.attributes().groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
 //!             println!("{}: {}", v.name(), v.value());
 //!         }
@@ -100,17 +100,17 @@ pub struct IppHeader {
     /// IPP protocol version
     pub version: IppVersion,
     /// Operation tag for requests, status for responses
-    pub operation_status: u16,
+    pub operation_or_status: u16,
     /// ID of the request
     pub request_id: u32,
 }
 
 impl IppHeader {
     /// Create IPP header
-    pub fn new(version: IppVersion, operation_status: u16, request_id: u32) -> IppHeader {
+    pub fn new(version: IppVersion, operation_or_status: u16, request_id: u32) -> IppHeader {
         IppHeader {
             version,
-            operation_status,
+            operation_or_status,
             request_id,
         }
     }
@@ -119,14 +119,14 @@ impl IppHeader {
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
         buffer.put_u16(self.version.0);
-        buffer.put_u16(self.operation_status);
+        buffer.put_u16(self.operation_or_status);
         buffer.put_u32(self.request_id);
 
         buffer.freeze()
     }
 
-    pub fn get_status_code(&self) -> StatusCode {
-        StatusCode::from_u16(self.operation_status).unwrap_or(StatusCode::UnknownError)
+    pub fn status_code(&self) -> StatusCode {
+        StatusCode::from_u16(self.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
     }
 }
 

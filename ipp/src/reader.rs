@@ -180,3 +180,63 @@ where
         IppReader::new(r)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::StatusCode;
+
+    #[test]
+    fn test_read_name() {
+        let data = io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
+        let mut reader = IppReader::new(data);
+        let name = reader.read_name().unwrap();
+        assert_eq!(name, "test");
+    }
+
+    #[test]
+    fn test_read_value() {
+        let data = io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
+        let mut reader = IppReader::new(data);
+        let value = reader.read_value().unwrap();
+        assert_eq!(value.as_ref(), b"test");
+    }
+
+    #[test]
+    fn test_read_header() {
+        let data = io::Cursor::new(vec![0x01, 0x01, 0x04, 0x01, 0x11, 0x22, 0x33, 0x44]);
+        let mut reader = IppReader::new(data);
+        let header = reader.read_header().unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0x401);
+        assert_eq!(header.request_id, 0x11223344);
+        assert_eq!(header.status_code(), StatusCode::ClientErrorForbidden);
+    }
+
+    #[tokio::test]
+    async fn test_async_read_name() {
+        let data = futures_util::io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
+        let mut reader = AsyncIppReader::new(data);
+        let name = reader.read_name().await.unwrap();
+        assert_eq!(name, "test");
+    }
+
+    #[tokio::test]
+    async fn test_async_read_value() {
+        let data = futures_util::io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
+        let mut reader = AsyncIppReader::new(data);
+        let value = reader.read_value().await.unwrap();
+        assert_eq!(value.as_ref(), b"test");
+    }
+
+    #[tokio::test]
+    async fn test_async_read_header() {
+        let data = futures_util::io::Cursor::new(vec![0x01, 0x01, 0x04, 0x01, 0x11, 0x22, 0x33, 0x44]);
+        let mut reader = AsyncIppReader::new(data);
+        let header = reader.read_header().await.unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0x401);
+        assert_eq!(header.request_id, 0x11223344);
+        assert_eq!(header.status_code(), StatusCode::ClientErrorForbidden);
+    }
+}
