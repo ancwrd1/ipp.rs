@@ -1,2 +1,2 @@
 [workspace]
-members = [ "ipp", "ipputil", "examples" ]
+members = [ "ipp", "util", "examples" ]
