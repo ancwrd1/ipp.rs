@@ -3,6 +3,8 @@
 IPP protocol implementation for Rust.
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
+[Documentation](https://ancwrd1.github.io/ipp.rs/doc/ipp/)
+
 Usage example:
 
 ```rust
