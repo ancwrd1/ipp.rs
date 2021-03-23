@@ -23,10 +23,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     for v in response
         .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
-        .next()
-        .unwrap()
-        .attributes()
-        .values()
+        .map(|g| g.attributes().values())
+        .flatten()
     {
         println!("{}: {}", v.name(), v.value());
     }
