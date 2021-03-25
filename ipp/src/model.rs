@@ -29,6 +29,7 @@ impl IppVersion {
 
 /// IPP operation constants
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Operation {
     PrintJob = 0x0002,
     PrintUri = 0x0003,
@@ -156,9 +157,9 @@ pub enum ValueTag {
 /// IPP status codes
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum StatusCode {
-    SuccessfulOK = 0x0000,
-    SuccessfulOKIgnoredOrSubstitutedAttributes = 0x0001,
-    SuccessfulOKConflictingAttributes = 0x0002,
+    SuccessfulOk = 0x0000,
+    SuccessfulOkIgnoredOrSubstitutedAttributes = 0x0001,
+    SuccessfulOkConflictingAttributes = 0x0002,
     ClientErrorBadRequest = 0x0400,
     ClientErrorForbidden = 0x0401,
     ClientErrorNotAuthenticated = 0x0402,
@@ -195,9 +196,9 @@ impl StatusCode {
     pub fn is_success(&self) -> bool {
         matches!(
             self,
-            StatusCode::SuccessfulOK
-                | StatusCode::SuccessfulOKIgnoredOrSubstitutedAttributes
-                | StatusCode::SuccessfulOKConflictingAttributes
+            StatusCode::SuccessfulOk
+                | StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes
+                | StatusCode::SuccessfulOkConflictingAttributes
         )
     }
 }
@@ -205,9 +206,9 @@ impl StatusCode {
 impl fmt::Display for StatusCode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            StatusCode::SuccessfulOK => write!(f, "No error"),
-            StatusCode::SuccessfulOKIgnoredOrSubstitutedAttributes => write!(f, "Ignored or substituted attributes"),
-            StatusCode::SuccessfulOKConflictingAttributes => write!(f, "Conflicting attributes"),
+            StatusCode::SuccessfulOk => write!(f, "No error"),
+            StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes => write!(f, "Ignored or substituted attributes"),
+            StatusCode::SuccessfulOkConflictingAttributes => write!(f, "Conflicting attributes"),
             StatusCode::ClientErrorBadRequest => write!(f, "Bad request"),
             StatusCode::ClientErrorForbidden => write!(f, "Forbidden"),
             StatusCode::ClientErrorNotAuthenticated => write!(f, "Not authenticated"),

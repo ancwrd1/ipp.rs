@@ -36,7 +36,7 @@ pub enum IppError {
 
     #[error(transparent)]
     /// Network or file I/O error
-    IOError(#[from] io::Error),
+    IoError(#[from] io::Error),
 
     #[error("IPP status error: {0}")]
     /// IPP status error

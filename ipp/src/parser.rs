@@ -28,7 +28,7 @@ pub enum IppParseError {
     InvalidCollection,
 
     #[error(transparent)]
-    IOError(#[from] io::Error),
+    IoError(#[from] io::Error),
 }
 
 // create a single value from one-element list, list otherwise
