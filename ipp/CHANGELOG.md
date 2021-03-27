@@ -4,8 +4,8 @@
 
 - Upgraded tokio dependency to 1.x.
 - Added synchronous API (parser and payload) to be used with synchronous HTTP clients.
-- Added `async` feature to enable or disable async operations (enabled by default). 
-- `reqwest` is now the only client.
+- Added `async` feature to enable or disable async operations (enabled by default).
+- `reqwest` is now the only client  behind the `client` feature.
 - Refactored and simplified internal project structure.
 
 ## 2.0.0
