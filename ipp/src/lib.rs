@@ -123,6 +123,7 @@ impl IppHeader {
         buffer.freeze()
     }
 
+    /// Decode and get IPP status code from the header
     pub fn status_code(&self) -> StatusCode {
         StatusCode::from_u16(self.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
     }
