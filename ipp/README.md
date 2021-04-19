@@ -3,6 +3,9 @@
 IPP protocol implementation for Rust.
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
+It supports both synchronous and asynchronous operations (requests and responses) which is controlled by the `async` feature flag.
+By default this feature is enabled, it is also required for the IPP client to send the requests to the printer.
+
 [Documentation](https://ancwrd1.github.io/ipp.rs/doc/ipp/)
 
 Usage example:
@@ -24,6 +27,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+For more usage examples please check the [examples folder](https://github.com/ancwrd1/ipp.rs/tree/master/examples).
 
 ## License
 
