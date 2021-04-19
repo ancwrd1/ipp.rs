@@ -2,7 +2,7 @@
 //! IPP print protocol implementation for Rust. This crate can be used in several ways:
 //! * using the low-level request/response API and building the requests manually.
 //! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
-//! * using the built-in IPP client based on `reqwest` crate.
+//! * using the built-in IPP client based on `reqwest` crate. Requires `async` feature.
 //! * using any third-party HTTP client and send the serialized request manually.
 //!
 //! This crate supports both synchronous and asynchronous operations. Asynchronous API is selected
