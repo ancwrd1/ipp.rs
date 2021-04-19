@@ -237,6 +237,8 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Attribute-related structs</span>
@@ -319,10 +321,12 @@
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COLOR_MODE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;color-mode-supported&quot;</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINT_COLOR_MODE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;print-color-mode-supported&quot;</span>;
 
-    <span class="kw">const</span> <span class="ident">HEADER_ATTRS</span>: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">3</span>] <span class="op">=</span> [
+    <span class="comment">// Per section 4.1.4. Character Set and Natural Language Operation Attributes</span>
+    <span class="comment">// The &quot;attributes-charset&quot; and &quot;attributes-natural-language&quot; attributes MUST be the first two attributes</span>
+    <span class="comment">// in every IPP request and response, as part of the initial Operation Attributes group of the IPP message</span>
+    <span class="kw">const</span> <span class="ident">HEADER_ATTRS</span>: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">2</span>] <span class="op">=</span> [
         <span class="ident">IppAttribute</span>::<span class="ident">ATTRIBUTES_CHARSET</span>,
         <span class="ident">IppAttribute</span>::<span class="ident">ATTRIBUTES_NATURAL_LANGUAGE</span>,
-        <span class="ident">IppAttribute</span>::<span class="ident">PRINTER_URI</span>,
     ];
 
     <span class="doccomment">/// Create new instance of the attribute</span>
@@ -438,7 +442,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Bytes</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">BytesMut</span>::<span class="ident">new</span>();
 
-        <span class="comment">// first send the header attributes</span>
+        <span class="comment">// put the required attributes first as described in section 4.1.4 of RFC8011</span>
         <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span> <span class="kw">as</span> <span class="ident">u8</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">groups_of</span>(<span class="ident">DelimiterTag</span>::<span class="ident">OperationAttributes</span>).<span class="ident">next</span>() {
@@ -475,4 +479,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

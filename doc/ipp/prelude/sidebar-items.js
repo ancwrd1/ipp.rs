@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Uri","The URI component of a request."]],"trait":[["_","A generic trait for converting a number to a value."]]});
+initSidebarItems({"struct":[["Uri","The URI component of a request."]]});

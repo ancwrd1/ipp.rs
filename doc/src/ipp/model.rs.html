@@ -246,6 +246,7 @@
 <span id="243">243</span>
 <span id="244">244</span>
 <span id="245">245</span>
+<span id="246">246</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Base IPP definitions and tags</span>
@@ -278,6 +279,7 @@
 
 <span class="doccomment">/// IPP operation constants</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">upper_case_acronyms</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Operation</span> {
     <span class="ident">PrintJob</span> <span class="op">=</span> <span class="number">0x0002</span>,
     <span class="ident">PrintUri</span> <span class="op">=</span> <span class="number">0x0003</span>,
@@ -405,9 +407,9 @@
 <span class="doccomment">/// IPP status codes</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusCode</span> {
-    <span class="ident">SuccessfulOK</span> <span class="op">=</span> <span class="number">0x0000</span>,
-    <span class="ident">SuccessfulOKIgnoredOrSubstitutedAttributes</span> <span class="op">=</span> <span class="number">0x0001</span>,
-    <span class="ident">SuccessfulOKConflictingAttributes</span> <span class="op">=</span> <span class="number">0x0002</span>,
+    <span class="ident">SuccessfulOk</span> <span class="op">=</span> <span class="number">0x0000</span>,
+    <span class="ident">SuccessfulOkIgnoredOrSubstitutedAttributes</span> <span class="op">=</span> <span class="number">0x0001</span>,
+    <span class="ident">SuccessfulOkConflictingAttributes</span> <span class="op">=</span> <span class="number">0x0002</span>,
     <span class="ident">ClientErrorBadRequest</span> <span class="op">=</span> <span class="number">0x0400</span>,
     <span class="ident">ClientErrorForbidden</span> <span class="op">=</span> <span class="number">0x0401</span>,
     <span class="ident">ClientErrorNotAuthenticated</span> <span class="op">=</span> <span class="number">0x0402</span>,
@@ -444,9 +446,9 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_success</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="macro">matches</span><span class="macro">!</span>(
             <span class="self">self</span>,
-            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOK</span>
-                <span class="op">|</span> <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOKIgnoredOrSubstitutedAttributes</span>
-                <span class="op">|</span> <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOKConflictingAttributes</span>
+            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOk</span>
+                <span class="op">|</span> <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOkIgnoredOrSubstitutedAttributes</span>
+                <span class="op">|</span> <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOkConflictingAttributes</span>
         )
     }
 }
@@ -454,9 +456,9 @@
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">StatusCode</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOK</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;No error&quot;</span>),
-            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOKIgnoredOrSubstitutedAttributes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Ignored or substituted attributes&quot;</span>),
-            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOKConflictingAttributes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Conflicting attributes&quot;</span>),
+            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOk</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;No error&quot;</span>),
+            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOkIgnoredOrSubstitutedAttributes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Ignored or substituted attributes&quot;</span>),
+            <span class="ident">StatusCode</span>::<span class="ident">SuccessfulOkConflictingAttributes</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Conflicting attributes&quot;</span>),
             <span class="ident">StatusCode</span>::<span class="ident">ClientErrorBadRequest</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Bad request&quot;</span>),
             <span class="ident">StatusCode</span>::<span class="ident">ClientErrorForbidden</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Forbidden&quot;</span>),
             <span class="ident">StatusCode</span>::<span class="ident">ClientErrorNotAuthenticated</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Not authenticated&quot;</span>),
@@ -493,4 +495,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "ipp";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
