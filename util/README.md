@@ -1,4 +1,4 @@
-## IPP command line utility
+# IPP command line utility
 
 This crate contains `ipputil` CLI application to perform common IPP operations
 such as getting printer attributes or printing a file.
@@ -7,9 +7,7 @@ To install it run `cargo install ipp-util`. For command line use usage run `ippu
 
 Usage example:
 
-```
-ipputil print -f /path/to/file.pdf http://192.168.1.100:631/ipp
-```
+`ipputil print -f /path/to/file.pdf http://192.168.1.100:631/ipp`
 
 ## License
 
