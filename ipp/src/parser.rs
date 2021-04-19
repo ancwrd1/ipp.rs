@@ -249,6 +249,7 @@ where
 mod tests {
     use super::*;
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_parse_no_attributes() {
         let data = &[1, 1, 0, 0, 0, 0, 0, 0, 3];
@@ -261,6 +262,7 @@ mod tests {
         assert!(res.attributes.groups().is_empty());
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_parse_single_value() {
         let data = &[
@@ -282,6 +284,7 @@ mod tests {
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_parse_array() {
         let data = &[
@@ -307,6 +310,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_parse_collection() {
         let data = vec![
@@ -335,6 +339,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_parse_with_payload() {
         let data = vec![

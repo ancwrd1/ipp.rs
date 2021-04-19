@@ -42,7 +42,7 @@ features = ["io", "compat"]
 
 [dev-dependencies]
 env_logger = "0.8"
-tokio = { version = "1", features = ["macros"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [features]
 default = ["client"]

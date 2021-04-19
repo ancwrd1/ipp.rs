@@ -213,6 +213,7 @@ mod tests {
         assert_eq!(header.status_code(), StatusCode::ClientErrorForbidden);
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_read_name() {
         let data = futures_util::io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
@@ -221,6 +222,7 @@ mod tests {
         assert_eq!(name, "test");
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_read_value() {
         let data = futures_util::io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
@@ -229,6 +231,7 @@ mod tests {
         assert_eq!(value.as_ref(), b"test");
     }
 
+    #[cfg(feature = "async")]
     #[tokio::test]
     async fn test_async_read_header() {
         let data = futures_util::io::Cursor::new(vec![0x01, 0x01, 0x04, 0x01, 0x11, 0x22, 0x33, 0x44]);
