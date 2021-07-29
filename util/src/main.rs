@@ -71,7 +71,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
 }
 
 async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
-    let client = new_client(cmd.uri.parse()?, &params);
+    let client = new_client(cmd.uri.parse()?, params);
 
     let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
         .attributes(&cmd.attributes)

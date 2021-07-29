@@ -224,7 +224,7 @@ impl IppValue {
             IppValue::NoValue => buffer.put_u16(0),
             IppValue::Other { ref data, .. } => {
                 buffer.put_u16(data.len() as u16);
-                buffer.put_slice(&data);
+                buffer.put_slice(data);
             }
         }
         buffer.freeze()
