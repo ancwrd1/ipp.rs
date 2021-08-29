@@ -138,4 +138,9 @@ impl IppRequestResponse {
 
         io::Cursor::new(header).chain(self.payload)
     }
+
+    /// Consume request/response and return a payload
+    pub fn into_payload(self) -> IppPayload {
+        self.payload
+    }
 }
