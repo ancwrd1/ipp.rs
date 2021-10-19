@@ -9,7 +9,7 @@ use std::{
     time::Duration,
 };
 
-use clap::Clap;
+use clap::Parser;
 
 use ipp::{prelude::*, util::check_printer_state};
 
@@ -99,7 +99,7 @@ async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError
     Ok(())
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(about = "IPP print utility", name = "ipputil", rename_all = "kebab-case")]
 struct IppParams {
     #[clap(
@@ -122,7 +122,7 @@ struct IppParams {
     command: IppCommand,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 enum IppCommand {
     #[clap(name = "print", about = "Print file to an IPP printer")]
     Print(IppPrintCmd),
@@ -130,7 +130,7 @@ enum IppCommand {
     Status(IppStatusCmd),
 }
 
-#[derive(Clap, Clone)]
+#[derive(Parser, Clone)]
 #[clap(rename_all = "kebab-case")]
 struct IppPrintCmd {
     #[clap(about = "Printer URI")]
@@ -164,7 +164,7 @@ struct IppPrintCmd {
     options: Vec<String>,
 }
 
-#[derive(Clap, Clone)]
+#[derive(Parser, Clone)]
 #[clap(rename_all = "kebab-case")]
 struct IppStatusCmd {
     #[clap(about = "Printer URI")]
