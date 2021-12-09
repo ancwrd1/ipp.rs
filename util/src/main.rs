@@ -106,7 +106,7 @@ struct IppParams {
         long = "ignore-tls-errors",
         short = 'i',
         global = true,
-        about = "Ignore TLS handshake errors"
+        help = "Ignore TLS handshake errors"
     )]
     ignore_tls_errors: bool,
 
@@ -114,7 +114,7 @@ struct IppParams {
         long = "timeout",
         short = 't',
         global = true,
-        about = "Request timeout in seconds, default = no timeout"
+        help = "Request timeout in seconds, default = no timeout"
     )]
     timeout: Option<u64>,
 
@@ -133,47 +133,47 @@ enum IppCommand {
 #[derive(Parser, Clone)]
 #[clap(rename_all = "kebab-case")]
 struct IppPrintCmd {
-    #[clap(about = "Printer URI")]
+    #[clap(help = "Printer URI")]
     uri: String,
 
     #[clap(
         long = "no-check-state",
         short = 'n',
-        about = "Do not check printer state before printing"
+        help = "Do not check printer state before printing"
     )]
     no_check_state: bool,
 
     #[clap(
         long = "file",
         short = 'f',
-        about = "Input file name to print [default: standard input]"
+        help = "Input file name to print [default: standard input]"
     )]
     file: Option<PathBuf>,
 
-    #[clap(long = "job-name", short = 'j', about = "Job name to send as job-name attribute")]
+    #[clap(long = "job-name", short = 'j', help = "Job name to send as job-name attribute")]
     job_name: Option<String>,
 
     #[clap(
         long = "user-name",
         short = 'u',
-        about = "User name to send as requesting-user-name attribute"
+        help = "User name to send as requesting-user-name attribute"
     )]
     user_name: Option<String>,
 
-    #[clap(long = "option", short = 'o', about = "Extra IPP job attributes in key=value format")]
+    #[clap(long = "option", short = 'o', help = "Extra IPP job attributes in key=value format")]
     options: Vec<String>,
 }
 
 #[derive(Parser, Clone)]
 #[clap(rename_all = "kebab-case")]
 struct IppStatusCmd {
-    #[clap(about = "Printer URI")]
+    #[clap(help = "Printer URI")]
     uri: String,
 
     #[clap(
         long = "attribute",
         short = 'a',
-        about = "Attributes to query, default is to get all"
+        help = "Attributes to query, default is to get all"
     )]
     attributes: Vec<String>,
 }
