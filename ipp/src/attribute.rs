@@ -82,9 +82,19 @@ impl IppAttribute {
     // Per section 4.1.4. Character Set and Natural Language Operation Attributes
     // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
     // in every IPP request and response, as part of the initial Operation Attributes group of the IPP message
-    const HEADER_ATTRS: [&'static str; 2] = [
+    // Per section 4.1.5 Operation targets
+    // o  In the case where there is only one operation target attribute
+    //    (i.e., either only the "printer-uri" attribute or only the
+    //    "job-uri" attribute), that attribute MUST be the third attribute
+    //    in the Operation Attributes group.
+    // o  In the case where Job operations use two operation target
+    //    attributes (i.e., the "printer-uri" and "job-id" attributes), the
+    //    "printer-uri" attribute MUST be the third attribute and the
+    //    "job-id" attribute MUST be the fourth attribute.
+    const HEADER_ATTRS: [&'static str; 3] = [
         IppAttribute::ATTRIBUTES_CHARSET,
         IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+        IppAttribute::PRINTER_URI,
     ];
 
     /// Create new instance of the attribute
