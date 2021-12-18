@@ -1,7 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/builder.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builder.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ipp/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp&#x2F;src&#x2F;builder.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builder.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../ipp/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -278,19 +275,18 @@
 <span id="275">275</span>
 <span id="276">276</span>
 <span id="277">277</span>
-</pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">//!</span>
+</pre><pre class="rust"><code><span class="doccomment">//!</span>
 <span class="doccomment">//! IPP operation builders</span>
 <span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">http</span>::<span class="ident">Uri</span>;
+<span class="kw">use</span> <span class="ident">http::Uri</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">attribute</span>::<span class="ident">IppAttribute</span>,
+    <span class="ident">attribute::IppAttribute</span>,
     <span class="ident">operation</span>::{
         <span class="ident">cups</span>::{<span class="ident">CupsDeletePrinter</span>, <span class="ident">CupsGetPrinters</span>},
         <span class="ident">CreateJob</span>, <span class="ident">GetPrinterAttributes</span>, <span class="ident">IppOperation</span>, <span class="ident">PrintJob</span>, <span class="ident">SendDocument</span>,
     },
-    <span class="ident">payload</span>::<span class="ident">IppPayload</span>,
+    <span class="ident">payload::IppPayload</span>,
 };
 
 <span class="doccomment">/// Builder to create IPP operations</span>
@@ -301,27 +297,27 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
     <span class="doccomment">/// * `payload` - `IppPayload`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span> {
-        <span class="ident">PrintJobBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>, <span class="ident">payload</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) -&gt; <span class="ident">PrintJobBuilder</span> {
+        <span class="ident">PrintJobBuilder::new</span>(<span class="ident">printer_uri</span>, <span class="ident">payload</span>)
     }
 
     <span class="doccomment">/// Create GetPrinterAttributes operation</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// * `printer_uri` - printer URI</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
-        <span class="ident">GetPrinterAttributesBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">GetPrinterAttributesBuilder</span> {
+        <span class="ident">GetPrinterAttributesBuilder::new</span>(<span class="ident">printer_uri</span>)
     }
 
     <span class="doccomment">/// Create CreateJob operation</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// * `printer_uri` - printer URI</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
-        <span class="ident">CreateJobBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_job</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">CreateJobBuilder</span> {
+        <span class="ident">CreateJobBuilder::new</span>(<span class="ident">printer_uri</span>)
     }
 
     <span class="doccomment">/// Create CUPS-specific operations</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cups</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CupsBuilder</span> {
-        <span class="ident">CupsBuilder</span>::<span class="ident">new</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cups</span>() -&gt; <span class="ident">CupsBuilder</span> {
+        <span class="ident">CupsBuilder::new</span>()
     }
 
     <span class="doccomment">/// Create SendDocument operation</span>
@@ -329,8 +325,8 @@
     <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
     <span class="doccomment">/// * `job_id` - job id returned by Create-Job operation &lt;br/&gt;</span>
     <span class="doccomment">/// * `payload` - `IppPayload`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">send_document</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span> {
-        <span class="ident">SendDocumentBuilder</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>, <span class="ident">job_id</span>, <span class="ident">payload</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">send_document</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) -&gt; <span class="ident">SendDocumentBuilder</span> {
+        <span class="ident">SendDocumentBuilder::new</span>(<span class="ident">printer_uri</span>, <span class="ident">job_id</span>, <span class="ident">payload</span>)
     }
 }
 
@@ -344,17 +340,17 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrintJobBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrintJobBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) -&gt; <span class="ident">PrintJobBuilder</span> {
         <span class="ident">PrintJobBuilder</span> {
             <span class="ident">printer_uri</span>,
             <span class="ident">payload</span>,
             <span class="ident">user_name</span>: <span class="prelude-val">None</span>,
             <span class="ident">job_title</span>: <span class="prelude-val">None</span>,
-            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
         }
     }
     <span class="doccomment">/// Specify requesting-user-name attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">user_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">user_name</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">user_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">user_name</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -363,7 +359,7 @@
     }
 
     <span class="doccomment">/// Specify job-name attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">job_title</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">job_title</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">job_title</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">job_title</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -372,13 +368,13 @@
     }
 
     <span class="doccomment">/// Specify custom job attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Specify custom job attributes</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">IppAttribute</span><span class="op">&gt;</span>,
     {
@@ -387,8 +383,8 @@
     }
 
     <span class="doccomment">/// Build operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">PrintJob</span>::<span class="ident">new</span>(
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">PrintJob::new</span>(
             <span class="self">self</span>.<span class="ident">printer_uri</span>,
             <span class="self">self</span>.<span class="ident">payload</span>,
             <span class="self">self</span>.<span class="ident">user_name</span>.<span class="ident">as_ref</span>(),
@@ -408,15 +404,15 @@
 }
 
 <span class="kw">impl</span> <span class="ident">GetPrinterAttributesBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">GetPrinterAttributesBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">GetPrinterAttributesBuilder</span> {
         <span class="ident">GetPrinterAttributesBuilder</span> {
             <span class="ident">printer_uri</span>,
-            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
         }
     }
 
     <span class="doccomment">/// Specify which attribute to retrieve from the printer. Can be repeated.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -425,7 +421,7 @@
     }
 
     <span class="doccomment">/// Specify which attributes to retrieve from the printer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
         <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">S</span><span class="op">&gt;</span>,
@@ -436,8 +432,8 @@
     }
 
     <span class="doccomment">/// Build operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">GetPrinterAttributes</span>::<span class="ident">with_attributes</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="ident">GetPrinterAttributes::with_attributes</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>)
     }
 }
 
@@ -449,16 +445,16 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CreateJobBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CreateJobBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">CreateJobBuilder</span> {
         <span class="ident">CreateJobBuilder</span> {
             <span class="ident">printer_uri</span>,
             <span class="ident">job_name</span>: <span class="prelude-val">None</span>,
-            <span class="ident">attributes</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
         }
     }
 
     <span class="doccomment">/// Specify job-name attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">job_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">job_name</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">job_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">job_name</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -467,13 +463,13 @@
     }
 
     <span class="doccomment">/// Specify custom job attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attribute</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Specify custom job attributes</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">IppAttribute</span><span class="op">&gt;</span>,
     {
@@ -482,8 +478,8 @@
     }
 
     <span class="doccomment">/// Build operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">CreateJob</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="self">self</span>.<span class="ident">job_name</span>.<span class="ident">as_ref</span>());
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">CreateJob::new</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>, <span class="self">self</span>.<span class="ident">job_name</span>.<span class="ident">as_ref</span>());
         <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">fold</span>(<span class="ident">op</span>, <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">op</span>, <span class="ident">attr</span><span class="op">|</span> {
             <span class="ident">op</span>.<span class="ident">add_attribute</span>(<span class="ident">attr</span>);
             <span class="ident">op</span>
@@ -501,7 +497,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">SendDocumentBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SendDocumentBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">IppPayload</span>) -&gt; <span class="ident">SendDocumentBuilder</span> {
         <span class="ident">SendDocumentBuilder</span> {
             <span class="ident">printer_uri</span>,
             <span class="ident">job_id</span>,
@@ -512,7 +508,7 @@
     }
 
     <span class="doccomment">/// Specify originating-user-name attribute</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">user_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">user_name</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">user_name</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">user_name</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
     {
@@ -521,14 +517,14 @@
     }
 
     <span class="doccomment">/// Parameter which indicates whether this document is a last one</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">last</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">last</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">last</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">last</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">is_last</span> <span class="op">=</span> <span class="ident">last</span>;
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Build operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">SendDocument</span>::<span class="ident">new</span>(
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="ident">SendDocument::new</span>(
             <span class="self">self</span>.<span class="ident">printer_uri</span>,
             <span class="self">self</span>.<span class="ident">job_id</span>,
             <span class="self">self</span>.<span class="ident">payload</span>,
@@ -542,20 +538,21 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CupsBuilder</span>;
 
 <span class="kw">impl</span> <span class="ident">CupsBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CupsBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="ident">CupsBuilder</span> {
         <span class="ident">CupsBuilder</span>
     }
 
     <span class="doccomment">/// CUPS-Get-Printers operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">CupsGetPrinters</span>::<span class="ident">new</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_printers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="ident">CupsGetPrinters::new</span>()
     }
 
     <span class="doccomment">/// CUPS-Delete-Printer operation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_printer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">printer_uri</span>: <span class="ident">Uri</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">IppOperation</span> {
-        <span class="ident">CupsDeletePrinter</span>::<span class="ident">new</span>(<span class="ident">printer_uri</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_printer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="kw">impl</span> <span class="ident">IppOperation</span> {
+        <span class="ident">CupsDeletePrinter::new</span>(<span class="ident">printer_uri</span>)
     }
 }
-</pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</code></pre></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</body></html>

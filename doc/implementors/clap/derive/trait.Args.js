@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["ipputil"] = [{"text":"impl Args for <a class=\"struct\" href=\"ipputil/struct.IppParams.html\" title=\"struct ipputil::IppParams\">IppParams</a>","synthetic":false,"types":["ipputil::IppParams"]},{"text":"impl Args for <a class=\"struct\" href=\"ipputil/struct.IppPrintCmd.html\" title=\"struct ipputil::IppPrintCmd\">IppPrintCmd</a>","synthetic":false,"types":["ipputil::IppPrintCmd"]},{"text":"impl Args for <a class=\"struct\" href=\"ipputil/struct.IppStatusCmd.html\" title=\"struct ipputil::IppStatusCmd\">IppStatusCmd</a>","synthetic":false,"types":["ipputil::IppStatusCmd"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

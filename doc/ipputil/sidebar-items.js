@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["IppCommand",""]],"fn":[["do_print",""],["do_status",""],["main",""],["new_client",""],["new_payload",""]],"struct":[["IppParams",""],["IppPrintCmd",""],["IppStatusCmd",""]]});
