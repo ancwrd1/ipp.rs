@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.1
+
+- Added IppRequestResponse::into_payload
+- Fixed improper ordering of 'printer-uri' attribute
+
 ## 3.0.0
 
 - Upgraded tokio dependency to 1.x.
