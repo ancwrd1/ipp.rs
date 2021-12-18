@@ -1,6 +1,6 @@
 [package]
 name = "ipp-examples"
-version = "3.0.0"
+version = "3.0.1"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 edition = "2018"
 publish = false
