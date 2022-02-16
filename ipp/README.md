@@ -20,7 +20,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = IppClient::new(uri);
     let resp = client.send(operation).await?;
     if resp.header().get_status_code().is_success() {
-        for (_, v) in resp.attributes().groups_of(DelimiterTag::PrinterAttributes).next().unwrap().attributes() {
+        let printer_attrs = resp
+            .attributes()
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap();
+        for (_, v) in printer_attrs.attributes() {
             println!("{}: {}", v.name(), v.value());
         }
     }
