@@ -110,6 +110,7 @@ impl IppClientBuilder {
 /// IPP client is responsible for sending requests to IPP server.
 pub struct IppClient {
     pub(crate) uri: Uri,
+    #[allow(dead_code)]
     pub(crate) ignore_tls_errors: bool,
     pub(crate) request_timeout: Option<Duration>,
 }
@@ -146,6 +147,7 @@ impl IppClient {
             builder = builder.timeout(timeout);
         }
 
+        #[cfg(feature = "tls")]
         if self.ignore_tls_errors {
             debug!("Setting dangerous TLS options");
             builder = builder

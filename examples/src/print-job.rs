@@ -33,13 +33,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!("IPP status code: {}", response.header().status_code());
 
-    for v in response
+    let attrs = response
         .attributes()
         .groups_of(DelimiterTag::JobAttributes)
-        .map(|g| g.attributes().values())
-        .flatten()
-    {
-        println!("{}: {}", v.name(), v.value());
+        .flat_map(|g| g.attributes().values());
+
+    for attr in attrs {
+        println!("{}: {}", attr.name(), attr.value());
     }
 
     Ok(())

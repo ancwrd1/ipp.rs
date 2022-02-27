@@ -14,7 +14,7 @@ edition = "2018"
 name = "ipp"
 
 [dependencies]
-enum-as-inner = "0.3"
+enum-as-inner = "0.4"
 enum-primitive-derive = "0.2"
 futures-executor = { version = "0.3", optional = true }
 log = "0.4"
@@ -33,10 +33,10 @@ features = ["io"]
 version = "0.11"
 optional = true
 default-features = false
-features = ["native-tls", "stream"]
+features = ["stream"]
 
 [dependencies.tokio-util]
-version = "0.6"
+version = "0.7"
 optional = true
 features = ["io", "compat"]
 
@@ -45,6 +45,7 @@ env_logger = "0.9"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["client"]
+default = ["client", "tls"]
 client = ["async", "reqwest", "tokio-util"]
 async = ["futures-util", "futures-executor"]
+tls = ["reqwest/native-tls"]
