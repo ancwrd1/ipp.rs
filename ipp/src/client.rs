@@ -1,6 +1,7 @@
 //!
 //! IPP client
 //!
+use std::collections::BTreeMap;
 use std::{io, time::Duration};
 
 use futures_util::{io::BufReader, stream::TryStreamExt};
@@ -72,6 +73,7 @@ pub struct IppClientBuilder {
     uri: Uri,
     ignore_tls_errors: bool,
     request_timeout: Option<Duration>,
+    headers: BTreeMap<String, String>,
 }
 
 impl IppClientBuilder {
@@ -80,6 +82,7 @@ impl IppClientBuilder {
             uri,
             ignore_tls_errors: false,
             request_timeout: None,
+            headers: BTreeMap::new(),
         }
     }
 
@@ -95,34 +98,31 @@ impl IppClientBuilder {
         self
     }
 
+    /// Add custom HTTP header
+    pub fn http_header<K, V>(mut self, key: K, value: V) -> Self
+    where
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
+        self.headers.insert(key.as_ref().to_owned(), value.as_ref().to_owned());
+        self
+    }
+
     /// Build the client
     pub fn build(self) -> IppClient {
-        IppClient {
-            uri: self.uri,
-            ignore_tls_errors: self.ignore_tls_errors,
-            request_timeout: self.request_timeout,
-        }
+        IppClient(self)
     }
 }
 
 /// IPP client.
 ///
 /// IPP client is responsible for sending requests to IPP server.
-pub struct IppClient {
-    pub(crate) uri: Uri,
-    #[allow(dead_code)]
-    pub(crate) ignore_tls_errors: bool,
-    pub(crate) request_timeout: Option<Duration>,
-}
+pub struct IppClient(IppClientBuilder);
 
 impl IppClient {
     /// Create IPP client with default options
     pub fn new(uri: Uri) -> Self {
-        IppClient {
-            uri,
-            ignore_tls_errors: false,
-            request_timeout: None,
-        }
+        IppClient(IppClient::builder(uri))
     }
 
     /// Create IPP client builder for setting extra options
@@ -132,7 +132,7 @@ impl IppClient {
 
     /// Return client URI
     pub fn uri(&self) -> &Uri {
-        &self.uri
+        &self.0.uri
     }
 
     /// Send IPP request to the server
@@ -142,25 +142,28 @@ impl IppClient {
     {
         let mut builder = ClientBuilder::new().connect_timeout(CONNECT_TIMEOUT);
 
-        if let Some(timeout) = self.request_timeout {
+        if let Some(timeout) = self.0.request_timeout {
             debug!("Setting request timeout to {:?}", timeout);
             builder = builder.timeout(timeout);
         }
 
         #[cfg(feature = "tls")]
-        if self.ignore_tls_errors {
+        if self.0.ignore_tls_errors {
             debug!("Setting dangerous TLS options");
             builder = builder
                 .danger_accept_invalid_hostnames(true)
                 .danger_accept_invalid_certs(true);
         }
 
-        debug!("Sending request to {}", self.uri);
+        debug!("Sending request to {}", self.0.uri);
 
-        let response = builder
-            .user_agent(USER_AGENT)
-            .build()?
-            .post(&self.uri.to_string())
+        let mut req_builder = builder.user_agent(USER_AGENT).build()?.post(&self.0.uri.to_string());
+
+        for (k, v) in &self.0.headers {
+            req_builder = req_builder.header(k, v);
+        }
+
+        let response = req_builder
             .header("content-type", "application/ipp")
             .body(Body::wrap_stream(tokio_util::io::ReaderStream::new(
                 request.into().into_async_read().compat(),

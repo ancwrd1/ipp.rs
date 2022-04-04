@@ -18,6 +18,13 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     if let Some(timeout) = params.timeout {
         builder = builder.request_timeout(Duration::from_secs(timeout));
     }
+
+    for param in &params.headers {
+        if let Some((k, v)) = param.split_once('=') {
+            builder = builder.http_header(k, v);
+        }
+    }
+
     builder.build()
 }
 
@@ -47,11 +54,8 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
     }
 
     for arg in cmd.options {
-        let mut kv = arg.split('=');
-        if let Some(k) = kv.next() {
-            if let Some(v) = kv.next() {
-                builder = builder.attribute(IppAttribute::new(k, v.parse().unwrap()));
-            }
+        if let Some((k, v)) = arg.split_once('=') {
+            builder = builder.attribute(IppAttribute::new(k, v.parse().unwrap()));
         }
     }
 
@@ -118,6 +122,9 @@ struct IppParams {
     )]
     timeout: Option<u64>,
 
+    #[clap(long = "header", short = 'H', help = "Extra HTTP headers in key=value format")]
+    headers: Vec<String>,
+
     #[clap(subcommand)]
     command: IppCommand,
 }
@@ -170,11 +177,7 @@ struct IppStatusCmd {
     #[clap(help = "Printer URI")]
     uri: String,
 
-    #[clap(
-        long = "attribute",
-        short = 'a',
-        help = "Attributes to query, default is to get all"
-    )]
+    #[clap(long = "attribute", short = 'a', help = "Attributes to query, default is to get all")]
     attributes: Vec<String>,
 }
 
