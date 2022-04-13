@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "3.0.1"
+version = "3.0.2"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Asynchronous IPP print protocol implementation"
 license = "MIT/Apache-2.0"

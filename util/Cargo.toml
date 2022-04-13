@@ -1,6 +1,6 @@
 [package]
 name = "ipp-util"
-version = "3.0.1"
+version = "3.0.2"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP command line print utility"
 license = "MIT/Apache-2.0"
