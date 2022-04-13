@@ -4,7 +4,12 @@ IPP protocol implementation for Rust.
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
 It supports both synchronous and asynchronous operations (requests and responses) which is controlled by the `async` feature flag.
-This feature is enabled by default because it required for the IPP client to send the requests to the printer.
+
+The following build-time features are supported:
+
+* `async` - enables asynchronous APIs
+* `client` - enables IPP client (based on reqwest crate), requires `async` feature
+* `tls` - enables TLS protocol for the client
 
 [Documentation](https://ancwrd1.github.io/ipp.rs/doc/ipp/)
 
