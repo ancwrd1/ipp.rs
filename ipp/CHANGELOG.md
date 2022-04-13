@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.2
+
+- Added `http_header` method to the client builder which allows to specify a custom HTTP header
+- Added `tls` feature
+
 ## 3.0.1
 
 - Added IppRequestResponse::into_payload
