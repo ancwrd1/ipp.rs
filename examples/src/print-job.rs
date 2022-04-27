@@ -19,16 +19,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .job_title(&args[1]);
 
     for arg in &args[3..] {
-        let mut kv = arg.split('=');
-        let (k, v) = (kv.next().unwrap(), kv.next().unwrap());
-
-        builder = builder.attribute(IppAttribute::new(k, v.parse()?));
+        if let Some((k, v)) = arg.split_once('=') {
+            builder = builder.attribute(IppAttribute::new(k, v.parse()?));
+        }
     }
 
     let operation = builder.build();
-
     let client = IppClient::new(uri);
-
     let response = client.send(operation).await?;
 
     println!("IPP status code: {}", response.header().status_code());
