@@ -3,6 +3,8 @@
 //!
 use std::collections::HashMap;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
 use bytes::{BufMut, Bytes, BytesMut};
 
 use crate::{model::DelimiterTag, value::IppValue};
@@ -12,6 +14,7 @@ fn is_header_attr(attr: &str) -> bool {
 }
 
 /// `IppAttribute` represents an IPP attribute
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug)]
 pub struct IppAttribute {
     /// Attribute name
@@ -134,6 +137,7 @@ impl IppAttribute {
 }
 
 /// Attribute group
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug)]
 pub struct IppAttributeGroup {
     tag: DelimiterTag,
@@ -166,6 +170,7 @@ impl IppAttributeGroup {
 }
 
 /// Attribute list
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, Default)]
 pub struct IppAttributes {
     groups: Vec<IppAttributeGroup>,

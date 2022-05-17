@@ -54,6 +54,12 @@ impl IppPayload {
     }
 }
 
+impl Default for IppPayload {
+    fn default() -> Self {
+        Self { inner: PayloadKind::Empty }
+    }
+}
+
 #[cfg(feature = "async")]
 impl AsyncRead for IppPayload {
     fn poll_read(mut self: Pin<&mut Self>, cx: &mut Context, buf: &mut [u8]) -> Poll<io::Result<usize>> {

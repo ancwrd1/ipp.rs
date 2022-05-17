@@ -55,6 +55,9 @@
 use bytes::{BufMut, Bytes, BytesMut};
 use num_traits::FromPrimitive;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 use crate::model::{IppVersion, StatusCode};
 
 pub mod attribute;
@@ -93,6 +96,7 @@ pub mod prelude {
 }
 
 /// IPP request and response header
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug)]
 pub struct IppHeader {
     /// IPP protocol version

@@ -3,9 +3,13 @@
 //!
 use std::fmt;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 use enum_primitive_derive::Primitive;
 
 /// IPP protocol version
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct IppVersion(pub u16);
 
@@ -28,6 +32,7 @@ impl IppVersion {
 }
 
 /// IPP operation constants
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum Operation {
@@ -117,6 +122,7 @@ pub enum JobState {
 }
 
 /// group delimiter tags
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Primitive, Debug, Copy, Clone, PartialEq, Hash, Eq)]
 pub enum DelimiterTag {
     OperationAttributes = 0x01,
@@ -127,6 +133,7 @@ pub enum DelimiterTag {
 }
 
 /// IPP value tags
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Primitive, Debug, Copy, Clone, PartialEq)]
 pub enum ValueTag {
     Unsupported = 0x10,
