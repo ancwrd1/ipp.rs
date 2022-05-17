@@ -3,12 +3,15 @@
 //!
 use std::{convert::Infallible, fmt, io, str::FromStr};
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
 use crate::{model::ValueTag, FromPrimitive as _};
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
 pub enum IppValue {
     Integer(i32),

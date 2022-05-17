@@ -3,6 +3,8 @@
 //!
 use std::io::{self, Read};
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
@@ -18,9 +20,11 @@ use crate::{
 };
 
 /// IPP request/response struct
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct IppRequestResponse {
     pub(crate) header: IppHeader,
     pub(crate) attributes: IppAttributes,
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub(crate) payload: IppPayload,
 }
 
