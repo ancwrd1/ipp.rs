@@ -1,6 +1,6 @@
 [package]
 name = "ipp-util"
-version = "3.0.2"
+version = "3.0.3"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP command line print utility"
 license = "MIT/Apache-2.0"
@@ -15,7 +15,7 @@ name = "ipputil"
 path = "src/main.rs"
 
 [dependencies]
-ipp = { path = "../ipp", version = "3.0.2" }
+ipp = { path = "../ipp", version = "3.0.3" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 env_logger = "0.9"
 clap = { version = "3", features = ["derive"] }
