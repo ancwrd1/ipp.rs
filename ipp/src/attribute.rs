@@ -83,6 +83,7 @@ impl IppAttribute {
     pub const PRINT_COLOR_MODE_SUPPORTED: &'static str = "print-color-mode-supported";
     pub const PRINT_COLOR_MODE_DEFAULT: &'static str = "print-color-mode-default";
     pub const MULTIPLE_DOCUMENT_HANDLING_SUPPORTED: &'static str = "multiple-document-handling-supported";
+    pub const MEDIA_SOURCE_SUPPORTED: &'static str = "media-source-supported";
 
     // Per section 4.1.4. Character Set and Natural Language Operation Attributes
     // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
