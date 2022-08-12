@@ -10,7 +10,7 @@ use enum_primitive_derive::Primitive;
 
 /// IPP protocol version
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct IppVersion(pub u16);
 
 impl IppVersion {
@@ -33,7 +33,7 @@ impl IppVersion {
 
 /// IPP operation constants
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum Operation {
     PrintJob = 0x0002,
@@ -73,7 +73,7 @@ pub enum Operation {
 }
 
 /// printer-state constants
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PrinterState {
     Idle = 3,
     Processing = 4,
@@ -81,7 +81,7 @@ pub enum PrinterState {
 }
 
 /// paper orientation constants
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Orientation {
     Portrait = 3,
     Landscape = 4,
@@ -90,7 +90,7 @@ pub enum Orientation {
 }
 
 /// print-quality constants
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PrintQuality {
     Draft = 3,
     Normal = 4,
@@ -98,7 +98,7 @@ pub enum PrintQuality {
 }
 
 /// finishings constants
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Finishings {
     None = 3,
     Staple = 4,
@@ -110,7 +110,7 @@ pub enum Finishings {
 }
 
 /// job-state constants
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum JobState {
     Pending = 3,
     PendingHeld = 4,
@@ -134,7 +134,7 @@ pub enum DelimiterTag {
 
 /// IPP value tags
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ValueTag {
     Unsupported = 0x10,
     Unknown = 0x12,
@@ -162,7 +162,7 @@ pub enum ValueTag {
 }
 
 /// IPP status codes
-#[derive(Primitive, Debug, Copy, Clone, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum StatusCode {
     SuccessfulOk = 0x0000,
     SuccessfulOkIgnoredOrSubstitutedAttributes = 0x0001,
