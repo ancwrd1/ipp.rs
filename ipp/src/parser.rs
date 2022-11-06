@@ -4,7 +4,7 @@
 use std::io::{self, Read};
 
 use bytes::Bytes;
-use log::{debug, error};
+use log::{error, trace};
 
 #[cfg(feature = "async")]
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
@@ -70,7 +70,7 @@ impl ParserState {
     }
 
     fn parse_delimiter(&mut self, tag: u8) -> Result<DelimiterTag, IppParseError> {
-        debug!("Delimiter tag: {:0x}", tag);
+        trace!("Delimiter tag: {:0x}", tag);
 
         let tag = DelimiterTag::from_u8(tag).ok_or(IppParseError::InvalidTag(tag))?;
         if tag == DelimiterTag::EndOfAttributes {
@@ -89,7 +89,7 @@ impl ParserState {
     fn parse_value(&mut self, tag: u8, name: String, value: Bytes) -> Result<(), IppParseError> {
         let ipp_value = IppValue::parse(tag, value)?;
 
-        debug!("Value tag: {:0x}: {}: {}", tag, name, ipp_value);
+        trace!("Value tag: {:0x}: {}: {}", tag, name, ipp_value);
 
         if !name.is_empty() {
             // single attribute or begin of array
@@ -99,7 +99,7 @@ impl ParserState {
         }
         if tag == ValueTag::BegCollection as u8 {
             // start new collection in the stack
-            debug!("Begin collection");
+            trace!("Begin collection");
             match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
@@ -110,7 +110,7 @@ impl ParserState {
             self.context.push(vec![]);
         } else if tag == ValueTag::EndCollection as u8 {
             // get collection from the stack and add it to the previous element
-            debug!("End collection");
+            trace!("End collection");
             match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
@@ -165,7 +165,7 @@ where
     /// Parse IPP stream
     pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
         let header = self.reader.read_header().await?;
-        debug!("IPP header: {:?}", header);
+        trace!("IPP header: {:?}", header);
 
         loop {
             match self.reader.read_tag().await? {
@@ -221,7 +221,7 @@ where
     /// Parse IPP stream
     pub fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
         let header = self.reader.read_header()?;
-        debug!("IPP header: {:?}", header);
+        trace!("IPP header: {:?}", header);
 
         loop {
             match self.reader.read_tag()? {

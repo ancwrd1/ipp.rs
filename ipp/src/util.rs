@@ -2,9 +2,14 @@
 //! IPP helper functions
 //!
 use http::Uri;
+use num_traits::FromPrimitive;
 
-#[cfg(feature = "client")]
-pub use client_util::{check_printer_state, get_printer_attributes, print_file};
+use crate::{
+    attribute::IppAttribute,
+    error::IppError,
+    model::{DelimiterTag, PrinterState},
+    prelude::IppRequestResponse,
+};
 
 /// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
 pub fn canonicalize_uri(uri: &Uri) -> Uri {
@@ -19,88 +24,55 @@ pub fn canonicalize_uri(uri: &Uri) -> Uri {
     builder.build().unwrap_or_else(|_| uri.to_owned())
 }
 
-#[cfg(feature = "client")]
-mod client_util {
-    use std::{fs::File, io::BufReader, path::Path};
+const ERROR_STATES: &[&str] = &[
+    "media-jam",
+    "toner-empty",
+    "spool-area-full",
+    "cover-open",
+    "door-open",
+    "input-tray-missing",
+    "output-tray-missing",
+    "marker-supply-empty",
+    "paused",
+    "shutdown",
+];
 
-    use futures_util::io::AllowStdIo;
-    use log::debug;
-
-    use crate::prelude::*;
-
-    const ERROR_STATES: &[&str] = &[
-        "media-jam",
-        "toner-empty",
-        "spool-area-full",
-        "cover-open",
-        "door-open",
-        "input-tray-missing",
-        "output-tray-missing",
-        "marker-supply-empty",
-        "paused",
-        "shutdown",
-    ];
-
-    /// Check printer ready status. Checks printer-state and printer-state-reasons attributes.
-    /// Returns Ok if no fatal errors are detected, IppError otherwise.
-    pub async fn check_printer_state(client: &IppClient) -> Result<(), IppError> {
-        debug!("Checking printer status");
-        let response = get_printer_attributes(client).await?;
-
-        let status = response.header().status_code();
-        if !status.is_success() {
-            return Err(IppError::StatusError(status));
-        }
-
-        let state = response
-            .attributes()
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
-            .and_then(|attr| attr.value().as_enum())
-            .and_then(|v| PrinterState::from_i32(*v));
-
-        if let Some(PrinterState::Stopped) = state {
-            debug!("Printer is stopped");
-            return Err(IppError::PrinterStopped);
-        }
-
-        if let Some(reasons) = response
-            .attributes()
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
-        {
-            let keywords = reasons
-                .value()
-                .into_iter()
-                .filter_map(|e| e.as_keyword())
-                .map(ToOwned::to_owned)
-                .collect::<Vec<_>>();
-
-            if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
-                debug!("Printer is in error state: {:?}", keywords);
-                return Err(IppError::PrinterStateError(keywords));
-            }
-        }
-        Ok(())
+pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError> {
+    let status = response.header().status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
     }
 
-    /// Print a file
-    pub async fn print_file<P>(client: &IppClient, path: P) -> Result<IppRequestResponse, IppError>
-    where
-        P: AsRef<Path>,
+    let state = response
+        .attributes()
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .next()
+        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
+        .and_then(|attr| attr.value().as_enum())
+        .and_then(|v| PrinterState::from_i32(*v));
+
+    if let Some(PrinterState::Stopped) = state {
+        return Ok(false);
+    }
+
+    if let Some(reasons) = response
+        .attributes()
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .next()
+        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
     {
-        let payload = IppPayload::new_async(AllowStdIo::new(BufReader::new(File::open(path.as_ref())?)));
-        let operation = IppOperationBuilder::print_job(client.uri().clone(), payload).build();
-        client.send(operation).await
-    }
+        let keywords = reasons
+            .value()
+            .into_iter()
+            .filter_map(|e| e.as_keyword())
+            .map(ToOwned::to_owned)
+            .collect::<Vec<_>>();
 
-    /// Get printer attributes
-    pub async fn get_printer_attributes(client: &IppClient) -> Result<IppRequestResponse, IppError> {
-        let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
-        client.send(operation).await
+        if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
+            return Ok(false);
+        }
     }
+    Ok(true)
 }
 
 #[cfg(test)]

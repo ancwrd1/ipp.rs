@@ -1,6 +1,6 @@
 [package]
 name = "ipp-examples"
-version = "3.0.1"
+version = "4.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 edition = "2018"
 publish = false
@@ -22,9 +22,13 @@ path = "src/multi-doc.rs"
 name = "multi-doc"
 
 [[bin]]
+path = "src/print-job-async.rs"
+name = "print-job-async"
+
+[[bin]]
 path = "src/print-job.rs"
 name = "print-job"
 
 [dependencies]
-ipp = { path = "../ipp", version = "3.0.0" }
+ipp = { path = "../ipp", version = "4.0.0" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

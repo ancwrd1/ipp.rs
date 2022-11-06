@@ -27,7 +27,7 @@
 //!         Operation::GetPrinterAttributes,
 //!         Some(uri.clone())
 //!     );
-//!     let client = IppClient::new(uri);
+//!     let client = AsyncIppClient::new(uri);
 //!     let resp = client.send(req).await?;
 //!     if resp.header().status_code().is_success() {
 //!         println!("{:?}", resp.attributes());
@@ -43,7 +43,7 @@
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
 //!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
-//!     let client = IppClient::new(uri);
+//!     let client = AsyncIppClient::new(uri);
 //!     let resp = client.send(operation).await?;
 //!     if resp.header().status_code().is_success() {
 //!         println!("{:?}", resp.attributes());
@@ -56,14 +56,15 @@ use bytes::{BufMut, Bytes, BytesMut};
 use num_traits::FromPrimitive;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::model::{IppVersion, StatusCode};
 
 pub mod attribute;
 pub mod builder;
-#[cfg(feature = "client")]
+#[cfg(any(feature = "client", feature = "async-client"))]
 pub mod client;
+pub mod error;
 pub mod model;
 pub mod operation;
 pub mod parser;
@@ -89,8 +90,13 @@ pub mod prelude {
         value::IppValue,
     };
 
+    pub use super::error::IppError;
+
+    #[cfg(feature = "async-client")]
+    pub use super::client::non_blocking::AsyncIppClient;
+
     #[cfg(feature = "client")]
-    pub use super::client::{IppClient, IppError};
+    pub use super::client::blocking::IppClient;
 
     pub use super::IppHeader;
 }

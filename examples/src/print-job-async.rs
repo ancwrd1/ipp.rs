@@ -2,7 +2,8 @@ use std::{env, error::Error, fs, process::exit};
 
 use ipp::prelude::*;
 
-fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
@@ -24,8 +25,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let operation = builder.build();
-    let client = IppClient::new(uri);
-    let response = client.send(operation)?;
+    let client = AsyncIppClient::new(uri);
+    let response = client.send(operation).await?;
 
     println!("IPP status code: {}", response.header().status_code());
 

@@ -1,6 +1,6 @@
 [package]
 name = "ipp"
-version = "3.0.3"
+version = "4.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "Asynchronous IPP print protocol implementation"
 license = "MIT/Apache-2.0"
@@ -22,7 +22,9 @@ num-traits = "0.2"
 bytes = "1"
 thiserror = "1"
 http = "0.2"
-serde = { version = "1.0", optional = true, features = ["derive"] }
+serde = { version = "1", optional = true, features = ["derive"] }
+ureq = { version = "2", optional = true }
+native-tls = { version = "0.2", optional = true }
 
 [dependencies.futures-util]
 version = "0.3"
@@ -42,12 +44,12 @@ optional = true
 features = ["io", "compat"]
 
 [dev-dependencies]
-env_logger = "0.9"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["client", "tls"]
-client = ["async", "reqwest", "tokio-util"]
+default = ["async-client", "client", "tls"]
+async-client = ["async", "reqwest", "tokio-util"]
+client = ["ureq", "dep:native-tls"]
 async = ["futures-util", "futures-executor"]
-tls = ["reqwest/native-tls"]
+tls = ["reqwest/native-tls", "ureq/native-tls"]
 serde = ["dep:serde", "bytes/serde"]

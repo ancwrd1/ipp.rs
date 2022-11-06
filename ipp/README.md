@@ -8,12 +8,15 @@ It supports both synchronous and asynchronous operations (requests and responses
 The following build-time features are supported:
 
 * `async` - enables asynchronous APIs
-* `client` - enables IPP client (based on reqwest crate), requires `async` feature
-* `tls` - enables TLS protocol for the client
+* `async-client` - enables asynchronous IPP client based on reqwest crate, implies `async` feature
+* `client` - enables blocking IPP client based on ureq crate
+* `tls` - enables TLS protocol for the client.
+
+By default, all features are enabled. Use `default-features=false` dependency option to disable them.
 
 [Documentation](https://ancwrd1.github.io/ipp.rs/doc/ipp/)
 
-Usage example:
+Usage example for async client:
 
 ```rust
 use ipp::prelude::*;
@@ -22,7 +25,7 @@ use ipp::prelude::*;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
-    let client = IppClient::new(uri);
+    let client = AsyncIppClient::new(uri);
     let resp = client.send(operation).await?;
     if resp.header().get_status_code().is_success() {
         let printer_attrs = resp

@@ -11,7 +11,7 @@ use std::{
 
 use clap::Parser;
 
-use ipp::{prelude::*, util::check_printer_state};
+use ipp::{prelude::*, util};
 
 fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
@@ -36,11 +36,15 @@ fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     Ok(payload)
 }
 
-async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
+fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params);
 
     if !cmd.no_check_state {
-        check_printer_state(&client).await?;
+        let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
+        let response = client.send(operation)?;
+        if !util::is_printer_ready(&response)? {
+            return Err(IppError::PrinterNotReady);
+        }
     }
 
     let payload = new_payload(&cmd).map_err(IppError::from)?;
@@ -59,7 +63,7 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
         }
     }
 
-    let response = client.send(builder.build()).await?;
+    let response = client.send(builder.build())?;
 
     let status = response.header().status_code();
     if !status.is_success() {
@@ -74,14 +78,14 @@ async fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> 
     Ok(())
 }
 
-async fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
+fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params);
 
     let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
         .attributes(&cmd.attributes)
         .build();
 
-    let response = client.send(operation).await?;
+    let response = client.send(operation)?;
 
     let status = response.header().status_code();
     if !status.is_success() {
@@ -181,15 +185,12 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    env_logger::init();
-
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let params = IppParams::parse();
 
     match params.command {
-        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone()).await?,
-        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone()).await?,
+        IppCommand::Status(ref cmd) => do_status(&params, cmd.clone())?,
+        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone())?,
     }
     Ok(())
 }

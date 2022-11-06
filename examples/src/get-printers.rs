@@ -2,8 +2,7 @@ use std::{env, error::Error, process::exit};
 
 use ipp::prelude::*;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 2 {
@@ -14,7 +13,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = IppClient::new(args[1].parse()?);
     let operation = IppOperationBuilder::cups().get_printers();
 
-    let response = client.send(operation).await?;
+    let response = client.send(operation)?;
     println!("IPP status code: {}", response.header().status_code());
 
     for group in response.attributes().groups_of(DelimiterTag::PrinterAttributes) {

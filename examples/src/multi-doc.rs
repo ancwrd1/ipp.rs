@@ -8,8 +8,7 @@ fn supports_multi_doc(v: &IppValue) -> bool {
         .unwrap_or(false)
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 3 {
@@ -24,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let get_op = IppOperationBuilder::get_printer_attributes(uri.clone())
         .attribute(IppAttribute::OPERATIONS_SUPPORTED)
         .build();
-    let response = client.send(get_op).await?;
+    let response = client.send(get_op)?;
 
     let ops_attr = response
         .attributes()
@@ -41,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let create_op = IppOperationBuilder::create_job(uri.clone())
         .job_name("multi-doc")
         .build();
-    let response = client.send(create_op).await?;
+    let response = client.send(create_op)?;
     let job_id = *response
         .attributes()
         .groups_of(DelimiterTag::JobAttributes)
@@ -65,7 +64,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .last(last)
             .build();
 
-        let response = client.send(send_op).await?;
+        let response = client.send(send_op)?;
         println!("IPP status code: {}", response.header().status_code());
 
         let attrs = response

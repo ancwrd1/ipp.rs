@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0
+- Added blocking client based on `ureq` crate, called `IppClient`
+- Renamed asynchronous client to `AsyncIppClient`
+- Refactored utility functions
+- Moved `IppError` into separate module
+
 ## 3.0.2
 
 - Added `http_header` method to the client builder which allows to specify a custom HTTP header
