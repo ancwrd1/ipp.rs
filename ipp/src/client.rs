@@ -1,10 +1,9 @@
 //!
 //! IPP client
 //!
+use std::{collections::BTreeMap, marker::PhantomData, time::Duration};
+
 use http::Uri;
-use std::collections::BTreeMap;
-use std::marker::PhantomData;
-use std::time::Duration;
 
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -68,7 +67,7 @@ impl IppClientBuilder<blocking::IppClient> {
 }
 
 #[cfg(feature = "async-client")]
-pub(crate) mod non_blocking {
+pub mod non_blocking {
     use std::io;
 
     use futures_util::{io::BufReader, stream::TryStreamExt};
@@ -114,7 +113,7 @@ pub(crate) mod non_blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "tls")]
+            #[cfg(feature = "__async_tls")]
             if self.0.ignore_tls_errors {
                 builder = builder
                     .danger_accept_invalid_hostnames(true)
@@ -152,8 +151,6 @@ pub(crate) mod non_blocking {
 
 #[cfg(feature = "client")]
 pub mod blocking {
-    use std::sync::Arc;
-
     use http::Uri;
     use ureq::AgentBuilder;
 
@@ -192,13 +189,13 @@ pub mod blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "tls")]
+            #[cfg(feature = "__sync_tls")]
             {
                 let tls_connector = native_tls::TlsConnector::builder()
                     .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
                     .danger_accept_invalid_certs(self.0.ignore_tls_errors)
                     .build()?;
-                builder = builder.tls_connector(Arc::new(tls_connector));
+                builder = builder.tls_connector(std::sync::Arc::new(tls_connector));
             }
 
             let agent = builder.user_agent(USER_AGENT).build();

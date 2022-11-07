@@ -1,6 +1,7 @@
 # Changelog
 
 ## 4.0.0
+- Breaking changes in few APIs
 - Added blocking client based on `ureq` crate, called `IppClient`
 - Renamed asynchronous client to `AsyncIppClient`
 - Refactored utility functions

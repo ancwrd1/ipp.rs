@@ -23,7 +23,7 @@ bytes = "1"
 thiserror = "1"
 http = "0.2"
 serde = { version = "1", optional = true, features = ["derive"] }
-ureq = { version = "2", optional = true }
+ureq = { version = "2", default-features = false, optional = true }
 native-tls = { version = "0.2", optional = true }
 
 [dependencies.futures-util]
@@ -49,7 +49,9 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 [features]
 default = ["async-client", "client", "tls"]
 async-client = ["async", "reqwest", "tokio-util"]
-client = ["ureq", "dep:native-tls"]
+client = ["ureq"]
 async = ["futures-util", "futures-executor"]
-tls = ["reqwest/native-tls", "ureq/native-tls"]
 serde = ["dep:serde", "bytes/serde"]
+tls = []
+__async_tls = ["reqwest/native-tls"]
+__sync_tls = ["ureq/native-tls"]

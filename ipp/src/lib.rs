@@ -2,11 +2,17 @@
 //! IPP print protocol implementation for Rust. This crate can be used in several ways:
 //! * using the low-level request/response API and building the requests manually.
 //! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
-//! * using the built-in IPP client based on `reqwest` crate. Requires `async` feature.
+//! * using the built-in IPP client.
 //! * using any third-party HTTP client and send the serialized request manually.
 //!
-//! This crate supports both synchronous and asynchronous operations. Asynchronous API is selected
-//! via `async` feature and is enabled by default.
+//! This crate supports both synchronous and asynchronous operations. The following feature flags are supported:
+//! * `async` - enable async APIs (parser, I/O)
+//! * `async-client` - enable async HTTP client via `request` crate
+//! * `client` - enable blocking HTTP client via `ureq` crate
+//! * `tls` - enable TLS support via `native-tls` crate
+//!
+//! By default, all features are enabled.
+//!
 //!
 //! Implementation notes:
 //! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
@@ -16,7 +22,7 @@
 //! Usage examples:
 //!
 //!```rust,no_run
-//! // using low-level API
+//! // using low-level async API
 //! use ipp::prelude::*;
 //!
 //! #[tokio::main]
@@ -36,15 +42,14 @@
 //! }
 //!```
 //!```rust,no_run
-//! // using operations API
+//! // using blocking operations API
 //! use ipp::prelude::*;
 //!
-//! #[tokio::main]
-//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let uri: Uri = "http://localhost:631/printers/test-printer".parse()?;
 //!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
-//!     let client = AsyncIppClient::new(uri);
-//!     let resp = client.send(operation).await?;
+//!     let client = IppClient::new(uri);
+//!     let resp = client.send(operation)?;
 //!     if resp.header().status_code().is_success() {
 //!         println!("{:?}", resp.attributes());
 //!     }
