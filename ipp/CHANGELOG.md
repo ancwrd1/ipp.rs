@@ -1,9 +1,10 @@
 # Changelog
 
 ## 4.0.0
-- Breaking changes in few APIs
+- Breaking changes in several APIs
 - Added blocking client based on `ureq` crate, called `IppClient`
 - Renamed asynchronous client to `AsyncIppClient`
+- Added basic auth support in the client builder
 - Refactored utility functions
 - Moved `IppError` into separate module
 
