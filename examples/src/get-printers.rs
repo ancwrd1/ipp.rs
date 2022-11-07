@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         exit(1);
     }
 
-    let client = IppClient::new(args[1].parse()?);
+    let client = IppClient::builder(args[1].parse()?).build();
     let operation = IppOperationBuilder::cups().get_printers();
 
     let response = client.send(operation)?;

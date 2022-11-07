@@ -56,7 +56,9 @@ impl IppPayload {
 
 impl Default for IppPayload {
     fn default() -> Self {
-        Self { inner: PayloadKind::Empty }
+        Self {
+            inner: PayloadKind::Empty,
+        }
     }
 }
 

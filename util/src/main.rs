@@ -2,6 +2,8 @@
 //! Command-line IPP utility to print a document or get printer status
 //!
 
+#![allow(clippy::result_large_err)]
+
 use std::{
     fs,
     io::{self, BufReader},

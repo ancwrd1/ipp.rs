@@ -57,6 +57,8 @@
 //! }
 //!```
 
+#![allow(clippy::result_large_err)]
+
 use bytes::{BufMut, Bytes, BytesMut};
 use num_traits::FromPrimitive;
 

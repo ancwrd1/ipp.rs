@@ -48,6 +48,18 @@ impl<T> IppClientBuilder<T> {
         self.headers.insert(key.as_ref().to_owned(), value.as_ref().to_owned());
         self
     }
+
+    /// Add basic auth header (RFC 7617)
+    pub fn basic_auth<U, P>(mut self, username: U, password: P) -> Self
+    where
+        U: AsRef<str>,
+        P: AsRef<str>,
+    {
+        let authz = base64::encode(format!("{}:{}", username.as_ref(), password.as_ref()));
+        self.headers
+            .insert("authorization".to_owned(), format!("Basic {}", authz));
+        self
+    }
 }
 
 #[cfg(feature = "async-client")]

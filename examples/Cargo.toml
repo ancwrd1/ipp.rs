@@ -2,7 +2,7 @@
 name = "ipp-examples"
 version = "4.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
-edition = "2018"
+edition = "2021"
 publish = false
 
 [[bin]]

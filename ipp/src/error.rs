@@ -8,6 +8,7 @@ use http::uri::InvalidUri;
 use crate::{model::StatusCode, parser::IppParseError};
 
 /// IPP error
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, thiserror::Error)]
 pub enum IppError {
     #[error(transparent)]
@@ -56,7 +57,7 @@ pub enum IppError {
     ClientError(#[from] ureq::Error),
 
     #[error(transparent)]
-    #[cfg(all(feature = "tls", feature = "client"))]
+    #[cfg(feature = "__sync_tls")]
     /// TLS error
     TlsError(#[from] native_tls::Error),
 }

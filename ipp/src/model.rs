@@ -4,7 +4,7 @@
 use std::fmt;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use enum_primitive_derive::Primitive;
 
