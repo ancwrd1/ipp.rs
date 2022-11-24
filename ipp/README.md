@@ -10,7 +10,8 @@ The following build-time features are supported:
 * `async` - enables asynchronous APIs
 * `async-client` - enables asynchronous IPP client based on reqwest crate, implies `async` feature
 * `client` - enables blocking IPP client based on ureq crate
-* `tls` - enables TLS protocol for the client.
+* `async-client-tls` - enables asynchronous IPP client with TLS
+* `client-tls` - enables blocking IPP client with TLS
 
 By default, all features are enabled. Use `default-features=false` dependency option to disable them.
 

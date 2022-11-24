@@ -6,10 +6,11 @@
 //! * using any third-party HTTP client and send the serialized request manually.
 //!
 //! This crate supports both synchronous and asynchronous operations. The following feature flags are supported:
-//! * `async` - enable async APIs (parser, I/O)
-//! * `async-client` - enable async HTTP client via `request` crate
-//! * `client` - enable blocking HTTP client via `ureq` crate
-//! * `tls` - enable TLS support via `native-tls` crate
+//! * `async` - enables asynchronous APIs
+//! * `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature
+//! * `client` - enables blocking IPP client based on `ureq` crate
+//! * `async-client-tls` - enables asynchronous IPP client with TLS support
+//! * `client-tls` - enables blocking IPP client with TLS support
 //!
 //! By default, all features are enabled.
 //!
