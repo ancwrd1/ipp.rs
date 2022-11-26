@@ -125,7 +125,7 @@ pub mod non_blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "__async_tls")]
+            #[cfg(feature = "async-client-tls")]
             if self.0.ignore_tls_errors {
                 builder = builder
                     .danger_accept_invalid_hostnames(true)
@@ -201,7 +201,7 @@ pub mod blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "__sync_tls")]
+            #[cfg(feature = "async-client-tls")]
             {
                 let tls_connector = native_tls::TlsConnector::builder()
                     .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
