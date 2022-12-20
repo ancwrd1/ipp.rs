@@ -132,7 +132,7 @@ pub mod non_blocking {
                     .danger_accept_invalid_certs(true);
             }
 
-            let mut req_builder = builder.user_agent(USER_AGENT).build()?.post(&self.0.uri.to_string());
+            let mut req_builder = builder.user_agent(USER_AGENT).build()?.post(self.0.uri.to_string());
 
             for (k, v) in &self.0.headers {
                 req_builder = req_builder.header(k, v);

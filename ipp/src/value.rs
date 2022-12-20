@@ -169,7 +169,7 @@ impl IppValue {
                 for (i, item) in list.iter().enumerate() {
                     buffer.put(item.to_bytes());
                     if i < list.len() - 1 {
-                        buffer.put_u8(self.to_tag() as u8);
+                        buffer.put_u8(self.to_tag());
                         buffer.put_u16(0);
                     }
                 }
@@ -180,7 +180,7 @@ impl IppValue {
 
                 for item in list.iter() {
                     // item tag
-                    buffer.put_u8(item.to_tag() as u8);
+                    buffer.put_u8(item.to_tag());
                     // name size is zero, this is a collection
                     buffer.put_u16(0);
 
@@ -273,7 +273,7 @@ impl fmt::Display for IppValue {
             } => write!(
                 f,
                 "{}-{}-{},{}:{}:{}.{},{}{}utc",
-                year, month, day, hour, minutes, seconds, deci_seconds, utc_dir as char, utc_hours
+                year, month, day, hour, minutes, seconds, deci_seconds, utc_dir, utc_hours
             ),
             IppValue::Resolution {
                 cross_feed,

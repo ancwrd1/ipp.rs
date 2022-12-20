@@ -53,10 +53,10 @@ fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
 
     let mut builder = IppOperationBuilder::print_job(client.uri().clone(), payload);
     if let Some(jobname) = cmd.job_name {
-        builder = builder.job_title(&jobname);
+        builder = builder.job_title(jobname);
     }
     if let Some(username) = cmd.user_name {
-        builder = builder.user_name(&username);
+        builder = builder.user_name(username);
     }
 
     for arg in cmd.options {

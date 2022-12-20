@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let payload = IppPayload::new(fs::File::open(item)?);
 
         let send_op = IppOperationBuilder::send_document(uri.clone(), job_id, payload)
-            .user_name(&env::var("USER").unwrap_or_else(|_| String::new()))
+            .user_name(env::var("USER").unwrap_or_else(|_| String::new()))
             .last(last)
             .build();
 
