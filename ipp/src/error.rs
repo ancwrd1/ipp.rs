@@ -57,7 +57,7 @@ pub enum IppError {
     ClientError(#[from] ureq::Error),
 
     #[error(transparent)]
-    #[cfg(feature = "async-client-tls")]
+    #[cfg(any(feature = "async-client-tls", feature = "client-tls"))]
     /// TLS error
     TlsError(#[from] native_tls::Error),
 }

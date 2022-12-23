@@ -172,6 +172,9 @@ pub mod blocking {
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 
+    /// Blocking IPP client.
+    ///
+    /// IPP client is responsible for sending requests to IPP server.
     pub struct IppClient(pub(super) IppClientBuilder<Self>);
 
     impl IppClient {
@@ -201,7 +204,7 @@ pub mod blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "async-client-tls")]
+            #[cfg(feature = "client-tls")]
             {
                 let tls_connector = native_tls::TlsConnector::builder()
                     .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
