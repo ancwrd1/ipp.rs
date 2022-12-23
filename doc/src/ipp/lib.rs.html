@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -149,152 +144,179 @@
 <span id="144">144</span>
 <span id="145">145</span>
 <span id="146">146</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! IPP print protocol implementation for Rust. This crate can be used in several ways:</span>
-<span class="doccomment">//! * using the low-level request/response API and building the requests manually.</span>
-<span class="doccomment">//! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.</span>
-<span class="doccomment">//! * using the built-in IPP client based on `reqwest` crate. Requires `async` feature.</span>
-<span class="doccomment">//! * using any third-party HTTP client and send the serialized request manually.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate supports both synchronous and asynchronous operations. Asynchronous API is selected</span>
-<span class="doccomment">//! via `async` feature and is enabled by default.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Implementation notes:</span>
-<span class="doccomment">//! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.</span>
-<span class="doccomment">//! * this crate is also suitable for building IPP servers, however the example is not provided yet.</span>
-<span class="doccomment">//! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Usage examples:</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!```rust,no_run</span>
-<span class="doccomment">//! // using low-level API</span>
-<span class="doccomment">//! use ipp::prelude::*;</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! #[tokio::main]</span>
-<span class="doccomment">//! async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {</span>
-<span class="doccomment">//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;</span>
-<span class="doccomment">//!     let req = IppRequestResponse::new(</span>
-<span class="doccomment">//!         IppVersion::v1_1(),</span>
-<span class="doccomment">//!         Operation::GetPrinterAttributes,</span>
-<span class="doccomment">//!         Some(uri.clone())</span>
-<span class="doccomment">//!     );</span>
-<span class="doccomment">//!     let client = IppClient::new(uri);</span>
-<span class="doccomment">//!     let resp = client.send(req).await?;</span>
-<span class="doccomment">//!     if resp.header().status_code().is_success() {</span>
-<span class="doccomment">//!         println!(&quot;{:?}&quot;, resp.attributes());</span>
-<span class="doccomment">//!     }</span>
-<span class="doccomment">//!     Ok(())</span>
-<span class="doccomment">//! }</span>
-<span class="doccomment">//!```</span>
-<span class="doccomment">//!```rust,no_run</span>
-<span class="doccomment">//! // using operations API</span>
-<span class="doccomment">//! use ipp::prelude::*;</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! #[tokio::main]</span>
-<span class="doccomment">//! async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {</span>
-<span class="doccomment">//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;</span>
-<span class="doccomment">//!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();</span>
-<span class="doccomment">//!     let client = IppClient::new(uri);</span>
-<span class="doccomment">//!     let resp = client.send(operation).await?;</span>
-<span class="doccomment">//!     if resp.header().status_code().is_success() {</span>
-<span class="doccomment">//!         println!(&quot;{:?}&quot;, resp.attributes());</span>
-<span class="doccomment">//!     }</span>
-<span class="doccomment">//!     Ok(())</span>
-<span class="doccomment">//! }</span>
-<span class="doccomment">//!```</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! IPP print protocol implementation for Rust. This crate can be used in several ways:
+//! * using the low-level request/response API and building the requests manually.
+//! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
+//! * using the built-in IPP client.
+//! * using any third-party HTTP client and send the serialized request manually.
+//!
+//! This crate supports both synchronous and asynchronous operations. The following feature flags are supported:
+//! * `async` - enables asynchronous APIs
+//! * `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature
+//! * `client` - enables blocking IPP client based on `ureq` crate
+//! * `async-client-tls` - enables asynchronous IPP client with TLS support
+//! * `client-tls` - enables blocking IPP client with TLS support
+//!
+//! By default, all features are enabled.
+//!
+//!
+//! Implementation notes:
+//! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
+//! * this crate is also suitable for building IPP servers, however the example is not provided yet.
+//! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.
+//!
+//! Usage examples:
+//!
+//!```rust,no_run
+//! // using low-level async API
+//! use ipp::prelude::*;
+//!
+//! #[tokio::main]
+//! async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;
+//!     let req = IppRequestResponse::new(
+//!         IppVersion::v1_1(),
+//!         Operation::GetPrinterAttributes,
+//!         Some(uri.clone())
+//!     );
+//!     let client = AsyncIppClient::new(uri);
+//!     let resp = client.send(req).await?;
+//!     if resp.header().status_code().is_success() {
+//!         println!(&quot;{:?}&quot;, resp.attributes());
+//!     }
+//!     Ok(())
+//! }
+//!```
+//!```rust,no_run
+//! // using blocking operations API
+//! use ipp::prelude::*;
+//!
+//! fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+//!     let uri: Uri = &quot;http://localhost:631/printers/test-printer&quot;.parse()?;
+//!     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
+//!     let client = IppClient::new(uri);
+//!     let resp = client.send(operation)?;
+//!     if resp.header().status_code().is_success() {
+//!         println!(&quot;{:?}&quot;, resp.attributes());
+//!     }
+//!     Ok(())
+//! }
+//!```
 
-<span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">BufMut</span>, <span class="ident">Bytes</span>, <span class="ident">BytesMut</span>};
-<span class="kw">use</span> <span class="ident">num_traits::FromPrimitive</span>;
+</span><span class="attribute">#![allow(clippy::result_large_err)]
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>};
+</span><span class="kw">use </span>bytes::{BufMut, Bytes, BytesMut};
+<span class="kw">use </span>num_traits::FromPrimitive;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::model</span>::{<span class="ident">IppVersion</span>, <span class="ident">StatusCode</span>};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">attribute</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">builder</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">client</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">model</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">operation</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">parser</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">payload</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">reader</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">request</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">util</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">value</span>;
+<span class="kw">use </span><span class="kw">crate</span>::model::{IppVersion, StatusCode};
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {
-    <span class="doccomment">//!</span>
-    <span class="doccomment">//! Common imports</span>
-    <span class="doccomment">//!</span>
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">http::Uri</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">num_traits::FromPrimitive</span> <span class="kw">as</span> <span class="kw">_</span>;
+<span class="kw">pub mod </span>attribute;
+<span class="kw">pub mod </span>builder;
+<span class="attribute">#[cfg(any(feature = <span class="string">&quot;client&quot;</span>, feature = <span class="string">&quot;async-client&quot;</span>))]
+</span><span class="kw">pub mod </span>client;
+<span class="kw">pub mod </span>error;
+<span class="kw">pub mod </span>model;
+<span class="kw">pub mod </span>operation;
+<span class="kw">pub mod </span>parser;
+<span class="kw">pub mod </span>payload;
+<span class="kw">pub mod </span>reader;
+<span class="kw">pub mod </span>request;
+<span class="kw">pub mod </span>util;
+<span class="kw">pub mod </span>value;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">attribute</span>::{<span class="ident">IppAttribute</span>, <span class="ident">IppAttributeGroup</span>, <span class="ident">IppAttributes</span>},
-        <span class="ident">builder::IppOperationBuilder</span>,
-        <span class="ident">model</span>::<span class="kw-2">*</span>,
-        <span class="ident">payload::IppPayload</span>,
-        <span class="ident">request::IppRequestResponse</span>,
-        <span class="ident">value::IppValue</span>,
+<span class="kw">pub mod </span>prelude {
+    <span class="doccomment">//!
+    //! Common imports
+    //!
+    </span><span class="kw">pub use </span>http::Uri;
+    <span class="kw">pub use </span>num_traits::FromPrimitive <span class="kw">as _</span>;
+
+    <span class="kw">pub use crate</span>::{
+        attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
+        builder::IppOperationBuilder,
+        model::<span class="kw-2">*</span>,
+        payload::IppPayload,
+        request::IppRequestResponse,
+        value::IppValue,
     };
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::client</span>::{<span class="ident">IppClient</span>, <span class="ident">IppError</span>};
+    <span class="kw">pub use </span><span class="kw">super</span>::error::IppError;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::IppHeader</span>;
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async-client&quot;</span>)]
+    </span><span class="kw">pub use </span><span class="kw">super</span>::client::non_blocking::AsyncIppClient;
+
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;client&quot;</span>)]
+    </span><span class="kw">pub use </span><span class="kw">super</span>::client::blocking::IppClient;
+
+    <span class="kw">pub use </span><span class="kw">super</span>::IppHeader;
 }
 
-<span class="doccomment">/// IPP request and response header</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppHeader</span> {
-    <span class="doccomment">/// IPP protocol version</span>
-    <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">IppVersion</span>,
-    <span class="doccomment">/// Operation tag for requests, status for responses</span>
-    <span class="kw">pub</span> <span class="ident">operation_or_status</span>: <span class="ident">u16</span>,
-    <span class="doccomment">/// ID of the request</span>
-    <span class="kw">pub</span> <span class="ident">request_id</span>: <span class="ident">u32</span>,
+<span class="doccomment">/// IPP request and response header
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>IppHeader {
+    <span class="doccomment">/// IPP protocol version
+    </span><span class="kw">pub </span>version: IppVersion,
+    <span class="doccomment">/// Operation tag for requests, status for responses
+    </span><span class="kw">pub </span>operation_or_status: u16,
+    <span class="doccomment">/// ID of the request
+    </span><span class="kw">pub </span>request_id: u32,
 }
 
-<span class="kw">impl</span> <span class="ident">IppHeader</span> {
-    <span class="doccomment">/// Create IPP header</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">version</span>: <span class="ident">IppVersion</span>, <span class="ident">operation_or_status</span>: <span class="ident">u16</span>, <span class="ident">request_id</span>: <span class="ident">u32</span>) -&gt; <span class="ident">IppHeader</span> {
-        <span class="ident">IppHeader</span> {
-            <span class="ident">version</span>,
-            <span class="ident">operation_or_status</span>,
-            <span class="ident">request_id</span>,
+<span class="kw">impl </span>IppHeader {
+    <span class="doccomment">/// Create IPP header
+    </span><span class="kw">pub fn </span>new(version: IppVersion, operation_or_status: u16, request_id: u32) -&gt; IppHeader {
+        IppHeader {
+            version,
+            operation_or_status,
+            request_id,
         }
     }
 
-    <span class="doccomment">/// Write header to a given writer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Bytes</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
-        <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="self">self</span>.<span class="ident">version</span>.<span class="number">0</span>);
-        <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="self">self</span>.<span class="ident">operation_or_status</span>);
-        <span class="ident">buffer</span>.<span class="ident">put_u32</span>(<span class="self">self</span>.<span class="ident">request_id</span>);
+    <span class="doccomment">/// Write header to a given writer
+    </span><span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Bytes {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = BytesMut::new();
+        buffer.put_u16(<span class="self">self</span>.version.<span class="number">0</span>);
+        buffer.put_u16(<span class="self">self</span>.operation_or_status);
+        buffer.put_u32(<span class="self">self</span>.request_id);
 
-        <span class="ident">buffer</span>.<span class="ident">freeze</span>()
+        buffer.freeze()
     }
 
-    <span class="doccomment">/// Decode and get IPP status code from the header</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">status_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">StatusCode</span> {
-        <span class="ident">StatusCode::from_u16</span>(<span class="self">self</span>.<span class="ident">operation_or_status</span>).<span class="ident">unwrap_or</span>(<span class="ident">StatusCode::UnknownStatusCode</span>)
+    <span class="doccomment">/// Decode and get IPP status code from the header
+    </span><span class="kw">pub fn </span>status_code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StatusCode {
+        StatusCode::from_u16(<span class="self">self</span>.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_header_to_bytes</span>() {
-        <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">IppHeader::new</span>(<span class="ident">IppVersion::v2_1</span>(), <span class="number">0x1234</span>, <span class="number">0xaa55_aa55</span>);
-        <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">to_bytes</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">buf</span>, <span class="macro">vec!</span>[<span class="number">0x02</span>, <span class="number">0x01</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0xaa</span>, <span class="number">0x55</span>, <span class="number">0xaa</span>, <span class="number">0x55</span>]);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_header_to_bytes() {
+        <span class="kw">let </span>header = IppHeader::new(IppVersion::v2_1(), <span class="number">0x1234</span>, <span class="number">0xaa55_aa55</span>);
+        <span class="kw">let </span>buf = header.to_bytes();
+        <span class="macro">assert_eq!</span>(buf, <span class="macro">vec!</span>[<span class="number">0x02</span>, <span class="number">0x01</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0xaa</span>, <span class="number">0x55</span>, <span class="number">0xaa</span>, <span class="number">0x55</span>]);
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

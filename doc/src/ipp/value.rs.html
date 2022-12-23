@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/value.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>value.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/value.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>value.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -501,504 +496,503 @@
 <span id="496">496</span>
 <span id="497">497</span>
 <span id="498">498</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! IPP value</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::Infallible</span>, <span class="ident">fmt</span>, <span class="ident">io</span>, <span class="ident">str::FromStr</span>};
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! IPP value
+//!
+</span><span class="kw">use </span>std::{convert::Infallible, fmt, io, str::FromStr};
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>};
-<span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">Buf</span>, <span class="ident">BufMut</span>, <span class="ident">Bytes</span>, <span class="ident">BytesMut</span>};
-<span class="kw">use</span> <span class="ident">enum_as_inner::EnumAsInner</span>;
+<span class="kw">use </span>bytes::{Buf, BufMut, Bytes, BytesMut};
+<span class="kw">use </span>enum_as_inner::EnumAsInner;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">model::ValueTag</span>, <span class="ident">FromPrimitive</span> <span class="kw">as</span> <span class="kw">_</span>};
+<span class="kw">use crate</span>::{model::ValueTag, FromPrimitive <span class="kw">as _</span>};
 
-<span class="doccomment">/// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">EnumAsInner</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IppValue</span> {
-    <span class="ident">Integer</span>(<span class="ident">i32</span>),
-    <span class="ident">Enum</span>(<span class="ident">i32</span>),
-    <span class="ident">OctetString</span>(<span class="ident">String</span>),
-    <span class="ident">TextWithoutLanguage</span>(<span class="ident">String</span>),
-    <span class="ident">NameWithoutLanguage</span>(<span class="ident">String</span>),
-    <span class="ident">Charset</span>(<span class="ident">String</span>),
-    <span class="ident">NaturalLanguage</span>(<span class="ident">String</span>),
-    <span class="ident">Uri</span>(<span class="ident">String</span>),
-    <span class="ident">UriScheme</span>(<span class="ident">String</span>),
-    <span class="ident">RangeOfInteger</span> {
-        <span class="ident">min</span>: <span class="ident">i32</span>,
-        <span class="ident">max</span>: <span class="ident">i32</span>,
+<span class="doccomment">/// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Clone, Debug, PartialEq, EnumAsInner)]
+</span><span class="kw">pub enum </span>IppValue {
+    Integer(i32),
+    Enum(i32),
+    OctetString(String),
+    TextWithoutLanguage(String),
+    NameWithoutLanguage(String),
+    Charset(String),
+    NaturalLanguage(String),
+    Uri(String),
+    UriScheme(String),
+    RangeOfInteger {
+        min: i32,
+        max: i32,
     },
-    <span class="ident">Boolean</span>(<span class="ident">bool</span>),
-    <span class="ident">Keyword</span>(<span class="ident">String</span>),
-    <span class="ident">Array</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span>),
-    <span class="ident">Collection</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span>),
-    <span class="ident">MimeMediaType</span>(<span class="ident">String</span>),
-    <span class="ident">DateTime</span> {
-        <span class="ident">year</span>: <span class="ident">u16</span>,
-        <span class="ident">month</span>: <span class="ident">u8</span>,
-        <span class="ident">day</span>: <span class="ident">u8</span>,
-        <span class="ident">hour</span>: <span class="ident">u8</span>,
-        <span class="ident">minutes</span>: <span class="ident">u8</span>,
-        <span class="ident">seconds</span>: <span class="ident">u8</span>,
-        <span class="ident">deci_seconds</span>: <span class="ident">u8</span>,
-        <span class="ident">utc_dir</span>: <span class="ident">char</span>,
-        <span class="ident">utc_hours</span>: <span class="ident">u8</span>,
-        <span class="ident">utc_mins</span>: <span class="ident">u8</span>,
+    Boolean(bool),
+    Keyword(String),
+    Array(Vec&lt;IppValue&gt;),
+    Collection(Vec&lt;IppValue&gt;),
+    MimeMediaType(String),
+    DateTime {
+        year: u16,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minutes: u8,
+        seconds: u8,
+        deci_seconds: u8,
+        utc_dir: char,
+        utc_hours: u8,
+        utc_mins: u8,
     },
-    <span class="ident">MemberAttrName</span>(<span class="ident">String</span>),
-    <span class="ident">Resolution</span> {
-        <span class="ident">cross_feed</span>: <span class="ident">i32</span>,
-        <span class="ident">feed</span>: <span class="ident">i32</span>,
-        <span class="ident">units</span>: <span class="ident">i8</span>,
+    MemberAttrName(String),
+    Resolution {
+        cross_feed: i32,
+        feed: i32,
+        units: i8,
     },
-    <span class="ident">NoValue</span>,
-    <span class="ident">Other</span> {
-        <span class="ident">tag</span>: <span class="ident">u8</span>,
-        <span class="ident">data</span>: <span class="ident">Bytes</span>,
+    NoValue,
+    Other {
+        tag: u8,
+        data: Bytes,
     },
 }
 
-<span class="kw">impl</span> <span class="ident">IppValue</span> {
-    <span class="doccomment">/// Convert to binary tag</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_tag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u8</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">IppValue::Integer</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Integer</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Enum</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Enum</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::RangeOfInteger</span> { .. } =&gt; <span class="ident">ValueTag::RangeOfInteger</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Boolean</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Boolean</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Keyword</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Keyword</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::OctetString</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::OctetStringUnspecified</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::TextWithoutLanguage</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::TextWithoutLanguage</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::NameWithoutLanguage</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Charset</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Charset</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::NaturalLanguage</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::NaturalLanguage</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Uri</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::Uri</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::UriScheme</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::UriScheme</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::MimeMediaType</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::MimeMediaType</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Array</span>(<span class="kw-2">ref</span> <span class="ident">array</span>) =&gt; <span class="ident">array</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_tag</span>()).<span class="ident">unwrap_or</span>(<span class="ident">ValueTag::Unknown</span> <span class="kw">as</span> <span class="ident">u8</span>),
-            <span class="ident">IppValue::Collection</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::BegCollection</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::DateTime</span> { .. } =&gt; <span class="ident">ValueTag::DateTime</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::MemberAttrName</span>(<span class="kw">_</span>) =&gt; <span class="ident">ValueTag::MemberAttrName</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Resolution</span> { .. } =&gt; <span class="ident">ValueTag::Resolution</span> <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">IppValue::Other</span> { <span class="ident">tag</span>, .. } =&gt; <span class="ident">tag</span>,
-            <span class="ident">IppValue::NoValue</span> =&gt; <span class="ident">ValueTag::NoValue</span> <span class="kw">as</span> <span class="ident">u8</span>,
+<span class="kw">impl </span>IppValue {
+    <span class="doccomment">/// Convert to binary tag
+    </span><span class="kw">pub fn </span>to_tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u8 {
+        <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
+            IppValue::Integer(<span class="kw">_</span>) =&gt; ValueTag::Integer <span class="kw">as </span>u8,
+            IppValue::Enum(<span class="kw">_</span>) =&gt; ValueTag::Enum <span class="kw">as </span>u8,
+            IppValue::RangeOfInteger { .. } =&gt; ValueTag::RangeOfInteger <span class="kw">as </span>u8,
+            IppValue::Boolean(<span class="kw">_</span>) =&gt; ValueTag::Boolean <span class="kw">as </span>u8,
+            IppValue::Keyword(<span class="kw">_</span>) =&gt; ValueTag::Keyword <span class="kw">as </span>u8,
+            IppValue::OctetString(<span class="kw">_</span>) =&gt; ValueTag::OctetStringUnspecified <span class="kw">as </span>u8,
+            IppValue::TextWithoutLanguage(<span class="kw">_</span>) =&gt; ValueTag::TextWithoutLanguage <span class="kw">as </span>u8,
+            IppValue::NameWithoutLanguage(<span class="kw">_</span>) =&gt; ValueTag::NameWithoutLanguage <span class="kw">as </span>u8,
+            IppValue::Charset(<span class="kw">_</span>) =&gt; ValueTag::Charset <span class="kw">as </span>u8,
+            IppValue::NaturalLanguage(<span class="kw">_</span>) =&gt; ValueTag::NaturalLanguage <span class="kw">as </span>u8,
+            IppValue::Uri(<span class="kw">_</span>) =&gt; ValueTag::Uri <span class="kw">as </span>u8,
+            IppValue::UriScheme(<span class="kw">_</span>) =&gt; ValueTag::UriScheme <span class="kw">as </span>u8,
+            IppValue::MimeMediaType(<span class="kw">_</span>) =&gt; ValueTag::MimeMediaType <span class="kw">as </span>u8,
+            IppValue::Array(<span class="kw-2">ref </span>array) =&gt; array.get(<span class="number">0</span>).map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown <span class="kw">as </span>u8),
+            IppValue::Collection(<span class="kw">_</span>) =&gt; ValueTag::BegCollection <span class="kw">as </span>u8,
+            IppValue::DateTime { .. } =&gt; ValueTag::DateTime <span class="kw">as </span>u8,
+            IppValue::MemberAttrName(<span class="kw">_</span>) =&gt; ValueTag::MemberAttrName <span class="kw">as </span>u8,
+            IppValue::Resolution { .. } =&gt; ValueTag::Resolution <span class="kw">as </span>u8,
+            IppValue::Other { tag, .. } =&gt; tag,
+            IppValue::NoValue =&gt; ValueTag::NoValue <span class="kw">as </span>u8,
         }
     }
 
-    <span class="doccomment">/// Parse value from byte array which does not include the value length field</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">value_tag</span>: <span class="ident">u8</span>, <span class="kw-2">mut</span> <span class="ident">data</span>: <span class="ident">Bytes</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ipp_tag</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ValueTag::from_u8</span>(<span class="ident">value_tag</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">x</span>) =&gt; <span class="ident">x</span>,
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">IppValue::Other</span> { <span class="ident">tag</span>: <span class="ident">value_tag</span>, <span class="ident">data</span> });
+    <span class="doccomment">/// Parse value from byte array which does not include the value length field
+    </span><span class="kw">pub fn </span>parse(value_tag: u8, <span class="kw-2">mut </span>data: Bytes) -&gt; io::Result&lt;IppValue&gt; {
+        <span class="kw">let </span>ipp_tag = <span class="kw">match </span>ValueTag::from_u8(value_tag) {
+            <span class="prelude-val">Some</span>(x) =&gt; x,
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(IppValue::Other { tag: value_tag, data });
             }
         };
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ipp_tag</span> {
-            <span class="ident">ValueTag::Integer</span> =&gt; <span class="ident">IppValue::Integer</span>(<span class="ident">data</span>.<span class="ident">get_i32</span>()),
-            <span class="ident">ValueTag::Enum</span> =&gt; <span class="ident">IppValue::Enum</span>(<span class="ident">data</span>.<span class="ident">get_i32</span>()),
-            <span class="ident">ValueTag::OctetStringUnspecified</span> =&gt; <span class="ident">IppValue::OctetString</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::TextWithoutLanguage</span> =&gt; <span class="ident">IppValue::TextWithoutLanguage</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::NameWithoutLanguage</span> =&gt; <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::Charset</span> =&gt; <span class="ident">IppValue::Charset</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::NaturalLanguage</span> =&gt; <span class="ident">IppValue::NaturalLanguage</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::Uri</span> =&gt; <span class="ident">IppValue::Uri</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::UriScheme</span> =&gt; <span class="ident">IppValue::UriScheme</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::RangeOfInteger</span> =&gt; <span class="ident">IppValue::RangeOfInteger</span> {
-                <span class="ident">min</span>: <span class="ident">data</span>.<span class="ident">get_i32</span>(),
-                <span class="ident">max</span>: <span class="ident">data</span>.<span class="ident">get_i32</span>(),
+        <span class="kw">let </span>value = <span class="kw">match </span>ipp_tag {
+            ValueTag::Integer =&gt; IppValue::Integer(data.get_i32()),
+            ValueTag::Enum =&gt; IppValue::Enum(data.get_i32()),
+            ValueTag::OctetStringUnspecified =&gt; IppValue::OctetString(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::TextWithoutLanguage =&gt; IppValue::TextWithoutLanguage(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::NameWithoutLanguage =&gt; IppValue::NameWithoutLanguage(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::Charset =&gt; IppValue::Charset(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::NaturalLanguage =&gt; IppValue::NaturalLanguage(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::Uri =&gt; IppValue::Uri(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::UriScheme =&gt; IppValue::UriScheme(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::RangeOfInteger =&gt; IppValue::RangeOfInteger {
+                min: data.get_i32(),
+                max: data.get_i32(),
             },
-            <span class="ident">ValueTag::Boolean</span> =&gt; <span class="ident">IppValue::Boolean</span>(<span class="ident">data</span>.<span class="ident">get_u8</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span>),
-            <span class="ident">ValueTag::Keyword</span> =&gt; <span class="ident">IppValue::Keyword</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::MimeMediaType</span> =&gt; <span class="ident">IppValue::MimeMediaType</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::DateTime</span> =&gt; <span class="ident">IppValue::DateTime</span> {
-                <span class="ident">year</span>: <span class="ident">data</span>.<span class="ident">get_u16</span>(),
-                <span class="ident">month</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">day</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">hour</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">minutes</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">seconds</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">deci_seconds</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">utc_dir</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>() <span class="kw">as</span> <span class="ident">char</span>,
-                <span class="ident">utc_hours</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
-                <span class="ident">utc_mins</span>: <span class="ident">data</span>.<span class="ident">get_u8</span>(),
+            ValueTag::Boolean =&gt; IppValue::Boolean(data.get_u8() != <span class="number">0</span>),
+            ValueTag::Keyword =&gt; IppValue::Keyword(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::MimeMediaType =&gt; IppValue::MimeMediaType(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::DateTime =&gt; IppValue::DateTime {
+                year: data.get_u16(),
+                month: data.get_u8(),
+                day: data.get_u8(),
+                hour: data.get_u8(),
+                minutes: data.get_u8(),
+                seconds: data.get_u8(),
+                deci_seconds: data.get_u8(),
+                utc_dir: data.get_u8() <span class="kw">as </span>char,
+                utc_hours: data.get_u8(),
+                utc_mins: data.get_u8(),
             },
-            <span class="ident">ValueTag::MemberAttrName</span> =&gt; <span class="ident">IppValue::MemberAttrName</span>(<span class="ident">String::from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="ident">into_owned</span>()),
-            <span class="ident">ValueTag::Resolution</span> =&gt; <span class="ident">IppValue::Resolution</span> {
-                <span class="ident">cross_feed</span>: <span class="ident">data</span>.<span class="ident">get_i32</span>(),
-                <span class="ident">feed</span>: <span class="ident">data</span>.<span class="ident">get_i32</span>(),
-                <span class="ident">units</span>: <span class="ident">data</span>.<span class="ident">get_i8</span>(),
+            ValueTag::MemberAttrName =&gt; IppValue::MemberAttrName(String::from_utf8_lossy(<span class="kw-2">&amp;</span>data).into_owned()),
+            ValueTag::Resolution =&gt; IppValue::Resolution {
+                cross_feed: data.get_i32(),
+                feed: data.get_i32(),
+                units: data.get_i8(),
             },
-            <span class="ident">ValueTag::NoValue</span> =&gt; <span class="ident">IppValue::NoValue</span>,
-            <span class="kw">_</span> =&gt; <span class="ident">IppValue::Other</span> { <span class="ident">tag</span>: <span class="ident">value_tag</span>, <span class="ident">data</span> },
+            ValueTag::NoValue =&gt; IppValue::NoValue,
+            <span class="kw">_ </span>=&gt; IppValue::Other { tag: value_tag, data },
         };
-        <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
+        <span class="prelude-val">Ok</span>(value)
     }
 
-    <span class="doccomment">/// Write value to byte array, including leading value length field, excluding value tag</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Bytes</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
+    <span class="doccomment">/// Write value to byte array, including leading value length field, excluding value tag
+    </span><span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Bytes {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = BytesMut::new();
 
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">IppValue::Integer</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">IppValue::Enum</span>(<span class="ident">i</span>) =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">4</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_i32</span>(<span class="ident">i</span>);
+        <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
+            IppValue::Integer(i) | IppValue::Enum(i) =&gt; {
+                buffer.put_u16(<span class="number">4</span>);
+                buffer.put_i32(i);
             }
-            <span class="ident">IppValue::RangeOfInteger</span> { <span class="ident">min</span>, <span class="ident">max</span> } =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">8</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_i32</span>(<span class="ident">min</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_i32</span>(<span class="ident">max</span>);
+            IppValue::RangeOfInteger { min, max } =&gt; {
+                buffer.put_u16(<span class="number">8</span>);
+                buffer.put_i32(min);
+                buffer.put_i32(max);
             }
-            <span class="ident">IppValue::Boolean</span>(<span class="ident">b</span>) =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">1</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">b</span> <span class="kw">as</span> <span class="ident">u8</span>);
+            IppValue::Boolean(b) =&gt; {
+                buffer.put_u16(<span class="number">1</span>);
+                buffer.put_u8(b <span class="kw">as </span>u8);
             }
-            <span class="ident">IppValue::Keyword</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::OctetString</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::TextWithoutLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::Charset</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::NaturalLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::Uri</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::UriScheme</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::MimeMediaType</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::MemberAttrName</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="ident">s</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u16</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_slice</span>(<span class="ident">s</span>.<span class="ident">as_bytes</span>());
+            IppValue::Keyword(<span class="kw-2">ref </span>s)
+            | IppValue::OctetString(<span class="kw-2">ref </span>s)
+            | IppValue::TextWithoutLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::NameWithoutLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::Charset(<span class="kw-2">ref </span>s)
+            | IppValue::NaturalLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::Uri(<span class="kw-2">ref </span>s)
+            | IppValue::UriScheme(<span class="kw-2">ref </span>s)
+            | IppValue::MimeMediaType(<span class="kw-2">ref </span>s)
+            | IppValue::MemberAttrName(<span class="kw-2">ref </span>s) =&gt; {
+                buffer.put_u16(s.len() <span class="kw">as </span>u16);
+                buffer.put_slice(s.as_bytes());
             }
-            <span class="ident">IppValue::Array</span>(<span class="kw-2">ref</span> <span class="ident">list</span>) =&gt; {
-                <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">item</span>) <span class="kw">in</span> <span class="ident">list</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                    <span class="ident">buffer</span>.<span class="ident">put</span>(<span class="ident">item</span>.<span class="ident">to_bytes</span>());
-                    <span class="kw">if</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">list</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-                        <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="self">self</span>.<span class="ident">to_tag</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-                        <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">0</span>);
+            IppValue::Array(<span class="kw-2">ref </span>list) =&gt; {
+                <span class="kw">for </span>(i, item) <span class="kw">in </span>list.iter().enumerate() {
+                    buffer.put(item.to_bytes());
+                    <span class="kw">if </span>i &lt; list.len() - <span class="number">1 </span>{
+                        buffer.put_u8(<span class="self">self</span>.to_tag());
+                        buffer.put_u16(<span class="number">0</span>);
                     }
                 }
             }
-            <span class="ident">IppValue::Collection</span>(<span class="kw-2">ref</span> <span class="ident">list</span>) =&gt; {
-                <span class="comment">// begin collection: value size is 0</span>
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">0</span>);
+            IppValue::Collection(<span class="kw-2">ref </span>list) =&gt; {
+                <span class="comment">// begin collection: value size is 0
+                </span>buffer.put_u16(<span class="number">0</span>);
 
-                <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">list</span>.<span class="ident">iter</span>() {
-                    <span class="comment">// item tag</span>
-                    <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">item</span>.<span class="ident">to_tag</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-                    <span class="comment">// name size is zero, this is a collection</span>
-                    <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">0</span>);
+                <span class="kw">for </span>item <span class="kw">in </span>list.iter() {
+                    <span class="comment">// item tag
+                    </span>buffer.put_u8(item.to_tag());
+                    <span class="comment">// name size is zero, this is a collection
+                    </span>buffer.put_u16(<span class="number">0</span>);
 
-                    <span class="ident">buffer</span>.<span class="ident">put</span>(<span class="ident">item</span>.<span class="ident">to_bytes</span>());
+                    buffer.put(item.to_bytes());
                 }
-                <span class="comment">// write end collection attribute</span>
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">ValueTag::EndCollection</span> <span class="kw">as</span> <span class="ident">u8</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u32</span>(<span class="number">0</span>);
+                <span class="comment">// write end collection attribute
+                </span>buffer.put_u8(ValueTag::EndCollection <span class="kw">as </span>u8);
+                buffer.put_u32(<span class="number">0</span>);
             }
-            <span class="ident">IppValue::DateTime</span> {
-                <span class="ident">year</span>,
-                <span class="ident">month</span>,
-                <span class="ident">day</span>,
-                <span class="ident">hour</span>,
-                <span class="ident">minutes</span>,
-                <span class="ident">seconds</span>,
-                <span class="ident">deci_seconds</span>,
-                <span class="ident">utc_dir</span>,
-                <span class="ident">utc_hours</span>,
-                <span class="ident">utc_mins</span>,
+            IppValue::DateTime {
+                year,
+                month,
+                day,
+                hour,
+                minutes,
+                seconds,
+                deci_seconds,
+                utc_dir,
+                utc_hours,
+                utc_mins,
             } =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">11</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="ident">year</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">month</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">day</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">hour</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">minutes</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">seconds</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">deci_seconds</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">utc_dir</span> <span class="kw">as</span> <span class="ident">u8</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">utc_hours</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">utc_mins</span>);
+                buffer.put_u16(<span class="number">11</span>);
+                buffer.put_u16(year);
+                buffer.put_u8(month);
+                buffer.put_u8(day);
+                buffer.put_u8(hour);
+                buffer.put_u8(minutes);
+                buffer.put_u8(seconds);
+                buffer.put_u8(deci_seconds);
+                buffer.put_u8(utc_dir <span class="kw">as </span>u8);
+                buffer.put_u8(utc_hours);
+                buffer.put_u8(utc_mins);
             }
-            <span class="ident">IppValue::Resolution</span> {
-                <span class="ident">cross_feed</span>,
-                <span class="ident">feed</span>,
-                <span class="ident">units</span>,
+            IppValue::Resolution {
+                cross_feed,
+                feed,
+                units,
             } =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">9</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_i32</span>(<span class="ident">cross_feed</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_i32</span>(<span class="ident">feed</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">units</span> <span class="kw">as</span> <span class="ident">u8</span>);
+                buffer.put_u16(<span class="number">9</span>);
+                buffer.put_i32(cross_feed);
+                buffer.put_i32(feed);
+                buffer.put_u8(units <span class="kw">as </span>u8);
             }
-            <span class="ident">IppValue::NoValue</span> =&gt; <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="number">0</span>),
-            <span class="ident">IppValue::Other</span> { <span class="kw-2">ref</span> <span class="ident">data</span>, .. } =&gt; {
-                <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="ident">data</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u16</span>);
-                <span class="ident">buffer</span>.<span class="ident">put_slice</span>(<span class="ident">data</span>);
+            IppValue::NoValue =&gt; buffer.put_u16(<span class="number">0</span>),
+            IppValue::Other { <span class="kw-2">ref </span>data, .. } =&gt; {
+                buffer.put_u16(data.len() <span class="kw">as </span>u16);
+                buffer.put_slice(data);
             }
         }
-        <span class="ident">buffer</span>.<span class="ident">freeze</span>()
+        buffer.freeze()
     }
 }
 
-<span class="doccomment">/// Implement Display trait to print the value</span>
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">IppValue</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">IppValue::Integer</span>(<span class="ident">i</span>) <span class="op">|</span> <span class="ident">IppValue::Enum</span>(<span class="ident">i</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">i</span>),
-            <span class="ident">IppValue::RangeOfInteger</span> { <span class="ident">min</span>, <span class="ident">max</span> } =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}..{}&quot;</span>, <span class="ident">min</span>, <span class="ident">max</span>),
-            <span class="ident">IppValue::Boolean</span>(<span class="ident">b</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="kw">if</span> <span class="ident">b</span> { <span class="string">&quot;true&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;false&quot;</span> }),
-            <span class="ident">IppValue::Keyword</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::OctetString</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::TextWithoutLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::Charset</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::NaturalLanguage</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::Uri</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::UriScheme</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::MimeMediaType</span>(<span class="kw-2">ref</span> <span class="ident">s</span>)
-            <span class="op">|</span> <span class="ident">IppValue::MemberAttrName</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>),
-            <span class="ident">IppValue::Array</span>(<span class="kw-2">ref</span> <span class="ident">array</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">s</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">array</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">v</span>)).<span class="ident">collect</span>();
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;[{}]&quot;</span>, <span class="ident">s</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>))
+<span class="doccomment">/// Implement Display trait to print the value
+</span><span class="kw">impl </span>fmt::Display <span class="kw">for </span>IppValue {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
+            IppValue::Integer(i) | IppValue::Enum(i) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, i),
+            IppValue::RangeOfInteger { min, max } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}..{}&quot;</span>, min, max),
+            IppValue::Boolean(b) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw">if </span>b { <span class="string">&quot;true&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;false&quot; </span>}),
+            IppValue::Keyword(<span class="kw-2">ref </span>s)
+            | IppValue::OctetString(<span class="kw-2">ref </span>s)
+            | IppValue::TextWithoutLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::NameWithoutLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::Charset(<span class="kw-2">ref </span>s)
+            | IppValue::NaturalLanguage(<span class="kw-2">ref </span>s)
+            | IppValue::Uri(<span class="kw-2">ref </span>s)
+            | IppValue::UriScheme(<span class="kw-2">ref </span>s)
+            | IppValue::MimeMediaType(<span class="kw-2">ref </span>s)
+            | IppValue::MemberAttrName(<span class="kw-2">ref </span>s) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, s),
+            IppValue::Array(<span class="kw-2">ref </span>array) =&gt; {
+                <span class="kw">let </span>s: Vec&lt;String&gt; = array.iter().map(|v| <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, v)).collect();
+                <span class="macro">write!</span>(f, <span class="string">&quot;[{}]&quot;</span>, s.join(<span class="string">&quot;, &quot;</span>))
             }
-            <span class="ident">IppValue::Collection</span>(<span class="kw-2">ref</span> <span class="ident">coll</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">s</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">coll</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">v</span>)).<span class="ident">collect</span>();
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;&lt;{}&gt;&quot;</span>, <span class="ident">s</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>))
+            IppValue::Collection(<span class="kw-2">ref </span>coll) =&gt; {
+                <span class="kw">let </span>s: Vec&lt;String&gt; = coll.iter().map(|v| <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, v)).collect();
+                <span class="macro">write!</span>(f, <span class="string">&quot;&lt;{}&gt;&quot;</span>, s.join(<span class="string">&quot;, &quot;</span>))
             }
-            <span class="ident">IppValue::DateTime</span> {
-                <span class="ident">year</span>,
-                <span class="ident">month</span>,
-                <span class="ident">day</span>,
-                <span class="ident">hour</span>,
-                <span class="ident">minutes</span>,
-                <span class="ident">seconds</span>,
-                <span class="ident">deci_seconds</span>,
-                <span class="ident">utc_dir</span>,
-                <span class="ident">utc_hours</span>,
+            IppValue::DateTime {
+                year,
+                month,
+                day,
+                hour,
+                minutes,
+                seconds,
+                deci_seconds,
+                utc_dir,
+                utc_hours,
                 ..
             } =&gt; <span class="macro">write!</span>(
-                <span class="ident">f</span>,
+                f,
                 <span class="string">&quot;{}-{}-{},{}:{}:{}.{},{}{}utc&quot;</span>,
-                <span class="ident">year</span>, <span class="ident">month</span>, <span class="ident">day</span>, <span class="ident">hour</span>, <span class="ident">minutes</span>, <span class="ident">seconds</span>, <span class="ident">deci_seconds</span>, <span class="ident">utc_dir</span> <span class="kw">as</span> <span class="ident">char</span>, <span class="ident">utc_hours</span>
+                year, month, day, hour, minutes, seconds, deci_seconds, utc_dir, utc_hours
             ),
-            <span class="ident">IppValue::Resolution</span> {
-                <span class="ident">cross_feed</span>,
-                <span class="ident">feed</span>,
-                <span class="ident">units</span>,
+            IppValue::Resolution {
+                cross_feed,
+                feed,
+                units,
             } =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}x{}{}&quot;</span>, <span class="ident">cross_feed</span>, <span class="ident">feed</span>, <span class="kw">if</span> <span class="ident">units</span> <span class="op">==</span> <span class="number">3</span> { <span class="string">&quot;in&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;cm&quot;</span> })
+                <span class="macro">write!</span>(f, <span class="string">&quot;{}x{}{}&quot;</span>, cross_feed, feed, <span class="kw">if </span>units == <span class="number">3 </span>{ <span class="string">&quot;in&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;cm&quot; </span>})
             }
 
-            <span class="ident">IppValue::NoValue</span> =&gt; <span class="prelude-val">Ok</span>(()),
-            <span class="ident">IppValue::Other</span> { <span class="ident">tag</span>, <span class="kw-2">ref</span> <span class="ident">data</span> } =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{:0x}: {:?}&quot;</span>, <span class="ident">tag</span>, <span class="ident">data</span>),
+            IppValue::NoValue =&gt; <span class="prelude-val">Ok</span>(()),
+            IppValue::Other { tag, <span class="kw-2">ref </span>data } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:0x}: {:?}&quot;</span>, tag, data),
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">IppValue</span> {
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">Infallible</span>;
+<span class="kw">impl </span>FromStr <span class="kw">for </span>IppValue {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= Infallible;
 
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">s</span> {
-            <span class="string">&quot;true&quot;</span> =&gt; <span class="ident">IppValue::Boolean</span>(<span class="bool-val">true</span>),
-            <span class="string">&quot;false&quot;</span> =&gt; <span class="ident">IppValue::Boolean</span>(<span class="bool-val">false</span>),
-            <span class="ident">other</span> =&gt; {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">iv</span>) <span class="op">=</span> <span class="ident">other</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>() {
-                    <span class="ident">IppValue::Integer</span>(<span class="ident">iv</span>)
-                } <span class="kw">else</span> {
-                    <span class="ident">IppValue::Keyword</span>(<span class="ident">other</span>.<span class="ident">to_owned</span>())
+    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        <span class="kw">let </span>value = <span class="kw">match </span>s {
+            <span class="string">&quot;true&quot; </span>=&gt; IppValue::Boolean(<span class="bool-val">true</span>),
+            <span class="string">&quot;false&quot; </span>=&gt; IppValue::Boolean(<span class="bool-val">false</span>),
+            other =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Ok</span>(iv) = other.parse::&lt;i32&gt;() {
+                    IppValue::Integer(iv)
+                } <span class="kw">else </span>{
+                    IppValue::Keyword(other.to_owned())
                 }
             }
         };
-        <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
+        <span class="prelude-val">Ok</span>(value)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">IntoIterator</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">IppValue</span> {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">IppValue</span>;
-    <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">IppValueIterator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; IntoIterator <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>IppValue {
+    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>IppValue;
+    <span class="kw">type </span>IntoIter = IppValueIterator&lt;<span class="lifetime">&#39;a</span>&gt;;
 
-    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::IntoIter</span> {
-        <span class="ident">IppValueIterator</span> { <span class="ident">value</span>: <span class="self">self</span>, <span class="ident">index</span>: <span class="number">0</span> }
+    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
+        IppValueIterator { value: <span class="self">self</span>, index: <span class="number">0 </span>}
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppValueIterator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">IppValue</span>,
-    <span class="ident">index</span>: <span class="ident">usize</span>,
+<span class="kw">pub struct </span>IppValueIterator&lt;<span class="lifetime">&#39;a</span>&gt; {
+    value: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>IppValue,
+    index: usize,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">IppValueIterator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">IppValue</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>IppValueIterator&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>IppValue;
 
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">value</span> {
-            <span class="ident">IppValue::Array</span>(<span class="kw-2">ref</span> <span class="ident">array</span>) <span class="op">|</span> <span class="ident">IppValue::Collection</span>(<span class="kw-2">ref</span> <span class="ident">array</span>) =&gt; {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">index</span> <span class="op">&lt;</span> <span class="ident">array</span>.<span class="ident">len</span>() {
-                    <span class="self">self</span>.<span class="ident">index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="self">self</span>.<span class="ident">index</span> <span class="op">-</span> <span class="number">1</span>])
-                } <span class="kw">else</span> {
-                    <span class="prelude-val">None</span>
-                }
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="kw">match </span><span class="self">self</span>.value {
+            IppValue::Array(<span class="kw-2">ref </span>array) | IppValue::Collection(<span class="kw-2">ref </span>array) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.index &lt; array.len() {
+                    <span class="self">self</span>.index += <span class="number">1</span>;
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>array[<span class="self">self</span>.index - <span class="number">1</span>])
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">None
+                </span>}
             }
-            <span class="kw">_</span> =&gt; {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">index</span> <span class="op">==</span> <span class="number">0</span> {
-                    <span class="self">self</span>.<span class="ident">index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">value</span>)
-                } <span class="kw">else</span> {
-                    <span class="prelude-val">None</span>
-                }
+            <span class="kw">_ </span>=&gt; {
+                <span class="kw">if </span><span class="self">self</span>.index == <span class="number">0 </span>{
+                    <span class="self">self</span>.index += <span class="number">1</span>;
+                    <span class="prelude-val">Some</span>(<span class="self">self</span>.value)
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">None
+                </span>}
             }
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::attribute::IppAttribute</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::model::DelimiterTag</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::parser::IppParser</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::reader::IppReader</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span><span class="kw">crate</span>::attribute::IppAttribute;
+    <span class="kw">use </span><span class="kw">crate</span>::model::DelimiterTag;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::IppParser;
+    <span class="kw">use </span><span class="kw">crate</span>::reader::IppReader;
 
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">fn</span> <span class="ident">value_check</span>(<span class="ident">value</span>: <span class="ident">IppValue</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_bytes</span>();
-        <span class="ident">b</span>.<span class="ident">advance</span>(<span class="number">2</span>); <span class="comment">// skip value size</span>
-        <span class="macro">assert_eq!</span>(<span class="ident">IppValue::parse</span>(<span class="ident">value</span>.<span class="ident">to_tag</span>() <span class="kw">as</span> <span class="ident">u8</span>, <span class="ident">b</span>).<span class="ident">unwrap</span>(), <span class="ident">value</span>);
+    <span class="kw">fn </span>value_check(value: IppValue) {
+        <span class="kw">let </span><span class="kw-2">mut </span>b = value.to_bytes();
+        b.advance(<span class="number">2</span>); <span class="comment">// skip value size
+        </span><span class="macro">assert_eq!</span>(IppValue::parse(value.to_tag() <span class="kw">as </span>u8, b).unwrap(), value);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_value_single</span>() {
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Integer</span>(<span class="number">1234</span>));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Enum</span>(<span class="number">4321</span>));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::OctetString</span>(<span class="string">&quot;octet-string&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::TextWithoutLanguage</span>(<span class="string">&quot;text-without&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::NameWithoutLanguage</span>(<span class="string">&quot;name-without&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Charset</span>(<span class="string">&quot;charset&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::NaturalLanguage</span>(<span class="string">&quot;natural&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Uri</span>(<span class="string">&quot;uri&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::UriScheme</span>(<span class="string">&quot;urischeme&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::RangeOfInteger</span> { <span class="ident">min</span>: <span class="op">-</span><span class="number">12</span>, <span class="ident">max</span>: <span class="number">45</span> });
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Boolean</span>(<span class="bool-val">true</span>));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Boolean</span>(<span class="bool-val">false</span>));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Keyword</span>(<span class="string">&quot;keyword&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::MimeMediaType</span>(<span class="string">&quot;mime&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::DateTime</span> {
-            <span class="ident">year</span>: <span class="number">2020</span>,
-            <span class="ident">month</span>: <span class="number">2</span>,
-            <span class="ident">day</span>: <span class="number">13</span>,
-            <span class="ident">hour</span>: <span class="number">12</span>,
-            <span class="ident">minutes</span>: <span class="number">34</span>,
-            <span class="ident">seconds</span>: <span class="number">22</span>,
-            <span class="ident">deci_seconds</span>: <span class="number">1</span>,
-            <span class="ident">utc_dir</span>: <span class="string">&#39;c&#39;</span>,
-            <span class="ident">utc_hours</span>: <span class="number">1</span>,
-            <span class="ident">utc_mins</span>: <span class="number">30</span>,
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_value_single() {
+        value_check(IppValue::Integer(<span class="number">1234</span>));
+        value_check(IppValue::Enum(<span class="number">4321</span>));
+        value_check(IppValue::OctetString(<span class="string">&quot;octet-string&quot;</span>.to_owned()));
+        value_check(IppValue::TextWithoutLanguage(<span class="string">&quot;text-without&quot;</span>.to_owned()));
+        value_check(IppValue::NameWithoutLanguage(<span class="string">&quot;name-without&quot;</span>.to_owned()));
+        value_check(IppValue::Charset(<span class="string">&quot;charset&quot;</span>.to_owned()));
+        value_check(IppValue::NaturalLanguage(<span class="string">&quot;natural&quot;</span>.to_owned()));
+        value_check(IppValue::Uri(<span class="string">&quot;uri&quot;</span>.to_owned()));
+        value_check(IppValue::UriScheme(<span class="string">&quot;urischeme&quot;</span>.to_owned()));
+        value_check(IppValue::RangeOfInteger { min: -<span class="number">12</span>, max: <span class="number">45 </span>});
+        value_check(IppValue::Boolean(<span class="bool-val">true</span>));
+        value_check(IppValue::Boolean(<span class="bool-val">false</span>));
+        value_check(IppValue::Keyword(<span class="string">&quot;keyword&quot;</span>.to_owned()));
+        value_check(IppValue::MimeMediaType(<span class="string">&quot;mime&quot;</span>.to_owned()));
+        value_check(IppValue::DateTime {
+            year: <span class="number">2020</span>,
+            month: <span class="number">2</span>,
+            day: <span class="number">13</span>,
+            hour: <span class="number">12</span>,
+            minutes: <span class="number">34</span>,
+            seconds: <span class="number">22</span>,
+            deci_seconds: <span class="number">1</span>,
+            utc_dir: <span class="string">&#39;c&#39;</span>,
+            utc_hours: <span class="number">1</span>,
+            utc_mins: <span class="number">30</span>,
         });
-        <span class="ident">value_check</span>(<span class="ident">IppValue::MemberAttrName</span>(<span class="string">&quot;member&quot;</span>.<span class="ident">to_owned</span>()));
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Resolution</span> {
-            <span class="ident">cross_feed</span>: <span class="number">800</span>,
-            <span class="ident">feed</span>: <span class="number">600</span>,
-            <span class="ident">units</span>: <span class="number">2</span>,
+        value_check(IppValue::MemberAttrName(<span class="string">&quot;member&quot;</span>.to_owned()));
+        value_check(IppValue::Resolution {
+            cross_feed: <span class="number">800</span>,
+            feed: <span class="number">600</span>,
+            units: <span class="number">2</span>,
         });
-        <span class="ident">value_check</span>(<span class="ident">IppValue::NoValue</span>);
-        <span class="ident">value_check</span>(<span class="ident">IppValue::Other</span> {
-            <span class="ident">tag</span>: <span class="number">123</span>,
-            <span class="ident">data</span>: <span class="string">&quot;foo&quot;</span>.<span class="ident">into</span>(),
+        value_check(IppValue::NoValue);
+        value_check(IppValue::Other {
+            tag: <span class="number">123</span>,
+            data: <span class="string">&quot;foo&quot;</span>.into(),
         });
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_value_iterator_single</span>() {
-        <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">IppValue::Integer</span>(<span class="number">1234</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_value_iterator_single() {
+        <span class="kw">let </span>val = IppValue::Integer(<span class="number">1234</span>);
 
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">val</span> {
-            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">v</span>, <span class="ident">val</span>);
+        <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span>val {
+            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>v, val);
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_value_iterator_multiple</span>() {
-        <span class="kw">let</span> <span class="ident">list</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">1234</span>), <span class="ident">IppValue::Integer</span>(<span class="number">5678</span>)];
-        <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">IppValue::Array</span>(<span class="ident">list</span>.<span class="ident">clone</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_value_iterator_multiple() {
+        <span class="kw">let </span>list = <span class="macro">vec!</span>[IppValue::Integer(<span class="number">1234</span>), IppValue::Integer(<span class="number">5678</span>)];
+        <span class="kw">let </span>val = IppValue::Array(list.clone());
 
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">val</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
-            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">v</span>.<span class="number">1</span>, <span class="ident">list</span>[<span class="ident">v</span>.<span class="number">0</span>]);
+        <span class="kw">for </span>v <span class="kw">in </span>val.into_iter().enumerate() {
+            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>v.<span class="number">1</span>, list[v.<span class="number">0</span>]);
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_array</span>() {
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">IppAttribute::new</span>(
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_array() {
+        <span class="kw">let </span>attr = IppAttribute::new(
             <span class="string">&quot;list&quot;</span>,
-            <span class="ident">IppValue::Array</span>(<span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1111_1111</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x2222_2222</span>)]),
+            IppValue::Array(<span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1111_1111</span>), IppValue::Integer(<span class="number">0x2222_2222</span>)]),
         );
-        <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">to_bytes</span>().<span class="ident">to_vec</span>();
+        <span class="kw">let </span>buf = attr.to_bytes().to_vec();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">buf</span>,
+            buf,
             <span class="macro">vec!</span>[
                 <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="string">b&#39;l&#39;</span>, <span class="string">b&#39;i&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x22</span>, <span class="number">0x22</span>, <span class="number">0x22</span>,
-                <span class="number">0x22</span>
-            ],
+                <span class="number">0x22
+            </span>],
         );
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>];
-        <span class="ident">data</span>.<span class="ident">extend</span>(<span class="ident">buf</span>);
-        <span class="ident">data</span>.<span class="ident">push</span>(<span class="number">3</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>];
+        data.extend(buf);
+        data.push(<span class="number">3</span>);
 
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;list&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;list&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_array</span>(),
-            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1111_1111</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x2222_2222</span>)])
+            attr.value().as_array(),
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1111_1111</span>), IppValue::Integer(<span class="number">0x2222_2222</span>)])
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_collection</span>() {
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">IppAttribute::new</span>(
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_collection() {
+        <span class="kw">let </span>attr = IppAttribute::new(
             <span class="string">&quot;coll&quot;</span>,
-            <span class="ident">IppValue::Collection</span>(<span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1111_1111</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x2222_2222</span>)]),
+            IppValue::Collection(<span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1111_1111</span>), IppValue::Integer(<span class="number">0x2222_2222</span>)]),
         );
-        <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">to_bytes</span>();
+        <span class="kw">let </span>buf = attr.to_bytes();
 
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[
                 <span class="number">0x34</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="string">b&#39;c&#39;</span>, <span class="string">b&#39;o&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x11</span>, <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>,
                 <span class="number">0x22</span>, <span class="number">0x22</span>, <span class="number">0x22</span>, <span class="number">0x22</span>, <span class="number">0x37</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>,
             ],
-            <span class="ident">buf</span>
+            buf
         );
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>];
-        <span class="ident">data</span>.<span class="ident">extend</span>(<span class="ident">buf</span>);
-        <span class="ident">data</span>.<span class="ident">push</span>(<span class="number">3</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>];
+        data.extend(buf);
+        data.push(<span class="number">3</span>);
 
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;coll&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;coll&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_collection</span>(),
-            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1111_1111</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x2222_2222</span>)])
+            attr.value().as_collection(),
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1111_1111</span>), IppValue::Integer(<span class="number">0x2222_2222</span>)])
         );
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

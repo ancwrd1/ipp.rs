@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Uri","The URI component of a request."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Uri","The URI component of a request."]]};

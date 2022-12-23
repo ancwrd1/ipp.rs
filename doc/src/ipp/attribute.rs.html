@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/attribute.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/attribute.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -258,261 +253,262 @@
 <span id="253">253</span>
 <span id="254">254</span>
 <span id="255">255</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! Attribute-related structs</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
+<span id="256">256</span>
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! Attribute-related structs
+//!
+</span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">BufMut</span>, <span class="ident">Bytes</span>, <span class="ident">BytesMut</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
+<span class="kw">use </span>bytes::{BufMut, Bytes, BytesMut};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">model::DelimiterTag</span>, <span class="ident">value::IppValue</span>};
+<span class="kw">use crate</span>::{model::DelimiterTag, value::IppValue};
 
-<span class="kw">fn</span> <span class="ident">is_header_attr</span>(<span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">bool</span> {
-    <span class="ident">IppAttribute::HEADER_ATTRS</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">at</span><span class="op">|</span> <span class="ident">at</span> <span class="op">==</span> <span class="ident">attr</span>)
+<span class="kw">fn </span>is_header_attr(attr: <span class="kw-2">&amp;</span>str) -&gt; bool {
+    IppAttribute::HEADER_ATTRS.iter().any(|<span class="kw-2">&amp;</span>at| at == attr)
 }
 
-<span class="doccomment">/// `IppAttribute` represents an IPP attribute</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppAttribute</span> {
-    <span class="doccomment">/// Attribute name</span>
-    <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Attribute value</span>
-    <span class="ident">value</span>: <span class="ident">IppValue</span>,
+<span class="doccomment">/// `IppAttribute` represents an IPP attribute
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>IppAttribute {
+    <span class="doccomment">/// Attribute name
+    </span>name: String,
+    <span class="doccomment">/// Attribute value
+    </span>value: IppValue,
 }
 
-<span class="kw">impl</span> <span class="ident">IppAttribute</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ATTRIBUTES_CHARSET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;attributes-charset&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ATTRIBUTES_NATURAL_LANGUAGE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;attributes-natural-language&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CHARSET_CONFIGURED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;charset-configured&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CHARSET_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;charset-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COMPRESSION_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;compression-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DOCUMENT_FORMAT_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;document-format-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DOCUMENT_FORMAT_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;document-format-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">GENERATED_NATURAL_LANGUAGE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;generated-natural-language-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IPP_VERSIONS_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;ipp-versions-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NATURAL_LANGUAGE_CONFIGURED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;natural-language-configured&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">OPERATIONS_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;operations-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PDL_OVERRIDE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;pdl-override-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_IS_ACCEPTING_JOBS</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-is-accepting-jobs&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_MAKE_AND_MODEL</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-make-and-model&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-name&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_STATE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-state&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_STATE_MESSAGE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-state-message&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_STATE_REASONS</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-state-reasons&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_UP_TIME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-up-time&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_URI</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-uri&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_URI_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-uri-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">QUEUED_JOB_COUNT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;queued-job-count&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">URI_AUTHENTICATION_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;uri-authentication-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">URI_SECURITY_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;uri-security-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">JOB_ID</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;job-id&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">JOB_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;job-name&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">JOB_STATE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;job-state&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">JOB_STATE_REASONS</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;job-state-reasons&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">JOB_URI</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;job-uri&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LAST_DOCUMENT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;last-document&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">REQUESTING_USER_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;requesting-user-name&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">STATUS_MESSAGE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;status-message&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">REQUESTED_ATTRIBUTES</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;requested-attributes&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SIDES_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sides-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">OUTPUT_MODE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;output-mode-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COLOR_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;color-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_INFO</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-info&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_LOCATION</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-location&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_MORE_INFO</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-more-info&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_RESOLUTION_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-resolution-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINTER_RESOLUTION_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;printer-resolution-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COPIES_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;copies-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COPIES_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;copies-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SIDES_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sides-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINT_QUALITY_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;print-quality-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINT_QUALITY_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;print-quality-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FINISHINGS_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;finishings-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FINISHINGS_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;finishings-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">OUTPUT_BIN_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;output-bin-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">OUTPUT_BIN_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;output-bin-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ORIENTATION_REQUESTED_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;orientation-requested-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ORIENTATION_REQUESTED_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;orientation-requested-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MEDIA_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;media-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MEDIA_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;media-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PAGES_PER_MINUTE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;pages-per-minute&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COLOR_MODE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;color-mode-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINT_COLOR_MODE_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;print-color-mode-supported&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PRINT_COLOR_MODE_DEFAULT</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;print-color-mode-default&quot;</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MULTIPLE_DOCUMENT_HANDLING_SUPPORTED</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;multiple-document-handling-supported&quot;</span>;
+<span class="kw">impl </span>IppAttribute {
+    <span class="kw">pub const </span>ATTRIBUTES_CHARSET: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;attributes-charset&quot;</span>;
+    <span class="kw">pub const </span>ATTRIBUTES_NATURAL_LANGUAGE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;attributes-natural-language&quot;</span>;
+    <span class="kw">pub const </span>CHARSET_CONFIGURED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;charset-configured&quot;</span>;
+    <span class="kw">pub const </span>CHARSET_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;charset-supported&quot;</span>;
+    <span class="kw">pub const </span>COMPRESSION_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;compression-supported&quot;</span>;
+    <span class="kw">pub const </span>DOCUMENT_FORMAT_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;document-format-default&quot;</span>;
+    <span class="kw">pub const </span>DOCUMENT_FORMAT_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;document-format-supported&quot;</span>;
+    <span class="kw">pub const </span>GENERATED_NATURAL_LANGUAGE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;generated-natural-language-supported&quot;</span>;
+    <span class="kw">pub const </span>IPP_VERSIONS_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;ipp-versions-supported&quot;</span>;
+    <span class="kw">pub const </span>NATURAL_LANGUAGE_CONFIGURED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;natural-language-configured&quot;</span>;
+    <span class="kw">pub const </span>OPERATIONS_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;operations-supported&quot;</span>;
+    <span class="kw">pub const </span>PDL_OVERRIDE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;pdl-override-supported&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_IS_ACCEPTING_JOBS: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-is-accepting-jobs&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_MAKE_AND_MODEL: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-make-and-model&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-name&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_STATE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-state&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_STATE_MESSAGE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-state-message&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_STATE_REASONS: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-state-reasons&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_UP_TIME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-up-time&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_URI: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-uri&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_URI_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-uri-supported&quot;</span>;
+    <span class="kw">pub const </span>QUEUED_JOB_COUNT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;queued-job-count&quot;</span>;
+    <span class="kw">pub const </span>URI_AUTHENTICATION_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;uri-authentication-supported&quot;</span>;
+    <span class="kw">pub const </span>URI_SECURITY_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;uri-security-supported&quot;</span>;
+    <span class="kw">pub const </span>JOB_ID: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;job-id&quot;</span>;
+    <span class="kw">pub const </span>JOB_NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;job-name&quot;</span>;
+    <span class="kw">pub const </span>JOB_STATE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;job-state&quot;</span>;
+    <span class="kw">pub const </span>JOB_STATE_REASONS: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;job-state-reasons&quot;</span>;
+    <span class="kw">pub const </span>JOB_URI: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;job-uri&quot;</span>;
+    <span class="kw">pub const </span>LAST_DOCUMENT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;last-document&quot;</span>;
+    <span class="kw">pub const </span>REQUESTING_USER_NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;requesting-user-name&quot;</span>;
+    <span class="kw">pub const </span>STATUS_MESSAGE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;status-message&quot;</span>;
+    <span class="kw">pub const </span>REQUESTED_ATTRIBUTES: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;requested-attributes&quot;</span>;
+    <span class="kw">pub const </span>SIDES_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;sides-supported&quot;</span>;
+    <span class="kw">pub const </span>OUTPUT_MODE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;output-mode-supported&quot;</span>;
+    <span class="kw">pub const </span>COLOR_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;color-supported&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_INFO: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-info&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_LOCATION: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-location&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_MORE_INFO: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-more-info&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_RESOLUTION_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-resolution-default&quot;</span>;
+    <span class="kw">pub const </span>PRINTER_RESOLUTION_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;printer-resolution-supported&quot;</span>;
+    <span class="kw">pub const </span>COPIES_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;copies-supported&quot;</span>;
+    <span class="kw">pub const </span>COPIES_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;copies-default&quot;</span>;
+    <span class="kw">pub const </span>SIDES_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;sides-default&quot;</span>;
+    <span class="kw">pub const </span>PRINT_QUALITY_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;print-quality-default&quot;</span>;
+    <span class="kw">pub const </span>PRINT_QUALITY_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;print-quality-supported&quot;</span>;
+    <span class="kw">pub const </span>FINISHINGS_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;finishings-default&quot;</span>;
+    <span class="kw">pub const </span>FINISHINGS_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;finishings-supported&quot;</span>;
+    <span class="kw">pub const </span>OUTPUT_BIN_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;output-bin-default&quot;</span>;
+    <span class="kw">pub const </span>OUTPUT_BIN_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;output-bin-supported&quot;</span>;
+    <span class="kw">pub const </span>ORIENTATION_REQUESTED_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;orientation-requested-default&quot;</span>;
+    <span class="kw">pub const </span>ORIENTATION_REQUESTED_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;orientation-requested-supported&quot;</span>;
+    <span class="kw">pub const </span>MEDIA_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;media-default&quot;</span>;
+    <span class="kw">pub const </span>MEDIA_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;media-supported&quot;</span>;
+    <span class="kw">pub const </span>PAGES_PER_MINUTE: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;pages-per-minute&quot;</span>;
+    <span class="kw">pub const </span>COLOR_MODE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;color-mode-supported&quot;</span>;
+    <span class="kw">pub const </span>PRINT_COLOR_MODE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;print-color-mode-supported&quot;</span>;
+    <span class="kw">pub const </span>PRINT_COLOR_MODE_DEFAULT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;print-color-mode-default&quot;</span>;
+    <span class="kw">pub const </span>MULTIPLE_DOCUMENT_HANDLING_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;multiple-document-handling-supported&quot;</span>;
+    <span class="kw">pub const </span>MEDIA_SOURCE_SUPPORTED: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;media-source-supported&quot;</span>;
 
-    <span class="comment">// Per section 4.1.4. Character Set and Natural Language Operation Attributes</span>
-    <span class="comment">// The &quot;attributes-charset&quot; and &quot;attributes-natural-language&quot; attributes MUST be the first two attributes</span>
-    <span class="comment">// in every IPP request and response, as part of the initial Operation Attributes group of the IPP message</span>
-    <span class="comment">// Per section 4.1.5 Operation targets</span>
-    <span class="comment">// o  In the case where there is only one operation target attribute</span>
-    <span class="comment">//    (i.e., either only the &quot;printer-uri&quot; attribute or only the</span>
-    <span class="comment">//    &quot;job-uri&quot; attribute), that attribute MUST be the third attribute</span>
-    <span class="comment">//    in the Operation Attributes group.</span>
-    <span class="comment">// o  In the case where Job operations use two operation target</span>
-    <span class="comment">//    attributes (i.e., the &quot;printer-uri&quot; and &quot;job-id&quot; attributes), the</span>
-    <span class="comment">//    &quot;printer-uri&quot; attribute MUST be the third attribute and the</span>
-    <span class="comment">//    &quot;job-id&quot; attribute MUST be the fourth attribute.</span>
-    <span class="kw">const</span> <span class="ident">HEADER_ATTRS</span>: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">3</span>] <span class="op">=</span> [
-        <span class="ident">IppAttribute::ATTRIBUTES_CHARSET</span>,
-        <span class="ident">IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE</span>,
-        <span class="ident">IppAttribute::PRINTER_URI</span>,
+    <span class="comment">// Per section 4.1.4. Character Set and Natural Language Operation Attributes
+    // The &quot;attributes-charset&quot; and &quot;attributes-natural-language&quot; attributes MUST be the first two attributes
+    // in every IPP request and response, as part of the initial Operation Attributes group of the IPP message
+    // Per section 4.1.5 Operation targets
+    // o  In the case where there is only one operation target attribute
+    //    (i.e., either only the &quot;printer-uri&quot; attribute or only the
+    //    &quot;job-uri&quot; attribute), that attribute MUST be the third attribute
+    //    in the Operation Attributes group.
+    // o  In the case where Job operations use two operation target
+    //    attributes (i.e., the &quot;printer-uri&quot; and &quot;job-id&quot; attributes), the
+    //    &quot;printer-uri&quot; attribute MUST be the third attribute and the
+    //    &quot;job-id&quot; attribute MUST be the fourth attribute.
+    </span><span class="kw">const </span>HEADER_ATTRS: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str; <span class="number">3</span>] = [
+        IppAttribute::ATTRIBUTES_CHARSET,
+        IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+        IppAttribute::PRINTER_URI,
     ];
 
-    <span class="doccomment">/// Create new instance of the attribute</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `name` - Attribute name&lt;br/&gt;</span>
-    <span class="doccomment">/// * `value` - Attribute value&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="ident">S</span>, <span class="ident">value</span>: <span class="ident">IppValue</span>) -&gt; <span class="ident">IppAttribute</span>
-    <span class="kw">where</span>
-        <span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Create new instance of the attribute
+    ///
+    /// * `name` - Attribute name&lt;br/&gt;
+    /// * `value` - Attribute value&lt;br/&gt;
+    </span><span class="kw">pub fn </span>new&lt;S&gt;(name: S, value: IppValue) -&gt; IppAttribute
+    <span class="kw">where
+        </span>S: AsRef&lt;str&gt;,
     {
-        <span class="ident">IppAttribute</span> {
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">to_owned</span>(),
-            <span class="ident">value</span>,
+        IppAttribute {
+            name: name.as_ref().to_owned(),
+            value,
         }
     }
 
-    <span class="doccomment">/// Return attribute name</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
+    <span class="doccomment">/// Return attribute name
+    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.name
     }
 
-    <span class="doccomment">/// Return attribute value</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">IppValue</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>
+    <span class="doccomment">/// Return attribute value
+    </span><span class="kw">pub fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>IppValue {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.value
     }
 
-    <span class="doccomment">/// Write attribute to byte array</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Bytes</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
+    <span class="doccomment">/// Write attribute to byte array
+    </span><span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Bytes {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = BytesMut::new();
 
-        <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">to_tag</span>());
-        <span class="ident">buffer</span>.<span class="ident">put_u16</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u16</span>);
-        <span class="ident">buffer</span>.<span class="ident">put_slice</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">as_bytes</span>());
-        <span class="ident">buffer</span>.<span class="ident">put</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">to_bytes</span>());
-        <span class="ident">buffer</span>.<span class="ident">freeze</span>()
+        buffer.put_u8(<span class="self">self</span>.value.to_tag());
+        buffer.put_u16(<span class="self">self</span>.name.len() <span class="kw">as </span>u16);
+        buffer.put_slice(<span class="self">self</span>.name.as_bytes());
+        buffer.put(<span class="self">self</span>.value.to_bytes());
+        buffer.freeze()
     }
 }
 
-<span class="doccomment">/// Attribute group</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppAttributeGroup</span> {
-    <span class="ident">tag</span>: <span class="ident">DelimiterTag</span>,
-    <span class="ident">attributes</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">IppAttribute</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Attribute group
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>IppAttributeGroup {
+    tag: DelimiterTag,
+    attributes: HashMap&lt;String, IppAttribute&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">IppAttributeGroup</span> {
-    <span class="doccomment">/// Create new attribute group of a given type</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">tag</span>: <span class="ident">DelimiterTag</span>) -&gt; <span class="ident">IppAttributeGroup</span> {
-        <span class="ident">IppAttributeGroup</span> {
-            <span class="ident">tag</span>,
-            <span class="ident">attributes</span>: <span class="ident">HashMap::new</span>(),
+<span class="kw">impl </span>IppAttributeGroup {
+    <span class="doccomment">/// Create new attribute group of a given type
+    </span><span class="kw">pub fn </span>new(tag: DelimiterTag) -&gt; IppAttributeGroup {
+        IppAttributeGroup {
+            tag,
+            attributes: HashMap::new(),
         }
     }
 
-    <span class="doccomment">/// Return group type tag</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">DelimiterTag</span> {
-        <span class="self">self</span>.<span class="ident">tag</span>
+    <span class="doccomment">/// Return group type tag
+    </span><span class="kw">pub fn </span>tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DelimiterTag {
+        <span class="self">self</span>.tag
     }
 
-    <span class="doccomment">/// Return read-only attributes</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">IppAttribute</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attributes</span>
+    <span class="doccomment">/// Return read-only attributes
+    </span><span class="kw">pub fn </span>attributes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, IppAttribute&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.attributes
     }
 
-    <span class="doccomment">/// Return mutable attributes</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">IppAttribute</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">attributes</span>
+    <span class="doccomment">/// Return mutable attributes
+    </span><span class="kw">pub fn </span>attributes_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>HashMap&lt;String, IppAttribute&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.attributes
     }
 }
 
-<span class="doccomment">/// Attribute list</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppAttributes</span> {
-    <span class="ident">groups</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttributeGroup</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Attribute list
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Clone, Debug, Default)]
+</span><span class="kw">pub struct </span>IppAttributes {
+    groups: Vec&lt;IppAttributeGroup&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">IppAttributes</span> {
-    <span class="doccomment">/// Create attribute list</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="ident">IppAttributes</span> {
-        <span class="ident">IppAttributes</span> { ..<span class="ident">Default::default</span>() }
+<span class="kw">impl </span>IppAttributes {
+    <span class="doccomment">/// Create attribute list
+    </span><span class="kw">pub fn </span>new() -&gt; IppAttributes {
+        IppAttributes { ..Default::default() }
     }
 
-    <span class="doccomment">/// Get all groups</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">groups</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">IppAttributeGroup</span>] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">groups</span>
+    <span class="doccomment">/// Get all groups
+    </span><span class="kw">pub fn </span>groups(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[IppAttributeGroup] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.groups
     }
 
-    <span class="doccomment">/// Get all mutable groups</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">groups_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttributeGroup</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">groups</span>
+    <span class="doccomment">/// Get all mutable groups
+    </span><span class="kw">pub fn </span>groups_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Vec&lt;IppAttributeGroup&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.groups
     }
 
-    <span class="doccomment">/// Get a list of attribute groups matching a given delimiter tag</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">groups_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">DelimiterTag</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">IppAttributeGroup</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">groups</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">tag</span> <span class="op">==</span> <span class="ident">tag</span>)
+    <span class="doccomment">/// Get a list of attribute groups matching a given delimiter tag
+    </span><span class="kw">pub fn </span>groups_of(<span class="kw-2">&amp;</span><span class="self">self</span>, tag: DelimiterTag) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>IppAttributeGroup&gt; {
+        <span class="self">self</span>.groups.iter().filter(<span class="kw">move </span>|g| g.tag == tag)
     }
 
-    <span class="doccomment">/// Add attribute to a given group</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">DelimiterTag</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
-        <span class="kw">let</span> <span class="ident">group</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">groups_mut</span>().<span class="ident">iter_mut</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">tag</span>() <span class="op">==</span> <span class="ident">tag</span>);
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="ident">group</span> {
-            <span class="ident">group</span>.<span class="ident">attributes_mut</span>().<span class="ident">insert</span>(<span class="ident">attribute</span>.<span class="ident">name</span>().<span class="ident">to_owned</span>(), <span class="ident">attribute</span>);
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_group</span> <span class="op">=</span> <span class="ident">IppAttributeGroup::new</span>(<span class="ident">tag</span>);
-            <span class="ident">new_group</span>
-                .<span class="ident">attributes_mut</span>()
-                .<span class="ident">insert</span>(<span class="ident">attribute</span>.<span class="ident">name</span>().<span class="ident">to_owned</span>(), <span class="ident">attribute</span>);
-            <span class="self">self</span>.<span class="ident">groups_mut</span>().<span class="ident">push</span>(<span class="ident">new_group</span>);
+    <span class="doccomment">/// Add attribute to a given group
+    </span><span class="kw">pub fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tag: DelimiterTag, attribute: IppAttribute) {
+        <span class="kw">let </span>group = <span class="self">self</span>.groups_mut().iter_mut().find(|g| g.tag() == tag);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(group) = group {
+            group.attributes_mut().insert(attribute.name().to_owned(), attribute);
+        } <span class="kw">else </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>new_group = IppAttributeGroup::new(tag);
+            new_group
+                .attributes_mut()
+                .insert(attribute.name().to_owned(), attribute);
+            <span class="self">self</span>.groups_mut().push(new_group);
         }
     }
 
-    <span class="doccomment">/// Write attribute list to byte array</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Bytes</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
+    <span class="doccomment">/// Write attribute list to byte array
+    </span><span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Bytes {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = BytesMut::new();
 
-        <span class="comment">// put the required attributes first as described in section 4.1.4 of RFC8011</span>
-        <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">DelimiterTag::OperationAttributes</span> <span class="kw">as</span> <span class="ident">u8</span>);
+        <span class="comment">// put the required attributes first as described in section 4.1.4 of RFC8011
+        </span>buffer.put_u8(DelimiterTag::OperationAttributes <span class="kw">as </span>u8);
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::OperationAttributes</span>).<span class="ident">next</span>() {
-            <span class="kw">for</span> <span class="ident">hdr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">IppAttribute::HEADER_ATTRS</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">attr</span>) <span class="op">=</span> <span class="ident">group</span>.<span class="ident">attributes</span>().<span class="ident">get</span>(<span class="kw-2">*</span><span class="ident">hdr</span>) {
-                    <span class="ident">buffer</span>.<span class="ident">put</span>(<span class="ident">attr</span>.<span class="ident">to_bytes</span>());
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(group) = <span class="self">self</span>.groups_of(DelimiterTag::OperationAttributes).next() {
+            <span class="kw">for </span>hdr <span class="kw">in </span><span class="kw-2">&amp;</span>IppAttribute::HEADER_ATTRS {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(attr) = group.attributes().get(<span class="kw-2">*</span>hdr) {
+                    buffer.put(attr.to_bytes());
                 }
             }
         }
 
-        <span class="comment">// now the rest</span>
-        <span class="kw">for</span> <span class="ident">hdr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[
-            <span class="ident">DelimiterTag::OperationAttributes</span>,
-            <span class="ident">DelimiterTag::JobAttributes</span>,
-            <span class="ident">DelimiterTag::PrinterAttributes</span>,
+        <span class="comment">// now the rest
+        </span><span class="kw">for </span>hdr <span class="kw">in </span><span class="kw-2">&amp;</span>[
+            DelimiterTag::OperationAttributes,
+            DelimiterTag::JobAttributes,
+            DelimiterTag::PrinterAttributes,
         ] {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">groups_of</span>(<span class="kw-2">*</span><span class="ident">hdr</span>).<span class="ident">next</span>() {
-                <span class="kw">if</span> <span class="ident">group</span>.<span class="ident">tag</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">DelimiterTag::OperationAttributes</span> {
-                    <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">group</span>.<span class="ident">tag</span>() <span class="kw">as</span> <span class="ident">u8</span>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(group) = <span class="self">self</span>.groups_of(<span class="kw-2">*</span>hdr).next() {
+                <span class="kw">if </span>group.tag() != DelimiterTag::OperationAttributes {
+                    buffer.put_u8(group.tag() <span class="kw">as </span>u8);
                 }
-                <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">group</span>
-                    .<span class="ident">attributes</span>()
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">group</span>.<span class="ident">tag</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">DelimiterTag::OperationAttributes</span> <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">is_header_attr</span>(<span class="ident">v</span>.<span class="ident">name</span>()));
+                <span class="kw">let </span>attrs = group
+                    .attributes()
+                    .iter()
+                    .filter(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()));
 
-                <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">attr</span>) <span class="kw">in</span> <span class="ident">attrs</span> {
-                    <span class="ident">buffer</span>.<span class="ident">put</span>(<span class="ident">attr</span>.<span class="ident">to_bytes</span>());
+                <span class="kw">for </span>(<span class="kw">_</span>, attr) <span class="kw">in </span>attrs {
+                    buffer.put(attr.to_bytes());
                 }
             }
         }
-        <span class="ident">buffer</span>.<span class="ident">put_u8</span>(<span class="ident">DelimiterTag::EndOfAttributes</span> <span class="kw">as</span> <span class="ident">u8</span>);
+        buffer.put_u8(DelimiterTag::EndOfAttributes <span class="kw">as </span>u8);
 
-        <span class="ident">buffer</span>.<span class="ident">freeze</span>()
+        buffer.freeze()
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

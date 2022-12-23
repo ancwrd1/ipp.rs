@@ -1,3 +1,3 @@
-(function() {var implementors = {};
-implementors["ipp"] = [{"text":"impl AsyncRead for <a class=\"struct\" href=\"ipp/payload/struct.IppPayload.html\" title=\"struct ipp::payload::IppPayload\">IppPayload</a>","synthetic":false,"types":["ipp::payload::IppPayload"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {var implementors = {
+"ipp":[["impl AsyncRead for <a class=\"struct\" href=\"ipp/payload/struct.IppPayload.html\" title=\"struct ipp::payload::IppPayload\">IppPayload</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

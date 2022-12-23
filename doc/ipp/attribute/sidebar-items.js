@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IppAttribute","`IppAttribute` represents an IPP attribute"],["IppAttributeGroup","Attribute group"],["IppAttributes","Attribute list"]]});
+window.SIDEBAR_ITEMS = {"struct":[["IppAttribute","`IppAttribute` represents an IPP attribute"],["IppAttributeGroup","Attribute group"],["IppAttributes","Attribute list"]]};

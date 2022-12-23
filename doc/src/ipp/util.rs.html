@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -96,155 +91,98 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
-<span id="98">98</span>
-<span id="99">99</span>
-<span id="100">100</span>
-<span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! IPP helper functions</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">http::Uri</span>;
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! IPP helper functions
+//!
+</span><span class="kw">use </span>http::Uri;
+<span class="kw">use </span>num_traits::FromPrimitive;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">client_util</span>::{<span class="ident">check_printer_state</span>, <span class="ident">get_printer_attributes</span>, <span class="ident">print_file</span>};
+<span class="kw">use crate</span>::{
+    attribute::IppAttribute,
+    error::IppError,
+    model::{DelimiterTag, PrinterState},
+    prelude::IppRequestResponse,
+};
 
-<span class="doccomment">/// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalize_uri</span>(<span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">Uri</span>) -&gt; <span class="ident">Uri</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Uri::builder</span>().<span class="ident">scheme</span>(<span class="string">&quot;ipp&quot;</span>).<span class="ident">path_and_query</span>(<span class="ident">uri</span>.<span class="ident">path</span>());
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">authority</span>) <span class="op">=</span> <span class="ident">uri</span>.<span class="ident">authority</span>() {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">port</span>) <span class="op">=</span> <span class="ident">authority</span>.<span class="ident">port_u16</span>() {
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">authority</span>(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, <span class="ident">authority</span>.<span class="ident">host</span>(), <span class="ident">port</span>).<span class="ident">as_str</span>());
-        } <span class="kw">else</span> {
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">authority</span>(<span class="ident">authority</span>.<span class="ident">host</span>());
+<span class="doccomment">/// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
+</span><span class="kw">pub fn </span>canonicalize_uri(uri: <span class="kw-2">&amp;</span>Uri) -&gt; Uri {
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = Uri::builder().scheme(<span class="string">&quot;ipp&quot;</span>).path_and_query(uri.path());
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(authority) = uri.authority() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(port) = authority.port_u16() {
+            builder = builder.authority(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, authority.host(), port).as_str());
+        } <span class="kw">else </span>{
+            builder = builder.authority(authority.host());
         }
     }
-    <span class="ident">builder</span>.<span class="ident">build</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">uri</span>.<span class="ident">to_owned</span>())
+    builder.build().unwrap_or_else(|<span class="kw">_</span>| uri.to_owned())
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;client&quot;</span>)]</span>
-<span class="kw">mod</span> <span class="ident">client_util</span> {
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs::File</span>, <span class="ident">io::BufReader</span>, <span class="ident">path::Path</span>};
+<span class="kw">const </span>ERROR_STATES: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[
+    <span class="string">&quot;media-jam&quot;</span>,
+    <span class="string">&quot;toner-empty&quot;</span>,
+    <span class="string">&quot;spool-area-full&quot;</span>,
+    <span class="string">&quot;cover-open&quot;</span>,
+    <span class="string">&quot;door-open&quot;</span>,
+    <span class="string">&quot;input-tray-missing&quot;</span>,
+    <span class="string">&quot;output-tray-missing&quot;</span>,
+    <span class="string">&quot;marker-supply-empty&quot;</span>,
+    <span class="string">&quot;paused&quot;</span>,
+    <span class="string">&quot;shutdown&quot;</span>,
+];
 
-    <span class="kw">use</span> <span class="ident">futures_util::io::AllowStdIo</span>;
-    <span class="kw">use</span> <span class="ident">log::debug</span>;
-
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
-
-    <span class="kw">const</span> <span class="ident">ERROR_STATES</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">str</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[
-        <span class="string">&quot;media-jam&quot;</span>,
-        <span class="string">&quot;toner-empty&quot;</span>,
-        <span class="string">&quot;spool-area-full&quot;</span>,
-        <span class="string">&quot;cover-open&quot;</span>,
-        <span class="string">&quot;door-open&quot;</span>,
-        <span class="string">&quot;input-tray-missing&quot;</span>,
-        <span class="string">&quot;output-tray-missing&quot;</span>,
-        <span class="string">&quot;marker-supply-empty&quot;</span>,
-        <span class="string">&quot;paused&quot;</span>,
-        <span class="string">&quot;shutdown&quot;</span>,
-    ];
-
-    <span class="doccomment">/// Check printer ready status. Checks printer-state and printer-state-reasons attributes.</span>
-    <span class="doccomment">/// Returns Ok if no fatal errors are detected, IppError otherwise.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">check_printer_state</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span> {
-        <span class="macro">debug!</span>(<span class="string">&quot;Checking printer status&quot;</span>);
-        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">header</span>().<span class="ident">status_code</span>();
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">status</span>.<span class="ident">is_success</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError::StatusError</span>(<span class="ident">status</span>));
-        }
-
-        <span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">response</span>
-            .<span class="ident">attributes</span>()
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">attributes</span>().<span class="ident">get</span>(<span class="ident">IppAttribute::PRINTER_STATE</span>))
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_enum</span>())
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">PrinterState::from_i32</span>(<span class="kw-2">*</span><span class="ident">v</span>));
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PrinterState::Stopped</span>) <span class="op">=</span> <span class="ident">state</span> {
-            <span class="macro">debug!</span>(<span class="string">&quot;Printer is stopped&quot;</span>);
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError::PrinterStopped</span>);
-        }
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reasons</span>) <span class="op">=</span> <span class="ident">response</span>
-            .<span class="ident">attributes</span>()
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">attributes</span>().<span class="ident">get</span>(<span class="ident">IppAttribute::PRINTER_STATE_REASONS</span>))
-        {
-            <span class="kw">let</span> <span class="ident">keywords</span> <span class="op">=</span> <span class="ident">reasons</span>
-                .<span class="ident">value</span>()
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">as_keyword</span>())
-                .<span class="ident">map</span>(<span class="ident">ToOwned::to_owned</span>)
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-
-            <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ERROR_STATES</span>.<span class="ident">contains</span>(<span class="op">&amp;&amp;</span><span class="ident">k</span>[..])) {
-                <span class="macro">debug!</span>(<span class="string">&quot;Printer is in error state: {:?}&quot;</span>, <span class="ident">keywords</span>);
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError::PrinterStateError</span>(<span class="ident">keywords</span>));
-            }
-        }
-        <span class="prelude-val">Ok</span>(())
+<span class="kw">pub fn </span>is_printer_ready(response: <span class="kw-2">&amp;</span>IppRequestResponse) -&gt; <span class="prelude-ty">Result</span>&lt;bool, IppError&gt; {
+    <span class="kw">let </span>status = response.header().status_code();
+    <span class="kw">if </span>!status.is_success() {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(IppError::StatusError(status));
     }
 
-    <span class="doccomment">/// Print a file</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">print_file</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>, <span class="ident">path</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppError</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
+    <span class="kw">let </span>state = response
+        .attributes()
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .next()
+        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
+        .and_then(|attr| attr.value().as_enum())
+        .and_then(|v| PrinterState::from_i32(<span class="kw-2">*</span>v));
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(PrinterState::Stopped) = state {
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
+    }
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(reasons) = response
+        .attributes()
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .next()
+        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
     {
-        <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">IppPayload::new_async</span>(<span class="ident">AllowStdIo::new</span>(<span class="ident">BufReader::new</span>(<span class="ident">File::open</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>)));
-        <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">IppOperationBuilder::print_job</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>(), <span class="ident">payload</span>).<span class="ident">build</span>();
-        <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="kw">await</span>
-    }
+        <span class="kw">let </span>keywords = reasons
+            .value()
+            .into_iter()
+            .filter_map(|e| e.as_keyword())
+            .map(ToOwned::to_owned)
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="doccomment">/// Get printer attributes</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_printer_attributes</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">IppClient</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">IppOperationBuilder::get_printer_attributes</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>()).<span class="ident">build</span>();
-        <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="kw">await</span>
+        <span class="kw">if </span>keywords.iter().any(|k| ERROR_STATES.contains(&amp;&amp;k[..])) {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
+        }
     }
+    <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_canonicalize_uri</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_canonicalize_uri() {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">canonicalize_uri</span>(<span class="kw-2">&amp;</span><span class="string">&quot;http://user:pass@example.com:631/path?query=val&quot;</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>()),
-            <span class="string">&quot;ipp://example.com:631/path&quot;</span>
-        );
+            canonicalize_uri(<span class="kw-2">&amp;</span><span class="string">&quot;http://user:pass@example.com:631/path?query=val&quot;</span>.parse().unwrap()),
+            <span class="string">&quot;ipp://example.com:631/path&quot;
+        </span>);
         <span class="macro">assert_eq!</span>(
-            <span class="ident">canonicalize_uri</span>(<span class="kw-2">&amp;</span><span class="string">&quot;http://example.com/path?query=val&quot;</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>()),
-            <span class="string">&quot;ipp://example.com/path&quot;</span>
-        );
+            canonicalize_uri(<span class="kw-2">&amp;</span><span class="string">&quot;http://example.com/path?query=val&quot;</span>.parse().unwrap()),
+            <span class="string">&quot;ipp://example.com/path&quot;
+        </span>);
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

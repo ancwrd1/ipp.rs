@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipputil/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipputil/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipputil/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `util/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipputil/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -198,201 +193,206 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! Command-line IPP utility to print a document or get printer status</span>
-<span class="doccomment">//!</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! Command-line IPP utility to print a document or get printer status
+//!
 
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">fs</span>,
-    <span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">BufReader</span>},
-    <span class="ident">path::PathBuf</span>,
-    <span class="ident">time::Duration</span>,
+</span><span class="attribute">#![allow(clippy::result_large_err)]
+
+</span><span class="kw">use </span>std::{
+    fs,
+    io::{<span class="self">self</span>, BufReader},
+    path::PathBuf,
+    time::Duration,
 };
 
-<span class="kw">use</span> <span class="ident">clap::Parser</span>;
+<span class="kw">use </span>clap::Parser;
 
-<span class="kw">use</span> <span class="ident">ipp</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">util::check_printer_state</span>};
+<span class="kw">use </span>ipp::{prelude::<span class="kw-2">*</span>, util};
 
-<span class="kw">fn</span> <span class="ident">new_client</span>(<span class="ident">uri</span>: <span class="ident">Uri</span>, <span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">IppParams</span>) -&gt; <span class="ident">IppClient</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">IppClient::builder</span>(<span class="ident">uri</span>).<span class="ident">ignore_tls_errors</span>(<span class="ident">params</span>.<span class="ident">ignore_tls_errors</span>);
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">timeout</span>) <span class="op">=</span> <span class="ident">params</span>.<span class="ident">timeout</span> {
-        <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">request_timeout</span>(<span class="ident">Duration::from_secs</span>(<span class="ident">timeout</span>));
+<span class="kw">fn </span>new_client(uri: Uri, params: <span class="kw-2">&amp;</span>IppParams) -&gt; IppClient {
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(timeout) = params.timeout {
+        builder = builder.request_timeout(Duration::from_secs(timeout));
     }
 
-    <span class="kw">for</span> <span class="ident">param</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">params</span>.<span class="ident">headers</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">k</span>, <span class="ident">v</span>)) <span class="op">=</span> <span class="ident">param</span>.<span class="ident">split_once</span>(<span class="string">&#39;=&#39;</span>) {
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">http_header</span>(<span class="ident">k</span>, <span class="ident">v</span>);
+    <span class="kw">for </span>param <span class="kw">in </span><span class="kw-2">&amp;</span>params.headers {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((k, v)) = param.split_once(<span class="string">&#39;=&#39;</span>) {
+            builder = builder.http_header(k, v);
         }
     }
 
-    <span class="ident">builder</span>.<span class="ident">build</span>()
+    builder.build()
 }
 
-<span class="kw">fn</span> <span class="ident">new_payload</span>(<span class="ident">cmd</span>: <span class="kw-2">&amp;</span><span class="ident">IppPrintCmd</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">IppPayload</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cmd</span>.<span class="ident">file</span> {
-        <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">filename</span>) =&gt; <span class="ident">IppPayload::new</span>(<span class="ident">BufReader::new</span>(<span class="ident">fs::File::open</span>(<span class="ident">filename</span>)<span class="question-mark">?</span>)),
-        <span class="prelude-val">None</span> =&gt; <span class="ident">IppPayload::new</span>(<span class="ident">BufReader::new</span>(<span class="ident">io::stdin</span>())),
+<span class="kw">fn </span>new_payload(cmd: <span class="kw-2">&amp;</span>IppPrintCmd) -&gt; io::Result&lt;IppPayload&gt; {
+    <span class="kw">let </span>payload = <span class="kw">match </span>cmd.file {
+        <span class="prelude-val">Some</span>(<span class="kw-2">ref </span>filename) =&gt; IppPayload::new(BufReader::new(fs::File::open(filename)<span class="question-mark">?</span>)),
+        <span class="prelude-val">None </span>=&gt; IppPayload::new(BufReader::new(io::stdin())),
     };
-    <span class="prelude-val">Ok</span>(<span class="ident">payload</span>)
+    <span class="prelude-val">Ok</span>(payload)
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">do_print</span>(<span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">IppParams</span>, <span class="ident">cmd</span>: <span class="ident">IppPrintCmd</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">new_client</span>(<span class="ident">cmd</span>.<span class="ident">uri</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">params</span>);
+<span class="kw">fn </span>do_print(params: <span class="kw-2">&amp;</span>IppParams, cmd: IppPrintCmd) -&gt; <span class="prelude-ty">Result</span>&lt;(), IppError&gt; {
+    <span class="kw">let </span>client = new_client(cmd.uri.parse()<span class="question-mark">?</span>, params);
 
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">cmd</span>.<span class="ident">no_check_state</span> {
-        <span class="ident">check_printer_state</span>(<span class="kw-2">&amp;</span><span class="ident">client</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-    }
-
-    <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">new_payload</span>(<span class="kw-2">&amp;</span><span class="ident">cmd</span>).<span class="ident">map_err</span>(<span class="ident">IppError::from</span>)<span class="question-mark">?</span>;
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">IppOperationBuilder::print_job</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>(), <span class="ident">payload</span>);
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">jobname</span>) <span class="op">=</span> <span class="ident">cmd</span>.<span class="ident">job_name</span> {
-        <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">job_title</span>(<span class="kw-2">&amp;</span><span class="ident">jobname</span>);
-    }
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">username</span>) <span class="op">=</span> <span class="ident">cmd</span>.<span class="ident">user_name</span> {
-        <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">user_name</span>(<span class="kw-2">&amp;</span><span class="ident">username</span>);
-    }
-
-    <span class="kw">for</span> <span class="ident">arg</span> <span class="kw">in</span> <span class="ident">cmd</span>.<span class="ident">options</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">k</span>, <span class="ident">v</span>)) <span class="op">=</span> <span class="ident">arg</span>.<span class="ident">split_once</span>(<span class="string">&#39;=&#39;</span>) {
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">attribute</span>(<span class="ident">IppAttribute::new</span>(<span class="ident">k</span>, <span class="ident">v</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>()));
+    <span class="kw">if </span>!cmd.no_check_state {
+        <span class="kw">let </span>operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
+        <span class="kw">let </span>response = client.send(operation)<span class="question-mark">?</span>;
+        <span class="kw">if </span>!util::is_printer_ready(<span class="kw-2">&amp;</span>response)<span class="question-mark">? </span>{
+            <span class="kw">return </span><span class="prelude-val">Err</span>(IppError::PrinterNotReady);
         }
     }
 
-    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">builder</span>.<span class="ident">build</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>payload = new_payload(<span class="kw-2">&amp;</span>cmd).map_err(IppError::from)<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">header</span>().<span class="ident">status_code</span>();
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">status</span>.<span class="ident">is_success</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError::StatusError</span>(<span class="ident">status</span>));
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = IppOperationBuilder::print_job(client.uri().clone(), payload);
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(jobname) = cmd.job_name {
+        builder = builder.job_title(jobname);
+    }
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(username) = cmd.user_name {
+        builder = builder.user_name(username);
     }
 
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="ident">response</span>.<span class="ident">attributes</span>().<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::JobAttributes</span>).<span class="ident">next</span>() {
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">group</span>.<span class="ident">attributes</span>().<span class="ident">values</span>() {
-            <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
+    <span class="kw">for </span>arg <span class="kw">in </span>cmd.options {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((k, v)) = arg.split_once(<span class="string">&#39;=&#39;</span>) {
+            builder = builder.attribute(IppAttribute::new(k, v.parse().unwrap()));
+        }
+    }
+
+    <span class="kw">let </span>response = client.send(builder.build())<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>status = response.header().status_code();
+    <span class="kw">if </span>!status.is_success() {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(IppError::StatusError(status));
+    }
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(group) = response.attributes().groups_of(DelimiterTag::JobAttributes).next() {
+        <span class="kw">for </span>v <span class="kw">in </span>group.attributes().values() {
+            <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, v.name(), v.value());
         }
     }
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">do_status</span>(<span class="ident">params</span>: <span class="kw-2">&amp;</span><span class="ident">IppParams</span>, <span class="ident">cmd</span>: <span class="ident">IppStatusCmd</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">new_client</span>(<span class="ident">cmd</span>.<span class="ident">uri</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>, <span class="ident">params</span>);
+<span class="kw">fn </span>do_status(params: <span class="kw-2">&amp;</span>IppParams, cmd: IppStatusCmd) -&gt; <span class="prelude-ty">Result</span>&lt;(), IppError&gt; {
+    <span class="kw">let </span>client = new_client(cmd.uri.parse()<span class="question-mark">?</span>, params);
 
-    <span class="kw">let</span> <span class="ident">operation</span> <span class="op">=</span> <span class="ident">IppOperationBuilder::get_printer_attributes</span>(<span class="ident">client</span>.<span class="ident">uri</span>().<span class="ident">clone</span>())
-        .<span class="ident">attributes</span>(<span class="kw-2">&amp;</span><span class="ident">cmd</span>.<span class="ident">attributes</span>)
-        .<span class="ident">build</span>();
+    <span class="kw">let </span>operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
+        .attributes(<span class="kw-2">&amp;</span>cmd.attributes)
+        .build();
 
-    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">send</span>(<span class="ident">operation</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>response = client.send(operation)<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">header</span>().<span class="ident">status_code</span>();
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">status</span>.<span class="ident">is_success</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppError::StatusError</span>(<span class="ident">status</span>));
+    <span class="kw">let </span>status = response.header().status_code();
+    <span class="kw">if </span>!status.is_success() {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(IppError::StatusError(status));
     }
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">values</span> <span class="op">=</span> <span class="ident">response</span>
-        .<span class="ident">attributes</span>()
-        .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-        .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">group</span><span class="op">|</span> <span class="ident">group</span>.<span class="ident">attributes</span>().<span class="ident">values</span>())
-        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+    <span class="kw">let </span><span class="kw-2">mut </span>values = response
+        .attributes()
+        .groups_of(DelimiterTag::PrinterAttributes)
+        .flat_map(|group| group.attributes().values())
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="ident">values</span>.<span class="ident">sort_by_key</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">name</span>());
+    values.sort_by_key(|<span class="kw-2">&amp;</span>a| a.name());
 
-    <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">values</span> {
-        <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">v</span>.<span class="ident">name</span>(), <span class="ident">v</span>.<span class="ident">value</span>());
+    <span class="kw">for </span>v <span class="kw">in </span>values {
+        <span class="macro">println!</span>(<span class="string">&quot;{}: {}&quot;</span>, v.name(), v.value());
     }
 
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>)]</span>
-<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;IPP print utility&quot;</span>, <span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;ipputil&quot;</span>, <span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
-<span class="kw">struct</span> <span class="ident">IppParams</span> {
-    <span class="attribute">#[<span class="ident">clap</span>(
-        <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;ignore-tls-errors&quot;</span>,
-        <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;i&#39;</span>,
-        <span class="ident">global</span> <span class="op">=</span> <span class="bool-val">true</span>,
-        <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Ignore TLS handshake errors&quot;</span>
-    )]</span>
-    <span class="ident">ignore_tls_errors</span>: <span class="ident">bool</span>,
+<span class="attribute">#[derive(Parser)]
+#[clap(about = <span class="string">&quot;IPP print utility&quot;</span>, name = <span class="string">&quot;ipputil&quot;</span>, rename_all = <span class="string">&quot;kebab-case&quot;</span>)]
+</span><span class="kw">struct </span>IppParams {
+    <span class="attribute">#[clap(
+        long = <span class="string">&quot;ignore-tls-errors&quot;</span>,
+        short = <span class="string">&#39;i&#39;</span>,
+        global = <span class="bool-val">true</span>,
+        help = <span class="string">&quot;Ignore TLS handshake errors&quot;
+    </span>)]
+    </span>ignore_tls_errors: bool,
 
-    <span class="attribute">#[<span class="ident">clap</span>(
-        <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;timeout&quot;</span>,
-        <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;t&#39;</span>,
-        <span class="ident">global</span> <span class="op">=</span> <span class="bool-val">true</span>,
-        <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Request timeout in seconds, default = no timeout&quot;</span>
-    )]</span>
-    <span class="ident">timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(
+        long = <span class="string">&quot;timeout&quot;</span>,
+        short = <span class="string">&#39;t&#39;</span>,
+        global = <span class="bool-val">true</span>,
+        help = <span class="string">&quot;Request timeout in seconds, default = no timeout&quot;
+    </span>)]
+    </span>timeout: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;header&quot;</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;H&#39;</span>, <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Extra HTTP headers in key=value format&quot;</span>)]</span>
-    <span class="ident">headers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(long = <span class="string">&quot;header&quot;</span>, short = <span class="string">&#39;H&#39;</span>, help = <span class="string">&quot;Extra HTTP headers in key=value format&quot;</span>)]
+    </span>headers: Vec&lt;String&gt;,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
-    <span class="ident">command</span>: <span class="ident">IppCommand</span>,
+    <span class="attribute">#[clap(subcommand)]
+    </span>command: IppCommand,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>)]</span>
-<span class="kw">enum</span> <span class="ident">IppCommand</span> {
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;print&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Print file to an IPP printer&quot;</span>)]</span>
-    <span class="ident">Print</span>(<span class="ident">IppPrintCmd</span>),
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;status&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Get status of an IPP printer&quot;</span>)]</span>
-    <span class="ident">Status</span>(<span class="ident">IppStatusCmd</span>),
+<span class="attribute">#[derive(Parser)]
+</span><span class="kw">enum </span>IppCommand {
+    <span class="attribute">#[clap(name = <span class="string">&quot;print&quot;</span>, about = <span class="string">&quot;Print file to an IPP printer&quot;</span>)]
+    </span>Print(IppPrintCmd),
+    <span class="attribute">#[clap(name = <span class="string">&quot;status&quot;</span>, about = <span class="string">&quot;Get status of an IPP printer&quot;</span>)]
+    </span>Status(IppStatusCmd),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
-<span class="kw">struct</span> <span class="ident">IppPrintCmd</span> {
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Printer URI&quot;</span>)]</span>
-    <span class="ident">uri</span>: <span class="ident">String</span>,
+<span class="attribute">#[derive(Parser, Clone)]
+#[clap(rename_all = <span class="string">&quot;kebab-case&quot;</span>)]
+</span><span class="kw">struct </span>IppPrintCmd {
+    <span class="attribute">#[clap(help = <span class="string">&quot;Printer URI&quot;</span>)]
+    </span>uri: String,
 
-    <span class="attribute">#[<span class="ident">clap</span>(
-        <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;no-check-state&quot;</span>,
-        <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;n&#39;</span>,
-        <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Do not check printer state before printing&quot;</span>
-    )]</span>
-    <span class="ident">no_check_state</span>: <span class="ident">bool</span>,
+    <span class="attribute">#[clap(
+        long = <span class="string">&quot;no-check-state&quot;</span>,
+        short = <span class="string">&#39;n&#39;</span>,
+        help = <span class="string">&quot;Do not check printer state before printing&quot;
+    </span>)]
+    </span>no_check_state: bool,
 
-    <span class="attribute">#[<span class="ident">clap</span>(
-        <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;file&quot;</span>,
-        <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;f&#39;</span>,
-        <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Input file name to print [default: standard input]&quot;</span>
-    )]</span>
-    <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(
+        long = <span class="string">&quot;file&quot;</span>,
+        short = <span class="string">&#39;f&#39;</span>,
+        help = <span class="string">&quot;Input file name to print [default: standard input]&quot;
+    </span>)]
+    </span>file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;job-name&quot;</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;j&#39;</span>, <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Job name to send as job-name attribute&quot;</span>)]</span>
-    <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(long = <span class="string">&quot;job-name&quot;</span>, short = <span class="string">&#39;j&#39;</span>, help = <span class="string">&quot;Job name to send as job-name attribute&quot;</span>)]
+    </span>job_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="attribute">#[<span class="ident">clap</span>(
-        <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;user-name&quot;</span>,
-        <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;u&#39;</span>,
-        <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;User name to send as requesting-user-name attribute&quot;</span>
-    )]</span>
-    <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(
+        long = <span class="string">&quot;user-name&quot;</span>,
+        short = <span class="string">&#39;u&#39;</span>,
+        help = <span class="string">&quot;User name to send as requesting-user-name attribute&quot;
+    </span>)]
+    </span>user_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;option&quot;</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;o&#39;</span>, <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Extra IPP job attributes in key=value format&quot;</span>)]</span>
-    <span class="ident">options</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(long = <span class="string">&quot;option&quot;</span>, short = <span class="string">&#39;o&#39;</span>, help = <span class="string">&quot;Extra IPP job attributes in key=value format&quot;</span>)]
+    </span>options: Vec&lt;String&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
-<span class="kw">struct</span> <span class="ident">IppStatusCmd</span> {
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Printer URI&quot;</span>)]</span>
-    <span class="ident">uri</span>: <span class="ident">String</span>,
+<span class="attribute">#[derive(Parser, Clone)]
+#[clap(rename_all = <span class="string">&quot;kebab-case&quot;</span>)]
+</span><span class="kw">struct </span>IppStatusCmd {
+    <span class="attribute">#[clap(help = <span class="string">&quot;Printer URI&quot;</span>)]
+    </span>uri: String,
 
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;attribute&quot;</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;a&#39;</span>, <span class="ident">help</span> <span class="op">=</span> <span class="string">&quot;Attributes to query, default is to get all&quot;</span>)]</span>
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[clap(long = <span class="string">&quot;attribute&quot;</span>, short = <span class="string">&#39;a&#39;</span>, help = <span class="string">&quot;Attributes to query, default is to get all&quot;</span>)]
+    </span>attributes: Vec&lt;String&gt;,
 }
 
-<span class="attribute">#[<span class="ident">tokio::main</span>]</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="ident">env_logger::init</span>();
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+    <span class="kw">let </span>params = IppParams::parse();
 
-    <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">IppParams::parse</span>();
-
-    <span class="kw">match</span> <span class="ident">params</span>.<span class="ident">command</span> {
-        <span class="ident">IppCommand::Status</span>(<span class="kw-2">ref</span> <span class="ident">cmd</span>) =&gt; <span class="ident">do_status</span>(<span class="kw-2">&amp;</span><span class="ident">params</span>, <span class="ident">cmd</span>.<span class="ident">clone</span>()).<span class="kw">await</span><span class="question-mark">?</span>,
-        <span class="ident">IppCommand::Print</span>(<span class="kw-2">ref</span> <span class="ident">cmd</span>) =&gt; <span class="ident">do_print</span>(<span class="kw-2">&amp;</span><span class="ident">params</span>, <span class="ident">cmd</span>.<span class="ident">clone</span>()).<span class="kw">await</span><span class="question-mark">?</span>,
+    <span class="kw">match </span>params.command {
+        IppCommand::Status(<span class="kw-2">ref </span>cmd) =&gt; do_status(<span class="kw-2">&amp;</span>params, cmd.clone())<span class="question-mark">?</span>,
+        IppCommand::Print(<span class="kw-2">ref </span>cmd) =&gt; do_print(<span class="kw-2">&amp;</span>params, cmd.clone())<span class="question-mark">?</span>,
     }
     <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipputil" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipputil" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

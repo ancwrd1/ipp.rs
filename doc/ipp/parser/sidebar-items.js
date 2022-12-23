@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["IppParseError","Parse error enum"]],"struct":[["AsyncIppParser","Asynchronous IPP parser"],["IppParser","Synchronous IPP parser"]]});
+window.SIDEBAR_ITEMS = {"enum":[["IppParseError","Parse error enum"]],"struct":[["AsyncIppParser","Asynchronous IPP parser"],["IppParser","Synchronous IPP parser"]]};

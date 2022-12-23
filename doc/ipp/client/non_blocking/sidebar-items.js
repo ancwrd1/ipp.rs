@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AsyncIppClient","Asynchronous IPP client."]]};

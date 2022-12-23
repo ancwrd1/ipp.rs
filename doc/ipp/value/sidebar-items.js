@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["IppValue","IPP attribute values as defined in RFC 8010"]],"struct":[["IppValueIterator",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["IppValue","IPP attribute values as defined in RFC 8010"]],"struct":[["IppValueIterator",""]]};

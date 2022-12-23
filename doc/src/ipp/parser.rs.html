@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/parser.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/parser.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -475,478 +470,477 @@
 <span id="470">470</span>
 <span id="471">471</span>
 <span id="472">472</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! IPP stream parser</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std::io</span>::{<span class="self">self</span>, <span class="ident">Read</span>};
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! IPP stream parser
+//!
+</span><span class="kw">use </span>std::io::{<span class="self">self</span>, Read};
 
-<span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
-<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>};
+<span class="kw">use </span>bytes::Bytes;
+<span class="kw">use </span>log::{error, trace};
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-<span class="kw">use</span> {<span class="ident"><span class="kw">crate</span>::reader::AsyncIppReader</span>, <span class="ident">futures_util::io::AsyncRead</span>};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+</span><span class="kw">use </span>{<span class="kw">crate</span>::reader::AsyncIppReader, futures_util::io::AsyncRead};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">attribute</span>::{<span class="ident">IppAttribute</span>, <span class="ident">IppAttributeGroup</span>, <span class="ident">IppAttributes</span>},
-    <span class="ident">model</span>::{<span class="ident">DelimiterTag</span>, <span class="ident">ValueTag</span>},
-    <span class="ident">reader::IppReader</span>,
-    <span class="ident">request::IppRequestResponse</span>,
-    <span class="ident">value::IppValue</span>,
-    <span class="ident">FromPrimitive</span> <span class="kw">as</span> <span class="kw">_</span>,
+<span class="kw">use crate</span>::{
+    attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
+    model::{DelimiterTag, ValueTag},
+    reader::IppReader,
+    request::IppRequestResponse,
+    value::IppValue,
+    FromPrimitive <span class="kw">as _</span>,
 };
 
-<span class="doccomment">/// Parse error enum</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IppParseError</span> {
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid tag: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidTag</span>(<span class="ident">u8</span>),
+<span class="doccomment">/// Parse error enum
+</span><span class="attribute">#[derive(Debug, thiserror::Error)]
+</span><span class="kw">pub enum </span>IppParseError {
+    <span class="attribute">#[error(<span class="string">&quot;Invalid tag: {0}&quot;</span>)]
+    </span>InvalidTag(u8),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid IPP collection&quot;</span>)]</span>
-    <span class="ident">InvalidCollection</span>,
+    <span class="attribute">#[error(<span class="string">&quot;Invalid IPP collection&quot;</span>)]
+    </span>InvalidCollection,
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="ident">IoError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">io::Error</span>),
+    <span class="attribute">#[error(transparent)]
+    </span>IoError(<span class="attribute">#[from] </span>io::Error),
 }
 
-<span class="comment">// create a single value from one-element list, list otherwise</span>
-<span class="kw">fn</span> <span class="ident">list_or_value</span>(<span class="kw-2">mut</span> <span class="ident">list</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span>) -&gt; <span class="ident">IppValue</span> {
-    <span class="kw">if</span> <span class="ident">list</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
-        <span class="ident">list</span>.<span class="ident">remove</span>(<span class="number">0</span>)
-    } <span class="kw">else</span> {
-        <span class="ident">IppValue::Array</span>(<span class="ident">list</span>)
+<span class="comment">// create a single value from one-element list, list otherwise
+</span><span class="kw">fn </span>list_or_value(<span class="kw-2">mut </span>list: Vec&lt;IppValue&gt;) -&gt; IppValue {
+    <span class="kw">if </span>list.len() == <span class="number">1 </span>{
+        list.remove(<span class="number">0</span>)
+    } <span class="kw">else </span>{
+        IppValue::Array(list)
     }
 }
 
-<span class="kw">struct</span> <span class="ident">ParserState</span> {
-    <span class="ident">current_group</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IppAttributeGroup</span><span class="op">&gt;</span>,
-    <span class="ident">last_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">context</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">attributes</span>: <span class="ident">IppAttributes</span>,
+<span class="kw">struct </span>ParserState {
+    current_group: <span class="prelude-ty">Option</span>&lt;IppAttributeGroup&gt;,
+    last_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    context: Vec&lt;Vec&lt;IppValue&gt;&gt;,
+    attributes: IppAttributes,
 }
 
-<span class="kw">impl</span> <span class="ident">ParserState</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">ParserState</span> {
-            <span class="ident">current_group</span>: <span class="prelude-val">None</span>,
-            <span class="ident">last_name</span>: <span class="prelude-val">None</span>,
-            <span class="ident">context</span>: <span class="macro">vec!</span>[<span class="macro">vec!</span>[]],
-            <span class="ident">attributes</span>: <span class="ident">IppAttributes::new</span>(),
+<span class="kw">impl </span>ParserState {
+    <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
+        ParserState {
+            current_group: <span class="prelude-val">None</span>,
+            last_name: <span class="prelude-val">None</span>,
+            context: <span class="macro">vec!</span>[<span class="macro">vec!</span>[]],
+            attributes: IppAttributes::new(),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">add_last_attribute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">last_name</span>.<span class="ident">take</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val_list</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">pop</span>() {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">group</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_group</span> {
-                    <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">IppAttribute::new</span>(<span class="kw-2">&amp;</span><span class="ident">last_name</span>, <span class="ident">list_or_value</span>(<span class="ident">val_list</span>));
-                    <span class="ident">group</span>.<span class="ident">attributes_mut</span>().<span class="ident">insert</span>(<span class="ident">last_name</span>, <span class="ident">attr</span>);
+    <span class="kw">fn </span>add_last_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(last_name) = <span class="self">self</span>.last_name.take() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(val_list) = <span class="self">self</span>.context.pop() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>group) = <span class="self">self</span>.current_group {
+                    <span class="kw">let </span>attr = IppAttribute::new(<span class="kw-2">&amp;</span>last_name, list_or_value(val_list));
+                    group.attributes_mut().insert(last_name, attr);
                 }
             }
-            <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">push</span>(<span class="macro">vec!</span>[]);
+            <span class="self">self</span>.context.push(<span class="macro">vec!</span>[]);
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">parse_delimiter</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DelimiterTag</span>, <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="macro">debug!</span>(<span class="string">&quot;Delimiter tag: {:0x}&quot;</span>, <span class="ident">tag</span>);
+    <span class="kw">fn </span>parse_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tag: u8) -&gt; <span class="prelude-ty">Result</span>&lt;DelimiterTag, IppParseError&gt; {
+        <span class="macro">trace!</span>(<span class="string">&quot;Delimiter tag: {:0x}&quot;</span>, tag);
 
-        <span class="kw">let</span> <span class="ident">tag</span> <span class="op">=</span> <span class="ident">DelimiterTag::from_u8</span>(<span class="ident">tag</span>).<span class="ident">ok_or</span>(<span class="ident">IppParseError::InvalidTag</span>(<span class="ident">tag</span>))<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">tag</span> <span class="op">==</span> <span class="ident">DelimiterTag::EndOfAttributes</span> {
-            <span class="self">self</span>.<span class="ident">add_last_attribute</span>();
+        <span class="kw">let </span>tag = DelimiterTag::from_u8(tag).ok_or(IppParseError::InvalidTag(tag))<span class="question-mark">?</span>;
+        <span class="kw">if </span>tag == DelimiterTag::EndOfAttributes {
+            <span class="self">self</span>.add_last_attribute();
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">group</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_group</span>.<span class="ident">take</span>() {
-            <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">groups_mut</span>().<span class="ident">push</span>(<span class="ident">group</span>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(group) = <span class="self">self</span>.current_group.take() {
+            <span class="self">self</span>.attributes.groups_mut().push(group);
         }
 
-        <span class="self">self</span>.<span class="ident">current_group</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">IppAttributeGroup::new</span>(<span class="ident">tag</span>));
+        <span class="self">self</span>.current_group = <span class="prelude-val">Some</span>(IppAttributeGroup::new(tag));
 
-        <span class="prelude-val">Ok</span>(<span class="ident">tag</span>)
+        <span class="prelude-val">Ok</span>(tag)
     }
 
-    <span class="kw">fn</span> <span class="ident">parse_value</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">u8</span>, <span class="ident">name</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">Bytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">ipp_value</span> <span class="op">=</span> <span class="ident">IppValue::parse</span>(<span class="ident">tag</span>, <span class="ident">value</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>parse_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tag: u8, name: String, value: Bytes) -&gt; <span class="prelude-ty">Result</span>&lt;(), IppParseError&gt; {
+        <span class="kw">let </span>ipp_value = IppValue::parse(tag, value)<span class="question-mark">?</span>;
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Value tag: {:0x}: {}: {}&quot;</span>, <span class="ident">tag</span>, <span class="ident">name</span>, <span class="ident">ipp_value</span>);
+        <span class="macro">trace!</span>(<span class="string">&quot;Value tag: {:0x}: {}: {}&quot;</span>, tag, name, ipp_value);
 
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">name</span>.<span class="ident">is_empty</span>() {
-            <span class="comment">// single attribute or begin of array</span>
-            <span class="self">self</span>.<span class="ident">add_last_attribute</span>();
-            <span class="comment">// store it as a previous attribute</span>
-            <span class="self">self</span>.<span class="ident">last_name</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>);
+        <span class="kw">if </span>!name.is_empty() {
+            <span class="comment">// single attribute or begin of array
+            </span><span class="self">self</span>.add_last_attribute();
+            <span class="comment">// store it as a previous attribute
+            </span><span class="self">self</span>.last_name = <span class="prelude-val">Some</span>(name);
         }
-        <span class="kw">if</span> <span class="ident">tag</span> <span class="op">==</span> <span class="ident">ValueTag::BegCollection</span> <span class="kw">as</span> <span class="ident">u8</span> {
-            <span class="comment">// start new collection in the stack</span>
-            <span class="macro">debug!</span>(<span class="string">&quot;Begin collection&quot;</span>);
-            <span class="kw">match</span> <span class="ident">ipp_value</span> {
-                <span class="ident">IppValue::Other</span> { <span class="kw-2">ref</span> <span class="ident">data</span>, .. } <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">is_empty</span>() =&gt; {}
-                <span class="kw">_</span> =&gt; {
+        <span class="kw">if </span>tag == ValueTag::BegCollection <span class="kw">as </span>u8 {
+            <span class="comment">// start new collection in the stack
+            </span><span class="macro">trace!</span>(<span class="string">&quot;Begin collection&quot;</span>);
+            <span class="kw">match </span>ipp_value {
+                IppValue::Other { <span class="kw-2">ref </span>data, .. } <span class="kw">if </span>data.is_empty() =&gt; {}
+                <span class="kw">_ </span>=&gt; {
                     <span class="macro">error!</span>(<span class="string">&quot;Invalid begin collection attribute&quot;</span>);
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppParseError::InvalidCollection</span>);
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(IppParseError::InvalidCollection);
                 }
             }
-            <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">push</span>(<span class="macro">vec!</span>[]);
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">tag</span> <span class="op">==</span> <span class="ident">ValueTag::EndCollection</span> <span class="kw">as</span> <span class="ident">u8</span> {
-            <span class="comment">// get collection from the stack and add it to the previous element</span>
-            <span class="macro">debug!</span>(<span class="string">&quot;End collection&quot;</span>);
-            <span class="kw">match</span> <span class="ident">ipp_value</span> {
-                <span class="ident">IppValue::Other</span> { <span class="kw-2">ref</span> <span class="ident">data</span>, .. } <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">is_empty</span>() =&gt; {}
-                <span class="kw">_</span> =&gt; {
+            <span class="self">self</span>.context.push(<span class="macro">vec!</span>[]);
+        } <span class="kw">else if </span>tag == ValueTag::EndCollection <span class="kw">as </span>u8 {
+            <span class="comment">// get collection from the stack and add it to the previous element
+            </span><span class="macro">trace!</span>(<span class="string">&quot;End collection&quot;</span>);
+            <span class="kw">match </span>ipp_value {
+                IppValue::Other { <span class="kw-2">ref </span>data, .. } <span class="kw">if </span>data.is_empty() =&gt; {}
+                <span class="kw">_ </span>=&gt; {
                     <span class="macro">error!</span>(<span class="string">&quot;Invalid end collection attribute&quot;</span>);
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppParseError::InvalidCollection</span>);
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(IppParseError::InvalidCollection);
                 }
             }
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">arr</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">pop</span>() {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val_list</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">last_mut</span>() {
-                    <span class="ident">val_list</span>.<span class="ident">push</span>(<span class="ident">IppValue::Collection</span>(<span class="ident">arr</span>));
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(arr) = <span class="self">self</span>.context.pop() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(val_list) = <span class="self">self</span>.context.last_mut() {
+                    val_list.push(IppValue::Collection(arr));
                 }
             }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val_list</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">context</span>.<span class="ident">last_mut</span>() {
-            <span class="comment">// add attribute to the current collection</span>
-            <span class="ident">val_list</span>.<span class="ident">push</span>(<span class="ident">ipp_value</span>);
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(val_list) = <span class="self">self</span>.context.last_mut() {
+            <span class="comment">// add attribute to the current collection
+            </span>val_list.push(ipp_value);
         }
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-<span class="doccomment">/// Asynchronous IPP parser</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncIppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
-    <span class="ident">reader</span>: <span class="ident">AsyncIppReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-    <span class="ident">state</span>: <span class="ident">ParserState</span>,
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+</span><span class="doccomment">/// Asynchronous IPP parser
+</span><span class="kw">pub struct </span>AsyncIppParser&lt;R&gt; {
+    reader: AsyncIppReader&lt;R&gt;,
+    state: ParserState,
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">AsyncIppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">R</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+</span><span class="kw">impl</span>&lt;R&gt; AsyncIppParser&lt;R&gt;
+<span class="kw">where
+    </span>R: <span class="lifetime">&#39;static </span>+ AsyncRead + Send + Sync + Unpin,
 {
-    <span class="doccomment">/// Create IPP parser from AsyncIppReader</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="ident">T</span>) -&gt; <span class="ident">AsyncIppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AsyncIppReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Create IPP parser from AsyncIppReader
+    </span><span class="kw">pub fn </span>new&lt;T&gt;(reader: T) -&gt; AsyncIppParser&lt;R&gt;
+    <span class="kw">where
+        </span>T: Into&lt;AsyncIppReader&lt;R&gt;&gt;,
     {
-        <span class="ident">AsyncIppParser</span> {
-            <span class="ident">reader</span>: <span class="ident">reader</span>.<span class="ident">into</span>(),
-            <span class="ident">state</span>: <span class="ident">ParserState::new</span>(),
+        AsyncIppParser {
+            reader: reader.into(),
+            state: ParserState::new(),
         }
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse_value</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="comment">// value tag</span>
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_name</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_value</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">async fn </span>parse_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tag: u8) -&gt; <span class="prelude-ty">Result</span>&lt;(), IppParseError&gt; {
+        <span class="comment">// value tag
+        </span><span class="kw">let </span>name = <span class="self">self</span>.reader.read_name().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>value = <span class="self">self</span>.reader.read_value().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">parse_value</span>(<span class="ident">tag</span>, <span class="ident">name</span>, <span class="ident">value</span>)
+        <span class="self">self</span>.state.parse_value(tag, name, value)
     }
 
-    <span class="doccomment">/// Parse IPP stream</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_header</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="macro">debug!</span>(<span class="string">&quot;IPP header: {:?}&quot;</span>, <span class="ident">header</span>);
+    <span class="doccomment">/// Parse IPP stream
+    </span><span class="kw">pub async fn </span>parse(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;IppRequestResponse, IppParseError&gt; {
+        <span class="kw">let </span>header = <span class="self">self</span>.reader.read_header().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">trace!</span>(<span class="string">&quot;IPP header: {:?}&quot;</span>, header);
 
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_tag</span>().<span class="kw">await</span><span class="question-mark">?</span> {
-                <span class="ident">tag</span> @ <span class="number">0x01</span>..<span class="op">=</span><span class="number">0x05</span> =&gt; {
-                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">parse_delimiter</span>(<span class="ident">tag</span>)<span class="question-mark">?</span> <span class="op">==</span> <span class="ident">DelimiterTag::EndOfAttributes</span> {
+        <span class="kw">loop </span>{
+            <span class="kw">match </span><span class="self">self</span>.reader.read_tag().<span class="kw">await</span><span class="question-mark">? </span>{
+                tag @ <span class="number">0x01</span>..=<span class="number">0x05 </span>=&gt; {
+                    <span class="kw">if </span><span class="self">self</span>.state.parse_delimiter(tag)<span class="question-mark">? </span>== DelimiterTag::EndOfAttributes {
                         <span class="kw">break</span>;
                     }
                 }
-                <span class="ident">tag</span> @ <span class="number">0x10</span>..<span class="op">=</span><span class="number">0x4a</span> =&gt; <span class="self">self</span>.<span class="ident">parse_value</span>(<span class="ident">tag</span>).<span class="kw">await</span><span class="question-mark">?</span>,
-                <span class="ident">tag</span> =&gt; {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppParseError::InvalidTag</span>(<span class="ident">tag</span>));
+                tag @ <span class="number">0x10</span>..=<span class="number">0x4a </span>=&gt; <span class="self">self</span>.parse_value(tag).<span class="kw">await</span><span class="question-mark">?</span>,
+                tag =&gt; {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(IppParseError::InvalidTag(tag));
                 }
             }
         }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">IppRequestResponse</span> {
-            <span class="ident">header</span>,
-            <span class="ident">attributes</span>: <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">attributes</span>,
-            <span class="ident">payload</span>: <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">into_payload</span>(),
+        <span class="prelude-val">Ok</span>(IppRequestResponse {
+            header,
+            attributes: <span class="self">self</span>.state.attributes,
+            payload: <span class="self">self</span>.reader.into_payload(),
         })
     }
 }
 
-<span class="doccomment">/// Synchronous IPP parser</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
-    <span class="ident">reader</span>: <span class="ident">IppReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-    <span class="ident">state</span>: <span class="ident">ParserState</span>,
+<span class="doccomment">/// Synchronous IPP parser
+</span><span class="kw">pub struct </span>IppParser&lt;R&gt; {
+    reader: IppReader&lt;R&gt;,
+    state: ParserState,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">R</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+<span class="kw">impl</span>&lt;R&gt; IppParser&lt;R&gt;
+<span class="kw">where
+    </span>R: <span class="lifetime">&#39;static </span>+ Read + Send + Sync,
 {
-    <span class="doccomment">/// Create IPP parser from IppReader</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="ident">T</span>) -&gt; <span class="ident">IppParser</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">IppReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Create IPP parser from IppReader
+    </span><span class="kw">pub fn </span>new&lt;T&gt;(reader: T) -&gt; IppParser&lt;R&gt;
+    <span class="kw">where
+        </span>T: Into&lt;IppReader&lt;R&gt;&gt;,
     {
-        <span class="ident">IppParser</span> {
-            <span class="ident">reader</span>: <span class="ident">reader</span>.<span class="ident">into</span>(),
-            <span class="ident">state</span>: <span class="ident">ParserState::new</span>(),
+        IppParser {
+            reader: reader.into(),
+            state: ParserState::new(),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">parse_value</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">tag</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="comment">// value tag</span>
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_name</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_value</span>()<span class="question-mark">?</span>;
+    <span class="kw">fn </span>parse_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tag: u8) -&gt; <span class="prelude-ty">Result</span>&lt;(), IppParseError&gt; {
+        <span class="comment">// value tag
+        </span><span class="kw">let </span>name = <span class="self">self</span>.reader.read_name()<span class="question-mark">?</span>;
+        <span class="kw">let </span>value = <span class="self">self</span>.reader.read_value()<span class="question-mark">?</span>;
 
-        <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">parse_value</span>(<span class="ident">tag</span>, <span class="ident">name</span>, <span class="ident">value</span>)
+        <span class="self">self</span>.state.parse_value(tag, name, value)
     }
 
-    <span class="doccomment">/// Parse IPP stream</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppParseError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_header</span>()<span class="question-mark">?</span>;
-        <span class="macro">debug!</span>(<span class="string">&quot;IPP header: {:?}&quot;</span>, <span class="ident">header</span>);
+    <span class="doccomment">/// Parse IPP stream
+    </span><span class="kw">pub fn </span>parse(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;IppRequestResponse, IppParseError&gt; {
+        <span class="kw">let </span>header = <span class="self">self</span>.reader.read_header()<span class="question-mark">?</span>;
+        <span class="macro">trace!</span>(<span class="string">&quot;IPP header: {:?}&quot;</span>, header);
 
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">read_tag</span>()<span class="question-mark">?</span> {
-                <span class="ident">tag</span> @ <span class="number">0x01</span>..<span class="op">=</span><span class="number">0x05</span> =&gt; {
-                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">parse_delimiter</span>(<span class="ident">tag</span>)<span class="question-mark">?</span> <span class="op">==</span> <span class="ident">DelimiterTag::EndOfAttributes</span> {
+        <span class="kw">loop </span>{
+            <span class="kw">match </span><span class="self">self</span>.reader.read_tag()<span class="question-mark">? </span>{
+                tag @ <span class="number">0x01</span>..=<span class="number">0x05 </span>=&gt; {
+                    <span class="kw">if </span><span class="self">self</span>.state.parse_delimiter(tag)<span class="question-mark">? </span>== DelimiterTag::EndOfAttributes {
                         <span class="kw">break</span>;
                     }
                 }
-                <span class="ident">tag</span> @ <span class="number">0x10</span>..<span class="op">=</span><span class="number">0x4a</span> =&gt; <span class="self">self</span>.<span class="ident">parse_value</span>(<span class="ident">tag</span>)<span class="question-mark">?</span>,
-                <span class="ident">tag</span> =&gt; {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">IppParseError::InvalidTag</span>(<span class="ident">tag</span>));
+                tag @ <span class="number">0x10</span>..=<span class="number">0x4a </span>=&gt; <span class="self">self</span>.parse_value(tag)<span class="question-mark">?</span>,
+                tag =&gt; {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(IppParseError::InvalidTag(tag));
                 }
             }
         }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">IppRequestResponse</span> {
-            <span class="ident">header</span>,
-            <span class="ident">attributes</span>: <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">attributes</span>,
-            <span class="ident">payload</span>: <span class="self">self</span>.<span class="ident">reader</span>.<span class="ident">into_payload</span>(),
+        <span class="prelude-val">Ok</span>(IppRequestResponse {
+            header,
+            attributes: <span class="self">self</span>.state.attributes,
+            payload: <span class="self">self</span>.reader.into_payload(),
         })
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_async_parse_no_attributes</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">AsyncIppReader::new</span>(<span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">data</span>)))
-            .<span class="ident">parse</span>()
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+    #[tokio::test]
+    </span><span class="kw">async fn </span>test_async_parse_no_attributes() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>];
+        <span class="kw">let </span>result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
             .<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="ident">res</span>.<span class="ident">attributes</span>.<span class="ident">groups</span>().<span class="ident">is_empty</span>());
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="macro">assert!</span>(res.attributes.groups().is_empty());
     }
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_async_parse_single_value</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+    #[tokio::test]
+    </span><span class="kw">async fn </span>test_async_parse_single_value() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">AsyncIppReader::new</span>(<span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">data</span>)))
-            .<span class="ident">parse</span>()
+        <span class="kw">let </span>result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
             .<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_integer</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(attr.value().as_integer(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
     }
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_async_parse_array</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+    #[tokio::test]
+    </span><span class="kw">async fn </span>test_async_parse_array() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>,
             <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x77</span>, <span class="number">0x65</span>, <span class="number">0x43</span>, <span class="number">0x21</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">AsyncIppReader::new</span>(<span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">data</span>)))
-            .<span class="ident">parse</span>()
+        <span class="kw">let </span>result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
             .<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_array</span>(),
-            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1234_5678</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x7765_4321</span>)])
+            attr.value().as_array(),
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1234_5678</span>), IppValue::Integer(<span class="number">0x7765_4321</span>)])
         );
     }
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_async_parse_collection</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+    #[tokio::test]
+    </span><span class="kw">async fn </span>test_async_parse_collection() {
+        <span class="kw">let </span>data = <span class="macro">vec!</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x34</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="string">b&#39;c&#39;</span>, <span class="string">b&#39;o&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>,
             <span class="number">0x78</span>, <span class="number">0x44</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="string">b&#39;k&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;y&#39;</span>, <span class="number">0x37</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">AsyncIppReader::new</span>(<span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">data</span>)))
-            .<span class="ident">parse</span>()
+        <span class="kw">let </span>result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
             .<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;coll&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;coll&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_collection</span>(),
+            attr.value().as_collection(),
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[
-                <span class="ident">IppValue::Integer</span>(<span class="number">0x1234_5678</span>),
-                <span class="ident">IppValue::Keyword</span>(<span class="string">&quot;key&quot;</span>.<span class="ident">to_owned</span>())
+                IppValue::Integer(<span class="number">0x1234_5678</span>),
+                IppValue::Keyword(<span class="string">&quot;key&quot;</span>.to_owned())
             ])
         );
     }
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-    <span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">test_async_parse_with_payload</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[
+    <span class="attribute">#[cfg(feature = <span class="string">&quot;async&quot;</span>)]
+    #[tokio::test]
+    </span><span class="kw">async fn </span>test_async_parse_with_payload() {
+        <span class="kw">let </span>data = <span class="macro">vec!</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>, <span class="number">3</span>,
             <span class="string">b&#39;f&#39;</span>, <span class="string">b&#39;o&#39;</span>, <span class="string">b&#39;o&#39;</span>,
         ];
 
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">AsyncIppReader::new</span>(<span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">data</span>)))
-            .<span class="ident">parse</span>()
+        <span class="kw">let </span>result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse()
             .<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_integer</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(attr.value().as_integer(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">futures_util::io::Cursor::new</span>(<span class="ident">Vec::new</span>());
-        <span class="ident">futures_executor::block_on</span>(<span class="ident">futures_util::io::copy</span>(<span class="ident">res</span>.<span class="ident">payload</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cursor</span>)).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">cursor</span>.<span class="ident">into_inner</span>(), <span class="string">b&quot;foo&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = futures_util::io::Cursor::new(Vec::new());
+        futures_executor::block_on(futures_util::io::copy(res.payload, <span class="kw-2">&amp;mut </span>cursor)).unwrap();
+        <span class="macro">assert_eq!</span>(cursor.into_inner(), <span class="string">b&quot;foo&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_parse_no_attributes</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_parse_no_attributes() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>];
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="ident">res</span>.<span class="ident">attributes</span>.<span class="ident">groups</span>().<span class="ident">is_empty</span>());
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="macro">assert!</span>(res.attributes.groups().is_empty());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_parse_single_value</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_parse_single_value() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_integer</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(attr.value().as_integer(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_parse_array</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_parse_array() {
+        <span class="kw">let </span>data = <span class="kw-2">&amp;</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>,
             <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x77</span>, <span class="number">0x65</span>, <span class="number">0x43</span>, <span class="number">0x21</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_array</span>(),
-            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">IppValue::Integer</span>(<span class="number">0x1234_5678</span>), <span class="ident">IppValue::Integer</span>(<span class="number">0x7765_4321</span>)])
+            attr.value().as_array(),
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[IppValue::Integer(<span class="number">0x1234_5678</span>), IppValue::Integer(<span class="number">0x7765_4321</span>)])
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_parse_collection</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_parse_collection() {
+        <span class="kw">let </span>data = <span class="macro">vec!</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x34</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="string">b&#39;c&#39;</span>, <span class="string">b&#39;o&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="string">b&#39;l&#39;</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x21</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>,
             <span class="number">0x78</span>, <span class="number">0x44</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="string">b&#39;k&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;y&#39;</span>, <span class="number">0x37</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>,
         ];
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;coll&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;coll&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_collection</span>(),
+            attr.value().as_collection(),
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[
-                <span class="ident">IppValue::Integer</span>(<span class="number">0x1234_5678</span>),
-                <span class="ident">IppValue::Keyword</span>(<span class="string">&quot;key&quot;</span>.<span class="ident">to_owned</span>())
+                IppValue::Integer(<span class="number">0x1234_5678</span>),
+                IppValue::Keyword(<span class="string">&quot;key&quot;</span>.to_owned())
             ])
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_parser_with_payload</span>() {
-        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_parser_with_payload() {
+        <span class="kw">let </span>data = <span class="macro">vec!</span>[
             <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0x21</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="string">b&#39;t&#39;</span>, <span class="string">b&#39;e&#39;</span>, <span class="string">b&#39;s&#39;</span>, <span class="string">b&#39;t&#39;</span>, <span class="number">0x00</span>, <span class="number">0x04</span>, <span class="number">0x12</span>, <span class="number">0x34</span>, <span class="number">0x56</span>, <span class="number">0x78</span>, <span class="number">3</span>,
             <span class="string">b&#39;f&#39;</span>, <span class="string">b&#39;o&#39;</span>, <span class="string">b&#39;o&#39;</span>,
         ];
 
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">IppParser::new</span>(<span class="ident">IppReader::new</span>(<span class="ident">io::Cursor::new</span>(<span class="ident">data</span>))).<span class="ident">parse</span>();
-        <span class="macro">assert!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>());
+        <span class="kw">let </span>result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        <span class="macro">assert!</span>(result.is_ok());
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">ok</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">res</span>
-            .<span class="ident">attributes</span>
-            .<span class="ident">groups_of</span>(<span class="ident">DelimiterTag::PrinterAttributes</span>)
-            .<span class="ident">next</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">attributes</span>();
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="ident">attrs</span>.<span class="ident">get</span>(<span class="string">&quot;test&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">attr</span>.<span class="ident">value</span>().<span class="ident">as_integer</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
+        <span class="kw">let </span><span class="kw-2">mut </span>res = result.ok().unwrap();
+        <span class="kw">let </span>attrs = res
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        <span class="kw">let </span>attr = attrs.get(<span class="string">&quot;test&quot;</span>).unwrap();
+        <span class="macro">assert_eq!</span>(attr.value().as_integer(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0x1234_5678</span>));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">io::Cursor::new</span>(<span class="ident">Vec::new</span>());
-        <span class="ident">io::copy</span>(<span class="kw-2">&amp;mut</span> <span class="ident">res</span>.<span class="ident">payload</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cursor</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">cursor</span>.<span class="ident">into_inner</span>(), <span class="string">b&quot;foo&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = io::Cursor::new(Vec::new());
+        io::copy(<span class="kw-2">&amp;mut </span>res.payload, <span class="kw-2">&amp;mut </span>cursor).unwrap();
+        <span class="macro">assert_eq!</span>(cursor.into_inner(), <span class="string">b&quot;foo&quot;</span>);
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

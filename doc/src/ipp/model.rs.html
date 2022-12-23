@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/model.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>model.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/model.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>model.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -256,259 +251,258 @@
 <span id="251">251</span>
 <span id="252">252</span>
 <span id="253">253</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! Base IPP definitions and tags</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! Base IPP definitions and tags
+//!
+</span><span class="kw">use </span>std::fmt;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;serde&quot;</span>)]
+</span><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use</span> <span class="ident">enum_primitive_derive::Primitive</span>;
+<span class="kw">use </span>enum_primitive_derive::Primitive;
 
-<span class="doccomment">/// IPP protocol version</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppVersion</span>(<span class="kw">pub</span> <span class="ident">u16</span>);
+<span class="doccomment">/// IPP protocol version
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub struct </span>IppVersion(<span class="kw">pub </span>u16);
 
-<span class="kw">impl</span> <span class="ident">IppVersion</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v1_0</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">IppVersion</span>(<span class="number">0x0100</span>)
+<span class="kw">impl </span>IppVersion {
+    <span class="kw">pub fn </span>v1_0() -&gt; <span class="self">Self </span>{
+        IppVersion(<span class="number">0x0100</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v1_1</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">IppVersion</span>(<span class="number">0x0101</span>)
+    <span class="kw">pub fn </span>v1_1() -&gt; <span class="self">Self </span>{
+        IppVersion(<span class="number">0x0101</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_0</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">IppVersion</span>(<span class="number">0x0200</span>)
+    <span class="kw">pub fn </span>v2_0() -&gt; <span class="self">Self </span>{
+        IppVersion(<span class="number">0x0200</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_1</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">IppVersion</span>(<span class="number">0x0201</span>)
+    <span class="kw">pub fn </span>v2_1() -&gt; <span class="self">Self </span>{
+        IppVersion(<span class="number">0x0201</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">v2_2</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">IppVersion</span>(<span class="number">0x0202</span>)
+    <span class="kw">pub fn </span>v2_2() -&gt; <span class="self">Self </span>{
+        IppVersion(<span class="number">0x0202</span>)
     }
 }
 
-<span class="doccomment">/// IPP operation constants</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::upper_case_acronyms</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Operation</span> {
-    <span class="ident">PrintJob</span> <span class="op">=</span> <span class="number">0x0002</span>,
-    <span class="ident">PrintUri</span> <span class="op">=</span> <span class="number">0x0003</span>,
-    <span class="ident">ValidateJob</span> <span class="op">=</span> <span class="number">0x0004</span>,
-    <span class="ident">CreateJob</span> <span class="op">=</span> <span class="number">0x0005</span>,
-    <span class="ident">SendDocument</span> <span class="op">=</span> <span class="number">0x0006</span>,
-    <span class="ident">SendUri</span> <span class="op">=</span> <span class="number">0x0007</span>,
-    <span class="ident">CancelJob</span> <span class="op">=</span> <span class="number">0x0008</span>,
-    <span class="ident">GetJobAttributes</span> <span class="op">=</span> <span class="number">0x0009</span>,
-    <span class="ident">GetJobs</span> <span class="op">=</span> <span class="number">0x000A</span>,
-    <span class="ident">GetPrinterAttributes</span> <span class="op">=</span> <span class="number">0x000B</span>,
-    <span class="ident">HoldJob</span> <span class="op">=</span> <span class="number">0x000C</span>,
-    <span class="ident">ReleaseJob</span> <span class="op">=</span> <span class="number">0x000D</span>,
-    <span class="ident">RestartJob</span> <span class="op">=</span> <span class="number">0x000E</span>,
-    <span class="ident">PausePrinter</span> <span class="op">=</span> <span class="number">0x0010</span>,
-    <span class="ident">ResumePrinter</span> <span class="op">=</span> <span class="number">0x0011</span>,
-    <span class="ident">PurgeJobs</span> <span class="op">=</span> <span class="number">0x0012</span>,
+<span class="doccomment">/// IPP operation constants
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
+</span><span class="kw">pub enum </span>Operation {
+    PrintJob = <span class="number">0x0002</span>,
+    PrintUri = <span class="number">0x0003</span>,
+    ValidateJob = <span class="number">0x0004</span>,
+    CreateJob = <span class="number">0x0005</span>,
+    SendDocument = <span class="number">0x0006</span>,
+    SendUri = <span class="number">0x0007</span>,
+    CancelJob = <span class="number">0x0008</span>,
+    GetJobAttributes = <span class="number">0x0009</span>,
+    GetJobs = <span class="number">0x000A</span>,
+    GetPrinterAttributes = <span class="number">0x000B</span>,
+    HoldJob = <span class="number">0x000C</span>,
+    ReleaseJob = <span class="number">0x000D</span>,
+    RestartJob = <span class="number">0x000E</span>,
+    PausePrinter = <span class="number">0x0010</span>,
+    ResumePrinter = <span class="number">0x0011</span>,
+    PurgeJobs = <span class="number">0x0012</span>,
 
-    <span class="ident">CupsGetDefault</span> <span class="op">=</span> <span class="number">0x4001</span>,
-    <span class="ident">CupsGetPrinters</span> <span class="op">=</span> <span class="number">0x4002</span>,
-    <span class="ident">CupsAddModifyPrinter</span> <span class="op">=</span> <span class="number">0x4003</span>,
-    <span class="ident">CupsDeletePrinter</span> <span class="op">=</span> <span class="number">0x4004</span>,
-    <span class="ident">CupsGetClasses</span> <span class="op">=</span> <span class="number">0x4005</span>,
-    <span class="ident">CupsAddModifyClass</span> <span class="op">=</span> <span class="number">0x4006</span>,
-    <span class="ident">CupsDeleteClass</span> <span class="op">=</span> <span class="number">0x4007</span>,
-    <span class="ident">CupsAcceptJobs</span> <span class="op">=</span> <span class="number">0x4008</span>,
-    <span class="ident">CupsRejectJobs</span> <span class="op">=</span> <span class="number">0x4009</span>,
-    <span class="ident">CupsSetDefault</span> <span class="op">=</span> <span class="number">0x400A</span>,
-    <span class="ident">CupsGetDevices</span> <span class="op">=</span> <span class="number">0x400B</span>,
-    <span class="ident">CupsGetPPDs</span> <span class="op">=</span> <span class="number">0x400C</span>,
-    <span class="ident">CupsMoveJob</span> <span class="op">=</span> <span class="number">0x400D</span>,
-    <span class="ident">CupsAuthenticateJob</span> <span class="op">=</span> <span class="number">0x400E</span>,
-    <span class="ident">CupsGetPPD</span> <span class="op">=</span> <span class="number">0x400F</span>,
-    <span class="ident">CupsGetDocument</span> <span class="op">=</span> <span class="number">0x4027</span>,
-    <span class="ident">CupsCreateLocalPrinter</span> <span class="op">=</span> <span class="number">0x4028</span>,
+    CupsGetDefault = <span class="number">0x4001</span>,
+    CupsGetPrinters = <span class="number">0x4002</span>,
+    CupsAddModifyPrinter = <span class="number">0x4003</span>,
+    CupsDeletePrinter = <span class="number">0x4004</span>,
+    CupsGetClasses = <span class="number">0x4005</span>,
+    CupsAddModifyClass = <span class="number">0x4006</span>,
+    CupsDeleteClass = <span class="number">0x4007</span>,
+    CupsAcceptJobs = <span class="number">0x4008</span>,
+    CupsRejectJobs = <span class="number">0x4009</span>,
+    CupsSetDefault = <span class="number">0x400A</span>,
+    CupsGetDevices = <span class="number">0x400B</span>,
+    CupsGetPPDs = <span class="number">0x400C</span>,
+    CupsMoveJob = <span class="number">0x400D</span>,
+    CupsAuthenticateJob = <span class="number">0x400E</span>,
+    CupsGetPPD = <span class="number">0x400F</span>,
+    CupsGetDocument = <span class="number">0x4027</span>,
+    CupsCreateLocalPrinter = <span class="number">0x4028</span>,
 }
 
-<span class="doccomment">/// printer-state constants</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PrinterState</span> {
-    <span class="ident">Idle</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="ident">Processing</span> <span class="op">=</span> <span class="number">4</span>,
-    <span class="ident">Stopped</span> <span class="op">=</span> <span class="number">5</span>,
+<span class="doccomment">/// printer-state constants
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>PrinterState {
+    Idle = <span class="number">3</span>,
+    Processing = <span class="number">4</span>,
+    Stopped = <span class="number">5</span>,
 }
 
-<span class="doccomment">/// paper orientation constants</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Orientation</span> {
-    <span class="ident">Portrait</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="ident">Landscape</span> <span class="op">=</span> <span class="number">4</span>,
-    <span class="ident">ReverseLandscape</span> <span class="op">=</span> <span class="number">5</span>,
-    <span class="ident">ReversePortrait</span> <span class="op">=</span> <span class="number">6</span>,
+<span class="doccomment">/// paper orientation constants
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>Orientation {
+    Portrait = <span class="number">3</span>,
+    Landscape = <span class="number">4</span>,
+    ReverseLandscape = <span class="number">5</span>,
+    ReversePortrait = <span class="number">6</span>,
 }
 
-<span class="doccomment">/// print-quality constants</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PrintQuality</span> {
-    <span class="ident">Draft</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="ident">Normal</span> <span class="op">=</span> <span class="number">4</span>,
-    <span class="ident">High</span> <span class="op">=</span> <span class="number">5</span>,
+<span class="doccomment">/// print-quality constants
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>PrintQuality {
+    Draft = <span class="number">3</span>,
+    Normal = <span class="number">4</span>,
+    High = <span class="number">5</span>,
 }
 
-<span class="doccomment">/// finishings constants</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Finishings</span> {
-    <span class="prelude-val">None</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="ident">Staple</span> <span class="op">=</span> <span class="number">4</span>,
-    <span class="ident">Punch</span> <span class="op">=</span> <span class="number">5</span>,
-    <span class="ident">Cover</span> <span class="op">=</span> <span class="number">6</span>,
-    <span class="ident">Bind</span> <span class="op">=</span> <span class="number">7</span>,
-    <span class="ident">SaddleStitch</span> <span class="op">=</span> <span class="number">8</span>,
-    <span class="ident">EdgeStitch</span> <span class="op">=</span> <span class="number">9</span>,
+<span class="doccomment">/// finishings constants
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>Finishings {
+    <span class="prelude-val">None </span>= <span class="number">3</span>,
+    Staple = <span class="number">4</span>,
+    Punch = <span class="number">5</span>,
+    Cover = <span class="number">6</span>,
+    Bind = <span class="number">7</span>,
+    SaddleStitch = <span class="number">8</span>,
+    EdgeStitch = <span class="number">9</span>,
 }
 
-<span class="doccomment">/// job-state constants</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">JobState</span> {
-    <span class="ident">Pending</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="ident">PendingHeld</span> <span class="op">=</span> <span class="number">4</span>,
-    <span class="ident">Processing</span> <span class="op">=</span> <span class="number">5</span>,
-    <span class="ident">ProcessingStopped</span> <span class="op">=</span> <span class="number">6</span>,
-    <span class="ident">Canceled</span> <span class="op">=</span> <span class="number">7</span>,
-    <span class="ident">Aborted</span> <span class="op">=</span> <span class="number">8</span>,
-    <span class="ident">Completed</span> <span class="op">=</span> <span class="number">9</span>,
+<span class="doccomment">/// job-state constants
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>JobState {
+    Pending = <span class="number">3</span>,
+    PendingHeld = <span class="number">4</span>,
+    Processing = <span class="number">5</span>,
+    ProcessingStopped = <span class="number">6</span>,
+    Canceled = <span class="number">7</span>,
+    Aborted = <span class="number">8</span>,
+    Completed = <span class="number">9</span>,
 }
 
-<span class="doccomment">/// group delimiter tags</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DelimiterTag</span> {
-    <span class="ident">OperationAttributes</span> <span class="op">=</span> <span class="number">0x01</span>,
-    <span class="ident">JobAttributes</span> <span class="op">=</span> <span class="number">0x02</span>,
-    <span class="ident">EndOfAttributes</span> <span class="op">=</span> <span class="number">0x03</span>,
-    <span class="ident">PrinterAttributes</span> <span class="op">=</span> <span class="number">0x04</span>,
-    <span class="ident">UnsupportedAttributes</span> <span class="op">=</span> <span class="number">0x05</span>,
+<span class="doccomment">/// group delimiter tags
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Primitive, Debug, Copy, Clone, PartialEq, Hash, Eq)]
+</span><span class="kw">pub enum </span>DelimiterTag {
+    OperationAttributes = <span class="number">0x01</span>,
+    JobAttributes = <span class="number">0x02</span>,
+    EndOfAttributes = <span class="number">0x03</span>,
+    PrinterAttributes = <span class="number">0x04</span>,
+    UnsupportedAttributes = <span class="number">0x05</span>,
 }
 
-<span class="doccomment">/// IPP value tags</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ValueTag</span> {
-    <span class="ident">Unsupported</span> <span class="op">=</span> <span class="number">0x10</span>,
-    <span class="ident">Unknown</span> <span class="op">=</span> <span class="number">0x12</span>,
-    <span class="ident">NoValue</span> <span class="op">=</span> <span class="number">0x13</span>,
-    <span class="ident">Integer</span> <span class="op">=</span> <span class="number">0x21</span>,
-    <span class="ident">Boolean</span> <span class="op">=</span> <span class="number">0x22</span>,
-    <span class="ident">Enum</span> <span class="op">=</span> <span class="number">0x23</span>,
-    <span class="ident">OctetStringUnspecified</span> <span class="op">=</span> <span class="number">0x30</span>,
-    <span class="ident">DateTime</span> <span class="op">=</span> <span class="number">0x31</span>,
-    <span class="ident">Resolution</span> <span class="op">=</span> <span class="number">0x32</span>,
-    <span class="ident">RangeOfInteger</span> <span class="op">=</span> <span class="number">0x33</span>,
-    <span class="ident">BegCollection</span> <span class="op">=</span> <span class="number">0x34</span>,
-    <span class="ident">TextWithLanguage</span> <span class="op">=</span> <span class="number">0x35</span>,
-    <span class="ident">NameWithLanguage</span> <span class="op">=</span> <span class="number">0x36</span>,
-    <span class="ident">EndCollection</span> <span class="op">=</span> <span class="number">0x37</span>,
-    <span class="ident">TextWithoutLanguage</span> <span class="op">=</span> <span class="number">0x41</span>,
-    <span class="ident">NameWithoutLanguage</span> <span class="op">=</span> <span class="number">0x42</span>,
-    <span class="ident">Keyword</span> <span class="op">=</span> <span class="number">0x44</span>,
-    <span class="ident">Uri</span> <span class="op">=</span> <span class="number">0x45</span>,
-    <span class="ident">UriScheme</span> <span class="op">=</span> <span class="number">0x46</span>,
-    <span class="ident">Charset</span> <span class="op">=</span> <span class="number">0x47</span>,
-    <span class="ident">NaturalLanguage</span> <span class="op">=</span> <span class="number">0x48</span>,
-    <span class="ident">MimeMediaType</span> <span class="op">=</span> <span class="number">0x49</span>,
-    <span class="ident">MemberAttrName</span> <span class="op">=</span> <span class="number">0x4a</span>,
+<span class="doccomment">/// IPP value tags
+</span><span class="attribute">#[cfg_attr(feature = <span class="string">&quot;serde&quot;</span>, derive(Serialize, Deserialize))]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>ValueTag {
+    Unsupported = <span class="number">0x10</span>,
+    Unknown = <span class="number">0x12</span>,
+    NoValue = <span class="number">0x13</span>,
+    Integer = <span class="number">0x21</span>,
+    Boolean = <span class="number">0x22</span>,
+    Enum = <span class="number">0x23</span>,
+    OctetStringUnspecified = <span class="number">0x30</span>,
+    DateTime = <span class="number">0x31</span>,
+    Resolution = <span class="number">0x32</span>,
+    RangeOfInteger = <span class="number">0x33</span>,
+    BegCollection = <span class="number">0x34</span>,
+    TextWithLanguage = <span class="number">0x35</span>,
+    NameWithLanguage = <span class="number">0x36</span>,
+    EndCollection = <span class="number">0x37</span>,
+    TextWithoutLanguage = <span class="number">0x41</span>,
+    NameWithoutLanguage = <span class="number">0x42</span>,
+    Keyword = <span class="number">0x44</span>,
+    Uri = <span class="number">0x45</span>,
+    UriScheme = <span class="number">0x46</span>,
+    Charset = <span class="number">0x47</span>,
+    NaturalLanguage = <span class="number">0x48</span>,
+    MimeMediaType = <span class="number">0x49</span>,
+    MemberAttrName = <span class="number">0x4a</span>,
 }
 
-<span class="doccomment">/// IPP status codes</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Primitive</span>, <span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusCode</span> {
-    <span class="ident">SuccessfulOk</span> <span class="op">=</span> <span class="number">0x0000</span>,
-    <span class="ident">SuccessfulOkIgnoredOrSubstitutedAttributes</span> <span class="op">=</span> <span class="number">0x0001</span>,
-    <span class="ident">SuccessfulOkConflictingAttributes</span> <span class="op">=</span> <span class="number">0x0002</span>,
-    <span class="ident">ClientErrorBadRequest</span> <span class="op">=</span> <span class="number">0x0400</span>,
-    <span class="ident">ClientErrorForbidden</span> <span class="op">=</span> <span class="number">0x0401</span>,
-    <span class="ident">ClientErrorNotAuthenticated</span> <span class="op">=</span> <span class="number">0x0402</span>,
-    <span class="ident">ClientErrorNotAuthorized</span> <span class="op">=</span> <span class="number">0x0403</span>,
-    <span class="ident">ClientErrorNotPossible</span> <span class="op">=</span> <span class="number">0x0404</span>,
-    <span class="ident">ClientErrorTimeout</span> <span class="op">=</span> <span class="number">0x0405</span>,
-    <span class="ident">ClientErrorNotFound</span> <span class="op">=</span> <span class="number">0x0406</span>,
-    <span class="ident">ClientErrorGone</span> <span class="op">=</span> <span class="number">0x0407</span>,
-    <span class="ident">ClientErrorRequestEntityTooLong</span> <span class="op">=</span> <span class="number">0x0408</span>,
-    <span class="ident">ClientErrorRequestValueTooLong</span> <span class="op">=</span> <span class="number">0x0409</span>,
-    <span class="ident">ClientErrorDocumentFormatNotSupported</span> <span class="op">=</span> <span class="number">0x040A</span>,
-    <span class="ident">ClientErrorAttributesOrValuesNotSupported</span> <span class="op">=</span> <span class="number">0x040B</span>,
-    <span class="ident">ClientErrorUriSchemeNotSupported</span> <span class="op">=</span> <span class="number">0x040C</span>,
-    <span class="ident">ClientErrorCharsetNotSupported</span> <span class="op">=</span> <span class="number">0x040D</span>,
-    <span class="ident">ClientErrorConflictingAttributes</span> <span class="op">=</span> <span class="number">0x040E</span>,
-    <span class="ident">ClientErrorCompressionNotSupported</span> <span class="op">=</span> <span class="number">0x040F</span>,
-    <span class="ident">ClientErrorCompressionError</span> <span class="op">=</span> <span class="number">0x0410</span>,
-    <span class="ident">ClientErrorDocumentFormatError</span> <span class="op">=</span> <span class="number">0x0411</span>,
-    <span class="ident">ClientErrorDocumentAccessError</span> <span class="op">=</span> <span class="number">0x0412</span>,
-    <span class="ident">ServerErrorInternalError</span> <span class="op">=</span> <span class="number">0x0500</span>,
-    <span class="ident">ServerErrorOperationNotSupported</span> <span class="op">=</span> <span class="number">0x0501</span>,
-    <span class="ident">ServerErrorServiceUnavailable</span> <span class="op">=</span> <span class="number">0x0502</span>,
-    <span class="ident">ServerErrorVersionNotSupported</span> <span class="op">=</span> <span class="number">0x0503</span>,
-    <span class="ident">ServerErrorDeviceError</span> <span class="op">=</span> <span class="number">0x0504</span>,
-    <span class="ident">ServerErrorTemporaryError</span> <span class="op">=</span> <span class="number">0x0505</span>,
-    <span class="ident">ServerErrorNotAcceptingJobs</span> <span class="op">=</span> <span class="number">0x0506</span>,
-    <span class="ident">ServerErrorBusy</span> <span class="op">=</span> <span class="number">0x0507</span>,
-    <span class="ident">ServerErrorJobCanceled</span> <span class="op">=</span> <span class="number">0x0508</span>,
-    <span class="ident">ServerErrorMultipleDocumentJobsNotSupported</span> <span class="op">=</span> <span class="number">0x0509</span>,
-    <span class="ident">UnknownStatusCode</span> <span class="op">=</span> <span class="number">0xffff</span>,
+<span class="doccomment">/// IPP status codes
+</span><span class="attribute">#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+</span><span class="kw">pub enum </span>StatusCode {
+    SuccessfulOk = <span class="number">0x0000</span>,
+    SuccessfulOkIgnoredOrSubstitutedAttributes = <span class="number">0x0001</span>,
+    SuccessfulOkConflictingAttributes = <span class="number">0x0002</span>,
+    ClientErrorBadRequest = <span class="number">0x0400</span>,
+    ClientErrorForbidden = <span class="number">0x0401</span>,
+    ClientErrorNotAuthenticated = <span class="number">0x0402</span>,
+    ClientErrorNotAuthorized = <span class="number">0x0403</span>,
+    ClientErrorNotPossible = <span class="number">0x0404</span>,
+    ClientErrorTimeout = <span class="number">0x0405</span>,
+    ClientErrorNotFound = <span class="number">0x0406</span>,
+    ClientErrorGone = <span class="number">0x0407</span>,
+    ClientErrorRequestEntityTooLong = <span class="number">0x0408</span>,
+    ClientErrorRequestValueTooLong = <span class="number">0x0409</span>,
+    ClientErrorDocumentFormatNotSupported = <span class="number">0x040A</span>,
+    ClientErrorAttributesOrValuesNotSupported = <span class="number">0x040B</span>,
+    ClientErrorUriSchemeNotSupported = <span class="number">0x040C</span>,
+    ClientErrorCharsetNotSupported = <span class="number">0x040D</span>,
+    ClientErrorConflictingAttributes = <span class="number">0x040E</span>,
+    ClientErrorCompressionNotSupported = <span class="number">0x040F</span>,
+    ClientErrorCompressionError = <span class="number">0x0410</span>,
+    ClientErrorDocumentFormatError = <span class="number">0x0411</span>,
+    ClientErrorDocumentAccessError = <span class="number">0x0412</span>,
+    ServerErrorInternalError = <span class="number">0x0500</span>,
+    ServerErrorOperationNotSupported = <span class="number">0x0501</span>,
+    ServerErrorServiceUnavailable = <span class="number">0x0502</span>,
+    ServerErrorVersionNotSupported = <span class="number">0x0503</span>,
+    ServerErrorDeviceError = <span class="number">0x0504</span>,
+    ServerErrorTemporaryError = <span class="number">0x0505</span>,
+    ServerErrorNotAcceptingJobs = <span class="number">0x0506</span>,
+    ServerErrorBusy = <span class="number">0x0507</span>,
+    ServerErrorJobCanceled = <span class="number">0x0508</span>,
+    ServerErrorMultipleDocumentJobsNotSupported = <span class="number">0x0509</span>,
+    UnknownStatusCode = <span class="number">0xffff</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">StatusCode</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_success</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+<span class="kw">impl </span>StatusCode {
+    <span class="kw">pub fn </span>is_success(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(
             <span class="self">self</span>,
-            <span class="ident">StatusCode::SuccessfulOk</span>
-                <span class="op">|</span> <span class="ident">StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes</span>
-                <span class="op">|</span> <span class="ident">StatusCode::SuccessfulOkConflictingAttributes</span>
+            StatusCode::SuccessfulOk
+                | StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes
+                | StatusCode::SuccessfulOkConflictingAttributes
         )
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">StatusCode</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">StatusCode::SuccessfulOk</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;No error&quot;</span>),
-            <span class="ident">StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Ignored or substituted attributes&quot;</span>),
-            <span class="ident">StatusCode::SuccessfulOkConflictingAttributes</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Conflicting attributes&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorBadRequest</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Bad request&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorForbidden</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Forbidden&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorNotAuthenticated</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Not authenticated&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorNotAuthorized</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Not authorized&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorNotPossible</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Not possible&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorTimeout</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Timeout&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorNotFound</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Not found&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorGone</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Gone&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorRequestEntityTooLong</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Entity too long&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorRequestValueTooLong</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Request value too long&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorDocumentFormatNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Document format not supported&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorAttributesOrValuesNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Attributes or values not supported&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorUriSchemeNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Uri scheme not supported&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorCharsetNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Charset not supported&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorConflictingAttributes</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Conflicting attributes&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorCompressionNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Compression not supported&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorCompressionError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Compression error&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorDocumentFormatError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Document format error&quot;</span>),
-            <span class="ident">StatusCode::ClientErrorDocumentAccessError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Document access error&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorInternalError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Internal error&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorOperationNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Operation not supported&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorServiceUnavailable</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Service unavailable&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorVersionNotSupported</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Version not supported&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorDeviceError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Device error&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorTemporaryError</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Temporary error&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorNotAcceptingJobs</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Not accepting jobs&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorBusy</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Busy&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorJobCanceled</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Job canceled&quot;</span>),
-            <span class="ident">StatusCode::ServerErrorMultipleDocumentJobsNotSupported</span> =&gt; {
-                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Multiple document jobs not supported&quot;</span>)
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>StatusCode {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            StatusCode::SuccessfulOk =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;No error&quot;</span>),
+            StatusCode::SuccessfulOkIgnoredOrSubstitutedAttributes =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Ignored or substituted attributes&quot;</span>),
+            StatusCode::SuccessfulOkConflictingAttributes =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Conflicting attributes&quot;</span>),
+            StatusCode::ClientErrorBadRequest =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Bad request&quot;</span>),
+            StatusCode::ClientErrorForbidden =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Forbidden&quot;</span>),
+            StatusCode::ClientErrorNotAuthenticated =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Not authenticated&quot;</span>),
+            StatusCode::ClientErrorNotAuthorized =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Not authorized&quot;</span>),
+            StatusCode::ClientErrorNotPossible =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Not possible&quot;</span>),
+            StatusCode::ClientErrorTimeout =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Timeout&quot;</span>),
+            StatusCode::ClientErrorNotFound =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Not found&quot;</span>),
+            StatusCode::ClientErrorGone =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Gone&quot;</span>),
+            StatusCode::ClientErrorRequestEntityTooLong =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Entity too long&quot;</span>),
+            StatusCode::ClientErrorRequestValueTooLong =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Request value too long&quot;</span>),
+            StatusCode::ClientErrorDocumentFormatNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Document format not supported&quot;</span>),
+            StatusCode::ClientErrorAttributesOrValuesNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Attributes or values not supported&quot;</span>),
+            StatusCode::ClientErrorUriSchemeNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Uri scheme not supported&quot;</span>),
+            StatusCode::ClientErrorCharsetNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Charset not supported&quot;</span>),
+            StatusCode::ClientErrorConflictingAttributes =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Conflicting attributes&quot;</span>),
+            StatusCode::ClientErrorCompressionNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Compression not supported&quot;</span>),
+            StatusCode::ClientErrorCompressionError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Compression error&quot;</span>),
+            StatusCode::ClientErrorDocumentFormatError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Document format error&quot;</span>),
+            StatusCode::ClientErrorDocumentAccessError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Document access error&quot;</span>),
+            StatusCode::ServerErrorInternalError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Internal error&quot;</span>),
+            StatusCode::ServerErrorOperationNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Operation not supported&quot;</span>),
+            StatusCode::ServerErrorServiceUnavailable =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Service unavailable&quot;</span>),
+            StatusCode::ServerErrorVersionNotSupported =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Version not supported&quot;</span>),
+            StatusCode::ServerErrorDeviceError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Device error&quot;</span>),
+            StatusCode::ServerErrorTemporaryError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Temporary error&quot;</span>),
+            StatusCode::ServerErrorNotAcceptingJobs =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Not accepting jobs&quot;</span>),
+            StatusCode::ServerErrorBusy =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Busy&quot;</span>),
+            StatusCode::ServerErrorJobCanceled =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Job canceled&quot;</span>),
+            StatusCode::ServerErrorMultipleDocumentJobsNotSupported =&gt; {
+                <span class="macro">write!</span>(f, <span class="string">&quot;Multiple document jobs not supported&quot;</span>)
             }
-            <span class="ident">StatusCode::UnknownStatusCode</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Unknown status code&quot;</span>),
+            StatusCode::UnknownStatusCode =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Unknown status code&quot;</span>),
         }
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

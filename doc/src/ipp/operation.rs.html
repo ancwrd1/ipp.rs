@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/operation.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>operation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/operation.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>operation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -260,263 +255,262 @@
 <span id="255">255</span>
 <span id="256">256</span>
 <span id="257">257</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! High-level IPP operation abstractions</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">http::Uri</span>;
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! High-level IPP operation abstractions
+//!
+</span><span class="kw">use </span>http::Uri;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">attribute::IppAttribute</span>,
-    <span class="ident">model</span>::{<span class="ident">DelimiterTag</span>, <span class="ident">IppVersion</span>, <span class="ident">Operation</span>},
-    <span class="ident">payload::IppPayload</span>,
-    <span class="ident">request::IppRequestResponse</span>,
-    <span class="ident">value::IppValue</span>,
+<span class="kw">use crate</span>::{
+    attribute::IppAttribute,
+    model::{DelimiterTag, IppVersion, Operation},
+    payload::IppPayload,
+    request::IppRequestResponse,
+    value::IppValue,
 };
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cups</span>;
+<span class="kw">pub mod </span>cups;
 
-<span class="doccomment">/// Trait which represents a single IPP operation</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IppOperation</span> {
-    <span class="doccomment">/// Convert this operation to IPP request which is ready for sending</span>
-    <span class="kw">fn</span> <span class="ident">into_ipp_request</span>(<span class="self">self</span>) -&gt; <span class="ident">IppRequestResponse</span>;
+<span class="doccomment">/// Trait which represents a single IPP operation
+</span><span class="kw">pub trait </span>IppOperation {
+    <span class="doccomment">/// Convert this operation to IPP request which is ready for sending
+    </span><span class="kw">fn </span>into_ipp_request(<span class="self">self</span>) -&gt; IppRequestResponse;
 
-    <span class="doccomment">/// Return IPP version for this operation. Default is 1.1</span>
-    <span class="kw">fn</span> <span class="ident">version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">IppVersion</span> {
-        <span class="ident">IppVersion::v1_1</span>()
+    <span class="doccomment">/// Return IPP version for this operation. Default is 1.1
+    </span><span class="kw">fn </span>version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IppVersion {
+        IppVersion::v1_1()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IppOperation</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IppRequestResponse</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">op</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">op</span>.<span class="ident">into_ipp_request</span>()
+<span class="kw">impl</span>&lt;T: IppOperation&gt; From&lt;T&gt; <span class="kw">for </span>IppRequestResponse {
+    <span class="kw">fn </span>from(op: T) -&gt; <span class="self">Self </span>{
+        op.into_ipp_request()
     }
 }
 
-<span class="doccomment">/// IPP operation Print-Job</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrintJob</span> {
-    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
-    <span class="ident">payload</span>: <span class="ident">IppPayload</span>,
-    <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>,
+<span class="doccomment">/// IPP operation Print-Job
+</span><span class="kw">pub struct </span>PrintJob {
+    printer_uri: Uri,
+    payload: IppPayload,
+    user_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    job_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    attributes: Vec&lt;IppAttribute&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">PrintJob</span> {
-    <span class="doccomment">/// Create Print-Job operation</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
-    <span class="doccomment">/// * `payload` - job payload&lt;br/&gt;</span>
-    <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
-    <span class="doccomment">/// * `job_name` - job name (job-name)&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span>, <span class="ident">N</span><span class="op">&gt;</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">payload</span>: <span class="ident">S</span>, <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) -&gt; <span class="ident">PrintJob</span>
-    <span class="kw">where</span>
-        <span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">IppPayload</span><span class="op">&gt;</span>,
-        <span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
-        <span class="ident">N</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+<span class="kw">impl </span>PrintJob {
+    <span class="doccomment">/// Create Print-Job operation
+    ///
+    /// * `printer_uri` - printer URI&lt;br/&gt;
+    /// * `payload` - job payload&lt;br/&gt;
+    /// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;
+    /// * `job_name` - job name (job-name)&lt;br/&gt;
+    </span><span class="kw">pub fn </span>new&lt;S, U, N&gt;(printer_uri: Uri, payload: S, user_name: <span class="prelude-ty">Option</span>&lt;U&gt;, job_name: <span class="prelude-ty">Option</span>&lt;N&gt;) -&gt; PrintJob
+    <span class="kw">where
+        </span>S: Into&lt;IppPayload&gt;,
+        U: AsRef&lt;str&gt;,
+        N: AsRef&lt;str&gt;,
     {
-        <span class="ident">PrintJob</span> {
-            <span class="ident">printer_uri</span>,
-            <span class="ident">payload</span>: <span class="ident">payload</span>.<span class="ident">into</span>(),
-            <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()),
-            <span class="ident">job_name</span>: <span class="ident">job_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()),
-            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
+        PrintJob {
+            printer_uri,
+            payload: payload.into(),
+            user_name: user_name.map(|v| v.as_ref().to_string()),
+            job_name: job_name.map(|v| v.as_ref().to_string()),
+            attributes: Vec::new(),
         }
     }
 
-    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_attribute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
-        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
+    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`
+    </span><span class="kw">pub fn </span>add_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, attribute: IppAttribute) {
+        <span class="self">self</span>.attributes.push(attribute);
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">PrintJob</span> {
-    <span class="kw">fn</span> <span class="ident">into_ipp_request</span>(<span class="self">self</span>) -&gt; <span class="ident">IppRequestResponse</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse::new</span>(<span class="self">self</span>.<span class="ident">version</span>(), <span class="ident">Operation::PrintJob</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>));
+<span class="kw">impl </span>IppOperation <span class="kw">for </span>PrintJob {
+    <span class="kw">fn </span>into_ipp_request(<span class="self">self</span>) -&gt; IppRequestResponse {
+        <span class="kw">let </span><span class="kw-2">mut </span>retval = IppRequestResponse::new(<span class="self">self</span>.version(), Operation::PrintJob, <span class="prelude-val">Some</span>(<span class="self">self</span>.printer_uri));
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">user_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">user_name</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-                <span class="ident">DelimiterTag::OperationAttributes</span>,
-                <span class="ident">IppAttribute::new</span>(
-                    <span class="ident">IppAttribute::REQUESTING_USER_NAME</span>,
-                    <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="ident">user_name</span>),
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(user_name) = <span class="self">self</span>.user_name {
+            retval.attributes_mut().add(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(
+                    IppAttribute::REQUESTING_USER_NAME,
+                    IppValue::NameWithoutLanguage(user_name),
                 ),
             );
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-                <span class="ident">DelimiterTag::OperationAttributes</span>,
-                <span class="ident">IppAttribute::new</span>(<span class="ident">IppAttribute::JOB_NAME</span>, <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="ident">job_name</span>)),
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(job_name) = <span class="self">self</span>.job_name {
+            retval.attributes_mut().add(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
-        <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">attributes</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(<span class="ident">DelimiterTag::JobAttributes</span>, <span class="ident">attr</span>);
+        <span class="kw">for </span>attr <span class="kw">in </span><span class="self">self</span>.attributes {
+            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr);
         }
-        <span class="kw-2">*</span><span class="ident">retval</span>.<span class="ident">payload_mut</span>() <span class="op">=</span> <span class="self">self</span>.<span class="ident">payload</span>;
+        <span class="kw-2">*</span>retval.payload_mut() = <span class="self">self</span>.payload;
 
-        <span class="ident">retval</span>
+        retval
     }
 }
 
-<span class="doccomment">/// IPP operation Get-Printer-Attributes</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetPrinterAttributes</span> {
-    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+<span class="doccomment">/// IPP operation Get-Printer-Attributes
+</span><span class="kw">pub struct </span>GetPrinterAttributes {
+    printer_uri: Uri,
+    attributes: Vec&lt;String&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">GetPrinterAttributes</span> {
-    <span class="doccomment">/// Create Get-Printer-Attributes operation</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `printer_uri` - printer URI</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">GetPrinterAttributes</span> {
-        <span class="ident">GetPrinterAttributes</span> {
-            <span class="ident">printer_uri</span>,
-            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
+<span class="kw">impl </span>GetPrinterAttributes {
+    <span class="doccomment">/// Create Get-Printer-Attributes operation
+    ///
+    /// * `printer_uri` - printer URI
+    </span><span class="kw">pub fn </span>new(printer_uri: Uri) -&gt; GetPrinterAttributes {
+        GetPrinterAttributes {
+            printer_uri,
+            attributes: Vec::new(),
         }
     }
 
-    <span class="doccomment">/// Create Get-Printer-Attributes operation for a given list of attributes</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `printer_uri` - printer URI</span>
-    <span class="doccomment">/// * `attributes` - list of attribute names to request from the printer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_attributes</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">attributes</span>: <span class="ident">I</span>) -&gt; <span class="ident">GetPrinterAttributes</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span>,
-        <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Create Get-Printer-Attributes operation for a given list of attributes
+    ///
+    /// * `printer_uri` - printer URI
+    /// * `attributes` - list of attribute names to request from the printer
+    </span><span class="kw">pub fn </span>with_attributes&lt;I, T&gt;(printer_uri: Uri, attributes: I) -&gt; GetPrinterAttributes
+    <span class="kw">where
+        </span>I: IntoIterator&lt;Item = T&gt;,
+        T: AsRef&lt;str&gt;,
     {
-        <span class="ident">GetPrinterAttributes</span> {
-            <span class="ident">printer_uri</span>,
-            <span class="ident">attributes</span>: <span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()).<span class="ident">collect</span>(),
+        GetPrinterAttributes {
+            printer_uri,
+            attributes: attributes.into_iter().map(|a| a.as_ref().to_string()).collect(),
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">GetPrinterAttributes</span> {
-    <span class="kw">fn</span> <span class="ident">into_ipp_request</span>(<span class="self">self</span>) -&gt; <span class="ident">IppRequestResponse</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span>
-            <span class="ident">IppRequestResponse::new</span>(<span class="self">self</span>.<span class="ident">version</span>(), <span class="ident">Operation::GetPrinterAttributes</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>));
+<span class="kw">impl </span>IppOperation <span class="kw">for </span>GetPrinterAttributes {
+    <span class="kw">fn </span>into_ipp_request(<span class="self">self</span>) -&gt; IppRequestResponse {
+        <span class="kw">let </span><span class="kw-2">mut </span>retval =
+            IppRequestResponse::new(<span class="self">self</span>.version(), Operation::GetPrinterAttributes, <span class="prelude-val">Some</span>(<span class="self">self</span>.printer_uri));
 
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">let</span> <span class="ident">vals</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppValue</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">IppValue::Keyword</span>).<span class="ident">collect</span>();
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-                <span class="ident">DelimiterTag::OperationAttributes</span>,
-                <span class="ident">IppAttribute::new</span>(<span class="ident">IppAttribute::REQUESTED_ATTRIBUTES</span>, <span class="ident">IppValue::Array</span>(<span class="ident">vals</span>)),
+        <span class="kw">if </span>!<span class="self">self</span>.attributes.is_empty() {
+            <span class="kw">let </span>vals: Vec&lt;IppValue&gt; = <span class="self">self</span>.attributes.into_iter().map(IppValue::Keyword).collect();
+            retval.attributes_mut().add(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::Array(vals)),
             );
         }
 
-        <span class="ident">retval</span>
+        retval
     }
 }
 
-<span class="doccomment">/// IPP operation Create-Job</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CreateJob</span> {
-    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
-    <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IppAttribute</span><span class="op">&gt;</span>,
+<span class="doccomment">/// IPP operation Create-Job
+</span><span class="kw">pub struct </span>CreateJob {
+    printer_uri: Uri,
+    job_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    attributes: Vec&lt;IppAttribute&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">CreateJob</span> {
-    <span class="doccomment">/// Create Create-Job operation</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `printer_uri` - printer URI</span>
-    <span class="doccomment">/// * `job_name` - optional job name (job-name)&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">CreateJob</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+<span class="kw">impl </span>CreateJob {
+    <span class="doccomment">/// Create Create-Job operation
+    ///
+    /// * `printer_uri` - printer URI
+    /// * `job_name` - optional job name (job-name)&lt;br/&gt;
+    </span><span class="kw">pub fn </span>new&lt;T&gt;(printer_uri: Uri, job_name: <span class="prelude-ty">Option</span>&lt;T&gt;) -&gt; CreateJob
+    <span class="kw">where
+        </span>T: AsRef&lt;str&gt;,
     {
-        <span class="ident">CreateJob</span> {
-            <span class="ident">printer_uri</span>,
-            <span class="ident">job_name</span>: <span class="ident">job_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()),
-            <span class="ident">attributes</span>: <span class="ident">Vec::new</span>(),
+        CreateJob {
+            printer_uri,
+            job_name: job_name.map(|v| v.as_ref().to_string()),
+            attributes: Vec::new(),
         }
     }
 
-    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_attribute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">attribute</span>: <span class="ident">IppAttribute</span>) {
-        <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">push</span>(<span class="ident">attribute</span>);
+    <span class="doccomment">/// Set extra job attribute for this operation, for example `colormodel=grayscale`
+    </span><span class="kw">pub fn </span>add_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, attribute: IppAttribute) {
+        <span class="self">self</span>.attributes.push(attribute);
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">CreateJob</span> {
-    <span class="kw">fn</span> <span class="ident">into_ipp_request</span>(<span class="self">self</span>) -&gt; <span class="ident">IppRequestResponse</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse::new</span>(<span class="self">self</span>.<span class="ident">version</span>(), <span class="ident">Operation::CreateJob</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>));
+<span class="kw">impl </span>IppOperation <span class="kw">for </span>CreateJob {
+    <span class="kw">fn </span>into_ipp_request(<span class="self">self</span>) -&gt; IppRequestResponse {
+        <span class="kw">let </span><span class="kw-2">mut </span>retval = IppRequestResponse::new(<span class="self">self</span>.version(), Operation::CreateJob, <span class="prelude-val">Some</span>(<span class="self">self</span>.printer_uri));
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">job_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">job_name</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-                <span class="ident">DelimiterTag::OperationAttributes</span>,
-                <span class="ident">IppAttribute::new</span>(<span class="ident">IppAttribute::JOB_NAME</span>, <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="ident">job_name</span>)),
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(job_name) = <span class="self">self</span>.job_name {
+            retval.attributes_mut().add(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
-        <span class="kw">for</span> <span class="ident">attr</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">attributes</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(<span class="ident">DelimiterTag::JobAttributes</span>, <span class="ident">attr</span>);
+        <span class="kw">for </span>attr <span class="kw">in </span><span class="self">self</span>.attributes {
+            retval.attributes_mut().add(DelimiterTag::JobAttributes, attr);
         }
-        <span class="ident">retval</span>
+        retval
     }
 }
 
-<span class="doccomment">/// IPP operation Send-Document</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SendDocument</span> {
-    <span class="ident">printer_uri</span>: <span class="ident">Uri</span>,
-    <span class="ident">job_id</span>: <span class="ident">i32</span>,
-    <span class="ident">payload</span>: <span class="ident">IppPayload</span>,
-    <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">last</span>: <span class="ident">bool</span>,
+<span class="doccomment">/// IPP operation Send-Document
+</span><span class="kw">pub struct </span>SendDocument {
+    printer_uri: Uri,
+    job_id: i32,
+    payload: IppPayload,
+    user_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    last: bool,
 }
 
-<span class="kw">impl</span> <span class="ident">SendDocument</span> {
-    <span class="doccomment">/// Create Send-Document operation</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * `printer_uri` - printer URI&lt;br/&gt;</span>
-    <span class="doccomment">/// * `job_id` - job ID returned by Create-Job operation&lt;br/&gt;</span>
-    <span class="doccomment">/// * `payload` - `IppPayload`&lt;br/&gt;</span>
-    <span class="doccomment">/// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;</span>
-    <span class="doccomment">/// * `last` - whether this document is a last one&lt;br/&gt;</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="ident">printer_uri</span>: <span class="ident">Uri</span>, <span class="ident">job_id</span>: <span class="ident">i32</span>, <span class="ident">payload</span>: <span class="ident">S</span>, <span class="ident">user_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, <span class="ident">last</span>: <span class="ident">bool</span>) -&gt; <span class="ident">SendDocument</span>
-    <span class="kw">where</span>
-        <span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">IppPayload</span><span class="op">&gt;</span>,
-        <span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+<span class="kw">impl </span>SendDocument {
+    <span class="doccomment">/// Create Send-Document operation
+    ///
+    /// * `printer_uri` - printer URI&lt;br/&gt;
+    /// * `job_id` - job ID returned by Create-Job operation&lt;br/&gt;
+    /// * `payload` - `IppPayload`&lt;br/&gt;
+    /// * `user_name` - name of the user (requesting-user-name)&lt;br/&gt;
+    /// * `last` - whether this document is a last one&lt;br/&gt;
+    </span><span class="kw">pub fn </span>new&lt;S, U&gt;(printer_uri: Uri, job_id: i32, payload: S, user_name: <span class="prelude-ty">Option</span>&lt;U&gt;, last: bool) -&gt; SendDocument
+    <span class="kw">where
+        </span>S: Into&lt;IppPayload&gt;,
+        U: AsRef&lt;str&gt;,
     {
-        <span class="ident">SendDocument</span> {
-            <span class="ident">printer_uri</span>,
-            <span class="ident">job_id</span>,
-            <span class="ident">payload</span>: <span class="ident">payload</span>.<span class="ident">into</span>(),
-            <span class="ident">user_name</span>: <span class="ident">user_name</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">to_string</span>()),
-            <span class="ident">last</span>,
+        SendDocument {
+            printer_uri,
+            job_id,
+            payload: payload.into(),
+            user_name: user_name.map(|v| v.as_ref().to_string()),
+            last,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">IppOperation</span> <span class="kw">for</span> <span class="ident">SendDocument</span> {
-    <span class="kw">fn</span> <span class="ident">into_ipp_request</span>(<span class="self">self</span>) -&gt; <span class="ident">IppRequestResponse</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">retval</span> <span class="op">=</span> <span class="ident">IppRequestResponse::new</span>(<span class="self">self</span>.<span class="ident">version</span>(), <span class="ident">Operation::SendDocument</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">printer_uri</span>));
+<span class="kw">impl </span>IppOperation <span class="kw">for </span>SendDocument {
+    <span class="kw">fn </span>into_ipp_request(<span class="self">self</span>) -&gt; IppRequestResponse {
+        <span class="kw">let </span><span class="kw-2">mut </span>retval = IppRequestResponse::new(<span class="self">self</span>.version(), Operation::SendDocument, <span class="prelude-val">Some</span>(<span class="self">self</span>.printer_uri));
 
-        <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-            <span class="ident">DelimiterTag::OperationAttributes</span>,
-            <span class="ident">IppAttribute::new</span>(<span class="ident">IppAttribute::JOB_ID</span>, <span class="ident">IppValue::Integer</span>(<span class="self">self</span>.<span class="ident">job_id</span>)),
+        retval.attributes_mut().add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(<span class="self">self</span>.job_id)),
         );
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">user_name</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">user_name</span> {
-            <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-                <span class="ident">DelimiterTag::OperationAttributes</span>,
-                <span class="ident">IppAttribute::new</span>(
-                    <span class="ident">IppAttribute::REQUESTING_USER_NAME</span>,
-                    <span class="ident">IppValue::NameWithoutLanguage</span>(<span class="ident">user_name</span>),
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(user_name) = <span class="self">self</span>.user_name {
+            retval.attributes_mut().add(
+                DelimiterTag::OperationAttributes,
+                IppAttribute::new(
+                    IppAttribute::REQUESTING_USER_NAME,
+                    IppValue::NameWithoutLanguage(user_name),
                 ),
             );
         }
 
-        <span class="ident">retval</span>.<span class="ident">attributes_mut</span>().<span class="ident">add</span>(
-            <span class="ident">DelimiterTag::OperationAttributes</span>,
-            <span class="ident">IppAttribute::new</span>(<span class="ident">IppAttribute::LAST_DOCUMENT</span>, <span class="ident">IppValue::Boolean</span>(<span class="self">self</span>.<span class="ident">last</span>)),
+        retval.attributes_mut().add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(IppAttribute::LAST_DOCUMENT, IppValue::Boolean(<span class="self">self</span>.last)),
         );
 
-        <span class="kw-2">*</span><span class="ident">retval</span>.<span class="ident">payload_mut</span>() <span class="op">=</span> <span class="self">self</span>.<span class="ident">payload</span>;
+        <span class="kw-2">*</span>retval.payload_mut() = <span class="self">self</span>.payload;
 
-        <span class="ident">retval</span>
+        retval
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

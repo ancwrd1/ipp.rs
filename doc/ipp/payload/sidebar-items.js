@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IppPayload","IPP payload"]]});
+window.SIDEBAR_ITEMS = {"struct":[["IppPayload","IPP payload"]]};

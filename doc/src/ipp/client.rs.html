@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/client.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>client.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../ipp/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `ipp/src/client.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>client.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../ipp/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -191,194 +186,283 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
-</pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! IPP client</span>
-<span class="doccomment">//!</span>
-<span class="kw">use</span> <span class="ident">std::collections::BTreeMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io</span>, <span class="ident">time::Duration</span>};
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+</pre><pre class="rust"><code><span class="doccomment">//!
+//! IPP client
+//!
+</span><span class="kw">use </span>std::{collections::BTreeMap, marker::PhantomData, time::Duration};
 
-<span class="kw">use</span> <span class="ident">futures_util</span>::{<span class="ident">io::BufReader</span>, <span class="ident">stream::TryStreamExt</span>};
-<span class="kw">use</span> <span class="ident">http</span>::{<span class="ident">uri::InvalidUri</span>, <span class="ident">Uri</span>};
-<span class="kw">use</span> <span class="ident">log::debug</span>;
-<span class="kw">use</span> <span class="ident">reqwest</span>::{<span class="ident">Body</span>, <span class="ident">ClientBuilder</span>};
-<span class="kw">use</span> <span class="ident">tokio_util::compat::FuturesAsyncReadCompatExt</span>;
+<span class="kw">use </span>http::Uri;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">model::StatusCode</span>,
-    <span class="ident">parser</span>::{<span class="ident">AsyncIppParser</span>, <span class="ident">IppParseError</span>},
-    <span class="ident">request::IppRequestResponse</span>,
-};
+<span class="kw">const </span>CONNECT_TIMEOUT: Duration = Duration::from_secs(<span class="number">10</span>);
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">CONNECT_TIMEOUT</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_secs</span>(<span class="number">10</span>);
-
-<span class="kw">const</span> <span class="ident">USER_AGENT</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_NAME&quot;</span>), <span class="string">&quot;/&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), <span class="string">&quot;;hyper&quot;</span>);
-
-<span class="doccomment">/// IPP error</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IppError</span> {
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="doccomment">/// HTTP protocol error</span>
-    <span class="ident">HttpError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">http::Error</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="doccomment">/// Client error</span>
-    <span class="ident">ClientError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">reqwest::Error</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;HTTP request error: {0}&quot;</span>)]</span>
-    <span class="doccomment">/// HTTP request error</span>
-    <span class="ident">RequestError</span>(<span class="ident">u16</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="doccomment">/// Network or file I/O error</span>
-    <span class="ident">IoError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">io::Error</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;IPP status error: {0}&quot;</span>)]</span>
-    <span class="doccomment">/// IPP status error</span>
-    <span class="ident">StatusError</span>(<span class="ident">StatusCode</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Printer state error: {0:?}&quot;</span>)]</span>
-    <span class="doccomment">/// Printer state error</span>
-    <span class="ident">PrinterStateError</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Printer stopped&quot;</span>)]</span>
-    <span class="doccomment">/// Printer stopped</span>
-    <span class="ident">PrinterStopped</span>,
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="doccomment">/// Parsing error</span>
-    <span class="ident">ParseError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">IppParseError</span>),
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Missing attribute in response&quot;</span>)]</span>
-    <span class="doccomment">/// Missing attribute in response</span>
-    <span class="ident">MissingAttribute</span>,
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid attribute type&quot;</span>)]</span>
-    <span class="doccomment">/// Invalid attribute type</span>
-    <span class="ident">InvalidAttributeType</span>,
-
-    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-    <span class="doccomment">/// Invalid URI</span>
-    <span class="ident">InvalidUri</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">InvalidUri</span>),
+<span class="doccomment">/// Builder to create IPP client
+</span><span class="kw">pub struct </span>IppClientBuilder&lt;T&gt; {
+    uri: Uri,
+    ignore_tls_errors: bool,
+    request_timeout: <span class="prelude-ty">Option</span>&lt;Duration&gt;,
+    headers: BTreeMap&lt;String, String&gt;,
+    _phantom_data: PhantomData&lt;T&gt;,
 }
 
-<span class="doccomment">/// Builder to create IPP client</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppClientBuilder</span> {
-    <span class="ident">uri</span>: <span class="ident">Uri</span>,
-    <span class="ident">ignore_tls_errors</span>: <span class="ident">bool</span>,
-    <span class="ident">request_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
-    <span class="ident">headers</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">IppClientBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">uri</span>: <span class="ident">Uri</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">IppClientBuilder</span> {
-            <span class="ident">uri</span>,
-            <span class="ident">ignore_tls_errors</span>: <span class="bool-val">false</span>,
-            <span class="ident">request_timeout</span>: <span class="prelude-val">None</span>,
-            <span class="ident">headers</span>: <span class="ident">BTreeMap::new</span>(),
+<span class="kw">impl</span>&lt;T&gt; IppClientBuilder&lt;T&gt; {
+    <span class="kw">fn </span>new(uri: Uri) -&gt; <span class="self">Self </span>{
+        IppClientBuilder {
+            uri,
+            ignore_tls_errors: <span class="bool-val">false</span>,
+            request_timeout: <span class="prelude-val">None</span>,
+            headers: BTreeMap::new(),
+            _phantom_data: PhantomData::default(),
         }
     }
 
-    <span class="doccomment">/// Enable or disable ignoring of TLS handshake errors. Default is false.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ignore_tls_errors</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">flag</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">ignore_tls_errors</span> <span class="op">=</span> <span class="ident">flag</span>;
-        <span class="self">self</span>
-    }
+    <span class="doccomment">/// Enable or disable ignoring of TLS handshake errors. Default is false.
+    </span><span class="kw">pub fn </span>ignore_tls_errors(<span class="kw-2">mut </span><span class="self">self</span>, flag: bool) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.ignore_tls_errors = flag;
+        <span class="self">self
+    </span>}
 
-    <span class="doccomment">/// Set network request timeout. Default is no timeout.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_timeout</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">duration</span>: <span class="ident">Duration</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">request_timeout</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">duration</span>);
-        <span class="self">self</span>
-    }
+    <span class="doccomment">/// Set network request timeout. Default is no timeout.
+    </span><span class="kw">pub fn </span>request_timeout(<span class="kw-2">mut </span><span class="self">self</span>, duration: Duration) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.request_timeout = <span class="prelude-val">Some</span>(duration);
+        <span class="self">self
+    </span>}
 
-    <span class="doccomment">/// Add custom HTTP header</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">http_header</span><span class="op">&lt;</span><span class="ident">K</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">K</span>, <span class="ident">value</span>: <span class="ident">V</span>) -&gt; <span class="self">Self</span>
-    <span class="kw">where</span>
-        <span class="ident">K</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
-        <span class="ident">V</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Add custom HTTP header
+    </span><span class="kw">pub fn </span>http_header&lt;K, V&gt;(<span class="kw-2">mut </span><span class="self">self</span>, key: K, value: V) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>K: AsRef&lt;str&gt;,
+        V: AsRef&lt;str&gt;,
     {
-        <span class="self">self</span>.<span class="ident">headers</span>.<span class="ident">insert</span>(<span class="ident">key</span>.<span class="ident">as_ref</span>().<span class="ident">to_owned</span>(), <span class="ident">value</span>.<span class="ident">as_ref</span>().<span class="ident">to_owned</span>());
-        <span class="self">self</span>
-    }
+        <span class="self">self</span>.headers.insert(key.as_ref().to_owned(), value.as_ref().to_owned());
+        <span class="self">self
+    </span>}
 
-    <span class="doccomment">/// Build the client</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="ident">IppClient</span> {
-        <span class="ident">IppClient</span>(<span class="self">self</span>)
+    <span class="doccomment">/// Add basic auth header (RFC 7617)
+    </span><span class="kw">pub fn </span>basic_auth&lt;U, P&gt;(<span class="kw-2">mut </span><span class="self">self</span>, username: U, password: P) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>U: AsRef&lt;str&gt;,
+        P: AsRef&lt;str&gt;,
+    {
+        <span class="kw">let </span>authz = base64::encode(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, username.as_ref(), password.as_ref()));
+        <span class="self">self</span>.headers
+            .insert(<span class="string">&quot;authorization&quot;</span>.to_owned(), <span class="macro">format!</span>(<span class="string">&quot;Basic {}&quot;</span>, authz));
+        <span class="self">self
+    </span>}
+}
+
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async-client&quot;</span>)]
+</span><span class="kw">impl </span>IppClientBuilder&lt;non_blocking::AsyncIppClient&gt; {
+    <span class="doccomment">/// Build the async client
+    </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; non_blocking::AsyncIppClient {
+        non_blocking::AsyncIppClient(<span class="self">self</span>)
     }
 }
 
-<span class="doccomment">/// IPP client.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// IPP client is responsible for sending requests to IPP server.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IppClient</span>(<span class="ident">IppClientBuilder</span>);
-
-<span class="kw">impl</span> <span class="ident">IppClient</span> {
-    <span class="doccomment">/// Create IPP client with default options</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">uri</span>: <span class="ident">Uri</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">IppClient</span>(<span class="ident">IppClient::builder</span>(<span class="ident">uri</span>))
+<span class="attribute">#[cfg(feature = <span class="string">&quot;client&quot;</span>)]
+</span><span class="kw">impl </span>IppClientBuilder&lt;blocking::IppClient&gt; {
+    <span class="doccomment">/// Build the blocking client
+    </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; blocking::IppClient {
+        blocking::IppClient(<span class="self">self</span>)
     }
+}
 
-    <span class="doccomment">/// Create IPP client builder for setting extra options</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builder</span>(<span class="ident">uri</span>: <span class="ident">Uri</span>) -&gt; <span class="ident">IppClientBuilder</span> {
-        <span class="ident">IppClientBuilder::new</span>(<span class="ident">uri</span>)
-    }
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async-client&quot;</span>)]
+</span><span class="kw">pub mod </span>non_blocking {
+    <span class="kw">use </span>std::io;
 
-    <span class="doccomment">/// Return client URI</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">uri</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Uri</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">uri</span>
-    }
+    <span class="kw">use </span>futures_util::{io::BufReader, stream::TryStreamExt};
+    <span class="kw">use </span>http::Uri;
+    <span class="kw">use </span>reqwest::{Body, ClientBuilder};
+    <span class="kw">use </span>tokio_util::compat::FuturesAsyncReadCompatExt;
 
-    <span class="doccomment">/// Send IPP request to the server</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">R</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span>, <span class="ident">IppError</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">R</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">IppRequestResponse</span><span class="op">&gt;</span>,
-    {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">ClientBuilder::new</span>().<span class="ident">connect_timeout</span>(<span class="ident">CONNECT_TIMEOUT</span>);
+    <span class="kw">use crate</span>::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">timeout</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">request_timeout</span> {
-            <span class="macro">debug!</span>(<span class="string">&quot;Setting request timeout to {:?}&quot;</span>, <span class="ident">timeout</span>);
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">timeout</span>(<span class="ident">timeout</span>);
+    <span class="kw">use super</span>::{IppClientBuilder, CONNECT_TIMEOUT};
+
+    <span class="kw">const </span>USER_AGENT: <span class="kw-2">&amp;</span>str = <span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_NAME&quot;</span>), <span class="string">&quot;/&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), <span class="string">&quot;;reqwest&quot;</span>);
+
+    <span class="doccomment">/// Asynchronous IPP client.
+    ///
+    /// IPP client is responsible for sending requests to IPP server.
+    </span><span class="kw">pub struct </span>AsyncIppClient(<span class="kw">pub</span>(<span class="kw">super</span>) IppClientBuilder&lt;<span class="self">Self</span>&gt;);
+
+    <span class="kw">impl </span>AsyncIppClient {
+        <span class="doccomment">/// Create IPP client with default options
+        </span><span class="kw">pub fn </span>new(uri: Uri) -&gt; <span class="self">Self </span>{
+            AsyncIppClient(AsyncIppClient::builder(uri))
         }
 
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls&quot;</span>)]</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">ignore_tls_errors</span> {
-            <span class="macro">debug!</span>(<span class="string">&quot;Setting dangerous TLS options&quot;</span>);
-            <span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>
-                .<span class="ident">danger_accept_invalid_hostnames</span>(<span class="bool-val">true</span>)
-                .<span class="ident">danger_accept_invalid_certs</span>(<span class="bool-val">true</span>);
+        <span class="doccomment">/// Create IPP client builder for setting extra options
+        </span><span class="kw">pub fn </span>builder(uri: Uri) -&gt; IppClientBuilder&lt;<span class="self">Self</span>&gt; {
+            IppClientBuilder::new(uri)
         }
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Sending request to {}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>.<span class="ident">uri</span>);
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">req_builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">user_agent</span>(<span class="ident">USER_AGENT</span>).<span class="ident">build</span>()<span class="question-mark">?</span>.<span class="ident">post</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">uri</span>.<span class="ident">to_string</span>());
-
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.<span class="ident">headers</span> {
-            <span class="ident">req_builder</span> <span class="op">=</span> <span class="ident">req_builder</span>.<span class="ident">header</span>(<span class="ident">k</span>, <span class="ident">v</span>);
+        <span class="doccomment">/// Return client URI
+        </span><span class="kw">pub fn </span>uri(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Uri {
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.uri
         }
 
-        <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">req_builder</span>
-            .<span class="ident">header</span>(<span class="string">&quot;content-type&quot;</span>, <span class="string">&quot;application/ipp&quot;</span>)
-            .<span class="ident">body</span>(<span class="ident">Body::wrap_stream</span>(<span class="ident">tokio_util::io::ReaderStream::new</span>(
-                <span class="ident">request</span>.<span class="ident">into</span>().<span class="ident">into_async_read</span>().<span class="ident">compat</span>(),
-            )))
-            .<span class="ident">send</span>()
-            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="doccomment">/// Send IPP request to the server
+        </span><span class="kw">pub async fn </span>send&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, request: R) -&gt; <span class="prelude-ty">Result</span>&lt;IppRequestResponse, IppError&gt;
+        <span class="kw">where
+            </span>R: Into&lt;IppRequestResponse&gt;,
+        {
+            <span class="kw">let </span><span class="kw-2">mut </span>builder = ClientBuilder::new().connect_timeout(CONNECT_TIMEOUT);
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Response status: {}&quot;</span>, <span class="ident">response</span>.<span class="ident">status</span>());
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(timeout) = <span class="self">self</span>.<span class="number">0</span>.request_timeout {
+                builder = builder.timeout(timeout);
+            }
 
-        <span class="kw">if</span> <span class="ident">response</span>.<span class="ident">status</span>().<span class="ident">is_success</span>() {
-            <span class="kw">let</span> <span class="ident">parser</span> <span class="op">=</span> <span class="ident">AsyncIppParser::new</span>(<span class="ident">BufReader::new</span>(
-                <span class="ident">response</span>
-                    .<span class="ident">bytes_stream</span>()
-                    .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">io::Error::new</span>(<span class="ident">io::ErrorKind::Other</span>, <span class="ident">e</span>))
-                    .<span class="ident">into_async_read</span>(),
-            ));
-            <span class="ident">parser</span>.<span class="ident">parse</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">IppError::from</span>)
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">IppError::RequestError</span>(<span class="ident">response</span>.<span class="ident">status</span>().<span class="ident">as_u16</span>()))
+            <span class="attribute">#[cfg(feature = <span class="string">&quot;async-client-tls&quot;</span>)]
+            </span><span class="kw">if </span><span class="self">self</span>.<span class="number">0</span>.ignore_tls_errors {
+                builder = builder
+                    .danger_accept_invalid_hostnames(<span class="bool-val">true</span>)
+                    .danger_accept_invalid_certs(<span class="bool-val">true</span>);
+            }
+
+            <span class="kw">let </span><span class="kw-2">mut </span>req_builder = builder.user_agent(USER_AGENT).build()<span class="question-mark">?</span>.post(<span class="self">self</span>.<span class="number">0</span>.uri.to_string());
+
+            <span class="kw">for </span>(k, v) <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.headers {
+                req_builder = req_builder.header(k, v);
+            }
+
+            <span class="kw">let </span>response = req_builder
+                .header(<span class="string">&quot;content-type&quot;</span>, <span class="string">&quot;application/ipp&quot;</span>)
+                .body(Body::wrap_stream(tokio_util::io::ReaderStream::new(
+                    request.into().into_async_read().compat(),
+                )))
+                .send()
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">if </span>response.status().is_success() {
+                <span class="kw">let </span>parser = AsyncIppParser::new(BufReader::new(
+                    response
+                        .bytes_stream()
+                        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+                        .into_async_read(),
+                ));
+                parser.parse().<span class="kw">await</span>.map_err(IppError::from)
+            } <span class="kw">else </span>{
+                <span class="prelude-val">Err</span>(IppError::RequestError(response.status().as_u16()))
+            }
+        }
+    }
+}
+
+<span class="attribute">#[cfg(feature = <span class="string">&quot;client&quot;</span>)]
+</span><span class="kw">pub mod </span>blocking {
+    <span class="kw">use </span>http::Uri;
+    <span class="kw">use </span>ureq::AgentBuilder;
+
+    <span class="kw">use crate</span>::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
+
+    <span class="kw">use super</span>::{IppClientBuilder, CONNECT_TIMEOUT};
+
+    <span class="kw">const </span>USER_AGENT: <span class="kw-2">&amp;</span>str = <span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_NAME&quot;</span>), <span class="string">&quot;/&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), <span class="string">&quot;;ureq&quot;</span>);
+
+    <span class="doccomment">/// Blocking IPP client.
+    ///
+    /// IPP client is responsible for sending requests to IPP server.
+    </span><span class="kw">pub struct </span>IppClient(<span class="kw">pub</span>(<span class="kw">super</span>) IppClientBuilder&lt;<span class="self">Self</span>&gt;);
+
+    <span class="kw">impl </span>IppClient {
+        <span class="doccomment">/// Create IPP client with default options
+        </span><span class="kw">pub fn </span>new(uri: Uri) -&gt; <span class="self">Self </span>{
+            IppClient(IppClient::builder(uri))
+        }
+
+        <span class="doccomment">/// Create IPP client builder for setting extra options
+        </span><span class="kw">pub fn </span>builder(uri: Uri) -&gt; IppClientBuilder&lt;<span class="self">Self</span>&gt; {
+            IppClientBuilder::new(uri)
+        }
+
+        <span class="doccomment">/// Return client URI
+        </span><span class="kw">pub fn </span>uri(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Uri {
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.uri
+        }
+
+        <span class="doccomment">/// Send IPP request to the server
+        </span><span class="kw">pub fn </span>send&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, request: R) -&gt; <span class="prelude-ty">Result</span>&lt;IppRequestResponse, IppError&gt;
+        <span class="kw">where
+            </span>R: Into&lt;IppRequestResponse&gt;,
+        {
+            <span class="kw">let </span><span class="kw-2">mut </span>builder = AgentBuilder::new().timeout_connect(CONNECT_TIMEOUT);
+
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(timeout) = <span class="self">self</span>.<span class="number">0</span>.request_timeout {
+                builder = builder.timeout(timeout);
+            }
+
+            <span class="attribute">#[cfg(feature = <span class="string">&quot;client-tls&quot;</span>)]
+            </span>{
+                <span class="kw">let </span>tls_connector = native_tls::TlsConnector::builder()
+                    .danger_accept_invalid_hostnames(<span class="self">self</span>.<span class="number">0</span>.ignore_tls_errors)
+                    .danger_accept_invalid_certs(<span class="self">self</span>.<span class="number">0</span>.ignore_tls_errors)
+                    .build()<span class="question-mark">?</span>;
+                builder = builder.tls_connector(std::sync::Arc::new(tls_connector));
+            }
+
+            <span class="kw">let </span>agent = builder.user_agent(USER_AGENT).build();
+
+            <span class="kw">let </span><span class="kw-2">mut </span>req = agent
+                .post(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.uri.to_string())
+                .set(<span class="string">&quot;content-type&quot;</span>, <span class="string">&quot;application/ipp&quot;</span>);
+
+            <span class="kw">for </span>(k, v) <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.headers {
+                req = req.set(k, v);
+            }
+
+            <span class="kw">let </span>response = req.send(request.into().into_read())<span class="question-mark">?</span>;
+            <span class="kw">let </span>reader = response.into_reader();
+            <span class="kw">let </span>parser = IppParser::new(IppReader::new(reader));
+
+            parser.parse().map_err(IppError::from)
         }
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0 (fe5b13d68 2022-05-18)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ipp" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>
