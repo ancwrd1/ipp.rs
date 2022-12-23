@@ -105,7 +105,7 @@ pub struct GetPrinterAttributes {
 }
 
 impl GetPrinterAttributes {
-    /// Create Get-Printer-Attributes operation
+    /// Create Get-Printer-Attributes operation to return all attributes
     ///
     /// * `printer_uri` - printer URI
     pub fn new(printer_uri: Uri) -> GetPrinterAttributes {
@@ -115,7 +115,7 @@ impl GetPrinterAttributes {
         }
     }
 
-    /// Create Get-Printer-Attributes operation for a given list of attributes
+    /// Create Get-Printer-Attributes operation to get a given list of attributes
     ///
     /// * `printer_uri` - printer URI
     /// * `attributes` - list of attribute names to request from the printer
