@@ -11,6 +11,7 @@ use crate::{
     value::IppValue,
 };
 
+pub mod builder;
 pub mod cups;
 
 /// Trait which represents a single IPP operation

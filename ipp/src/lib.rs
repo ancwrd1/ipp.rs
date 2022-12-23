@@ -69,7 +69,6 @@ use serde::{Deserialize, Serialize};
 use crate::model::{IppVersion, StatusCode};
 
 pub mod attribute;
-pub mod builder;
 #[cfg(any(feature = "client", feature = "async-client"))]
 pub mod client;
 pub mod error;
@@ -91,8 +90,8 @@ pub mod prelude {
 
     pub use crate::{
         attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
-        builder::IppOperationBuilder,
         model::*,
+        operation::builder::IppOperationBuilder,
         payload::IppPayload,
         request::IppRequestResponse,
         value::IppValue,
