@@ -3,6 +3,7 @@
 //!
 use std::{collections::BTreeMap, marker::PhantomData, time::Duration};
 
+use base64::Engine;
 use http::Uri;
 
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -55,7 +56,8 @@ impl<T> IppClientBuilder<T> {
         U: AsRef<str>,
         P: AsRef<str>,
     {
-        let authz = base64::encode(format!("{}:{}", username.as_ref(), password.as_ref()));
+        let authz =
+            base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", username.as_ref(), password.as_ref()));
         self.headers
             .insert("authorization".to_owned(), format!("Basic {}", authz));
         self
