@@ -231,11 +231,14 @@
 <span id="231">231</span>
 <span id="232">232</span>
 <span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
 </pre><pre class="rust"><code><span class="doccomment">//!
 //! IPP client
 //!
 </span><span class="kw">use </span>std::{collections::BTreeMap, marker::PhantomData, time::Duration};
 
+<span class="kw">use </span>base64::Engine;
 <span class="kw">use </span>http::Uri;
 
 <span class="kw">const </span>CONNECT_TIMEOUT: Duration = Duration::from_secs(<span class="number">10</span>);
@@ -288,7 +291,8 @@
         </span>U: AsRef&lt;str&gt;,
         P: AsRef&lt;str&gt;,
     {
-        <span class="kw">let </span>authz = base64::encode(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, username.as_ref(), password.as_ref()));
+        <span class="kw">let </span>authz =
+            base64::engine::general_purpose::STANDARD.encode(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, username.as_ref(), password.as_ref()));
         <span class="self">self</span>.headers
             .insert(<span class="string">&quot;authorization&quot;</span>.to_owned(), <span class="macro">format!</span>(<span class="string">&quot;Basic {}&quot;</span>, authz));
         <span class="self">self

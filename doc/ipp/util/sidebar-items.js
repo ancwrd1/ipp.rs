@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["canonicalize_uri","convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`"],["is_printer_ready",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["canonicalize_uri","convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`"],["is_printer_ready","Check if the printer is ready for printing"]]};

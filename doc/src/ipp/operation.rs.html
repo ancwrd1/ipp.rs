@@ -255,6 +255,7 @@
 <span id="255">255</span>
 <span id="256">256</span>
 <span id="257">257</span>
+<span id="258">258</span>
 </pre><pre class="rust"><code><span class="doccomment">//!
 //! High-level IPP operation abstractions
 //!
@@ -268,6 +269,7 @@
     value::IppValue,
 };
 
+<span class="kw">pub mod </span>builder;
 <span class="kw">pub mod </span>cups;
 
 <span class="doccomment">/// Trait which represents a single IPP operation
@@ -361,7 +363,7 @@
 }
 
 <span class="kw">impl </span>GetPrinterAttributes {
-    <span class="doccomment">/// Create Get-Printer-Attributes operation
+    <span class="doccomment">/// Create Get-Printer-Attributes operation to return all attributes
     ///
     /// * `printer_uri` - printer URI
     </span><span class="kw">pub fn </span>new(printer_uri: Uri) -&gt; GetPrinterAttributes {
@@ -371,7 +373,7 @@
         }
     }
 
-    <span class="doccomment">/// Create Get-Printer-Attributes operation for a given list of attributes
+    <span class="doccomment">/// Create Get-Printer-Attributes operation to get a given list of attributes
     ///
     /// * `printer_uri` - printer URI
     /// * `attributes` - list of attribute names to request from the printer

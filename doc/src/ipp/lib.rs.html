@@ -157,7 +157,6 @@
 <span id="157">157</span>
 <span id="158">158</span>
 <span id="159">159</span>
-<span id="160">160</span>
 </pre><pre class="rust"><code><span class="doccomment">//!
 //! IPP print protocol implementation for Rust. This crate can be used in several ways:
 //! * using the low-level request/response API and building the requests manually.
@@ -229,7 +228,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::model::{IppVersion, StatusCode};
 
 <span class="kw">pub mod </span>attribute;
-<span class="kw">pub mod </span>builder;
 <span class="attribute">#[cfg(any(feature = <span class="string">&quot;client&quot;</span>, feature = <span class="string">&quot;async-client&quot;</span>))]
 </span><span class="kw">pub mod </span>client;
 <span class="kw">pub mod </span>error;
@@ -251,8 +249,8 @@
 
     <span class="kw">pub use crate</span>::{
         attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
-        builder::IppOperationBuilder,
         model::<span class="kw-2">*</span>,
+        operation::builder::IppOperationBuilder,
         payload::IppPayload,
         request::IppRequestResponse,
         value::IppValue,

@@ -91,6 +91,9 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
 </pre><pre class="rust"><code><span class="doccomment">//!
 //! IPP helper functions
 //!
@@ -130,7 +133,10 @@
     <span class="string">&quot;shutdown&quot;</span>,
 ];
 
-<span class="kw">pub fn </span>is_printer_ready(response: <span class="kw-2">&amp;</span>IppRequestResponse) -&gt; <span class="prelude-ty">Result</span>&lt;bool, IppError&gt; {
+<span class="doccomment">/// Check if the printer is ready for printing
+///
+/// * `response` - IPP response to check
+</span><span class="kw">pub fn </span>is_printer_ready(response: <span class="kw-2">&amp;</span>IppRequestResponse) -&gt; <span class="prelude-ty">Result</span>&lt;bool, IppError&gt; {
     <span class="kw">let </span>status = response.header().status_code();
     <span class="kw">if </span>!status.is_success() {
         <span class="kw">return </span><span class="prelude-val">Err</span>(IppError::StatusError(status));
