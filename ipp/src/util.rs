@@ -37,6 +37,9 @@ const ERROR_STATES: &[&str] = &[
     "shutdown",
 ];
 
+/// Check if the printer is ready for printing
+///
+/// * `response` - IPP response to check
 pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError> {
     let status = response.header().status_code();
     if !status.is_success() {
