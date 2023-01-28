@@ -238,8 +238,8 @@ impl IppValue {
 impl fmt::Display for IppValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            IppValue::Integer(i) | IppValue::Enum(i) => write!(f, "{}", i),
-            IppValue::RangeOfInteger { min, max } => write!(f, "{}..{}", min, max),
+            IppValue::Integer(i) | IppValue::Enum(i) => write!(f, "{i}"),
+            IppValue::RangeOfInteger { min, max } => write!(f, "{min}..{max}"),
             IppValue::Boolean(b) => write!(f, "{}", if b { "true" } else { "false" }),
             IppValue::Keyword(ref s)
             | IppValue::OctetString(ref s)
@@ -250,13 +250,13 @@ impl fmt::Display for IppValue {
             | IppValue::Uri(ref s)
             | IppValue::UriScheme(ref s)
             | IppValue::MimeMediaType(ref s)
-            | IppValue::MemberAttrName(ref s) => write!(f, "{}", s),
+            | IppValue::MemberAttrName(ref s) => write!(f, "{s}"),
             IppValue::Array(ref array) => {
-                let s: Vec<String> = array.iter().map(|v| format!("{}", v)).collect();
+                let s: Vec<String> = array.iter().map(|v| format!("{v}")).collect();
                 write!(f, "[{}]", s.join(", "))
             }
             IppValue::Collection(ref coll) => {
-                let s: Vec<String> = coll.iter().map(|v| format!("{}", v)).collect();
+                let s: Vec<String> = coll.iter().map(|v| format!("{v}")).collect();
                 write!(f, "<{}>", s.join(", "))
             }
             IppValue::DateTime {
@@ -272,19 +272,18 @@ impl fmt::Display for IppValue {
                 ..
             } => write!(
                 f,
-                "{}-{}-{},{}:{}:{}.{},{}{}utc",
-                year, month, day, hour, minutes, seconds, deci_seconds, utc_dir, utc_hours
+                "{year}-{month}-{day},{hour}:{minutes}:{seconds}.{deci_seconds},{utc_dir}{utc_hours}utc"
             ),
             IppValue::Resolution {
                 cross_feed,
                 feed,
                 units,
             } => {
-                write!(f, "{}x{}{}", cross_feed, feed, if units == 3 { "in" } else { "cm" })
+                write!(f, "{cross_feed}x{feed}{}", if units == 3 { "in" } else { "cm" })
             }
 
             IppValue::NoValue => Ok(()),
-            IppValue::Other { tag, ref data } => write!(f, "{:0x}: {:?}", tag, data),
+            IppValue::Other { tag, ref data } => write!(f, "{tag:0x}: {data:?}"),
         }
     }
 }

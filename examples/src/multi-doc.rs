@@ -49,13 +49,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         .and_then(|attr| attr.value().as_integer())
         .ok_or(IppError::MissingAttribute)?;
 
-    println!("job id: {}", job_id);
+    println!("job id: {job_id}");
 
     for (i, item) in args.iter().enumerate().skip(2) {
         let client = IppClient::new(uri.clone());
 
         let last = i >= (args.len() - 1);
-        println!("Sending {}, last: {}", item, last);
+        println!("Sending {item}, last: {last}");
 
         let payload = IppPayload::new(fs::File::open(item)?);
 

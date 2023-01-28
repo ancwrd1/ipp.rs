@@ -59,7 +59,7 @@ impl<T> IppClientBuilder<T> {
         let authz =
             base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", username.as_ref(), password.as_ref()));
         self.headers
-            .insert("authorization".to_owned(), format!("Basic {}", authz));
+            .insert("authorization".to_owned(), format!("Basic {authz}"));
         self
     }
 }

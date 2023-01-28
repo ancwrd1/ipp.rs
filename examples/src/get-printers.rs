@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .and_then(|v| PrinterState::from_i32(*v))
             .ok_or(IppError::InvalidAttributeType)?;
 
-        println!("{}: {} {:?}", name, uri, state);
+        println!("{name}: {uri} {state:?}");
     }
 
     Ok(())
