@@ -15,7 +15,7 @@ use clap::Parser;
 
 use ipp::{prelude::*, util};
 
-fn new_client(uri: Uri, params: &IppParams) -> IppClient {
+fn new_client(uri: Uri, params: &IppParams) -> io::Result<IppClient> {
     let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
     if let Some(timeout) = params.timeout {
         builder = builder.request_timeout(Duration::from_secs(timeout));
@@ -28,10 +28,10 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
     }
 
     for cert in &params.ca_certs {
-        builder = builder.ca_cert(cert);
+        builder = builder.ca_cert(fs::read(cert)?);
     }
 
-    builder.build()
+    Ok(builder.build())
 }
 
 fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
@@ -43,7 +43,7 @@ fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
 }
 
 fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
-    let client = new_client(cmd.uri.parse()?, params);
+    let client = new_client(cmd.uri.parse()?, params)?;
 
     if !cmd.no_check_state {
         let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
@@ -85,7 +85,7 @@ fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
 }
 
 fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
-    let client = new_client(cmd.uri.parse()?, params);
+    let client = new_client(cmd.uri.parse()?, params)?;
 
     let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
         .attributes(&cmd.attributes)

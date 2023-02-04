@@ -1,12 +1,7 @@
 //!
 //! IPP client
 //!
-use std::{
-    collections::BTreeMap,
-    marker::PhantomData,
-    path::{Path, PathBuf},
-    time::Duration,
-};
+use std::{collections::BTreeMap, marker::PhantomData, time::Duration};
 
 use base64::Engine;
 use http::Uri;
@@ -19,7 +14,7 @@ pub struct IppClientBuilder<T> {
     ignore_tls_errors: bool,
     request_timeout: Option<Duration>,
     headers: BTreeMap<String, String>,
-    ca_certs: Vec<PathBuf>,
+    ca_certs: Vec<Vec<u8>>,
     _phantom_data: PhantomData<T>,
 }
 
@@ -41,8 +36,9 @@ impl<T> IppClientBuilder<T> {
         self
     }
 
-    pub fn ca_cert<P: AsRef<Path>>(mut self, path: P) -> Self {
-        self.ca_certs.push(path.as_ref().to_owned());
+    /// Add custom root certificate in PEM or DER format.
+    pub fn ca_cert<D: AsRef<[u8]>>(mut self, data: D) -> Self {
+        self.ca_certs.push(data.as_ref().to_owned());
         self
     }
 
@@ -94,7 +90,7 @@ impl IppClientBuilder<blocking::IppClient> {
 
 #[cfg(feature = "async-client")]
 pub mod non_blocking {
-    use std::{fs, io};
+    use std::io;
 
     use futures_util::{io::BufReader, stream::TryStreamExt};
     use http::Uri;
@@ -146,9 +142,8 @@ pub mod non_blocking {
                         .danger_accept_invalid_hostnames(true)
                         .danger_accept_invalid_certs(true);
                 }
-                for path in &self.0.ca_certs {
-                    let data = fs::read(path)?;
-                    let cert = Certificate::from_pem(&data).or_else(|_| Certificate::from_der(&data))?;
+                for data in &self.0.ca_certs {
+                    let cert = Certificate::from_pem(data).or_else(|_| Certificate::from_der(data))?;
                     builder = builder.add_root_certificate(cert);
                 }
             }
@@ -184,8 +179,6 @@ pub mod non_blocking {
 
 #[cfg(feature = "client")]
 pub mod blocking {
-    use std::fs;
-
     use http::Uri;
     use native_tls::Certificate;
     use ureq::AgentBuilder;
@@ -236,9 +229,8 @@ pub mod blocking {
                     .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
                     .danger_accept_invalid_certs(self.0.ignore_tls_errors);
 
-                for path in &self.0.ca_certs {
-                    let data = fs::read(path)?;
-                    let cert = Certificate::from_pem(&data).or_else(|_| Certificate::from_der(&data))?;
+                for data in &self.0.ca_certs {
+                    let cert = Certificate::from_pem(data).or_else(|_| Certificate::from_der(data))?;
                     tls_builder.add_root_certificate(cert);
                 }
 
