@@ -1,7 +1,12 @@
 //!
 //! IPP client
 //!
-use std::{collections::BTreeMap, marker::PhantomData, time::Duration};
+use std::{
+    collections::BTreeMap,
+    marker::PhantomData,
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use base64::Engine;
 use http::Uri;
@@ -14,6 +19,7 @@ pub struct IppClientBuilder<T> {
     ignore_tls_errors: bool,
     request_timeout: Option<Duration>,
     headers: BTreeMap<String, String>,
+    ca_certs: Vec<PathBuf>,
     _phantom_data: PhantomData<T>,
 }
 
@@ -24,6 +30,7 @@ impl<T> IppClientBuilder<T> {
             ignore_tls_errors: false,
             request_timeout: None,
             headers: BTreeMap::new(),
+            ca_certs: Vec::new(),
             _phantom_data: PhantomData::default(),
         }
     }
@@ -31,6 +38,11 @@ impl<T> IppClientBuilder<T> {
     /// Enable or disable ignoring of TLS handshake errors. Default is false.
     pub fn ignore_tls_errors(mut self, flag: bool) -> Self {
         self.ignore_tls_errors = flag;
+        self
+    }
+
+    pub fn ca_cert<P: AsRef<Path>>(mut self, path: P) -> Self {
+        self.ca_certs.push(path.as_ref().to_owned());
         self
     }
 
@@ -82,11 +94,11 @@ impl IppClientBuilder<blocking::IppClient> {
 
 #[cfg(feature = "async-client")]
 pub mod non_blocking {
-    use std::io;
+    use std::{fs, io};
 
     use futures_util::{io::BufReader, stream::TryStreamExt};
     use http::Uri;
-    use reqwest::{Body, ClientBuilder};
+    use reqwest::{Body, Certificate, ClientBuilder};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
@@ -128,10 +140,17 @@ pub mod non_blocking {
             }
 
             #[cfg(feature = "async-client-tls")]
-            if self.0.ignore_tls_errors {
-                builder = builder
-                    .danger_accept_invalid_hostnames(true)
-                    .danger_accept_invalid_certs(true);
+            {
+                if self.0.ignore_tls_errors {
+                    builder = builder
+                        .danger_accept_invalid_hostnames(true)
+                        .danger_accept_invalid_certs(true);
+                }
+                for path in &self.0.ca_certs {
+                    let data = fs::read(path)?;
+                    let cert = Certificate::from_pem(&data).or_else(|_| Certificate::from_der(&data))?;
+                    builder = builder.add_root_certificate(cert);
+                }
             }
 
             let mut req_builder = builder.user_agent(USER_AGENT).build()?.post(self.0.uri.to_string());
@@ -165,7 +184,10 @@ pub mod non_blocking {
 
 #[cfg(feature = "client")]
 pub mod blocking {
+    use std::fs;
+
     use http::Uri;
+    use native_tls::Certificate;
     use ureq::AgentBuilder;
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
@@ -208,10 +230,19 @@ pub mod blocking {
 
             #[cfg(feature = "client-tls")]
             {
-                let tls_connector = native_tls::TlsConnector::builder()
+                let mut tls_builder = native_tls::TlsConnector::builder();
+
+                tls_builder
                     .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
-                    .danger_accept_invalid_certs(self.0.ignore_tls_errors)
-                    .build()?;
+                    .danger_accept_invalid_certs(self.0.ignore_tls_errors);
+
+                for path in &self.0.ca_certs {
+                    let data = fs::read(path)?;
+                    let cert = Certificate::from_pem(&data).or_else(|_| Certificate::from_der(&data))?;
+                    tls_builder.add_root_certificate(cert);
+                }
+
+                let tls_connector = tls_builder.build()?;
                 builder = builder.tls_connector(std::sync::Arc::new(tls_connector));
             }
 

@@ -27,6 +27,10 @@ fn new_client(uri: Uri, params: &IppParams) -> IppClient {
         }
     }
 
+    for cert in &params.ca_certs {
+        builder = builder.ca_cert(cert);
+    }
+
     builder.build()
 }
 
@@ -119,6 +123,14 @@ struct IppParams {
         help = "Ignore TLS handshake errors"
     )]
     ignore_tls_errors: bool,
+
+    #[clap(
+        long = "ca-cert",
+        short = 'c',
+        global = true,
+        help = "One or more additional CA certs in PEM or DER format"
+    )]
+    ca_certs: Vec<PathBuf>,
 
     #[clap(
         long = "timeout",
