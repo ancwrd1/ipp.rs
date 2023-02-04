@@ -1,6 +1,9 @@
-use std::{env, error::Error, fs, process::exit};
+use std::{env, error::Error, process::exit};
+
+use tokio::fs::File;
 
 use ipp::prelude::*;
+use tokio_util::compat::TokioAsyncReadCompatExt;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -12,7 +15,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let uri: Uri = args[1].parse()?;
-    let payload = IppPayload::new(fs::File::open(&args[2])?);
+    let payload = IppPayload::new_async(File::open(&args[2]).await?.compat());
 
     let mut builder = IppOperationBuilder::print_job(uri.clone(), payload)
         .user_name(env::var("USER").unwrap_or_else(|_| "noname".to_owned()))
