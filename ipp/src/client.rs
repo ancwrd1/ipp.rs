@@ -94,7 +94,7 @@ pub mod non_blocking {
 
     use futures_util::{io::BufReader, stream::TryStreamExt};
     use http::Uri;
-    use reqwest::{Body, Certificate, ClientBuilder};
+    use reqwest::{Body, ClientBuilder};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
@@ -143,7 +143,8 @@ pub mod non_blocking {
                         .danger_accept_invalid_certs(true);
                 }
                 for data in &self.0.ca_certs {
-                    let cert = Certificate::from_pem(data).or_else(|_| Certificate::from_der(data))?;
+                    let cert =
+                        reqwest::Certificate::from_pem(data).or_else(|_| reqwest::Certificate::from_der(data))?;
                     builder = builder.add_root_certificate(cert);
                 }
             }
@@ -180,7 +181,6 @@ pub mod non_blocking {
 #[cfg(feature = "client")]
 pub mod blocking {
     use http::Uri;
-    use native_tls::Certificate;
     use ureq::AgentBuilder;
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
@@ -230,7 +230,8 @@ pub mod blocking {
                     .danger_accept_invalid_certs(self.0.ignore_tls_errors);
 
                 for data in &self.0.ca_certs {
-                    let cert = Certificate::from_pem(data).or_else(|_| Certificate::from_der(data))?;
+                    let cert =
+                        native_tls::Certificate::from_pem(data).or_else(|_| native_tls::Certificate::from_der(data))?;
                     tls_builder.add_root_certificate(cert);
                 }
 
