@@ -14,6 +14,18 @@ use crate::{
 pub mod builder;
 pub mod cups;
 
+fn with_user_name(user_name: Option<String>, req: &mut IppRequestResponse) {
+    if let Some(user_name) = user_name {
+        req.attributes_mut().add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(
+                IppAttribute::REQUESTING_USER_NAME,
+                IppValue::NameWithoutLanguage(user_name),
+            ),
+        );
+    }
+}
+
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
@@ -72,15 +84,7 @@ impl IppOperation for PrintJob {
     fn into_ipp_request(self) -> IppRequestResponse {
         let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(self.printer_uri));
 
-        if let Some(user_name) = self.user_name {
-            retval.attributes_mut().add(
-                DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::REQUESTING_USER_NAME,
-                    IppValue::NameWithoutLanguage(user_name),
-                ),
-            );
-        }
+        with_user_name(self.user_name, &mut retval);
 
         if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
@@ -236,22 +240,115 @@ impl IppOperation for SendDocument {
             IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(self.job_id)),
         );
 
-        if let Some(user_name) = self.user_name {
-            retval.attributes_mut().add(
-                DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::REQUESTING_USER_NAME,
-                    IppValue::NameWithoutLanguage(user_name),
-                ),
-            );
-        }
-
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(IppAttribute::LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
+        with_user_name(self.user_name, &mut retval);
+
         *retval.payload_mut() = self.payload;
+
+        retval
+    }
+}
+
+/// IPP operation Purge-Jobs
+pub struct PurgeJobs {
+    printer_uri: Uri,
+    user_name: Option<String>,
+}
+
+impl PurgeJobs {
+    /// Create Purge-Jobs operation
+    ///
+    /// * `printer_uri` - printer URI<br/>
+    /// * `user_name` - name of the user (requesting-user-name)<br/>
+    pub fn new<U>(printer_uri: Uri, user_name: Option<U>) -> Self
+    where
+        U: AsRef<str>,
+    {
+        Self {
+            printer_uri,
+            user_name: user_name.map(|u| u.as_ref().to_owned()),
+        }
+    }
+}
+
+impl IppOperation for PurgeJobs {
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::PurgeJobs, Some(self.printer_uri));
+
+        with_user_name(self.user_name, &mut retval);
+
+        retval
+    }
+}
+
+/// IPP operation Cancel-Job
+pub struct CancelJob {
+    printer_uri: Uri,
+    job_id: i32,
+    user_name: Option<String>,
+}
+
+impl CancelJob {
+    /// Create Cancel-Job operation
+    ///
+    /// * `printer_uri` - printer URI<br/>
+    /// * `job_id` - job ID<br/>
+    /// * `user_name` - name of the user (requesting-user-name)<br/>
+    pub fn new<U>(printer_uri: Uri, job_id: i32, user_name: Option<U>) -> Self
+    where
+        U: AsRef<str>,
+    {
+        Self {
+            printer_uri,
+            job_id,
+            user_name: user_name.map(|u| u.as_ref().to_owned()),
+        }
+    }
+}
+
+impl IppOperation for CancelJob {
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::CancelJob, Some(self.printer_uri));
+        retval.attributes_mut().add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(self.job_id)),
+        );
+        with_user_name(self.user_name, &mut retval);
+        retval
+    }
+}
+
+/// IPP operation Get-Jobs
+pub struct GetJobs {
+    printer_uri: Uri,
+    user_name: Option<String>,
+}
+
+impl GetJobs {
+    /// Create Get-Jobs operation
+    ///
+    /// * `printer_uri` - printer URI<br/>
+    /// * `user_name` - name of the user (requesting-user-name)<br/>
+    pub fn new<U>(printer_uri: Uri, user_name: Option<U>) -> Self
+    where
+        U: AsRef<str>,
+    {
+        Self {
+            printer_uri,
+            user_name: user_name.map(|u| u.as_ref().to_owned()),
+        }
+    }
+}
+
+impl IppOperation for GetJobs {
+    fn into_ipp_request(self) -> IppRequestResponse {
+        let mut retval = IppRequestResponse::new(self.version(), Operation::GetJobs, Some(self.printer_uri));
+
+        with_user_name(self.user_name, &mut retval);
 
         retval
     }

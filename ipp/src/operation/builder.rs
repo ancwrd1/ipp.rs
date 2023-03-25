@@ -5,10 +5,7 @@ use http::Uri;
 
 use crate::{
     attribute::IppAttribute,
-    operation::{
-        cups::{CupsDeletePrinter, CupsGetPrinters},
-        CreateJob, GetPrinterAttributes, IppOperation, PrintJob, SendDocument,
-    },
+    operation::{cups::*, *},
     payload::IppPayload,
 };
 
@@ -50,6 +47,28 @@ impl IppOperationBuilder {
     /// * `payload` - `IppPayload`
     pub fn send_document(printer_uri: Uri, job_id: i32, payload: IppPayload) -> SendDocumentBuilder {
         SendDocumentBuilder::new(printer_uri, job_id, payload)
+    }
+
+    /// Create PurgeJobs operation
+    ///
+    /// * `printer_uri` - printer URI
+    pub fn purge_jobs(printer_uri: Uri) -> PurgeJobsBuilder {
+        PurgeJobsBuilder::new(printer_uri)
+    }
+
+    /// Create PurgeJobs operation
+    ///
+    /// * `printer_uri` - printer URI
+    /// * `job_id` - job id to cancel <br/>
+    pub fn cancel_job(printer_uri: Uri, job_id: i32) -> CancelJobBuilder {
+        CancelJobBuilder::new(printer_uri, job_id)
+    }
+
+    /// Create PurgeJobs operation
+    ///
+    /// * `printer_uri` - printer URI
+    pub fn get_jobs(printer_uri: Uri) -> GetJobsBuilder {
+        GetJobsBuilder::new(printer_uri)
     }
 }
 
@@ -254,6 +273,95 @@ impl SendDocumentBuilder {
             self.user_name.as_ref(),
             self.is_last,
         )
+    }
+}
+
+/// Builder to create PurgeJobs operation
+pub struct PurgeJobsBuilder {
+    printer_uri: Uri,
+    user_name: Option<String>,
+}
+
+impl PurgeJobsBuilder {
+    fn new(printer_uri: Uri) -> PurgeJobsBuilder {
+        PurgeJobsBuilder {
+            printer_uri,
+            user_name: None,
+        }
+    }
+
+    /// Specify originating-user-name attribute
+    pub fn user_name<S>(mut self, user_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.user_name = Some(user_name.as_ref().to_owned());
+        self
+    }
+
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
+        PurgeJobs::new(self.printer_uri, self.user_name)
+    }
+}
+
+/// Builder to create CancelJob operation
+pub struct CancelJobBuilder {
+    printer_uri: Uri,
+    job_id: i32,
+    user_name: Option<String>,
+}
+
+impl CancelJobBuilder {
+    fn new(printer_uri: Uri, job_id: i32) -> CancelJobBuilder {
+        CancelJobBuilder {
+            printer_uri,
+            job_id,
+            user_name: None,
+        }
+    }
+
+    /// Specify originating-user-name attribute
+    pub fn user_name<S>(mut self, user_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.user_name = Some(user_name.as_ref().to_owned());
+        self
+    }
+
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
+        CancelJob::new(self.printer_uri, self.job_id, self.user_name)
+    }
+}
+
+/// Builder to create GetJobs operation
+pub struct GetJobsBuilder {
+    printer_uri: Uri,
+    user_name: Option<String>,
+}
+
+impl GetJobsBuilder {
+    fn new(printer_uri: Uri) -> GetJobsBuilder {
+        GetJobsBuilder {
+            printer_uri,
+            user_name: None,
+        }
+    }
+
+    /// Specify originating-user-name attribute
+    pub fn user_name<S>(mut self, user_name: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.user_name = Some(user_name.as_ref().to_owned());
+        self
+    }
+
+    /// Build operation
+    pub fn build(self) -> impl IppOperation {
+        GetJobs::new(self.printer_uri, self.user_name)
     }
 }
 

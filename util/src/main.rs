@@ -42,6 +42,19 @@ fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
     Ok(payload)
 }
 
+fn dump_attributes(response: &IppRequestResponse, tag: DelimiterTag) {
+    for group in response.attributes().groups_of(tag) {
+        let mut values = group.attributes().values().collect::<Vec<_>>();
+
+        values.sort_by_key(|&a| a.name());
+
+        for v in values {
+            println!("{}: {}", v.name(), v.value());
+        }
+        println!();
+    }
+}
+
 fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
@@ -76,11 +89,8 @@ fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
         return Err(IppError::StatusError(status));
     }
 
-    if let Some(group) = response.attributes().groups_of(DelimiterTag::JobAttributes).next() {
-        for v in group.attributes().values() {
-            println!("{}: {}", v.name(), v.value());
-        }
-    }
+    dump_attributes(&response, DelimiterTag::JobAttributes);
+
     Ok(())
 }
 
@@ -98,17 +108,76 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
         return Err(IppError::StatusError(status));
     }
 
-    let mut values = response
-        .attributes()
-        .groups_of(DelimiterTag::PrinterAttributes)
-        .flat_map(|group| group.attributes().values())
-        .collect::<Vec<_>>();
+    dump_attributes(&response, DelimiterTag::PrinterAttributes);
 
-    values.sort_by_key(|&a| a.name());
+    Ok(())
+}
 
-    for v in values {
-        println!("{}: {}", v.name(), v.value());
+fn do_purge(params: &IppParams, cmd: IppPurgeCmd) -> Result<(), IppError> {
+    let client = new_client(cmd.uri.parse()?, params)?;
+
+    let mut builder = IppOperationBuilder::purge_jobs(client.uri().clone());
+
+    if let Some(username) = cmd.user_name {
+        builder = builder.user_name(username);
     }
+
+    let operation = builder.build();
+
+    let response = client.send(operation)?;
+
+    let status = response.header().status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    dump_attributes(&response, DelimiterTag::OperationAttributes);
+
+    Ok(())
+}
+
+fn do_cancel(params: &IppParams, cmd: IppCancelCmd) -> Result<(), IppError> {
+    let client = new_client(cmd.uri.parse()?, params)?;
+
+    let mut builder = IppOperationBuilder::cancel_job(client.uri().clone(), cmd.job_id);
+
+    if let Some(username) = cmd.user_name {
+        builder = builder.user_name(username);
+    }
+
+    let operation = builder.build();
+
+    let response = client.send(operation)?;
+
+    let status = response.header().status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    dump_attributes(&response, DelimiterTag::OperationAttributes);
+
+    Ok(())
+}
+
+fn do_get(params: &IppParams, cmd: IppGetCmd) -> Result<(), IppError> {
+    let client = new_client(cmd.uri.parse()?, params)?;
+
+    let mut builder = IppOperationBuilder::get_jobs(client.uri().clone());
+
+    if let Some(username) = cmd.user_name {
+        builder = builder.user_name(username);
+    }
+
+    let operation = builder.build();
+
+    let response = client.send(operation)?;
+
+    let status = response.header().status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    dump_attributes(&response, DelimiterTag::JobAttributes);
 
     Ok(())
 }
@@ -153,6 +222,12 @@ enum IppCommand {
     Print(IppPrintCmd),
     #[clap(name = "status", about = "Get status of an IPP printer")]
     Status(IppStatusCmd),
+    #[clap(name = "cancel", about = "Cancel job from an IPP printer")]
+    Cancel(IppCancelCmd),
+    #[clap(name = "purge", about = "Purge all jobs from an IPP printer")]
+    Purge(IppPurgeCmd),
+    #[clap(name = "get", about = "Get pending jobs from an IPP printer")]
+    Get(IppGetCmd),
 }
 
 #[derive(Parser, Clone)]
@@ -199,12 +274,56 @@ struct IppStatusCmd {
     attributes: Vec<String>,
 }
 
+#[derive(Parser, Clone)]
+#[clap(rename_all = "kebab-case")]
+struct IppPurgeCmd {
+    #[clap(help = "Printer URI")]
+    uri: String,
+    #[clap(
+        long = "user-name",
+        short = 'u',
+        help = "User name to send as requesting-user-name attribute"
+    )]
+    user_name: Option<String>,
+}
+
+#[derive(Parser, Clone)]
+#[clap(rename_all = "kebab-case")]
+struct IppCancelCmd {
+    #[clap(help = "Printer URI")]
+    uri: String,
+    #[clap(long = "job-id", short = 'j', help = "Job ID to cancel")]
+    job_id: i32,
+    #[clap(
+        long = "user-name",
+        short = 'u',
+        help = "User name to send as requesting-user-name attribute"
+    )]
+    user_name: Option<String>,
+}
+
+#[derive(Parser, Clone)]
+#[clap(rename_all = "kebab-case")]
+struct IppGetCmd {
+    #[clap(help = "Printer URI")]
+    uri: String,
+    #[clap(
+        long = "user-name",
+        short = 'u',
+        help = "User name to send as requesting-user-name attribute"
+    )]
+    user_name: Option<String>,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let params = IppParams::parse();
 
     match params.command {
         IppCommand::Status(ref cmd) => do_status(&params, cmd.clone())?,
         IppCommand::Print(ref cmd) => do_print(&params, cmd.clone())?,
+        IppCommand::Cancel(ref cmd) => do_cancel(&params, cmd.clone())?,
+        IppCommand::Purge(ref cmd) => do_purge(&params, cmd.clone())?,
+        IppCommand::Get(ref cmd) => do_get(&params, cmd.clone())?,
     }
     Ok(())
 }
