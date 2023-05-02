@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.1.0 - UNRELEASED
+- Added support for custom CA certs in the IPP client builder
+- Async print example now uses async IPP payload
+- Added more operations to ipputil utility: Purge-Jobs, Cancel-Job, Get-Jobs
+
 ## 4.0.0
 - Breaking changes in several APIs
 - Added blocking client based on `ureq` crate, called `IppClient`
