@@ -55,7 +55,7 @@ fn dump_attributes(response: &IppRequestResponse, tag: DelimiterTag) {
     }
 }
 
-fn do_print(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
+fn do_print_job(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
     if !cmd.no_check_state {
@@ -113,7 +113,7 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
     Ok(())
 }
 
-fn do_purge(params: &IppParams, cmd: IppPurgeCmd) -> Result<(), IppError> {
+fn do_purge_jobs(params: &IppParams, cmd: IppPurgeCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
     let mut builder = IppOperationBuilder::purge_jobs(client.uri().clone());
@@ -136,7 +136,7 @@ fn do_purge(params: &IppParams, cmd: IppPurgeCmd) -> Result<(), IppError> {
     Ok(())
 }
 
-fn do_cancel(params: &IppParams, cmd: IppCancelCmd) -> Result<(), IppError> {
+fn do_cancel_job(params: &IppParams, cmd: IppCancelCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
     let mut builder = IppOperationBuilder::cancel_job(client.uri().clone(), cmd.job_id);
@@ -159,7 +159,30 @@ fn do_cancel(params: &IppParams, cmd: IppCancelCmd) -> Result<(), IppError> {
     Ok(())
 }
 
-fn do_get(params: &IppParams, cmd: IppGetCmd) -> Result<(), IppError> {
+fn do_get_job(params: &IppParams, cmd: IppGetJobCmd) -> Result<(), IppError> {
+    let client = new_client(cmd.uri.parse()?, params)?;
+
+    let mut builder = IppOperationBuilder::get_job_attributes(client.uri().clone(), cmd.job_id);
+
+    if let Some(username) = cmd.user_name {
+        builder = builder.user_name(username);
+    }
+
+    let operation = builder.build();
+
+    let response = client.send(operation)?;
+
+    let status = response.header().status_code();
+    if !status.is_success() {
+        return Err(IppError::StatusError(status));
+    }
+
+    dump_attributes(&response, DelimiterTag::JobAttributes);
+
+    Ok(())
+}
+
+fn do_get_all_jobs(params: &IppParams, cmd: IppGetAllJobsCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
     let mut builder = IppOperationBuilder::get_jobs(client.uri().clone());
@@ -219,15 +242,17 @@ struct IppParams {
 #[derive(Parser)]
 enum IppCommand {
     #[clap(name = "print", about = "Print file to an IPP printer")]
-    Print(IppPrintCmd),
+    PrintJob(IppPrintCmd),
     #[clap(name = "status", about = "Get status of an IPP printer")]
     Status(IppStatusCmd),
-    #[clap(name = "cancel", about = "Cancel job from an IPP printer")]
-    Cancel(IppCancelCmd),
-    #[clap(name = "purge", about = "Purge all jobs from an IPP printer")]
-    Purge(IppPurgeCmd),
-    #[clap(name = "get", about = "Get pending jobs from an IPP printer")]
-    Get(IppGetCmd),
+    #[clap(name = "cancel-job", about = "Cancel job from an IPP printer")]
+    CancelJob(IppCancelCmd),
+    #[clap(name = "get-job", about = "Get job attributes from an IPP printer")]
+    GetJob(IppGetJobCmd),
+    #[clap(name = "purge-jobs", about = "Purge all jobs from an IPP printer")]
+    PurgeJobs(IppPurgeCmd),
+    #[clap(name = "get-all-jobs", about = "Get pending jobs from an IPP printer")]
+    GetAllJobs(IppGetAllJobsCmd),
 }
 
 #[derive(Parser, Clone)]
@@ -304,7 +329,22 @@ struct IppCancelCmd {
 
 #[derive(Parser, Clone)]
 #[clap(rename_all = "kebab-case")]
-struct IppGetCmd {
+struct IppGetJobCmd {
+    #[clap(help = "Printer URI")]
+    uri: String,
+    #[clap(long = "job-id", short = 'j', help = "Job ID to get attributes for")]
+    job_id: i32,
+    #[clap(
+        long = "user-name",
+        short = 'u',
+        help = "User name to send as requesting-user-name attribute"
+    )]
+    user_name: Option<String>,
+}
+
+#[derive(Parser, Clone)]
+#[clap(rename_all = "kebab-case")]
+struct IppGetAllJobsCmd {
     #[clap(help = "Printer URI")]
     uri: String,
     #[clap(
@@ -320,10 +360,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match params.command {
         IppCommand::Status(ref cmd) => do_status(&params, cmd.clone())?,
-        IppCommand::Print(ref cmd) => do_print(&params, cmd.clone())?,
-        IppCommand::Cancel(ref cmd) => do_cancel(&params, cmd.clone())?,
-        IppCommand::Purge(ref cmd) => do_purge(&params, cmd.clone())?,
-        IppCommand::Get(ref cmd) => do_get(&params, cmd.clone())?,
+        IppCommand::PrintJob(ref cmd) => do_print_job(&params, cmd.clone())?,
+        IppCommand::CancelJob(ref cmd) => do_cancel_job(&params, cmd.clone())?,
+        IppCommand::GetJob(ref cmd) => do_get_job(&params, cmd.clone())?,
+        IppCommand::PurgeJobs(ref cmd) => do_purge_jobs(&params, cmd.clone())?,
+        IppCommand::GetAllJobs(ref cmd) => do_get_all_jobs(&params, cmd.clone())?,
     }
     Ok(())
 }
