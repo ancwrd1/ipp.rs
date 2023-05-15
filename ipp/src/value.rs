@@ -10,6 +10,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::{model::ValueTag, FromPrimitive as _};
 
+macro_rules! hashmap {
+    ($( $key: expr => $val: expr ),*) => {{
+         let mut map = ::std::collections::HashMap::new();
+         $( map.insert($key, $val); )*
+         map
+    }}
+}
+
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -30,7 +38,7 @@ pub enum IppValue {
     Boolean(bool),
     Keyword(String),
     Array(Vec<IppValue>),
-    Collection(Vec<IppValue>),
+    Collection(std::collections::HashMap<String, IppValue>),
     MimeMediaType(String),
     DateTime {
         year: u16,
@@ -179,12 +187,20 @@ impl IppValue {
                 buffer.put_u16(0);
 
                 for item in list.iter() {
+                    let atr_name = IppValue::MemberAttrName(item.0.to_string());
                     // item tag
-                    buffer.put_u8(item.to_tag());
+                    buffer.put_u8(atr_name.to_tag());
                     // name size is zero, this is a collection
                     buffer.put_u16(0);
 
-                    buffer.put(item.to_bytes());
+                    buffer.put(atr_name.to_bytes());
+
+                    // item tag
+                    buffer.put_u8(item.1.to_tag());
+                    // name size is zero, this is a collection
+                    buffer.put_u16(0);
+
+                    buffer.put(item.1.to_bytes());
                 }
                 // write end collection attribute
                 buffer.put_u8(ValueTag::EndCollection as u8);
@@ -256,7 +272,7 @@ impl fmt::Display for IppValue {
                 write!(f, "[{}]", s.join(", "))
             }
             IppValue::Collection(ref coll) => {
-                let s: Vec<String> = coll.iter().map(|v| format!("{v}")).collect();
+                let s: Vec<String> = coll.iter().map(|(k, v)| format!("{k}={v}")).collect();
                 write!(f, "<{}>", s.join(", "))
             }
             IppValue::DateTime {
@@ -326,14 +342,27 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.value {
-            IppValue::Array(ref array) | IppValue::Collection(ref array) => {
+            IppValue::Array(ref array) => {
                 if self.index < array.len() {
                     self.index += 1;
                     Some(&array[self.index - 1])
                 } else {
                     None
                 }
-            }
+            },
+            IppValue::Collection(ref map) => {
+                let array = Vec::from_iter(map.keys().cloned());
+                if self.index < array.len() {
+                    self.index += 1;
+                    if let Some(key) = array.get(self.index - 1) {
+                        map.get(key)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            },
             _ => {
                 if self.index == 0 {
                     self.index += 1;
@@ -462,13 +491,13 @@ mod tests {
     fn test_collection() {
         let attr = IppAttribute::new(
             "coll",
-            IppValue::Collection(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
+            IppValue::Collection(hashmap!["abcd".to_string() => IppValue::Integer(0x2222_2222)]),
         );
         let buf = attr.to_bytes();
 
         assert_eq!(
             vec![
-                0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x11, 0x11, 0x11, 0x11, 0x21, 0, 0, 0, 4,
+                0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c', b'd', 0x21, 0, 0, 0, 4,
                 0x22, 0x22, 0x22, 0x22, 0x37, 0, 0, 0, 0,
             ],
             buf
@@ -490,8 +519,10 @@ mod tests {
             .attributes();
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
-            attr.value().as_collection(),
-            Some(&vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)])
+            attr.value(),
+            &IppValue::Collection(hashmap![
+                "abcd".to_string() => IppValue::Integer(0x2222_2222)
+            ])
         );
     }
 }
