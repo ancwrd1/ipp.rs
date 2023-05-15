@@ -18,6 +18,14 @@ use crate::{
     FromPrimitive as _,
 };
 
+macro_rules! hashmap {
+    ($( $key: expr => $val: expr ),*) => {{
+         let mut map = ::std::collections::HashMap::new();
+         $( map.insert($key, $val); )*
+         map
+    }}
+}
+
 /// Parse error enum
 #[derive(Debug, thiserror::Error)]
 pub enum IppParseError {
@@ -120,7 +128,16 @@ impl ParserState {
             }
             if let Some(arr) = self.context.pop() {
                 if let Some(val_list) = self.context.last_mut() {
-                    val_list.push(IppValue::Collection(arr));
+                    let mut map: std::collections::HashMap<String, IppValue> = std::collections::HashMap::new();
+                    for idx in (0..arr.len()).step_by(2) {
+                        match (arr.get(idx), arr.get(idx + 1)) {
+                            (Some(IppValue::MemberAttrName(k)), Some(v)) => {
+                                map.insert(k.to_string(), v.clone());
+                            },
+                            _ => {}
+                        }
+                    }
+                    val_list.push(IppValue::Collection(map));
                 }
             }
         } else if let Some(val_list) = self.context.last_mut() {
@@ -314,8 +331,8 @@ mod tests {
     #[tokio::test]
     async fn test_async_parse_collection() {
         let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
-            0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c', b'd',
+            0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
         let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
             .parse()
@@ -331,10 +348,9 @@ mod tests {
             .attributes();
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
-            attr.value().as_collection(),
-            Some(&vec![
-                IppValue::Integer(0x1234_5678),
-                IppValue::Keyword("key".to_owned())
+            attr.value(),
+            &IppValue::Collection(hashmap![
+                "abcd".to_string() => IppValue::Keyword("key".to_owned())
             ])
         );
     }
@@ -422,8 +438,8 @@ mod tests {
     #[test]
     fn test_parse_collection() {
         let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x21, 0, 0, 0, 4, 0x12, 0x34, 0x56,
-            0x78, 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c', b'd',
+            0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
         let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
@@ -437,10 +453,9 @@ mod tests {
             .attributes();
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
-            attr.value().as_collection(),
-            Some(&vec![
-                IppValue::Integer(0x1234_5678),
-                IppValue::Keyword("key".to_owned())
+            attr.value(),
+            &IppValue::Collection(hashmap![
+                "abcd".to_string() => IppValue::Keyword("key".to_owned())
             ])
         );
     }
