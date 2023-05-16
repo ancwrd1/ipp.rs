@@ -1,7 +1,7 @@
 //!
 //! IPP stream parser
 //!
-use std::io::{self, Read};
+use std::{io::{self, Read}, collections::BTreeMap};
 
 use bytes::Bytes;
 use log::{error, trace};
@@ -17,14 +17,6 @@ use crate::{
     value::IppValue,
     FromPrimitive as _,
 };
-
-macro_rules! hashmap {
-    ($( $key: expr => $val: expr ),*) => {{
-         let mut map = ::std::collections::HashMap::new();
-         $( map.insert($key, $val); )*
-         map
-    }}
-}
 
 /// Parse error enum
 #[derive(Debug, thiserror::Error)]
@@ -128,7 +120,7 @@ impl ParserState {
             }
             if let Some(arr) = self.context.pop() {
                 if let Some(val_list) = self.context.last_mut() {
-                    let mut map: std::collections::HashMap<String, IppValue> = std::collections::HashMap::new();
+                    let mut map: BTreeMap<String, IppValue> = BTreeMap::new();
                     for idx in (0..arr.len()).step_by(2) {
                         match (arr.get(idx), arr.get(idx + 1)) {
                             (Some(IppValue::MemberAttrName(k)), Some(v)) => {
@@ -349,9 +341,9 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(hashmap![
-                "abcd".to_string() => IppValue::Keyword("key".to_owned())
-            ])
+            &IppValue::Collection(BTreeMap::from([
+                ("abcd".to_string(), IppValue::Keyword("key".to_owned()))
+            ]))
         );
     }
 
@@ -454,9 +446,9 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(hashmap![
-                "abcd".to_string() => IppValue::Keyword("key".to_owned())
-            ])
+            &IppValue::Collection(BTreeMap::from([
+                ("abcd".to_string(), IppValue::Keyword("key".to_owned()))
+            ]))
         );
     }
 
