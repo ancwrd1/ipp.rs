@@ -1,7 +1,7 @@
 //!
 //! IPP value
 //!
-use std::{convert::Infallible, fmt, io, str::FromStr};
+use std::{convert::Infallible, fmt, io, str::FromStr, collections::BTreeMap};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
@@ -9,14 +9,6 @@ use enum_as_inner::EnumAsInner;
 use serde::{Deserialize, Serialize};
 
 use crate::{model::ValueTag, FromPrimitive as _};
-
-macro_rules! hashmap {
-    ($( $key: expr => $val: expr ),*) => {{
-         let mut map = ::std::collections::HashMap::new();
-         $( map.insert($key, $val); )*
-         map
-    }}
-}
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -38,7 +30,7 @@ pub enum IppValue {
     Boolean(bool),
     Keyword(String),
     Array(Vec<IppValue>),
-    Collection(std::collections::HashMap<String, IppValue>),
+    Collection(BTreeMap<String, IppValue>),
     MimeMediaType(String),
     DateTime {
         year: u16,
@@ -351,14 +343,9 @@ impl<'a> Iterator for IppValueIterator<'a> {
                 }
             },
             IppValue::Collection(ref map) => {
-                let array = Vec::from_iter(map.keys().cloned());
-                if self.index < array.len() {
+                if let Some(entry) = map.iter().nth(self.index) {
                     self.index += 1;
-                    if let Some(key) = array.get(self.index - 1) {
-                        map.get(key)
-                    } else {
-                        None
-                    }
+                    Some(entry.1)
                 } else {
                     None
                 }
@@ -377,6 +364,8 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::BTreeMap;
+
     use crate::attribute::IppAttribute;
     use crate::model::DelimiterTag;
     use crate::parser::IppParser;
@@ -491,7 +480,9 @@ mod tests {
     fn test_collection() {
         let attr = IppAttribute::new(
             "coll",
-            IppValue::Collection(hashmap!["abcd".to_string() => IppValue::Integer(0x2222_2222)]),
+            IppValue::Collection(BTreeMap::from([
+                ("abcd".to_string(), IppValue::Integer(0x2222_2222))
+            ]))
         );
         let buf = attr.to_bytes();
 
@@ -520,9 +511,9 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(hashmap![
-                "abcd".to_string() => IppValue::Integer(0x2222_2222)
-            ])
+            &IppValue::Collection(BTreeMap::from([
+                ("abcd".to_string(), IppValue::Integer(0x2222_2222))
+            ]))
         );
     }
 }
