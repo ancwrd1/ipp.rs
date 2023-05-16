@@ -1,9 +1,10 @@
 # Changelog
 
-## 4.1.0 - UNRELEASED
+## 5.0.0 - UNRELEASED
+- Breaking change: IppValue::Collection now uses BTreeMap instead of Vec
 - Added support for custom CA certs in the IPP client builder
 - Async print example now uses async IPP payload
-- Added more operations to ipputil utility: Purge-Jobs, Cancel-Job, Get-Jobs
+- Added more operations to ipputil utility: Purge-Jobs, Cancel-Job, Get-Jobs, Get-Job
 
 ## 4.0.0
 - Breaking changes in several APIs
