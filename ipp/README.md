@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let operation = IppOperationBuilder::get_printer_attributes(uri.clone()).build();
     let client = AsyncIppClient::new(uri);
     let resp = client.send(operation).await?;
-    if resp.header().get_status_code().is_success() {
+    if resp.header().status_code().is_success() {
         let printer_attrs = resp
             .attributes()
             .groups_of(DelimiterTag::PrinterAttributes)
