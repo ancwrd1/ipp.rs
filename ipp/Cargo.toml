@@ -14,7 +14,7 @@ edition = "2021"
 name = "ipp"
 
 [dependencies]
-enum-as-inner = "0.5"
+enum-as-inner = "0.6"
 enum-primitive-derive = "0.2"
 futures-executor = { version = "0.3", optional = true }
 log = "0.4"

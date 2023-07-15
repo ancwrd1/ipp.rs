@@ -13,7 +13,7 @@ pub struct CupsGetPrinters;
 impl CupsGetPrinters {
     /// Create CUPS-Get-Printers operation
     pub fn new() -> CupsGetPrinters {
-        CupsGetPrinters::default()
+        CupsGetPrinters
     }
 }
 

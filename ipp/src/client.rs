@@ -26,7 +26,7 @@ impl<T> IppClientBuilder<T> {
             request_timeout: None,
             headers: BTreeMap::new(),
             ca_certs: Vec::new(),
-            _phantom_data: PhantomData::default(),
+            _phantom_data: PhantomData,
         }
     }
 

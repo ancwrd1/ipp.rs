@@ -1,7 +1,10 @@
 //!
 //! IPP stream parser
 //!
-use std::{io::{self, Read}, collections::BTreeMap};
+use std::{
+    collections::BTreeMap,
+    io::{self, Read},
+};
 
 use bytes::Bytes;
 use log::{error, trace};
@@ -122,11 +125,8 @@ impl ParserState {
                 if let Some(val_list) = self.context.last_mut() {
                     let mut map: BTreeMap<String, IppValue> = BTreeMap::new();
                     for idx in (0..arr.len()).step_by(2) {
-                        match (arr.get(idx), arr.get(idx + 1)) {
-                            (Some(IppValue::MemberAttrName(k)), Some(v)) => {
-                                map.insert(k.to_string(), v.clone());
-                            },
-                            _ => {}
+                        if let (Some(IppValue::MemberAttrName(k)), Some(v)) = (arr.get(idx), arr.get(idx + 1)) {
+                            map.insert(k.to_string(), v.clone());
                         }
                     }
                     val_list.push(IppValue::Collection(map));
@@ -323,8 +323,8 @@ mod tests {
     #[tokio::test]
     async fn test_async_parse_collection() {
         let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c', b'd',
-            0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c',
+            b'd', 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
         let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
             .parse()
@@ -341,9 +341,10 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(BTreeMap::from([
-                ("abcd".to_string(), IppValue::Keyword("key".to_owned()))
-            ]))
+            &IppValue::Collection(BTreeMap::from([(
+                "abcd".to_string(),
+                IppValue::Keyword("key".to_owned())
+            )]))
         );
     }
 
@@ -430,8 +431,8 @@ mod tests {
     #[test]
     fn test_parse_collection() {
         let data = vec![
-            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c', b'd',
-            0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x34, 0, 4, b'c', b'o', b'l', b'l', 0, 0, 0x4a, 0, 0, 0, 4, b'a', b'b', b'c',
+            b'd', 0x44, 0, 0, 0, 3, b'k', b'e', b'y', 0x37, 0, 0, 0, 0, 3,
         ];
         let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
         assert!(result.is_ok());
@@ -446,9 +447,10 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(BTreeMap::from([
-                ("abcd".to_string(), IppValue::Keyword("key".to_owned()))
-            ]))
+            &IppValue::Collection(BTreeMap::from([(
+                "abcd".to_string(),
+                IppValue::Keyword("key".to_owned())
+            )]))
         );
     }
 
