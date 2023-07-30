@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["IppClient","Blocking IPP client."]]};
+window.SIDEBAR_ITEMS = {"struct":["IppClient"]};

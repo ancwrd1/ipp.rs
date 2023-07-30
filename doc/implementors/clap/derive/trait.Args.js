@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"ipputil":[["impl Args for <a class=\"struct\" href=\"ipputil/struct.IppParams.html\" title=\"struct ipputil::IppParams\">IppParams</a>"],["impl Args for <a class=\"struct\" href=\"ipputil/struct.IppPrintCmd.html\" title=\"struct ipputil::IppPrintCmd\">IppPrintCmd</a>"],["impl Args for <a class=\"struct\" href=\"ipputil/struct.IppStatusCmd.html\" title=\"struct ipputil::IppStatusCmd\">IppStatusCmd</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

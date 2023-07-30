@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["AsyncIppReader","Asynchronous IPP reader contains a set of methods to read from IPP data stream"],["IppReader","Synchronous IPP reader contains a set of methods to read from IPP data stream"]]};
+window.SIDEBAR_ITEMS = {"struct":["AsyncIppReader","IppReader"]};

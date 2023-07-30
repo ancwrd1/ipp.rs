@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["IppCommand",""]],"fn":[["do_print",""],["do_status",""],["main",""],["new_client",""],["new_payload",""]],"struct":[["IppParams",""],["IppPrintCmd",""],["IppStatusCmd",""]]};
+window.SIDEBAR_ITEMS = {"enum":["IppCommand"],"fn":["do_cancel_job","do_get_all_jobs","do_get_job","do_print_job","do_purge_jobs","do_status","dump_attributes","main","new_client","new_payload"],"struct":["IppCancelCmd","IppGetAllJobsCmd","IppGetJobCmd","IppParams","IppPrintCmd","IppPurgeCmd","IppStatusCmd"]};
