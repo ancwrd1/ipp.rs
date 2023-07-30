@@ -1,6 +1,6 @@
 [package]
 name = "ipp-examples"
-version = "4.0.0"
+version = "5.0.0"
 authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 edition = "2021"
 publish = false
@@ -30,7 +30,7 @@ path = "src/print-job.rs"
 name = "print-job"
 
 [dependencies]
-ipp = { path = "../ipp", version = "4.0.0" }
+ipp = { path = "../ipp", version = "5.0.0" }
 tokio = { version = "1", features = ["macros", "fs", "rt-multi-thread"] }
 tokio-util = { version = "0.7", features = ["compat"] }
 

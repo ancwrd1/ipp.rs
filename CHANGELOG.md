@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0 - UNRELEASED
+## 5.0.0
 - Breaking change: IppValue::Collection now uses BTreeMap instead of Vec
 - Added support for custom CA certs in the IPP client builder
 - Async print example now uses async IPP payload
