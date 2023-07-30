@@ -1,14 +1,14 @@
 [package]
 name = "ipp-util"
-version = "5.0.0"
-authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
 description = "IPP command line print utility"
-license = "MIT/Apache-2.0"
-repository = "https://github.com/ancwrd1/ipp.rs"
-documentation = "https://docs.rs/ipp"
-readme = "README.md"
-keywords = ["ipp", "print", "cups", "printing", "protocol"]
-edition = "2021"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+readme.workspace = true
+keywords.workspace = true
+edition.workspace = true
 
 [[bin]]
 name = "ipputil"

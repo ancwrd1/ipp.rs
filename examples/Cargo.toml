@@ -1,9 +1,15 @@
 [package]
 name = "ipp-examples"
-version = "5.0.0"
-authors = ["Dmitry Pankratov <dmitry@pankratov.net>"]
-edition = "2021"
+description = "IPP usage examples"
 publish = false
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+readme.workspace = true
+keywords.workspace = true
+edition.workspace = true
 
 [[bin]]
 path = "src/delete-printer.rs"
