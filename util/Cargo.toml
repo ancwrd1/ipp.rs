@@ -6,7 +6,7 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 documentation.workspace = true
-readme.workspace = true
+readme = "README.md"
 keywords.workspace = true
 edition.workspace = true
 
