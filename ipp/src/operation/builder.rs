@@ -128,7 +128,7 @@ impl PrintJobBuilder {
     where
         I: IntoIterator<Item = IppAttribute>,
     {
-        self.attributes.extend(attributes.into_iter());
+        self.attributes.extend(attributes);
         self
     }
 
@@ -223,7 +223,7 @@ impl CreateJobBuilder {
     where
         I: IntoIterator<Item = IppAttribute>,
     {
-        self.attributes.extend(attributes.into_iter());
+        self.attributes.extend(attributes);
         self
     }
 
@@ -362,8 +362,8 @@ impl GetJobAttributesBuilder {
 
     /// Specify originating-user-name attribute
     pub fn user_name<S>(mut self, user_name: S) -> Self
-        where
-            S: AsRef<str>,
+    where
+        S: AsRef<str>,
     {
         self.user_name = Some(user_name.as_ref().to_owned());
         self

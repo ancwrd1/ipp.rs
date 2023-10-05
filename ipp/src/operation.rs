@@ -336,8 +336,8 @@ impl GetJobAttributes {
     /// * `job_id` - job ID<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
     pub fn new<U>(printer_uri: Uri, job_id: i32, user_name: Option<U>) -> Self
-        where
-            U: AsRef<str>,
+    where
+        U: AsRef<str>,
     {
         Self {
             printer_uri,

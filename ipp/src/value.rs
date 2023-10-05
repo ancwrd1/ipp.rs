@@ -1,7 +1,7 @@
 //!
 //! IPP value
 //!
-use std::{convert::Infallible, fmt, io, str::FromStr, collections::BTreeMap};
+use std::{collections::BTreeMap, convert::Infallible, fmt, io, str::FromStr};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
@@ -341,7 +341,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
                 } else {
                     None
                 }
-            },
+            }
             IppValue::Collection(ref map) => {
                 if let Some(entry) = map.iter().nth(self.index) {
                     self.index += 1;
@@ -349,7 +349,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
                 } else {
                     None
                 }
-            },
+            }
             _ => {
                 if self.index == 0 {
                     self.index += 1;
@@ -480,9 +480,7 @@ mod tests {
     fn test_collection() {
         let attr = IppAttribute::new(
             "coll",
-            IppValue::Collection(BTreeMap::from([
-                ("abcd".to_string(), IppValue::Integer(0x2222_2222))
-            ]))
+            IppValue::Collection(BTreeMap::from([("abcd".to_string(), IppValue::Integer(0x2222_2222))])),
         );
         let buf = attr.to_bytes();
 
@@ -511,9 +509,7 @@ mod tests {
         let attr = attrs.get("coll").unwrap();
         assert_eq!(
             attr.value(),
-            &IppValue::Collection(BTreeMap::from([
-                ("abcd".to_string(), IppValue::Integer(0x2222_2222))
-            ]))
+            &IppValue::Collection(BTreeMap::from([("abcd".to_string(), IppValue::Integer(0x2222_2222))]))
         );
     }
 }
