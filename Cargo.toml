@@ -1,5 +1,6 @@
 [workspace]
 members = [ "ipp", "util", "examples" ]
+resolver = "2"
 
 [workspace.package]
 version = "5.0.0"
