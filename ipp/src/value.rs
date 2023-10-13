@@ -10,6 +10,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::{model::ValueTag, FromPrimitive as _};
 
+#[inline]
+fn get_len_string(data: &mut Bytes) -> String {
+    let len = data.get_u16() as usize;
+    let s = String::from_utf8_lossy(&data[0..len]).into_owned();
+    data.advance(len);
+    s
+}
+
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, EnumAsInner)]
@@ -19,6 +27,14 @@ pub enum IppValue {
     OctetString(String),
     TextWithoutLanguage(String),
     NameWithoutLanguage(String),
+    TextWithLanguage {
+        language: String,
+        text: String,
+    },
+    NameWithLanguage {
+        language: String,
+        name: String,
+    },
     Charset(String),
     NaturalLanguage(String),
     Uri(String),
@@ -69,6 +85,8 @@ impl IppValue {
             IppValue::OctetString(_) => ValueTag::OctetStringUnspecified as u8,
             IppValue::TextWithoutLanguage(_) => ValueTag::TextWithoutLanguage as u8,
             IppValue::NameWithoutLanguage(_) => ValueTag::NameWithoutLanguage as u8,
+            IppValue::TextWithLanguage { .. } => ValueTag::TextWithLanguage as u8,
+            IppValue::NameWithLanguage { .. } => ValueTag::NameWithLanguage as u8,
             IppValue::Charset(_) => ValueTag::Charset as u8,
             IppValue::NaturalLanguage(_) => ValueTag::NaturalLanguage as u8,
             IppValue::Uri(_) => ValueTag::Uri as u8,
@@ -99,6 +117,14 @@ impl IppValue {
             ValueTag::OctetStringUnspecified => IppValue::OctetString(String::from_utf8_lossy(&data).into_owned()),
             ValueTag::TextWithoutLanguage => IppValue::TextWithoutLanguage(String::from_utf8_lossy(&data).into_owned()),
             ValueTag::NameWithoutLanguage => IppValue::NameWithoutLanguage(String::from_utf8_lossy(&data).into_owned()),
+            ValueTag::TextWithLanguage => IppValue::TextWithLanguage {
+                language: get_len_string(&mut data),
+                text: get_len_string(&mut data),
+            },
+            ValueTag::NameWithLanguage => IppValue::NameWithLanguage {
+                language: get_len_string(&mut data),
+                name: get_len_string(&mut data),
+            },
             ValueTag::Charset => IppValue::Charset(String::from_utf8_lossy(&data).into_owned()),
             ValueTag::NaturalLanguage => IppValue::NaturalLanguage(String::from_utf8_lossy(&data).into_owned()),
             ValueTag::Uri => IppValue::Uri(String::from_utf8_lossy(&data).into_owned()),
@@ -164,6 +190,20 @@ impl IppValue {
             | IppValue::MemberAttrName(ref s) => {
                 buffer.put_u16(s.len() as u16);
                 buffer.put_slice(s.as_bytes());
+            }
+            IppValue::TextWithLanguage { ref language, ref text } => {
+                buffer.put_u16((language.len() + text.len() + 4) as u16);
+                buffer.put_u16(language.len() as u16);
+                buffer.put_slice(language.as_bytes());
+                buffer.put_u16(text.len() as u16);
+                buffer.put_slice(text.as_bytes());
+            }
+            IppValue::NameWithLanguage { ref language, ref name } => {
+                buffer.put_u16((language.len() + name.len() + 4) as u16);
+                buffer.put_u16(language.len() as u16);
+                buffer.put_slice(language.as_bytes());
+                buffer.put_u16(name.len() as u16);
+                buffer.put_slice(name.as_bytes());
             }
             IppValue::Array(ref list) => {
                 for (i, item) in list.iter().enumerate() {
@@ -259,6 +299,8 @@ impl fmt::Display for IppValue {
             | IppValue::UriScheme(ref s)
             | IppValue::MimeMediaType(ref s)
             | IppValue::MemberAttrName(ref s) => write!(f, "{s}"),
+            IppValue::TextWithLanguage { ref language, ref text } => write!(f, "{language}:{text}"),
+            IppValue::NameWithLanguage { ref language, ref name } => write!(f, "{language}:{name}"),
             IppValue::Array(ref array) => {
                 let s: Vec<String> = array.iter().map(|v| format!("{v}")).collect();
                 write!(f, "[{}]", s.join(", "))
@@ -386,6 +428,14 @@ mod tests {
         value_check(IppValue::OctetString("octet-string".to_owned()));
         value_check(IppValue::TextWithoutLanguage("text-without".to_owned()));
         value_check(IppValue::NameWithoutLanguage("name-without".to_owned()));
+        value_check(IppValue::TextWithLanguage {
+            language: "en".to_owned(),
+            text: "text-with".to_owned(),
+        });
+        value_check(IppValue::NameWithLanguage {
+            language: "en".to_owned(),
+            name: "name-with".to_owned(),
+        });
         value_check(IppValue::Charset("charset".to_owned()));
         value_check(IppValue::NaturalLanguage("natural".to_owned()));
         value_check(IppValue::Uri("uri".to_owned()));

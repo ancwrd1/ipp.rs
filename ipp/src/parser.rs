@@ -76,9 +76,8 @@ impl ParserState {
         trace!("Delimiter tag: {:0x}", tag);
 
         let tag = DelimiterTag::from_u8(tag).ok_or(IppParseError::InvalidTag(tag))?;
-        if tag == DelimiterTag::EndOfAttributes {
-            self.add_last_attribute();
-        }
+
+        self.add_last_attribute();
 
         if let Some(group) = self.current_group.take() {
             self.attributes.groups_mut().push(group);
@@ -477,5 +476,19 @@ mod tests {
         let mut cursor = io::Cursor::new(Vec::new());
         io::copy(&mut res.payload, &mut cursor).unwrap();
         assert_eq!(cursor.into_inner(), b"foo");
+    }
+
+    #[test]
+    fn test_parse_groups() {
+        let data = vec![
+            0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04,
+            0x12, 0x34, 0x56, 0x78, 0x21, 0x00, 0x05, b't', b'e', b's', b't', b'2', 0x00, 0x04, 0x12, 0x34, 0x56, 0xFF,
+            0x04, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x87, 0x65, 0x43, 0x21, 0x03,
+        ];
+
+        let res = IppParser::new(IppReader::new(io::Cursor::new(data))).parse().unwrap();
+
+        assert_eq!(2, res.attributes().groups()[0].attributes().len());
+        assert_eq!(1, res.attributes().groups()[1].attributes().len());
     }
 }
