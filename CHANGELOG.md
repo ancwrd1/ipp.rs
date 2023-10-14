@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.1
+- Fixed #22: placing of attribute into incorrect group
+- Added missing text-with-language and name-with-language value support
+
 ## 5.0.0
 - Breaking change: IppValue::Collection now uses BTreeMap instead of Vec
 - Added support for custom CA certs in the IPP client builder
