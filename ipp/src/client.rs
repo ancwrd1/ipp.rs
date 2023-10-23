@@ -8,6 +8,29 @@ use http::Uri;
 
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
+fn ipp_uri_to_string(uri: &Uri) -> String {
+    let (scheme, default_port) = match uri.scheme_str() {
+        Some("ipps") => ("https", 443),
+        Some("ipp") => ("http", 631),
+        _ => return uri.to_string(),
+    };
+
+    let authority = match uri.authority() {
+        Some(authority) => {
+            if authority.port_u16().is_some() {
+                authority.to_string()
+            } else {
+                format!("{}:{}", authority, default_port)
+            }
+        }
+        None => return uri.to_string(),
+    };
+
+    let path_and_query = uri.path_and_query().map(|p| p.as_str()).unwrap_or_default();
+
+    format!("{}://{}{}", scheme, authority, path_and_query)
+}
+
 /// Builder to create IPP client
 pub struct IppClientBuilder<T> {
     uri: Uri,
@@ -99,7 +122,7 @@ pub mod non_blocking {
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
-    use super::{IppClientBuilder, CONNECT_TIMEOUT};
+    use super::{ipp_uri_to_string, IppClientBuilder, CONNECT_TIMEOUT};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -149,7 +172,10 @@ pub mod non_blocking {
                 }
             }
 
-            let mut req_builder = builder.user_agent(USER_AGENT).build()?.post(self.0.uri.to_string());
+            let mut req_builder = builder
+                .user_agent(USER_AGENT)
+                .build()?
+                .post(ipp_uri_to_string(&self.0.uri));
 
             for (k, v) in &self.0.headers {
                 req_builder = req_builder.header(k, v);
@@ -185,7 +211,7 @@ pub mod blocking {
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
-    use super::{IppClientBuilder, CONNECT_TIMEOUT};
+    use super::{ipp_uri_to_string, IppClientBuilder, CONNECT_TIMEOUT};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 
@@ -242,7 +268,7 @@ pub mod blocking {
             let agent = builder.user_agent(USER_AGENT).build();
 
             let mut req = agent
-                .post(&self.0.uri.to_string())
+                .post(&ipp_uri_to_string(&self.0.uri))
                 .set("content-type", "application/ipp");
 
             for (k, v) in &self.0.headers {
@@ -255,5 +281,46 @@ pub mod blocking {
 
             parser.parse().map_err(IppError::from)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::client::ipp_uri_to_string;
+    use http::Uri;
+
+    #[test]
+    fn test_ipp_uri_no_port() {
+        let uri = "ipp://user:pass@host/path?query=1234".parse::<Uri>().unwrap();
+        let http_uri = ipp_uri_to_string(&uri);
+        assert_eq!(http_uri, "http://user:pass@host:631/path?query=1234");
+    }
+
+    #[test]
+    fn test_ipp_uri_with_port() {
+        let uri = "ipp://user:pass@host:1000".parse::<Uri>().unwrap();
+        let http_uri = ipp_uri_to_string(&uri);
+        assert_eq!(http_uri, "http://user:pass@host:1000/");
+    }
+
+    #[test]
+    fn test_ipps_uri_no_port() {
+        let uri = "ipps://host".parse::<Uri>().unwrap();
+        let http_uri = ipp_uri_to_string(&uri);
+        assert_eq!(http_uri, "https://host:443/");
+    }
+
+    #[test]
+    fn test_ipps_uri_with_port() {
+        let uri = "ipps://host:8443".parse::<Uri>().unwrap();
+        let http_uri = ipp_uri_to_string(&uri);
+        assert_eq!(http_uri, "https://host:8443/");
+    }
+
+    #[test]
+    fn test_http_uri_no_change() {
+        let uri = "http://somehost".parse::<Uri>().unwrap();
+        let http_uri = ipp_uri_to_string(&uri);
+        assert_eq!(http_uri, uri.to_string());
     }
 }
