@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.2
+- Re-added support for `ipp://` scheme in the IPP url
+
 ## 5.0.1
 - Fixed #22: placing of attribute into incorrect group
 - Added missing text-with-language and name-with-language value support
