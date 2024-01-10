@@ -127,6 +127,11 @@ impl IppAttribute {
         &self.value
     }
 
+    /// Consume this attribute and return the value
+    pub fn into_value(self) -> IppValue {
+        self.value
+    }
+
     /// Write attribute to byte array
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
@@ -170,6 +175,11 @@ impl IppAttributeGroup {
     pub fn attributes_mut(&mut self) -> &mut HashMap<String, IppAttribute> {
         &mut self.attributes
     }
+
+    /// Consume this group and return mutable attributes
+    pub fn into_attributes(self) -> HashMap<String, IppAttribute> {
+        self.attributes
+    }
 }
 
 /// Attribute list
@@ -193,6 +203,11 @@ impl IppAttributes {
     /// Get all mutable groups
     pub fn groups_mut(&mut self) -> &mut Vec<IppAttributeGroup> {
         &mut self.groups
+    }
+
+    /// Consume this attribute list and return all attribute groups
+    pub fn into_groups(self) -> Vec<IppAttributeGroup> {
+        self.groups
     }
 
     /// Get a list of attribute groups matching a given delimiter tag
