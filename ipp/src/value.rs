@@ -20,7 +20,7 @@ fn get_len_string(data: &mut Bytes) -> String {
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Debug, PartialEq, EnumAsInner)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, EnumAsInner)]
 pub enum IppValue {
     Integer(i32),
     Enum(i32),
