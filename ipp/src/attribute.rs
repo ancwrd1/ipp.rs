@@ -242,26 +242,21 @@ impl IppAttributes {
                     buffer.put(attr.to_bytes());
                 }
             }
+
+            // now the other operation attributes
+            for attr in group.attributes().values() {
+                if !is_header_attr(attr.name()) {
+                    buffer.put(attr.to_bytes());
+                }
+            }
         }
 
         // now the rest
-        for hdr in &[
-            DelimiterTag::OperationAttributes,
-            DelimiterTag::JobAttributes,
-            DelimiterTag::PrinterAttributes,
-        ] {
-            if let Some(group) = self.groups_of(*hdr).next() {
-                if group.tag() != DelimiterTag::OperationAttributes {
-                    buffer.put_u8(group.tag() as u8);
-                }
-                let attrs = group
-                    .attributes()
-                    .iter()
-                    .filter(|&(_, v)| group.tag() != DelimiterTag::OperationAttributes || !is_header_attr(v.name()));
+        for group in self.groups().iter().filter(|group| group.tag() != DelimiterTag::OperationAttributes) {
+            buffer.put_u8(group.tag() as u8);
 
-                for (_, attr) in attrs {
-                    buffer.put(attr.to_bytes());
-                }
+            for attr in group.attributes().values() {
+                buffer.put(attr.to_bytes());
             }
         }
         buffer.put_u8(DelimiterTag::EndOfAttributes as u8);
