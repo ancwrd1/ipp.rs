@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.3
+- Added Eq and Hash derivation for IppValue
+- Added into_xx methods for attribute models
+- Fixed a bug with unsupported attributes not being sent
+
 ## 5.0.2
 - Re-added support for `ipp://` scheme in the IPP url
 
