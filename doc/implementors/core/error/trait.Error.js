@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"ipp":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"ipp/parser/enum.IppParseError.html\" title=\"enum ipp::parser::IppParseError\">IppParseError</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"ipp/error/enum.IppError.html\" title=\"enum ipp::error::IppError\">IppError</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
