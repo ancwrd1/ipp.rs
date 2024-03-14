@@ -18,7 +18,7 @@ use crate::{
     reader::IppReader,
     request::IppRequestResponse,
     value::IppValue,
-    FromPrimitive as _,
+    FromPrimitive as _, IppHeader,
 };
 
 /// Parse error enum
@@ -149,7 +149,7 @@ pub struct AsyncIppParser<R> {
 #[cfg(feature = "async")]
 impl<R> AsyncIppParser<R>
 where
-    R: 'static + AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Sync + Unpin,
 {
     /// Create IPP parser from AsyncIppReader
     pub fn new<T>(reader: T) -> AsyncIppParser<R>
@@ -170,8 +170,7 @@ where
         self.state.parse_value(tag, name, value)
     }
 
-    /// Parse IPP stream
-    pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
+    async fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.reader.read_header().await?;
         trace!("IPP header: {:?}", header);
 
@@ -188,6 +187,22 @@ where
                 }
             }
         }
+
+        Ok(header)
+    }
+
+    /// Parse IPP stream without reading beyond the end of the attributes. The payload stays untouched.
+    pub async fn parse_parts(mut self) -> Result<(IppHeader, IppAttributes, AsyncIppReader<R>), IppParseError> {
+        let header = self.parse_header_attributes().await?;
+        Ok((header, self.state.attributes, self.reader))
+    }
+
+    /// Parse IPP stream
+    pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError>
+    where
+        R: 'static,
+    {
+        let header = self.parse_header_attributes().await?;
 
         Ok(IppRequestResponse {
             header,
@@ -226,8 +241,7 @@ where
         self.state.parse_value(tag, name, value)
     }
 
-    /// Parse IPP stream
-    pub fn parse(mut self) -> Result<IppRequestResponse, IppParseError> {
+    fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.reader.read_header()?;
         trace!("IPP header: {:?}", header);
 
@@ -245,6 +259,22 @@ where
             }
         }
 
+        Ok(header)
+    }
+
+    /// Parse IPP stream without reading beyond the end of the attributes. The payload stays untouched.
+    pub fn parse_parts(mut self) -> Result<(IppHeader, IppAttributes, IppReader<R>), IppParseError> {
+        let header = self.parse_header_attributes()?;
+        Ok((header, self.state.attributes, self.reader))
+    }
+
+    /// Parse IPP stream
+    pub fn parse(mut self) -> Result<IppRequestResponse, IppParseError>
+    where
+        R: 'static,
+    {
+        let header = self.parse_header_attributes()?;
+
         Ok(IppRequestResponse {
             header,
             attributes: self.state.attributes,
@@ -255,6 +285,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::prelude::IppVersion;
+
     use super::*;
 
     #[cfg(feature = "async")]
@@ -361,6 +393,7 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
+        assert_eq!(res.header.version, IppVersion::v1_1());
         let attrs = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
@@ -372,6 +405,35 @@ mod tests {
 
         let mut cursor = futures_util::io::Cursor::new(Vec::new());
         futures_executor::block_on(futures_util::io::copy(res.payload, &mut cursor)).unwrap();
+        assert_eq!(cursor.into_inner(), b"foo");
+    }
+
+    #[cfg(feature = "async")]
+    #[tokio::test]
+    async fn test_async_parse_parts() {
+        let data = vec![
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+            b'f', b'o', b'o',
+        ];
+
+        let result = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)))
+            .parse_parts()
+            .await;
+        assert!(result.is_ok());
+
+        let (header, attributes, reader) = result.ok().unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        let attrs = attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        let attr = attrs.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
+
+        let mut payload = reader.into_payload();
+        let mut cursor = io::Cursor::new(Vec::new());
+        io::copy(&mut payload, &mut cursor).unwrap();
         assert_eq!(cursor.into_inner(), b"foo");
     }
 
@@ -464,6 +526,7 @@ mod tests {
         assert!(result.is_ok());
 
         let mut res = result.ok().unwrap();
+        assert_eq!(res.header.version, IppVersion::v1_1());
         let attrs = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
@@ -475,6 +538,32 @@ mod tests {
 
         let mut cursor = io::Cursor::new(Vec::new());
         io::copy(&mut res.payload, &mut cursor).unwrap();
+        assert_eq!(cursor.into_inner(), b"foo");
+    }
+
+    #[test]
+    fn test_parse_parts() {
+        let data = vec![
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+            b'f', b'o', b'o',
+        ];
+
+        let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse_parts();
+        assert!(result.is_ok());
+
+        let (header, attributes, reader) = result.ok().unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        let attrs = attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        let attr = attrs.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
+
+        let mut payload = reader.into_payload();
+        let mut cursor = io::Cursor::new(Vec::new());
+        io::copy(&mut payload, &mut cursor).unwrap();
         assert_eq!(cursor.into_inner(), b"foo");
     }
 

@@ -19,7 +19,7 @@ pub struct AsyncIppReader<R> {
 #[cfg(feature = "async")]
 impl<R> AsyncIppReader<R>
 where
-    R: 'static + AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Sync + Unpin,
 {
     /// Create IppReader from AsyncRead instance
     pub fn new(inner: R) -> Self {
@@ -83,7 +83,10 @@ where
     }
 
     /// Convert the remaining inner stream into IppPayload
-    pub fn into_payload(self) -> IppPayload {
+    pub fn into_payload(self) -> IppPayload
+    where
+        R: 'static,
+    {
         IppPayload::new_async(self.inner)
     }
 }
@@ -91,7 +94,7 @@ where
 #[cfg(feature = "async")]
 impl<R> From<R> for AsyncIppReader<R>
 where
-    R: 'static + AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Sync + Unpin,
 {
     fn from(r: R) -> Self {
         AsyncIppReader::new(r)
@@ -105,7 +108,7 @@ pub struct IppReader<R> {
 
 impl<R> IppReader<R>
 where
-    R: 'static + Read + Send + Sync,
+    R: Read + Send + Sync,
 {
     /// Create IppReader from Read instance
     pub fn new(inner: R) -> Self {
@@ -167,14 +170,17 @@ where
     }
 
     /// Convert the remaining inner stream into IppPayload
-    pub fn into_payload(self) -> IppPayload {
+    pub fn into_payload(self) -> IppPayload
+    where
+        R: 'static,
+    {
         IppPayload::new(self.inner)
     }
 }
 
 impl<R> From<R> for IppReader<R>
 where
-    R: 'static + Read + Send + Sync,
+    R: Read + Send + Sync,
 {
     fn from(r: R) -> Self {
         IppReader::new(r)
@@ -197,6 +203,15 @@ mod tests {
     #[test]
     fn test_read_value() {
         let data = io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
+        let mut reader = IppReader::new(data);
+        let value = reader.read_value().unwrap();
+        assert_eq!(value.as_ref(), b"test");
+    }
+
+    #[test]
+    fn test_read_borrowed_value() {
+        let data = vec![0x00, 0x04, b't', b'e', b's', b't'];
+        let data = io::Cursor::new(&data);
         let mut reader = IppReader::new(data);
         let value = reader.read_value().unwrap();
         assert_eq!(value.as_ref(), b"test");
