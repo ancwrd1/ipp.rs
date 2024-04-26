@@ -1,5 +1,11 @@
 # ipp.rs
 
+[![github actions](https://github.com/ancwrd1/ipp.rs/workflows/CI/badge.svg)](https://github.com/ancwrd1/ipp.rs/actions)
+[![crates](https://img.shields.io/crates/v/ipp.svg)](https://github.com/ancwrd1/ipp.rs)
+[![license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![docs.rs](https://docs.rs/ipp/badge.svg)](https://docs.rs/ipp)
+
 IPP protocol implementation for Rust.
 This crate implements IPP protocol as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010), [RFC 8011](https://tools.ietf.org/html/rfc8011).
 
