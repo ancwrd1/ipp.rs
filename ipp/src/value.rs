@@ -92,7 +92,7 @@ impl IppValue {
             IppValue::Uri(_) => ValueTag::Uri as u8,
             IppValue::UriScheme(_) => ValueTag::UriScheme as u8,
             IppValue::MimeMediaType(_) => ValueTag::MimeMediaType as u8,
-            IppValue::Array(ref array) => array.get(0).map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown as u8),
+            IppValue::Array(ref array) => array.first().map(|v| v.to_tag()).unwrap_or(ValueTag::Unknown as u8),
             IppValue::Collection(_) => ValueTag::BegCollection as u8,
             IppValue::DateTime { .. } => ValueTag::DateTime as u8,
             IppValue::MemberAttrName(_) => ValueTag::MemberAttrName as u8,
