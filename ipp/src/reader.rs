@@ -82,6 +82,11 @@ where
         Ok(IppHeader::new(version, operation_status, request_id))
     }
 
+    /// Release the underlying reader
+    pub fn into_inner(self) -> R {
+        self.inner
+    }
+
     /// Convert the remaining inner stream into IppPayload
     pub fn into_payload(self) -> IppPayload
     where
@@ -167,6 +172,11 @@ where
         let request_id = self.read_u32()?;
 
         Ok(IppHeader::new(version, operation_status, request_id))
+    }
+
+    /// Release the underlying reader
+    pub fn into_inner(self) -> R {
+        self.inner
     }
 
     /// Convert the remaining inner stream into IppPayload
