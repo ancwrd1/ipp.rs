@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.4
+- Added IppParser::parse_parts function to only read and parse IPP headers without payload
+- Added missing `serde` feature to the manifest file
+- Added IppRader::into_inner function
+
 ## 5.0.3
 - Added Eq and Hash derivation for IppValue
 - Added into_xx methods for attribute models
