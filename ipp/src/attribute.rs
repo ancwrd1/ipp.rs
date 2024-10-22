@@ -31,6 +31,7 @@ impl IppAttribute {
     pub const COMPRESSION_SUPPORTED: &'static str = "compression-supported";
     pub const DOCUMENT_FORMAT_DEFAULT: &'static str = "document-format-default";
     pub const DOCUMENT_FORMAT_SUPPORTED: &'static str = "document-format-supported";
+    pub const DOCUMENT_FORMAT_PREFERRED: &'static str = "document-format-preferred";
     pub const GENERATED_NATURAL_LANGUAGE_SUPPORTED: &'static str = "generated-natural-language-supported";
     pub const IPP_VERSIONS_SUPPORTED: &'static str = "ipp-versions-supported";
     pub const NATURAL_LANGUAGE_CONFIGURED: &'static str = "natural-language-configured";
@@ -45,6 +46,10 @@ impl IppAttribute {
     pub const PRINTER_UP_TIME: &'static str = "printer-up-time";
     pub const PRINTER_URI: &'static str = "printer-uri";
     pub const PRINTER_URI_SUPPORTED: &'static str = "printer-uri-supported";
+    pub const PRINTER_FIRMWARE_NAME: &'static str = "printer-firmware-name";
+    pub const PRINTER_FIRMWARE_STRING_VERSION: &'static str = "printer-firmware-string-version";
+    pub const PRINTER_DEVICE_ID: &'static str = "printer-device-id";
+    pub const PRINTER_UUID: &'static str = "printer-uuid";
     pub const QUEUED_JOB_COUNT: &'static str = "queued-job-count";
     pub const URI_AUTHENTICATION_SUPPORTED: &'static str = "uri-authentication-supported";
     pub const URI_SECURITY_SUPPORTED: &'static str = "uri-security-supported";
@@ -78,12 +83,15 @@ impl IppAttribute {
     pub const ORIENTATION_REQUESTED_SUPPORTED: &'static str = "orientation-requested-supported";
     pub const MEDIA_DEFAULT: &'static str = "media-default";
     pub const MEDIA_SUPPORTED: &'static str = "media-supported";
+    pub const MEDIA_COL_SUPPORTED: &'static str = "media-col-supported";
+    pub const MEDIA_TYPE_SUPPORTED: &'static str = "media-type-supported";
     pub const PAGES_PER_MINUTE: &'static str = "pages-per-minute";
     pub const COLOR_MODE_SUPPORTED: &'static str = "color-mode-supported";
     pub const PRINT_COLOR_MODE_SUPPORTED: &'static str = "print-color-mode-supported";
     pub const PRINT_COLOR_MODE_DEFAULT: &'static str = "print-color-mode-default";
     pub const MULTIPLE_DOCUMENT_HANDLING_SUPPORTED: &'static str = "multiple-document-handling-supported";
     pub const MEDIA_SOURCE_SUPPORTED: &'static str = "media-source-supported";
+    pub const MOPRIA_CERTIFIED: &'static str = "mopria-certified";
 
     // Per section 4.1.4. Character Set and Natural Language Operation Attributes
     // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
