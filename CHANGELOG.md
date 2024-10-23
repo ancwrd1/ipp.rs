@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.5
+- Added IPP attributes required by Windows Print Protection mode
+
 ## 5.0.4
 - Added IppParser::parse_parts function to only read and parse IPP headers without payload
 - Added missing `serde` feature to the manifest file
