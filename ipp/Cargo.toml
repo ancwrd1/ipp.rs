@@ -26,6 +26,7 @@ serde = { version = "1", optional = true, features = ["derive"] }
 ureq = { version = "2", default-features = false, optional = true }
 native-tls = { version = "0.2", optional = true }
 base64 = { version = "0.22", optional = true }
+rustls-native-certs = { version = "0.8", optional = true }
 
 [dependencies.futures-util]
 version = "0.3"
@@ -39,6 +40,13 @@ optional = true
 default-features = false
 features = ["stream"]
 
+[dependencies.rustls]
+version = "0.23"
+optional = true
+default-features = false
+features = ["ring", "log", "tls12", "std"]
+
+
 [dependencies.tokio-util]
 version = "0.7"
 optional = true
@@ -48,10 +56,12 @@ features = ["io", "compat"]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["async-client", "client", "async-client-tls", "client-tls"]
+default = ["async-client-tls"]
 serde = ["dep:serde", "bytes/serde"]
 async = ["futures-util", "futures-executor"]
 async-client = ["async", "reqwest", "tokio-util", "base64"]
 client = ["ureq", "base64"]
 async-client-tls = ["async-client", "native-tls", "reqwest/native-tls"]
 client-tls = ["client", "native-tls", "ureq/native-tls"]
+async-client-rustls = ["async-client", "rustls", "reqwest/rustls-tls-native-roots"]
+client-rustls = ["client", "rustls", "rustls-native-certs", "ureq/tls"]

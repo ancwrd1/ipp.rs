@@ -6,19 +6,19 @@
 //! * using any third-party HTTP client and send the serialized request manually.
 //!
 //! This crate supports both synchronous and asynchronous operations. The following feature flags are supported:
-//! * `async` - enables asynchronous APIs
-//! * `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature
-//! * `client` - enables blocking IPP client based on `ureq` crate
-//! * `async-client-tls` - enables asynchronous IPP client with TLS support
-//! * `client-tls` - enables blocking IPP client with TLS support
+//! * `async` - enables asynchronous APIs.
+//! * `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature.
+//! * `client` - enables blocking IPP client based on `ureq` crate.
+//! * `async-client-tls` - enables asynchronous IPP client with TLS, using native-tls backend. Implies `async-client` feature.
+//! * `client-tls` - enables blocking IPP client with TLS, using native-tls backend. Implies `client` feature.
+//! * `async-client-rustls` - enables asynchronous IPP client with TLS, using rustls backend. Implies `async-client` feature.
+//! * `client-rustls` - enables blocking IPP client with TLS, using rustls backend. Implies `client` feature.
 //!
-//! By default, all features are enabled.
-//!
+//! By default, the following feature is enabled: `async-client-tls`.
 //!
 //! Implementation notes:
 //! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
 //! * this crate is also suitable for building IPP servers, however the example is not provided yet.
-//! * some operations (e.g. CUPS-specific) require authorization which can be supplied in the printer URI.
 //!
 //! Usage examples:
 //!

@@ -13,15 +13,18 @@ It supports both synchronous and asynchronous operations (requests and responses
 
 The following build-time features are supported:
 
-* `async` - enables asynchronous APIs
-* `async-client` - enables asynchronous IPP client based on reqwest crate, implies `async` feature
-* `client` - enables blocking IPP client based on ureq crate
-* `async-client-tls` - enables asynchronous IPP client with TLS
-* `client-tls` - enables blocking IPP client with TLS
+* `async` - enables asynchronous APIs.
+* `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature.
+* `client` - enables blocking IPP client based on `ureq` crate.
+* `async-client-tls` - enables asynchronous IPP client with TLS, using native-tls backend. Implies `async-client` feature.
+* `client-tls` - enables blocking IPP client with TLS, using native-tls backend. Implies `client` feature.
+* `async-client-rustls` - enables asynchronous IPP client with TLS, using rustls backend. Implies `async-client` feature.
+* `client-rustls` - enables blocking IPP client with TLS, using rustls backend. Implies `client` feature.
 
-By default, all features are enabled. Use `default-features=false` dependency option to disable them.
+By default, the following features are enabled: `async-client-tls`.
+Use `default-features=false` dependency option to disable them.
 
-[Documentation](https://ancwrd1.github.io/ipp.rs/doc/ipp/)
+[Documentation](https://docs.rs/ipp/latest/ipp/)
 
 Usage example for async client:
 

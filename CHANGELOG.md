@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.0
+- Added `rustls` backend support via two new feature flags: `client-rustls` and `async-client-rustls`
+- Only `async-client-tls` feature is enabled by default
+
 ## 5.0.5
 - Added IPP attributes required by Windows Print Protection mode
 

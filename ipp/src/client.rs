@@ -158,7 +158,7 @@ pub mod non_blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(feature = "async-client-tls")]
+            #[cfg(any(feature = "async-client-tls", feature = "async-client-rustls"))]
             {
                 if self.0.ignore_tls_errors {
                     builder = builder
@@ -170,6 +170,11 @@ pub mod non_blocking {
                         reqwest::Certificate::from_pem(data).or_else(|_| reqwest::Certificate::from_der(data))?;
                     builder = builder.add_root_certificate(cert);
                 }
+            }
+
+            #[cfg(feature = "async-client-rustls")]
+            {
+                builder = builder.use_rustls_tls();
             }
 
             let mut req_builder = builder
@@ -265,6 +270,37 @@ pub mod blocking {
                 builder = builder.tls_connector(std::sync::Arc::new(tls_connector));
             }
 
+            #[cfg(feature = "client-rustls")]
+            {
+                use rustls::pki_types::pem::PemObject;
+                let mut root_store = rustls::RootCertStore::empty();
+                let certs = rustls_native_certs::load_native_certs();
+                root_store.add_parsable_certificates(certs.certs);
+
+                for data in &self.0.ca_certs {
+                    let cert = rustls::pki_types::CertificateDer::<'static>::from_pem_slice(data)
+                        .unwrap_or_else(|_| rustls::pki_types::CertificateDer::from_slice(data));
+                    root_store.add(cert)?;
+                }
+
+                let secure_config = rustls::ClientConfig::builder()
+                    .with_root_certificates(root_store)
+                    .with_no_client_auth();
+
+                let config = if self.0.ignore_tls_errors {
+                    rustls::ClientConfig::builder()
+                        .dangerous()
+                        .with_custom_certificate_verifier(std::sync::Arc::new(verifiers::NoVerifier(
+                            secure_config.crypto_provider().clone(),
+                        )))
+                        .with_no_client_auth()
+                } else {
+                    secure_config
+                };
+
+                builder = builder.tls_config(std::sync::Arc::new(config));
+            }
+
             let agent = builder.user_agent(USER_AGENT).build();
 
             let mut req = agent
@@ -280,6 +316,52 @@ pub mod blocking {
             let parser = IppParser::new(IppReader::new(reader));
 
             parser.parse().map_err(IppError::from)
+        }
+    }
+
+    #[cfg(feature = "client-rustls")]
+    mod verifiers {
+        use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
+        use rustls::pki_types::{CertificateDer, ServerName, UnixTime};
+        use rustls::{crypto::CryptoProvider, DigitallySignedStruct, Error, SignatureScheme};
+        use std::sync::Arc;
+
+        #[derive(Debug)]
+        pub struct NoVerifier(pub Arc<CryptoProvider>);
+
+        impl ServerCertVerifier for NoVerifier {
+            fn verify_server_cert(
+                &self,
+                _end_entity: &CertificateDer,
+                _intermediates: &[CertificateDer],
+                _server_name: &ServerName,
+                _ocsp_response: &[u8],
+                _now: UnixTime,
+            ) -> Result<ServerCertVerified, Error> {
+                Ok(ServerCertVerified::assertion())
+            }
+
+            fn verify_tls12_signature(
+                &self,
+                _message: &[u8],
+                _cert: &CertificateDer,
+                _dss: &DigitallySignedStruct,
+            ) -> Result<HandshakeSignatureValid, Error> {
+                Ok(HandshakeSignatureValid::assertion())
+            }
+
+            fn verify_tls13_signature(
+                &self,
+                _message: &[u8],
+                _cert: &CertificateDer,
+                _dss: &DigitallySignedStruct,
+            ) -> Result<HandshakeSignatureValid, Error> {
+                Ok(HandshakeSignatureValid::assertion())
+            }
+
+            fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
+                self.0.signature_verification_algorithms.supported_schemes()
+            }
         }
     }
 }
