@@ -272,10 +272,14 @@ pub mod blocking {
 
             #[cfg(feature = "client-rustls")]
             {
+                use once_cell::sync::Lazy;
                 use rustls::pki_types::pem::PemObject;
+                use rustls_native_certs::{load_native_certs, CertificateResult};
+
+                static ROOTS: Lazy<CertificateResult> = Lazy::new(load_native_certs);
+
                 let mut root_store = rustls::RootCertStore::empty();
-                let certs = rustls_native_certs::load_native_certs();
-                root_store.add_parsable_certificates(certs.certs);
+                root_store.add_parsable_certificates(ROOTS.certs.clone());
 
                 for data in &self.0.ca_certs {
                     let cert = rustls::pki_types::CertificateDer::<'static>::from_pem_slice(data)

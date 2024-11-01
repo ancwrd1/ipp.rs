@@ -27,6 +27,7 @@ ureq = { version = "2", default-features = false, optional = true }
 native-tls = { version = "0.2", optional = true }
 base64 = { version = "0.22", optional = true }
 rustls-native-certs = { version = "0.8", optional = true }
+once_cell = { version  = "1", optional = true }
 
 [dependencies.futures-util]
 version = "0.3"
@@ -64,4 +65,4 @@ client = ["ureq", "base64"]
 async-client-tls = ["async-client", "native-tls", "reqwest/native-tls"]
 client-tls = ["client", "native-tls", "ureq/native-tls"]
 async-client-rustls = ["async-client", "rustls", "reqwest/rustls-tls-native-roots"]
-client-rustls = ["client", "rustls", "rustls-native-certs", "ureq/tls"]
+client-rustls = ["client", "rustls", "rustls-native-certs", "once_cell", "ureq/tls"]
