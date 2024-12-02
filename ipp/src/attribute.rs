@@ -63,6 +63,7 @@ impl IppAttribute {
     pub const STATUS_MESSAGE: &'static str = "status-message";
     pub const REQUESTED_ATTRIBUTES: &'static str = "requested-attributes";
     pub const SIDES_SUPPORTED: &'static str = "sides-supported";
+    pub const SIDES: &'static str = "sides";
     pub const OUTPUT_MODE_SUPPORTED: &'static str = "output-mode-supported";
     pub const COLOR_SUPPORTED: &'static str = "color-supported";
     pub const PRINTER_INFO: &'static str = "printer-info";
@@ -72,6 +73,7 @@ impl IppAttribute {
     pub const PRINTER_RESOLUTION_SUPPORTED: &'static str = "printer-resolution-supported";
     pub const COPIES_SUPPORTED: &'static str = "copies-supported";
     pub const COPIES_DEFAULT: &'static str = "copies-default";
+    pub const COPIES: &'static str = "copies";
     pub const SIDES_DEFAULT: &'static str = "sides-default";
     pub const PRINT_QUALITY_DEFAULT: &'static str = "print-quality-default";
     pub const PRINT_QUALITY_SUPPORTED: &'static str = "print-quality-supported";
@@ -89,7 +91,10 @@ impl IppAttribute {
     pub const COLOR_MODE_SUPPORTED: &'static str = "color-mode-supported";
     pub const PRINT_COLOR_MODE_SUPPORTED: &'static str = "print-color-mode-supported";
     pub const PRINT_COLOR_MODE_DEFAULT: &'static str = "print-color-mode-default";
+    pub const PRINT_COLOR_MODE: &'static str = "print-color-mode";
     pub const MULTIPLE_DOCUMENT_HANDLING_SUPPORTED: &'static str = "multiple-document-handling-supported";
+    pub const MULTIPLE_DOCUMENT_HANDLING_DEFAULT: &'static str = "multiple-document-handling-default";
+    pub const MULTIPLE_DOCUMENT_HANDLING: &'static str = "multiple-document-handling";
     pub const MEDIA_SOURCE_SUPPORTED: &'static str = "media-source-supported";
     pub const MOPRIA_CERTIFIED: &'static str = "mopria-certified";
     pub const COPIES: &'static str = "copies";
@@ -270,7 +275,11 @@ impl IppAttributes {
         }
 
         // now the rest
-        for group in self.groups().iter().filter(|group| group.tag() != DelimiterTag::OperationAttributes) {
+        for group in self
+            .groups()
+            .iter()
+            .filter(|group| group.tag() != DelimiterTag::OperationAttributes)
+        {
             buffer.put_u8(group.tag() as u8);
 
             for attr in group.attributes().values() {

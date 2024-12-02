@@ -107,6 +107,18 @@ pub enum Finishings {
     Bind = 7,
     SaddleStitch = 8,
     EdgeStitch = 9,
+    StapleTopLeft = 20,
+    StapleBottomLeft = 21,
+    StapleTopRight = 22,
+    StapleBottomRight = 23,
+    EdgeStitchLeft = 24,
+    EdgeStitchTop = 25,
+    EdgeStitchRight = 26,
+    EdgeStitchBottom = 27,
+    StapleDualLeft = 28,
+    StapleDualTop = 29,
+    StapleDualRight = 30,
+    StapleDualBottom = 31,
 }
 
 /// job-state constants
