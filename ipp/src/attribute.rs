@@ -97,6 +97,16 @@ impl IppAttribute {
     pub const MULTIPLE_DOCUMENT_HANDLING: &'static str = "multiple-document-handling";
     pub const MEDIA_SOURCE_SUPPORTED: &'static str = "media-source-supported";
     pub const MOPRIA_CERTIFIED: &'static str = "mopria-certified";
+    pub const COPIES: &'static str = "copies";
+    pub const SIDES: &'static str = "sides";
+    pub const ORIENTATION_REQUESTED: &'static str = "orientation-requested";
+    pub const MULTIPLE_DOCUMENT_HANDLING: &'static str = "multiple-document-handling";
+    pub const PRINT_COLOR_MODE: &'static str = "print-color-mode";
+    pub const OUTPUT_BIN: &'static str = "output-bin";
+    pub const PRINT_QUALITY: &'static str = "print-quality";
+    pub const PRINTER_RESOLUTION: &'static str = "printer-resolution";
+    pub const MEDIA_COL: &'static str = "media-col";
+    pub const FINISHINGS: &'static str = "finishings";
 
     // Per section 4.1.4. Character Set and Natural Language Operation Attributes
     // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
