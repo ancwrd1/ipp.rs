@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.0
+- Added additional attribute constants
+- Updated 'thiserror' dependency to version 2
+
 ## 5.1.0
 - Added `rustls` backend support via two new feature flags: `client-rustls` and `async-client-rustls`
 - Only `async-client-tls` feature is enabled by default
