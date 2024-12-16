@@ -7,6 +7,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
         shell: bash
       - run: ci/build.bash cargo ${{ matrix.target }}
@@ -26,6 +28,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
       - run: ci/build.bash cargo ${{ matrix.target }}
       - run: ci/test.bash cargo ${{ matrix.target }}
@@ -41,6 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
       - run: ci/build.bash cargo ${{ matrix.target }}
       - run: ci/test.bash cargo ${{ matrix.target }}
