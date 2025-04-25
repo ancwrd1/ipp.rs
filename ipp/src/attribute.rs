@@ -29,6 +29,7 @@ impl IppAttribute {
     pub const CHARSET_CONFIGURED: &'static str = "charset-configured";
     pub const CHARSET_SUPPORTED: &'static str = "charset-supported";
     pub const COMPRESSION_SUPPORTED: &'static str = "compression-supported";
+    pub const DOCUMENT_FORMAT: &'static str = "document-format";
     pub const DOCUMENT_FORMAT_DEFAULT: &'static str = "document-format-default";
     pub const DOCUMENT_FORMAT_SUPPORTED: &'static str = "document-format-supported";
     pub const DOCUMENT_FORMAT_PREFERRED: &'static str = "document-format-preferred";

@@ -26,6 +26,15 @@ fn with_user_name(user_name: Option<String>, req: &mut IppRequestResponse) {
     }
 }
 
+fn with_document_format(document_format: Option<String>, req: &mut IppRequestResponse) {
+    if let Some(document_format) = document_format {
+        req.attributes_mut().add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(IppAttribute::DOCUMENT_FORMAT, IppValue::MimeMediaType(document_format)),
+        );
+    }
+}
+
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
     /// Convert this operation to IPP request which is ready for sending
@@ -49,6 +58,7 @@ pub struct PrintJob {
     payload: IppPayload,
     user_name: Option<String>,
     job_name: Option<String>,
+    document_format: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
@@ -58,18 +68,27 @@ impl PrintJob {
     /// * `printer_uri` - printer URI<br/>
     /// * `payload` - job payload<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
+    /// * `document_format` - mime-type of the payload<br/>
     /// * `job_name` - job name (job-name)<br/>
-    pub fn new<S, U, N>(printer_uri: Uri, payload: S, user_name: Option<U>, job_name: Option<N>) -> PrintJob
+    pub fn new<S, U, N, D>(
+        printer_uri: Uri,
+        payload: S,
+        user_name: Option<U>,
+        job_name: Option<N>,
+        document_format: Option<D>,
+    ) -> PrintJob
     where
         S: Into<IppPayload>,
         U: AsRef<str>,
         N: AsRef<str>,
+        D: AsRef<str>,
     {
         PrintJob {
             printer_uri,
             payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
             job_name: job_name.map(|v| v.as_ref().to_string()),
+            document_format: document_format.map(|v| v.as_ref().to_string()),
             attributes: Vec::new(),
         }
     }
@@ -85,6 +104,7 @@ impl IppOperation for PrintJob {
         let mut retval = IppRequestResponse::new(self.version(), Operation::PrintJob, Some(self.printer_uri));
 
         with_user_name(self.user_name, &mut retval);
+        with_document_format(self.document_format, &mut retval);
 
         if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
@@ -205,6 +225,7 @@ pub struct SendDocument {
     job_id: i32,
     payload: IppPayload,
     user_name: Option<String>,
+    document_format: Option<String>,
     last: bool,
 }
 
@@ -215,17 +236,27 @@ impl SendDocument {
     /// * `job_id` - job ID returned by Create-Job operation<br/>
     /// * `payload` - `IppPayload`<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
+    /// * `document_format` - mime-type of the payload<br/>
     /// * `last` - whether this document is a last one<br/>
-    pub fn new<S, U>(printer_uri: Uri, job_id: i32, payload: S, user_name: Option<U>, last: bool) -> SendDocument
+    pub fn new<S, U, D>(
+        printer_uri: Uri,
+        job_id: i32,
+        payload: S,
+        user_name: Option<U>,
+        document_format: Option<D>,
+        last: bool,
+    ) -> SendDocument
     where
         S: Into<IppPayload>,
         U: AsRef<str>,
+        D: AsRef<str>,
     {
         SendDocument {
             printer_uri,
             job_id,
             payload: payload.into(),
             user_name: user_name.map(|v| v.as_ref().to_string()),
+            document_format: document_format.map(|v| v.as_ref().to_string()),
             last,
         }
     }
@@ -246,6 +277,7 @@ impl IppOperation for SendDocument {
         );
 
         with_user_name(self.user_name, &mut retval);
+        with_document_format(self.document_format, &mut retval);
 
         *retval.payload_mut() = self.payload;
 

@@ -86,6 +86,7 @@ pub struct PrintJobBuilder {
     payload: IppPayload,
     user_name: Option<String>,
     job_title: Option<String>,
+    document_format: Option<String>,
     attributes: Vec<IppAttribute>,
 }
 
@@ -96,6 +97,7 @@ impl PrintJobBuilder {
             payload,
             user_name: None,
             job_title: None,
+            document_format: None,
             attributes: Vec::new(),
         }
     }
@@ -114,6 +116,15 @@ impl PrintJobBuilder {
         S: AsRef<str>,
     {
         self.job_title = Some(job_title.as_ref().to_owned());
+        self
+    }
+
+    /// Specify the mime-type of the document, e.g. "image/jpeg"
+    pub fn document_format<S>(mut self, document_format: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.document_format = Some(document_format.as_ref().to_owned());
         self
     }
 
@@ -139,6 +150,7 @@ impl PrintJobBuilder {
             self.payload,
             self.user_name.as_ref(),
             self.job_title.as_ref(),
+            self.document_format.as_ref(),
         );
         self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
@@ -243,6 +255,7 @@ pub struct SendDocumentBuilder {
     job_id: i32,
     payload: IppPayload,
     user_name: Option<String>,
+    document_format: Option<String>,
     is_last: bool,
 }
 
@@ -253,6 +266,7 @@ impl SendDocumentBuilder {
             job_id,
             payload,
             user_name: None,
+            document_format: None,
             is_last: true,
         }
     }
@@ -263,6 +277,15 @@ impl SendDocumentBuilder {
         S: AsRef<str>,
     {
         self.user_name = Some(user_name.as_ref().to_owned());
+        self
+    }
+
+    /// Specify the mime-type of the document, e.g. "image/jpeg"
+    pub fn document_format<S>(mut self, document_format: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        self.document_format = Some(document_format.as_ref().to_owned());
         self
     }
 
@@ -279,6 +302,7 @@ impl SendDocumentBuilder {
             self.job_id,
             self.payload,
             self.user_name.as_ref(),
+            self.document_format.as_ref(),
             self.is_last,
         )
     }
