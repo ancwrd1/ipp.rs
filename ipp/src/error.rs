@@ -55,14 +55,4 @@ pub enum IppError {
     #[cfg(feature = "client")]
     /// Client error
     ClientError(#[from] ureq::Error),
-
-    #[error(transparent)]
-    #[cfg(any(feature = "async-client-tls", feature = "client-tls"))]
-    /// TLS error
-    TlsError(#[from] native_tls::Error),
-
-    #[error(transparent)]
-    #[cfg(feature = "client-rustls")]
-    /// TLS error
-    RustlsError(#[from] rustls::Error),
 }

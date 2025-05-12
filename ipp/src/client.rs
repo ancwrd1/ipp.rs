@@ -212,7 +212,13 @@ pub mod non_blocking {
 #[cfg(feature = "client")]
 pub mod blocking {
     use http::Uri;
-    use ureq::AgentBuilder;
+    use once_cell::sync::Lazy;
+    use rustls_native_certs::load_native_certs;
+    use std::sync::Arc;
+    use ureq::{
+        tls::{RootCerts, TlsConfig, TlsProvider},
+        Agent, SendBody,
+    };
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
@@ -246,126 +252,63 @@ pub mod blocking {
         where
             R: Into<IppRequestResponse>,
         {
-            let mut builder = AgentBuilder::new().timeout_connect(CONNECT_TIMEOUT);
+            let mut builder = Agent::config_builder().timeout_connect(Some(CONNECT_TIMEOUT));
 
             if let Some(timeout) = self.0.request_timeout {
-                builder = builder.timeout(timeout);
+                builder = builder.timeout_global(Some(timeout));
             }
 
-            #[cfg(feature = "client-tls")]
+            #[cfg(any(feature = "client-tls", feature = "client-rustls"))]
             {
-                let mut tls_builder = native_tls::TlsConnector::builder();
-
-                tls_builder
-                    .danger_accept_invalid_hostnames(self.0.ignore_tls_errors)
-                    .danger_accept_invalid_certs(self.0.ignore_tls_errors);
-
-                for data in &self.0.ca_certs {
-                    let cert =
-                        native_tls::Certificate::from_pem(data).or_else(|_| native_tls::Certificate::from_der(data))?;
-                    tls_builder.add_root_certificate(cert);
+                let mut tls_config = TlsConfig::builder();
+                if self.0.ignore_tls_errors {
+                    tls_config = tls_config.disable_verification(true);
                 }
 
-                let tls_connector = tls_builder.build()?;
-                builder = builder.tls_connector(std::sync::Arc::new(tls_connector));
-            }
-
-            #[cfg(feature = "client-rustls")]
-            {
-                use once_cell::sync::Lazy;
-                use rustls::pki_types::pem::PemObject;
-                use rustls_native_certs::{load_native_certs, CertificateResult};
-
-                static ROOTS: Lazy<CertificateResult> = Lazy::new(load_native_certs);
-
-                let mut root_store = rustls::RootCertStore::empty();
-                root_store.add_parsable_certificates(ROOTS.certs.clone());
-
-                for data in &self.0.ca_certs {
-                    let cert = rustls::pki_types::CertificateDer::<'static>::from_pem_slice(data)
-                        .unwrap_or_else(|_| rustls::pki_types::CertificateDer::from_slice(data));
-                    root_store.add(cert)?;
-                }
-
-                let secure_config = rustls::ClientConfig::builder()
-                    .with_root_certificates(root_store)
-                    .with_no_client_auth();
-
-                let config = if self.0.ignore_tls_errors {
-                    rustls::ClientConfig::builder()
-                        .dangerous()
-                        .with_custom_certificate_verifier(std::sync::Arc::new(verifiers::NoVerifier(
-                            secure_config.crypto_provider().clone(),
-                        )))
-                        .with_no_client_auth()
+                let provider = if cfg!(feature = "client-rustls") {
+                    TlsProvider::Rustls
                 } else {
-                    secure_config
+                    TlsProvider::NativeTls
                 };
 
-                builder = builder.tls_config(std::sync::Arc::new(config));
+                tls_config = tls_config.provider(provider);
+
+                static ROOTS: Lazy<Arc<Vec<ureq::tls::Certificate<'static>>>> = Lazy::new(|| {
+                    let certs = load_native_certs();
+                    Arc::new(
+                        certs
+                            .certs
+                            .into_iter()
+                            .map(|c| ureq::tls::Certificate::from_der(c.as_ref()).to_owned())
+                            .collect(),
+                    )
+                });
+
+                let mut roots = (**ROOTS).clone();
+
+                for data in &self.0.ca_certs {
+                    roots.push(ureq::tls::Certificate::from_der(data).to_owned());
+                }
+
+                tls_config = tls_config.root_certs(RootCerts::Specific(Arc::new(roots)));
+                builder = builder.tls_config(tls_config.build());
             }
 
-            let agent = builder.user_agent(USER_AGENT).build();
+            let agent: Agent = builder.user_agent(USER_AGENT).build().into();
 
             let mut req = agent
                 .post(&ipp_uri_to_string(&self.0.uri))
-                .set("content-type", "application/ipp");
+                .header("content-type", "application/ipp");
 
             for (k, v) in &self.0.headers {
-                req = req.set(k, v);
+                req = req.header(k, v);
             }
 
-            let response = req.send(request.into().into_read())?;
-            let reader = response.into_reader();
+            let response = req.send(SendBody::from_reader(&mut request.into().into_read()))?;
+            let reader = response.into_body().into_reader();
             let parser = IppParser::new(IppReader::new(reader));
 
             parser.parse().map_err(IppError::from)
-        }
-    }
-
-    #[cfg(feature = "client-rustls")]
-    mod verifiers {
-        use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
-        use rustls::pki_types::{CertificateDer, ServerName, UnixTime};
-        use rustls::{crypto::CryptoProvider, DigitallySignedStruct, Error, SignatureScheme};
-        use std::sync::Arc;
-
-        #[derive(Debug)]
-        pub struct NoVerifier(pub Arc<CryptoProvider>);
-
-        impl ServerCertVerifier for NoVerifier {
-            fn verify_server_cert(
-                &self,
-                _end_entity: &CertificateDer,
-                _intermediates: &[CertificateDer],
-                _server_name: &ServerName,
-                _ocsp_response: &[u8],
-                _now: UnixTime,
-            ) -> Result<ServerCertVerified, Error> {
-                Ok(ServerCertVerified::assertion())
-            }
-
-            fn verify_tls12_signature(
-                &self,
-                _message: &[u8],
-                _cert: &CertificateDer,
-                _dss: &DigitallySignedStruct,
-            ) -> Result<HandshakeSignatureValid, Error> {
-                Ok(HandshakeSignatureValid::assertion())
-            }
-
-            fn verify_tls13_signature(
-                &self,
-                _message: &[u8],
-                _cert: &CertificateDer,
-                _dss: &DigitallySignedStruct,
-            ) -> Result<HandshakeSignatureValid, Error> {
-                Ok(HandshakeSignatureValid::assertion())
-            }
-
-            fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
-                self.0.signature_verification_algorithms.supported_schemes()
-            }
         }
     }
 }
