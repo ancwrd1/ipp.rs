@@ -15,5 +15,11 @@ name = "ipputil"
 path = "src/main.rs"
 
 [dependencies]
-ipp = { path = "../ipp", version = "5.2.0", default-features = false, features = ["client-tls"] }
+ipp = { path = "../ipp", version = "5.2.0", default-features = false, optional = true }
 clap = { version = "4", features = ["derive"] }
+
+[features]
+default = ["client-tls"]
+client-tls = ["ipp/client-tls"]
+client-rustls = ["ipp/client-rustls"]
+
