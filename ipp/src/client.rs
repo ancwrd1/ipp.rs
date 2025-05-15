@@ -196,10 +196,7 @@ pub mod non_blocking {
 
             if response.status().is_success() {
                 let parser = AsyncIppParser::new(BufReader::new(
-                    response
-                        .bytes_stream()
-                        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
-                        .into_async_read(),
+                    response.bytes_stream().map_err(io::Error::other).into_async_read(),
                 ));
                 parser.parse().await.map_err(IppError::from)
             } else {
