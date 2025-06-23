@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.3.0
+- Added document_format builder function
+- Upgraded ureq dependency to version 3
+- Added TLS backend selection features to the util project
+
 ## 5.2.0
 - Added additional attribute constants
 - Updated 'thiserror' dependency to version 2
