@@ -209,13 +209,8 @@ pub mod non_blocking {
 #[cfg(feature = "client")]
 pub mod blocking {
     use http::Uri;
-    use once_cell::sync::Lazy;
-    use rustls_native_certs::load_native_certs;
     use std::sync::Arc;
-    use ureq::{
-        tls::{RootCerts, TlsConfig, TlsProvider},
-        Agent, SendBody,
-    };
+    use ureq::{Agent, SendBody};
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
@@ -257,6 +252,10 @@ pub mod blocking {
 
             #[cfg(any(feature = "client-tls", feature = "client-rustls"))]
             {
+                use once_cell::sync::Lazy;
+                use rustls_native_certs::load_native_certs;
+                use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
+
                 let mut tls_config = TlsConfig::builder();
                 if self.0.ignore_tls_errors {
                     tls_config = tls_config.disable_verification(true);
