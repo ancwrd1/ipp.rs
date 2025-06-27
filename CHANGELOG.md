@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.3.1
+- Compilation fix when TLS features are disabled
+
 ## 5.3.0
 - Added document_format builder function
 - Upgraded ureq dependency to version 3
