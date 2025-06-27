@@ -20,7 +20,7 @@ fn ipp_uri_to_string(uri: &Uri) -> String {
             if authority.port_u16().is_some() {
                 authority.to_string()
             } else {
-                format!("{}:{}", authority, default_port)
+                format!("{authority}:{default_port}")
             }
         }
         None => return uri.to_string(),
@@ -28,7 +28,7 @@ fn ipp_uri_to_string(uri: &Uri) -> String {
 
     let path_and_query = uri.path_and_query().map(|p| p.as_str()).unwrap_or_default();
 
-    format!("{}://{}{}", scheme, authority, path_and_query)
+    format!("{scheme}://{authority}{path_and_query}")
 }
 
 /// Builder to create IPP client

@@ -73,7 +73,7 @@ impl ParserState {
     }
 
     fn parse_delimiter(&mut self, tag: u8) -> Result<DelimiterTag, IppParseError> {
-        trace!("Delimiter tag: {:0x}", tag);
+        trace!("Delimiter tag: {tag:0x}");
 
         let tag = DelimiterTag::from_u8(tag).ok_or(IppParseError::InvalidTag(tag))?;
 
@@ -91,7 +91,7 @@ impl ParserState {
     fn parse_value(&mut self, tag: u8, name: String, value: Bytes) -> Result<(), IppParseError> {
         let ipp_value = IppValue::parse(tag, value)?;
 
-        trace!("Value tag: {:0x}: {}: {}", tag, name, ipp_value);
+        trace!("Value tag: {tag:0x}: {name}: {ipp_value}");
 
         if !name.is_empty() {
             // single attribute or begin of array
@@ -172,7 +172,7 @@ where
 
     async fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.reader.read_header().await?;
-        trace!("IPP header: {:?}", header);
+        trace!("IPP header: {header:?}");
 
         loop {
             match self.reader.read_tag().await? {
@@ -243,7 +243,7 @@ where
 
     fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.reader.read_header()?;
-        trace!("IPP header: {:?}", header);
+        trace!("IPP header: {header:?}");
 
         loop {
             match self.reader.read_tag()? {
