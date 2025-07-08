@@ -13,12 +13,12 @@ use log::{error, trace};
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
 
 use crate::{
+    FromPrimitive as _, IppHeader,
     attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
     model::{DelimiterTag, ValueTag},
     reader::IppReader,
     request::IppRequestResponse,
     value::IppValue,
-    FromPrimitive as _, IppHeader,
 };
 
 /// Parse error enum

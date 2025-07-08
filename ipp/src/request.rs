@@ -12,11 +12,11 @@ use log::trace;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    IppHeader,
     attribute::{IppAttribute, IppAttributes},
     model::{DelimiterTag, IppVersion, Operation, StatusCode},
     payload::IppPayload,
     value::*,
-    IppHeader,
 };
 
 /// IPP request/response struct

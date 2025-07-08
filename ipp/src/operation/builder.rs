@@ -437,12 +437,12 @@ impl CupsBuilder {
     }
 
     /// CUPS-Get-Printers operation
-    pub fn get_printers(&self) -> impl IppOperation {
+    pub fn get_printers(&self) -> impl IppOperation + use<> {
         CupsGetPrinters::new()
     }
 
     /// CUPS-Delete-Printer operation
-    pub fn delete_printer(&self, printer_uri: Uri) -> impl IppOperation {
+    pub fn delete_printer(&self, printer_uri: Uri) -> impl IppOperation + use<> {
         CupsDeletePrinter::new(printer_uri)
     }
 }

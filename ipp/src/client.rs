@@ -122,7 +122,7 @@ pub mod non_blocking {
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
-    use super::{ipp_uri_to_string, IppClientBuilder, CONNECT_TIMEOUT};
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -214,7 +214,7 @@ pub mod blocking {
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
-    use super::{ipp_uri_to_string, IppClientBuilder, CONNECT_TIMEOUT};
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 

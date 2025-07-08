@@ -8,7 +8,7 @@ use enum_as_inner::EnumAsInner;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::{model::ValueTag, FromPrimitive as _};
+use crate::{FromPrimitive as _, model::ValueTag};
 
 #[inline]
 fn get_len_string(data: &mut Bytes) -> String {
@@ -376,7 +376,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.value {
-            IppValue::Array(ref array) => {
+            IppValue::Array(array) => {
                 if self.index < array.len() {
                     self.index += 1;
                     Some(&array[self.index - 1])
@@ -384,7 +384,7 @@ impl<'a> Iterator for IppValueIterator<'a> {
                     None
                 }
             }
-            IppValue::Collection(ref map) => {
+            IppValue::Collection(map) => {
                 if let Some(entry) = map.iter().nth(self.index) {
                     self.index += 1;
                     Some(entry.1)

@@ -8,7 +8,7 @@ use bytes::Bytes;
 #[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
 
-use crate::{model::IppVersion, payload::IppPayload, IppHeader};
+use crate::{IppHeader, model::IppVersion, payload::IppPayload};
 
 #[cfg(feature = "async")]
 /// Asynchronous IPP reader contains a set of methods to read from IPP data stream
