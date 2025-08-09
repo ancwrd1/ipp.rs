@@ -14,19 +14,19 @@ use enum_primitive_derive::Primitive;
 pub struct IppVersion(pub u16);
 
 impl IppVersion {
-    pub fn v1_0() -> Self {
+    pub const fn v1_0() -> Self {
         IppVersion(0x0100)
     }
-    pub fn v1_1() -> Self {
+    pub const fn v1_1() -> Self {
         IppVersion(0x0101)
     }
-    pub fn v2_0() -> Self {
+    pub const fn v2_0() -> Self {
         IppVersion(0x0200)
     }
-    pub fn v2_1() -> Self {
+    pub const fn v2_1() -> Self {
         IppVersion(0x0201)
     }
-    pub fn v2_2() -> Self {
+    pub const fn v2_2() -> Self {
         IppVersion(0x0202)
     }
 }
