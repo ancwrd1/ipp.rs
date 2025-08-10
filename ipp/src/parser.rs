@@ -62,11 +62,11 @@ impl ParserState {
 
     fn add_last_attribute(&mut self) {
         if let Some(last_name) = self.last_name.take() {
-            if let Some(val_list) = self.context.pop() {
-                if let Some(ref mut group) = self.current_group {
-                    let attr = IppAttribute::new(&last_name, list_or_value(val_list));
-                    group.attributes_mut().insert(last_name, attr);
-                }
+            if let Some(val_list) = self.context.pop()
+                && let Some(ref mut group) = self.current_group
+            {
+                let attr = IppAttribute::new(&last_name, list_or_value(val_list));
+                group.attributes_mut().insert(last_name, attr);
             }
             self.context.push(vec![]);
         }
@@ -120,16 +120,16 @@ impl ParserState {
                     return Err(IppParseError::InvalidCollection);
                 }
             }
-            if let Some(arr) = self.context.pop() {
-                if let Some(val_list) = self.context.last_mut() {
-                    let mut map: BTreeMap<String, IppValue> = BTreeMap::new();
-                    for idx in (0..arr.len()).step_by(2) {
-                        if let (Some(IppValue::MemberAttrName(k)), Some(v)) = (arr.get(idx), arr.get(idx + 1)) {
-                            map.insert(k.to_string(), v.clone());
-                        }
+            if let Some(arr) = self.context.pop()
+                && let Some(val_list) = self.context.last_mut()
+            {
+                let mut map: BTreeMap<String, IppValue> = BTreeMap::new();
+                for idx in (0..arr.len()).step_by(2) {
+                    if let (Some(IppValue::MemberAttrName(k)), Some(v)) = (arr.get(idx), arr.get(idx + 1)) {
+                        map.insert(k.to_string(), v.clone());
                     }
-                    val_list.push(IppValue::Collection(map));
                 }
+                val_list.push(IppValue::Collection(map));
             }
         } else if let Some(val_list) = self.context.last_mut() {
             // add attribute to the current collection
