@@ -10,6 +10,9 @@ readme.workspace = true
 keywords.workspace = true
 edition.workspace = true
 
+[package.metadata.docs.rs]
+features = ["async-client-tls", "client-tls", "serde"]
+
 [lib]
 name = "ipp"
 
