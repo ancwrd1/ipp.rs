@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.3.2
+- Updated to Rust 2024 edition
+- Declare IppVersion::vX_X() as const functions
+
 ## 5.3.1
 - Compilation fix when TLS features are disabled
 
