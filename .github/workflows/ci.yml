@@ -1,0 +1,31 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Configure Rust compiler
+        run: |
+          rustup update
+          rustup default ${{ matrix.channel }}
+          rustup target add ${{ matrix.target }}
+          rustup component add clippy rustfmt
+      - name: Formatting
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --target ${{ matrix.target }} --workspace --examples --tests
+      - name: Tests
+        run: cargo test --target ${{ matrix.target }} --workspace --examples --tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [stable]
+        target:
+          - x86_64-unknown-linux-gnu
