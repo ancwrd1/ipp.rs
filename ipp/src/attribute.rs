@@ -85,7 +85,11 @@ impl IppAttribute {
     pub const ORIENTATION_REQUESTED_DEFAULT: &'static str = "orientation-requested-default";
     pub const ORIENTATION_REQUESTED_SUPPORTED: &'static str = "orientation-requested-supported";
     pub const MEDIA_DEFAULT: &'static str = "media-default";
+    pub const MEDIA_READY: &'static str = "media-ready";
     pub const MEDIA_SUPPORTED: &'static str = "media-supported";
+    pub const MEDIA_COL_DATABASE: &'static str = "media-col-database";
+    pub const MEDIA_COL_DEFAULT: &'static str = "media-col-default";
+    pub const MEDIA_COL_READY: &'static str = "media-col-ready";
     pub const MEDIA_COL_SUPPORTED: &'static str = "media-col-supported";
     pub const MEDIA_TYPE_SUPPORTED: &'static str = "media-type-supported";
     pub const PAGES_PER_MINUTE: &'static str = "pages-per-minute";
