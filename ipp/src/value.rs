@@ -1,6 +1,7 @@
 //!
 //! IPP value
 //!
+#![allow(unused_assignments)]
 use std::{collections::BTreeMap, convert::Infallible, fmt, io, str::FromStr};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
@@ -102,7 +103,7 @@ impl IppValue {
         }
     }
 
-    /// Parse value from byte array which does not include the value length field
+    /// Parse value from a byte array which does not include the value length field
     pub fn parse(value_tag: u8, mut data: Bytes) -> io::Result<IppValue> {
         let ipp_tag = match ValueTag::from_u8(value_tag) {
             Some(x) => x,

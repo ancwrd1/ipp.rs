@@ -168,13 +168,18 @@ pub mod non_blocking {
                 for data in &self.0.ca_certs {
                     let cert =
                         reqwest::Certificate::from_pem(data).or_else(|_| reqwest::Certificate::from_der(data))?;
-                    builder = builder.add_root_certificate(cert);
+                    builder = builder.tls_certs_merge(Some(cert));
                 }
             }
 
             #[cfg(feature = "async-client-rustls")]
             {
-                builder = builder.use_rustls_tls();
+                builder = builder.tls_backend_rustls();
+            }
+
+            #[cfg(feature = "async-client-tls")]
+            {
+                builder = builder.tls_backend_native();
             }
 
             let mut req_builder = builder
