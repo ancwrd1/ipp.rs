@@ -52,7 +52,7 @@ features = ["io", "compat"]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [features]
-default = ["async-client-tls"]
+default = ["async-client-rustls"]
 serde = ["dep:serde", "bytes/serde"]
 async = ["futures-util", "futures-executor"]
 async-client = ["async", "reqwest", "tokio-util", "base64"]

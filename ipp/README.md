@@ -14,19 +14,19 @@ It supports both synchronous and asynchronous operations (requests and responses
 The following build-time features are supported:
 
 * `async` - enables asynchronous APIs.
-* `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature.
-* `client` - enables blocking IPP client based on `ureq` crate.
-* `async-client-tls` - enables asynchronous IPP client with TLS, using native-tls backend. Implies `async-client` feature.
-* `client-tls` - enables blocking IPP client with TLS, using native-tls backend. Implies `client` feature.
+* `async-client` - enables an asynchronous IPP client based on `reqwest` crate, implies `async` feature.
+* `client` - enables a blocking IPP client based on `ureq` crate.
+* `async-client-tls` - enables an asynchronous IPP client with TLS, using native-tls backend. Implies `async-client` feature.
+* `client-tls` - enables a blocking IPP client with TLS, using native-tls backend. Implies `client` feature.
 * `async-client-rustls` - enables asynchronous IPP client with TLS, using rustls backend. Implies `async-client` feature.
 * `client-rustls` - enables blocking IPP client with TLS, using rustls backend. Implies `client` feature.
 
-By default, the following features are enabled: `async-client-tls`.
+By default, the following features are enabled: `async-client-rustls`.
 Use `default-features=false` dependency option to disable them.
 
 [Documentation](https://docs.rs/ipp/latest/ipp/)
 
-Usage example for async client:
+Usage example for an async client:
 
 ```rust
 use ipp::prelude::*;

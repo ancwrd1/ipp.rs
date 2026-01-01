@@ -59,7 +59,7 @@ impl<T> IppClientBuilder<T> {
         self
     }
 
-    /// Add custom root certificate in PEM or DER format.
+    /// Add a custom root certificate in PEM or DER format.
     pub fn ca_cert<D: AsRef<[u8]>>(mut self, data: D) -> Self {
         self.ca_certs.push(data.as_ref().to_owned());
         self
@@ -71,7 +71,7 @@ impl<T> IppClientBuilder<T> {
         self
     }
 
-    /// Add custom HTTP header
+    /// Add a custom HTTP header
     pub fn http_header<K, V>(mut self, key: K, value: V) -> Self
     where
         K: AsRef<str>,
