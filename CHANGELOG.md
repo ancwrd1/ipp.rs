@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.4.0
+- Added missing media-col attribute constants
+- Updated reqwest dependency to version 0.13
+- Make rustls a default backend
+
 ## 5.3.2
 - Updated to Rust 2024 edition
 - Declare IppVersion::vX_X() as const functions
