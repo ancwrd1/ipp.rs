@@ -15,13 +15,13 @@ The following build-time features are supported:
 
 * `async` - enables asynchronous APIs.
 * `async-client` - enables an asynchronous IPP client based on `reqwest` crate, implies `async` feature.
-* `async-client-rustls` - enables asynchronous IPP client with TLS, using `rustls` backend. Implies `async-client` feature.
+* `async-client-rustls` - enables an asynchronous IPP client with TLS, using `rustls` backend. Implies `async-client` feature.
 * `async-client-tls` - enables an asynchronous IPP client with TLS, using `native-tls` backend. Implies `async-client` feature.
 * `client` - enables a blocking IPP client based on `ureq` crate.
-* `client-rustls` - enables blocking IPP client with TLS, using `rustls` backend. Implies `client` feature.
+* `client-rustls` - enables a blocking IPP client with TLS, using `rustls` backend. Implies `client` feature.
 * `client-tls` - enables a blocking IPP client with TLS, using `native-tls` backend. Implies `client` feature.
 
-By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards,
+By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards;
 in that case you can choose to use `async-client-tls` or `client-tls` instead which will use platform-specific `native-tls` instead of `rustls`. 
 
 [Documentation](https://docs.rs/ipp/latest/ipp/)

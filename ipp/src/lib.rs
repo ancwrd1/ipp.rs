@@ -1,24 +1,25 @@
 //!
 //! IPP print protocol implementation for Rust. This crate can be used in several ways:
 //! * using the low-level request/response API and building the requests manually.
-//! * using the higher-level operations API with builders. Currently only a subset of all IPP operations is supported.
+//! * using the higher-level operations API with builders. Currently, only a subset of all IPP operations is supported.
 //! * using the built-in IPP client.
 //! * using any third-party HTTP client and send the serialized request manually.
 //!
 //! This crate supports both synchronous and asynchronous operations. The following feature flags are supported:
 //! * `async` - enables asynchronous APIs.
-//! * `async-client` - enables asynchronous IPP client based on `reqwest` crate, implies `async` feature.
-//! * `client` - enables blocking IPP client based on `ureq` crate.
-//! * `async-client-tls` - enables asynchronous IPP client with TLS, using native-tls backend. Implies `async-client` feature.
-//! * `client-tls` - enables blocking IPP client with TLS, using native-tls backend. Implies `client` feature.
-//! * `async-client-rustls` - enables asynchronous IPP client with TLS, using rustls backend. Implies `async-client` feature.
-//! * `client-rustls` - enables blocking IPP client with TLS, using rustls backend. Implies `client` feature.
+//! * `async-client` - enables an asynchronous IPP client based on `reqwest` crate, implies `async` feature.
+//! * `async-client-rustls` - enables an asynchronous IPP client with TLS, using `rustls` backend. Implies `async-client` feature.
+//! * `async-client-tls` - enables an asynchronous IPP client with TLS, using `native-tls` backend. Implies `async-client` feature.
+//! * `client` - enables a blocking IPP client based on `ureq` crate.
+//! * `client-rustls` - enables a blocking IPP client with TLS, using `rustls` backend. Implies `client` feature.
+//! * `client-tls` - enables a blocking IPP client with TLS, using `native-tls` backend. Implies `client` feature.
 //!
-//! By default, the following feature is enabled: `async-client-tls`.
+//! By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards;
+//! in that case you can choose to use `async-client-tls` or `client-tls` instead, which will use platform-specific `native-tls` instead of `rustls`.
 //!
 //! Implementation notes:
-//! * all RFC IPP values are supported including arrays and collections, for both de- and serialization.
-//! * this crate is also suitable for building IPP servers, however the example is not provided yet.
+//! * all RFC IPP values are supported, including arrays and collections, for both de- and serialization.
+//! * this crate is also suitable for building IPP servers, however, the example is not provided yet.
 //!
 //! Usage examples:
 //!
