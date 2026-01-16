@@ -22,7 +22,7 @@ The following build-time features are supported:
 * `client-tls` - enables a blocking IPP client with TLS, using `native-tls` backend. Implies `client` feature.
 
 By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards;
-in that case you can choose to use `async-client-tls` or `client-tls` instead which will use platform-specific `native-tls` instead of `rustls`. 
+in that case you can choose to use `async-client-tls` or `client-tls` which will use platform-specific `native-tls`. 
 
 [Documentation](https://docs.rs/ipp/latest/ipp/)
 

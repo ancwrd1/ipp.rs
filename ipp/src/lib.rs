@@ -15,11 +15,11 @@
 //! * `client-tls` - enables a blocking IPP client with TLS, using `native-tls` backend. Implies `client` feature.
 //!
 //! By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards;
-//! in that case you can choose to use `async-client-tls` or `client-tls` instead, which will use platform-specific `native-tls` instead of `rustls`.
+//! in that case you can choose to use `async-client-tls` or `client-tls`, which will use platform-specific `native-tls`.
 //!
 //! Implementation notes:
 //! * all RFC IPP values are supported, including arrays and collections, for both de- and serialization.
-//! * this crate is also suitable for building IPP servers, however, the example is not provided yet.
+//! * this crate is also suitable for building the IPP servers; however, the example is not provided yet.
 //!
 //! Usage examples:
 //!
