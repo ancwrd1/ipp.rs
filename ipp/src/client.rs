@@ -31,13 +31,25 @@ fn ipp_uri_to_string(uri: &Uri) -> String {
     format!("{scheme}://{authority}{path_and_query}")
 }
 
+#[cfg(feature = "__tls")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum TlsBackend {
+    #[default]
+    Rustls,
+    Native,
+}
+
 /// Builder to create IPP client
 pub struct IppClientBuilder<T> {
     uri: Uri,
+    #[cfg(feature = "__tls")]
     ignore_tls_errors: bool,
     request_timeout: Option<Duration>,
     headers: BTreeMap<String, String>,
+    #[cfg(feature = "__tls")]
     ca_certs: Vec<Vec<u8>>,
+    #[cfg(feature = "__tls")]
+    tls_backend: Option<TlsBackend>,
     _phantom_data: PhantomData<T>,
 }
 
@@ -45,20 +57,26 @@ impl<T> IppClientBuilder<T> {
     fn new(uri: Uri) -> Self {
         IppClientBuilder {
             uri,
+            #[cfg(feature = "__tls")]
             ignore_tls_errors: false,
             request_timeout: None,
             headers: BTreeMap::new(),
+            #[cfg(feature = "__tls")]
             ca_certs: Vec::new(),
+            #[cfg(feature = "__tls")]
+            tls_backend: None,
             _phantom_data: PhantomData,
         }
     }
 
+    #[cfg(feature = "__tls")]
     /// Enable or disable ignoring of TLS handshake errors. Default is false.
     pub fn ignore_tls_errors(mut self, flag: bool) -> Self {
         self.ignore_tls_errors = flag;
         self
     }
 
+    #[cfg(feature = "__tls")]
     /// Add a custom root certificate in PEM or DER format.
     pub fn ca_cert<D: AsRef<[u8]>>(mut self, data: D) -> Self {
         self.ca_certs.push(data.as_ref().to_owned());
@@ -93,6 +111,13 @@ impl<T> IppClientBuilder<T> {
             .insert("authorization".to_owned(), format!("Basic {authz}"));
         self
     }
+
+    #[cfg(feature = "__tls")]
+    /// Set TLS backend.
+    pub fn tls_backend(mut self, backend: TlsBackend) -> Self {
+        self.tls_backend = Some(backend);
+        self
+    }
 }
 
 #[cfg(feature = "async-client")]
@@ -122,7 +147,7 @@ pub mod non_blocking {
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
-    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, TlsBackend, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -158,7 +183,7 @@ pub mod non_blocking {
                 builder = builder.timeout(timeout);
             }
 
-            #[cfg(any(feature = "async-client-tls", feature = "async-client-rustls"))]
+            #[cfg(feature = "__tls")]
             {
                 if self.0.ignore_tls_errors {
                     builder = builder
@@ -173,12 +198,12 @@ pub mod non_blocking {
             }
 
             #[cfg(feature = "async-client-rustls")]
-            {
+            if self.0.tls_backend != Some(TlsBackend::Native) {
                 builder = builder.tls_backend_rustls();
             }
 
             #[cfg(feature = "async-client-tls")]
-            {
+            if self.0.tls_backend == Some(TlsBackend::Native) {
                 builder = builder.tls_backend_native();
             }
 
@@ -219,7 +244,7 @@ pub mod blocking {
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
-    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, TlsBackend, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 
@@ -255,7 +280,7 @@ pub mod blocking {
                 builder = builder.timeout_global(Some(timeout));
             }
 
-            #[cfg(any(feature = "client-tls", feature = "client-rustls"))]
+            #[cfg(feature = "__tls")]
             {
                 use once_cell::sync::Lazy;
                 use rustls_native_certs::load_native_certs;
@@ -266,13 +291,15 @@ pub mod blocking {
                     tls_config = tls_config.disable_verification(true);
                 }
 
-                let provider = if cfg!(feature = "client-rustls") {
-                    TlsProvider::Rustls
-                } else {
-                    TlsProvider::NativeTls
-                };
+                #[cfg(feature = "client-rustls")]
+                if self.0.tls_backend != Some(TlsBackend::Native) {
+                    tls_config = tls_config.provider(TlsProvider::Rustls);
+                }
 
-                tls_config = tls_config.provider(provider);
+                #[cfg(feature = "client-tls")]
+                if self.0.tls_backend == Some(TlsBackend::Native) {
+                    tls_config = tls_config.provider(TlsProvider::NativeTls);
+                }
 
                 static ROOTS: Lazy<Arc<Vec<ureq::tls::Certificate<'static>>>> = Lazy::new(|| {
                     let certs = load_native_certs();
