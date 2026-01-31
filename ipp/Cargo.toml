@@ -11,7 +11,7 @@ keywords.workspace = true
 edition.workspace = true
 
 [package.metadata.docs.rs]
-features = ["async-client-tls", "client-tls", "serde"]
+all-features = true
 
 [lib]
 name = "ipp"
