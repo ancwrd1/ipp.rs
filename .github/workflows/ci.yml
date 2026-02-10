@@ -19,7 +19,7 @@ jobs:
       - name: Formatting
         run: cargo fmt --check
       - name: Clippy
-        run: cargo clippy --target ${{ matrix.target }} --workspace --examples --tests
+        run: cargo clippy --target ${{ matrix.target }} --workspace --examples --tests -- -D warnings
       - name: Tests
         run: cargo test --target ${{ matrix.target }} --workspace --examples --tests
 
