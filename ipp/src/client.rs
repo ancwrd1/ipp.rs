@@ -282,7 +282,6 @@ pub mod blocking {
 
             #[cfg(feature = "__tls")]
             {
-                use once_cell::sync::Lazy;
                 use rustls_native_certs::load_native_certs;
                 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
 
@@ -301,16 +300,17 @@ pub mod blocking {
                     tls_config = tls_config.provider(TlsProvider::NativeTls);
                 }
 
-                static ROOTS: Lazy<Arc<Vec<ureq::tls::Certificate<'static>>>> = Lazy::new(|| {
-                    let certs = load_native_certs();
-                    Arc::new(
-                        certs
-                            .certs
-                            .into_iter()
-                            .map(|c| ureq::tls::Certificate::from_der(c.as_ref()).to_owned())
-                            .collect(),
-                    )
-                });
+                static ROOTS: std::sync::LazyLock<Arc<Vec<ureq::tls::Certificate<'static>>>> =
+                    std::sync::LazyLock::new(|| {
+                        let certs = load_native_certs();
+                        Arc::new(
+                            certs
+                                .certs
+                                .into_iter()
+                                .map(|c| ureq::tls::Certificate::from_der(c.as_ref()).to_owned())
+                                .collect(),
+                        )
+                    });
 
                 let mut roots = (**ROOTS).clone();
 
