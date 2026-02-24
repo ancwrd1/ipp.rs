@@ -147,7 +147,9 @@ pub mod non_blocking {
 
     use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
-    use super::{CONNECT_TIMEOUT, IppClientBuilder, TlsBackend, ipp_uri_to_string};
+    #[cfg(feature = "__tls")]
+    use super::TlsBackend;
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -239,12 +241,11 @@ pub mod non_blocking {
 #[cfg(feature = "client")]
 pub mod blocking {
     use http::Uri;
-    use std::sync::Arc;
     use ureq::{Agent, SendBody};
 
     use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
-    use super::{CONNECT_TIMEOUT, IppClientBuilder, TlsBackend, ipp_uri_to_string};
+    use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 
@@ -282,7 +283,9 @@ pub mod blocking {
 
             #[cfg(feature = "__tls")]
             {
+                use super::TlsBackend;
                 use rustls_native_certs::load_native_certs;
+                use std::sync::Arc;
                 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
 
                 let mut tls_config = TlsConfig::builder();
