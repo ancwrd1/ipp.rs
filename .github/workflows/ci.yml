@@ -18,10 +18,26 @@ jobs:
           rustup component add clippy rustfmt
       - name: Formatting
         run: cargo fmt --check
-      - name: Clippy
-        run: cargo clippy --target ${{ matrix.target }} --workspace --examples --tests -- -D warnings
+      - name: Clippy all features
+        run: cargo clippy --target ${{ matrix.target }} --workspace --examples --tests --all-features -- -D warnings
+      - name: Clippy no features
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features -- -D warnings
+      - name: Clippy async feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async -- -D warnings
+      - name: Clippy async-client feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client -- -D warnings
+      - name: Clippy async-client-rustls feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client-rustls -- -D warnings
+      - name: Clippy async-client-tls feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client-tls -- -D warnings
+      - name: Clippy client feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client -- -D warnings
+      - name: Clippy client-rustls feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client-rustls -- -D warnings
+      - name: Clippy client-tls feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client-tls -- -D warnings
       - name: Tests
-        run: cargo test --target ${{ matrix.target }} --workspace --examples --tests
+        run: cargo test --target ${{ matrix.target }} --workspace --examples --tests --all-features
 
     strategy:
       fail-fast: false
