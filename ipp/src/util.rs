@@ -9,6 +9,7 @@ use crate::{
     error::IppError,
     model::{DelimiterTag, PrinterState},
     prelude::IppRequestResponse,
+    value::IppName,
 };
 
 /// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
@@ -46,11 +47,13 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         return Err(IppError::StatusError(status));
     }
 
+    let printer_state_attr_name: IppName = IppAttribute::PRINTER_STATE.try_into().unwrap();
+    let printer_state_reasons_name: IppName = IppAttribute::PRINTER_STATE_REASONS.try_into().unwrap();
     let state = response
         .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .next()
-        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE))
+        .and_then(|g| g.attributes().get(&printer_state_attr_name))
         .and_then(|attr| attr.value().as_enum())
         .and_then(|v| PrinterState::from_i32(*v));
 
@@ -62,7 +65,7 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .next()
-        .and_then(|g| g.attributes().get(IppAttribute::PRINTER_STATE_REASONS))
+        .and_then(|g| g.attributes().get(&printer_state_reasons_name))
     {
         let keywords = reasons
             .value()

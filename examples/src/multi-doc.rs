@@ -22,7 +22,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // check if printer supports create/send operations
     let get_op = IppOperationBuilder::get_printer_attributes(uri.clone())
         .attribute(IppAttribute::OPERATIONS_SUPPORTED)
-        .build();
+        .build()?;
+
     let response = client.send(get_op)?;
 
     let ops_attr = response
@@ -39,7 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let create_op = IppOperationBuilder::create_job(uri.clone())
         .job_name("multi-doc")
-        .build();
+        .build()?;
     let response = client.send(create_op)?;
     let job_id = *response
         .attributes()
@@ -62,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let send_op = IppOperationBuilder::send_document(uri.clone(), job_id, payload)
             .user_name(env::var("USER").unwrap_or_else(|_| String::new()))
             .last(last)
-            .build();
+            .build()?;
 
         let response = client.send(send_op)?;
         println!("IPP status code: {}", response.header().status_code());

@@ -144,18 +144,18 @@ impl PrintJobBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         let op = PrintJob::new(
             self.printer_uri,
             self.payload,
             self.user_name.as_ref(),
             self.job_title.as_ref(),
             self.document_format.as_ref(),
-        );
-        self.attributes.into_iter().fold(op, |mut op, attr| {
+        )?;
+        Ok(self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
-        })
+        }))
     }
 }
 
@@ -194,7 +194,7 @@ impl GetPrinterAttributesBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         GetPrinterAttributes::with_attributes(self.printer_uri, &self.attributes)
     }
 }
@@ -240,12 +240,12 @@ impl CreateJobBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
-        let op = CreateJob::new(self.printer_uri, self.job_name.as_ref());
-        self.attributes.into_iter().fold(op, |mut op, attr| {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
+        let op = CreateJob::new(self.printer_uri, self.job_name.as_ref())?;
+        Ok(self.attributes.into_iter().fold(op, |mut op, attr| {
             op.add_attribute(attr);
             op
-        })
+        }))
     }
 }
 
@@ -296,7 +296,7 @@ impl SendDocumentBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         SendDocument::new(
             self.printer_uri,
             self.job_id,
@@ -332,7 +332,7 @@ impl PurgeJobsBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         PurgeJobs::new(self.printer_uri, self.user_name)
     }
 }
@@ -363,7 +363,7 @@ impl CancelJobBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         CancelJob::new(self.printer_uri, self.job_id, self.user_name)
     }
 }
@@ -394,7 +394,7 @@ impl GetJobAttributesBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         GetJobAttributes::new(self.printer_uri, self.job_id, self.user_name)
     }
 }
@@ -423,7 +423,7 @@ impl GetJobsBuilder {
     }
 
     /// Build operation
-    pub fn build(self) -> impl IppOperation {
+    pub fn build(self) -> Result<impl IppOperation, IppParseError> {
         GetJobs::new(self.printer_uri, self.user_name)
     }
 }
@@ -437,12 +437,12 @@ impl CupsBuilder {
     }
 
     /// CUPS-Get-Printers operation
-    pub fn get_printers(&self) -> impl IppOperation + use<> {
+    pub fn get_printers(&self) -> impl IppOperation {
         CupsGetPrinters::new()
     }
 
     /// CUPS-Delete-Printer operation
-    pub fn delete_printer(&self, printer_uri: Uri) -> impl IppOperation + use<> {
+    pub fn delete_printer(&self, printer_uri: Uri) -> Result<impl IppOperation, IppParseError> {
         CupsDeletePrinter::new(printer_uri)
     }
 }

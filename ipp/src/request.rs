@@ -15,6 +15,7 @@ use crate::{
     IppHeader,
     attribute::{IppAttribute, IppAttributes},
     model::{DelimiterTag, IppVersion, Operation, StatusCode},
+    parser::IppParseError,
     payload::IppPayload,
     value::*,
 };
@@ -30,30 +31,47 @@ pub struct IppRequestResponse {
 
 impl IppRequestResponse {
     /// Create new IPP request for the operation and uri
-    pub fn new(version: IppVersion, operation: Operation, uri: Option<Uri>) -> IppRequestResponse {
+    pub fn new(
+        version: IppVersion,
+        operation: Operation,
+        uri: Option<Uri>,
+    ) -> Result<IppRequestResponse, IppParseError> {
+        let uri = uri
+            .map(|uri| crate::util::canonicalize_uri(&uri).try_into())
+            .transpose()?;
+        Ok(Self::new_internal(version, operation, uri))
+    }
+
+    pub(crate) fn new_internal(
+        version: IppVersion,
+        operation: Operation,
+        uri: Option<IppString>,
+    ) -> IppRequestResponse {
         let header = IppHeader::new(version, operation as u16, 1);
         let mut attributes = IppAttributes::new();
 
-        attributes.add(
-            DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
-        );
-
+        // unwrap is fine because "utf-8" into bounded string is infallible.
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage("en".to_string()),
+                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
+                IppValue::Charset("utf-8".try_into().unwrap()),
+            ),
+        );
+
+        // unwrap is fine because "en" into bounded string is infallible.
+        attributes.add(
+            DelimiterTag::OperationAttributes,
+            IppAttribute::new(
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
+                IppValue::NaturalLanguage("en".try_into().unwrap()),
             ),
         );
 
         if let Some(uri) = uri {
             attributes.add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::PRINTER_URI,
-                    IppValue::Uri(crate::util::canonicalize_uri(&uri).to_string()),
-                ),
+                IppAttribute::new(IppAttribute::PRINTER_URI.try_into().unwrap(), IppValue::Uri(uri)),
             );
         }
 
@@ -65,7 +83,7 @@ impl IppRequestResponse {
     }
 
     /// Create response from status and id
-    pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> IppRequestResponse {
+    pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> Result<IppRequestResponse, IppParseError> {
         let header = IppHeader::new(version, status as u16, id);
         let mut response = IppRequestResponse {
             header,
@@ -75,17 +93,20 @@ impl IppRequestResponse {
 
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".to_string())),
+            IppAttribute::new(
+                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
+                IppValue::Charset("utf-8".try_into()?),
+            ),
         );
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage("en".to_string()),
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
+                IppValue::NaturalLanguage("en".try_into()?),
             ),
         );
 
-        response
+        Ok(response)
     }
 
     /// Get IPP header

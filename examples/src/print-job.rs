@@ -19,11 +19,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for arg in &args[3..] {
         if let Some((k, v)) = arg.split_once('=') {
-            builder = builder.attribute(IppAttribute::new(k, v.parse()?));
+            builder = builder.attribute(IppAttribute::new(k.try_into()?, v.parse()?));
         }
     }
 
-    let operation = builder.build();
+    let operation = builder.build()?;
     let client = IppClient::new(uri);
     let response = client.send(operation)?;
 

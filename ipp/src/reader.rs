@@ -8,7 +8,7 @@ use bytes::Bytes;
 #[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
 
-use crate::{IppHeader, model::IppVersion, payload::IppPayload};
+use crate::{IppHeader, model::IppVersion, parser::IppParseError, payload::IppPayload, value::IppName};
 
 #[cfg(feature = "async")]
 /// Asynchronous IPP reader contains a set of methods to read from IPP data stream
@@ -62,9 +62,9 @@ where
     }
 
     /// Read IPP name from [len; name] element
-    pub async fn read_name(&mut self) -> io::Result<String> {
+    pub async fn read_name(&mut self) -> Result<IppName, IppParseError> {
         let name_len = self.read_u16().await?;
-        self.read_string(name_len as usize).await
+        self.read_string(name_len as usize).await?.try_into()
     }
 
     /// Read IPP value from [len; value] element
@@ -154,9 +154,9 @@ where
     }
 
     /// Read IPP name from [len; name] element
-    pub fn read_name(&mut self) -> io::Result<String> {
+    pub fn read_name(&mut self) -> Result<IppName, IppParseError> {
         let name_len = self.read_u16()?;
-        self.read_string(name_len as usize)
+        self.read_string(name_len as usize)?.try_into()
     }
 
     /// Read IPP value from [len; value] element
@@ -207,7 +207,7 @@ mod tests {
         let data = io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
         let mut reader = IppReader::new(data);
         let name = reader.read_name().unwrap();
-        assert_eq!(name, "test");
+        assert_eq!(name, "test".try_into().unwrap());
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests {
         let data = futures_util::io::Cursor::new(vec![0x00, 0x04, b't', b'e', b's', b't']);
         let mut reader = AsyncIppReader::new(data);
         let name = reader.read_name().await.unwrap();
-        assert_eq!(name, "test");
+        assert_eq!(name, "test".try_into().unwrap());
     }
 
     #[cfg(feature = "async")]

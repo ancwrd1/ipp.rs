@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let client = IppClient::new(uri.clone());
     let operation = IppOperationBuilder::get_printer_attributes(uri)
         .attributes(&args[2..])
-        .build();
+        .build()?;
 
     let response = client.send(operation)?;
     println!("IPP status code: {}", response.header().status_code());

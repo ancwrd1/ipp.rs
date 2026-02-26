@@ -59,7 +59,7 @@ fn do_print_job(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
     let client = new_client(cmd.uri.parse()?, params)?;
 
     if !cmd.no_check_state {
-        let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build();
+        let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone()).build()?;
         let response = client.send(operation)?;
         if !util::is_printer_ready(&response)? {
             return Err(IppError::PrinterNotReady);
@@ -78,11 +78,11 @@ fn do_print_job(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
 
     for arg in cmd.options {
         if let Some((k, v)) = arg.split_once('=') {
-            builder = builder.attribute(IppAttribute::new(k, v.parse().unwrap()));
+            builder = builder.attribute(IppAttribute::new(k.try_into().unwrap(), v.parse().unwrap()));
         }
     }
 
-    let response = client.send(builder.build())?;
+    let response = client.send(builder.build()?)?;
 
     let status = response.header().status_code();
     if !status.is_success() {
@@ -99,7 +99,7 @@ fn do_status(params: &IppParams, cmd: IppStatusCmd) -> Result<(), IppError> {
 
     let operation = IppOperationBuilder::get_printer_attributes(client.uri().clone())
         .attributes(&cmd.attributes)
-        .build();
+        .build()?;
 
     let response = client.send(operation)?;
 
@@ -122,7 +122,7 @@ fn do_purge_jobs(params: &IppParams, cmd: IppPurgeCmd) -> Result<(), IppError> {
         builder = builder.user_name(username);
     }
 
-    let operation = builder.build();
+    let operation = builder.build()?;
 
     let response = client.send(operation)?;
 
@@ -145,7 +145,7 @@ fn do_cancel_job(params: &IppParams, cmd: IppCancelCmd) -> Result<(), IppError> 
         builder = builder.user_name(username);
     }
 
-    let operation = builder.build();
+    let operation = builder.build()?;
 
     let response = client.send(operation)?;
 
@@ -168,7 +168,7 @@ fn do_get_job(params: &IppParams, cmd: IppGetJobCmd) -> Result<(), IppError> {
         builder = builder.user_name(username);
     }
 
-    let operation = builder.build();
+    let operation = builder.build()?;
 
     let response = client.send(operation)?;
 
@@ -191,7 +191,7 @@ fn do_get_all_jobs(params: &IppParams, cmd: IppGetAllJobsCmd) -> Result<(), IppE
         builder = builder.user_name(username);
     }
 
-    let operation = builder.build();
+    let operation = builder.build()?;
 
     let response = client.send(operation)?;
 

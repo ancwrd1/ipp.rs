@@ -12,7 +12,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let uri: Uri = args[1].parse()?;
     let client = IppClient::new(uri.clone());
-    let operation = IppOperationBuilder::cups().delete_printer(uri);
+    let cups = IppOperationBuilder::cups();
+    let operation = cups.delete_printer(uri)?;
 
     client.send(operation)?;
 

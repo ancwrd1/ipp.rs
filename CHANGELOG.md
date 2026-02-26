@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.0
+- Added bounds checking for all IPP string values using a const generic string wrapper `BoundedString<MAX>`
+- Switched `IppAttribute` type to use `IppName` aka `BoundedString<255>`.
+- Refactored IppOperation construction to return a result ensuring `Uri` values used don't exceed the maximum allowed byte length for IPP URI values.
+- Switched `IppAttributeGroup` to use `IppName` in attribute methods to enforce string length contstraints.
+
 ## 5.4.0
 - Added missing media-col attribute constants
 - Updated reqwest dependency to version 0.13

@@ -3,11 +3,14 @@
 //!
 use std::collections::HashMap;
 
+use crate::parser::IppParseError;
+use crate::{
+    model::DelimiterTag,
+    value::{IppName, IppValue},
+};
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-
-use crate::{model::DelimiterTag, value::IppValue};
 
 macro_rules! define_attributes {
     ($($name:ident => $value:literal),* $(,)?) => {
@@ -24,7 +27,7 @@ fn is_header_attr(attr: &str) -> bool {
 #[derive(Clone, Debug)]
 pub struct IppAttribute {
     /// Attribute name
-    name: String,
+    name: IppName,
     /// Attribute value
     value: IppValue,
 }
@@ -139,18 +142,26 @@ impl IppAttribute {
     ///
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
-    pub fn new<S>(name: S, value: IppValue) -> IppAttribute
+    pub fn new(name: IppName, value: IppValue) -> IppAttribute {
+        IppAttribute { name, value }
+    }
+
+    /// Create new instance of the attribute
+    ///
+    /// * `name` - Attribute name<br/>
+    /// * `value` - Attribute value<br/>
+    pub fn with_name<S>(name: S, value: IppValue) -> Result<IppAttribute, IppParseError>
     where
         S: AsRef<str>,
     {
-        IppAttribute {
-            name: name.as_ref().to_owned(),
+        Ok(IppAttribute {
+            name: name.as_ref().try_into()?,
             value,
-        }
+        })
     }
 
     /// Return attribute name
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &IppName {
         &self.name
     }
 
@@ -181,7 +192,7 @@ impl IppAttribute {
 #[derive(Clone, Debug)]
 pub struct IppAttributeGroup {
     tag: DelimiterTag,
-    attributes: HashMap<String, IppAttribute>,
+    attributes: HashMap<IppName, IppAttribute>,
 }
 
 impl IppAttributeGroup {
@@ -199,17 +210,17 @@ impl IppAttributeGroup {
     }
 
     /// Return read-only attributes
-    pub fn attributes(&self) -> &HashMap<String, IppAttribute> {
+    pub fn attributes(&self) -> &HashMap<IppName, IppAttribute> {
         &self.attributes
     }
 
     /// Return mutable attributes
-    pub fn attributes_mut(&mut self) -> &mut HashMap<String, IppAttribute> {
+    pub fn attributes_mut(&mut self) -> &mut HashMap<IppName, IppAttribute> {
         &mut self.attributes
     }
 
     /// Consume this group and return mutable attributes
-    pub fn into_attributes(self) -> HashMap<String, IppAttribute> {
+    pub fn into_attributes(self) -> HashMap<IppName, IppAttribute> {
         self.attributes
     }
 }

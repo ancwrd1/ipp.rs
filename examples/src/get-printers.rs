@@ -11,7 +11,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let client = IppClient::builder(args[1].parse()?).build();
-    let operation = IppOperationBuilder::cups().get_printers();
+    let cups = IppOperationBuilder::cups();
+    let operation = cups.get_printers();
 
     let response = client.send(operation)?;
     println!("IPP status code: {}", response.header().status_code());

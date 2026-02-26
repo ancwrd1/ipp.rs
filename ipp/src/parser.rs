@@ -3,7 +3,9 @@
 //!
 use std::{
     collections::BTreeMap,
+    convert::Infallible,
     io::{self, Read},
+    num::TryFromIntError,
 };
 
 use bytes::Bytes;
@@ -18,7 +20,7 @@ use crate::{
     model::{DelimiterTag, ValueTag},
     reader::IppReader,
     request::IppRequestResponse,
-    value::IppValue,
+    value::{IppName, IppValue},
 };
 
 /// Parse error enum
@@ -30,8 +32,19 @@ pub enum IppParseError {
     #[error("Invalid IPP collection")]
     InvalidCollection,
 
+    /// occurs when a string is too long for an IPP Value.
+    #[error("invalid string length: {len}, max: {max}")]
+    InvalidStringLength { len: usize, max: usize },
+
+    /// failure to parse int usually used when trying to convert usize -> u16 in this crate
+    #[error(transparent)]
+    InvalidIntValue(#[from] TryFromIntError),
+
     #[error(transparent)]
     IoError(#[from] io::Error),
+
+    #[error("infallible this should never happen")]
+    Infallible(#[from] Infallible),
 }
 
 // create a single value from one-element list, list otherwise
@@ -45,7 +58,7 @@ fn list_or_value(mut list: Vec<IppValue>) -> IppValue {
 
 struct ParserState {
     current_group: Option<IppAttributeGroup>,
-    last_name: Option<String>,
+    last_name: Option<IppName>,
     context: Vec<Vec<IppValue>>,
     attributes: IppAttributes,
 }
@@ -65,7 +78,7 @@ impl ParserState {
             if let Some(val_list) = self.context.pop()
                 && let Some(ref mut group) = self.current_group
             {
-                let attr = IppAttribute::new(&last_name, list_or_value(val_list));
+                let attr = IppAttribute::new(last_name.clone(), list_or_value(val_list));
                 group.attributes_mut().insert(last_name, attr);
             }
             self.context.push(vec![]);
@@ -88,7 +101,7 @@ impl ParserState {
         Ok(tag)
     }
 
-    fn parse_value(&mut self, tag: u8, name: String, value: Bytes) -> Result<(), IppParseError> {
+    fn parse_value(&mut self, tag: u8, name: IppName, value: Bytes) -> Result<(), IppParseError> {
         let ipp_value = IppValue::parse(tag, value)?;
 
         trace!("Value tag: {tag:0x}: {name}: {ipp_value}");
@@ -123,10 +136,10 @@ impl ParserState {
             if let Some(arr) = self.context.pop()
                 && let Some(val_list) = self.context.last_mut()
             {
-                let mut map: BTreeMap<String, IppValue> = BTreeMap::new();
+                let mut map: BTreeMap<IppName, IppValue> = BTreeMap::new();
                 for idx in (0..arr.len()).step_by(2) {
                     if let (Some(IppValue::MemberAttrName(k)), Some(v)) = (arr.get(idx), arr.get(idx + 1)) {
-                        map.insert(k.to_string(), v.clone());
+                        map.insert(k.clone(), v.clone());
                     }
                 }
                 val_list.push(IppValue::Collection(map));
@@ -164,7 +177,7 @@ where
 
     async fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
         // value tag
-        let name = self.reader.read_name().await?;
+        let name: IppName = self.reader.read_name().await?;
         let value = self.reader.read_value().await?;
 
         self.state.parse_value(tag, name, value)
@@ -235,7 +248,7 @@ where
 
     fn parse_value(&mut self, tag: u8) -> Result<(), IppParseError> {
         // value tag
-        let name = self.reader.read_name()?;
+        let name: IppName = self.reader.read_name()?;
         let value = self.reader.read_value()?;
 
         self.state.parse_value(tag, name, value)
@@ -373,8 +386,8 @@ mod tests {
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
-                "abcd".to_string(),
-                IppValue::Keyword("key".to_owned())
+                "abcd".try_into().unwrap(),
+                IppValue::Keyword("key".try_into().unwrap())
             )]))
         );
     }
@@ -509,8 +522,8 @@ mod tests {
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
-                "abcd".to_string(),
-                IppValue::Keyword("key".to_owned())
+                "abcd".try_into().unwrap(),
+                IppValue::Keyword("key".try_into().expect("failed to create IPP text value"))
             )]))
         );
     }
