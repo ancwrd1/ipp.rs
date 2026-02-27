@@ -32,11 +32,11 @@ pub enum IppParseError {
     #[error("Invalid IPP collection")]
     InvalidCollection,
 
-    /// occurs when a string is too long for an IPP Value.
+    /// Occurs when a string is too long for an IPP Value.
     #[error("invalid string length: {len}, max: {max}")]
     InvalidStringLength { len: usize, max: usize },
 
-    /// failure to parse int usually used when trying to convert usize -> u16 in this crate
+    /// Failure to parse an int, usually used when trying to convert usize -> u16 in this crate
     #[error(transparent)]
     InvalidIntValue(#[from] TryFromIntError),
 
@@ -164,7 +164,7 @@ impl<R> AsyncIppParser<R>
 where
     R: AsyncRead + Send + Sync + Unpin,
 {
-    /// Create IPP parser from AsyncIppReader
+    /// Create an IPP parser from AsyncIppReader
     pub fn new<T>(reader: T) -> AsyncIppParser<R>
     where
         T: Into<AsyncIppReader<R>>,
@@ -204,13 +204,13 @@ where
         Ok(header)
     }
 
-    /// Parse IPP stream without reading beyond the end of the attributes. The payload stays untouched.
+    /// Parse the IPP stream without reading beyond the end of the attributes. The payload stays untouched.
     pub async fn parse_parts(mut self) -> Result<(IppHeader, IppAttributes, AsyncIppReader<R>), IppParseError> {
         let header = self.parse_header_attributes().await?;
         Ok((header, self.state.attributes, self.reader))
     }
 
-    /// Parse IPP stream
+    /// Parse the IPP stream
     pub async fn parse(mut self) -> Result<IppRequestResponse, IppParseError>
     where
         R: 'static,
@@ -235,7 +235,7 @@ impl<R> IppParser<R>
 where
     R: 'static + Read + Send + Sync,
 {
-    /// Create IPP parser from IppReader
+    /// Create an IPP parser from IppReader
     pub fn new<T>(reader: T) -> IppParser<R>
     where
         T: Into<IppReader<R>>,
@@ -275,13 +275,13 @@ where
         Ok(header)
     }
 
-    /// Parse IPP stream without reading beyond the end of the attributes. The payload stays untouched.
+    /// Parse the IPP stream without reading beyond the end of the attributes. The payload stays untouched.
     pub fn parse_parts(mut self) -> Result<(IppHeader, IppAttributes, IppReader<R>), IppParseError> {
         let header = self.parse_header_attributes()?;
         Ok((header, self.state.attributes, self.reader))
     }
 
-    /// Parse IPP stream
+    /// Parse the IPP stream
     pub fn parse(mut self) -> Result<IppRequestResponse, IppParseError>
     where
         R: 'static,

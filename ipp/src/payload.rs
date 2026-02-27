@@ -25,7 +25,7 @@ pub struct IppPayload {
 }
 
 impl IppPayload {
-    /// Create empty payload
+    /// Create an empty payload
     pub fn empty() -> Self {
         IppPayload {
             inner: PayloadKind::Empty,

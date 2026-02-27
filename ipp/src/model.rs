@@ -14,18 +14,23 @@ use enum_primitive_derive::Primitive;
 pub struct IppVersion(pub u16);
 
 impl IppVersion {
+    /// IPP version 1.0
     pub const fn v1_0() -> Self {
         IppVersion(0x0100)
     }
+    /// IPP version 1.1
     pub const fn v1_1() -> Self {
         IppVersion(0x0101)
     }
+    /// IPP version 2.0
     pub const fn v2_0() -> Self {
         IppVersion(0x0200)
     }
+    /// IPP version 2.1
     pub const fn v2_1() -> Self {
         IppVersion(0x0201)
     }
+    /// IPP version 2.2
     pub const fn v2_2() -> Self {
         IppVersion(0x0202)
     }
@@ -232,6 +237,7 @@ pub enum StatusCode {
 }
 
 impl StatusCode {
+    /// Return true if the status code indicates a successful response
     pub fn is_success(&self) -> bool {
         matches!(
             self,

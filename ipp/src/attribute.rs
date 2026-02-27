@@ -138,7 +138,7 @@ impl IppAttribute {
         IppAttribute::PRINTER_URI,
     ];
 
-    /// Create new instance of the attribute
+    /// Create a new instance of the attribute
     ///
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
@@ -146,7 +146,7 @@ impl IppAttribute {
         IppAttribute { name, value }
     }
 
-    /// Create new instance of the attribute
+    /// Create a new instance of the attribute
     ///
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
@@ -160,12 +160,12 @@ impl IppAttribute {
         })
     }
 
-    /// Return attribute name
+    /// Return the attribute name
     pub fn name(&self) -> &IppName {
         &self.name
     }
 
-    /// Return attribute value
+    /// Return the attribute value
     pub fn value(&self) -> &IppValue {
         &self.value
     }
@@ -175,7 +175,7 @@ impl IppAttribute {
         self.value
     }
 
-    /// Write attribute to byte array
+    /// Write the attribute to a byte array
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 
@@ -196,7 +196,7 @@ pub struct IppAttributeGroup {
 }
 
 impl IppAttributeGroup {
-    /// Create new attribute group of a given type
+    /// Create a new attribute group of a given type
     pub fn new(tag: DelimiterTag) -> IppAttributeGroup {
         IppAttributeGroup {
             tag,
@@ -204,22 +204,22 @@ impl IppAttributeGroup {
         }
     }
 
-    /// Return group type tag
+    /// Return the group type tag
     pub fn tag(&self) -> DelimiterTag {
         self.tag
     }
 
-    /// Return read-only attributes
+    /// Return the read-only attributes
     pub fn attributes(&self) -> &HashMap<IppName, IppAttribute> {
         &self.attributes
     }
 
-    /// Return mutable attributes
+    /// Return the mutable attributes
     pub fn attributes_mut(&mut self) -> &mut HashMap<IppName, IppAttribute> {
         &mut self.attributes
     }
 
-    /// Consume this group and return mutable attributes
+    /// Consume this group and return the mutable attributes
     pub fn into_attributes(self) -> HashMap<IppName, IppAttribute> {
         self.attributes
     }
@@ -233,7 +233,7 @@ pub struct IppAttributes {
 }
 
 impl IppAttributes {
-    /// Create attribute list
+    /// Create an attribute list
     pub fn new() -> IppAttributes {
         IppAttributes { ..Default::default() }
     }
@@ -258,7 +258,7 @@ impl IppAttributes {
         self.groups.iter().filter(move |g| g.tag == tag)
     }
 
-    /// Add attribute to a given group
+    /// Add an attribute to a given group
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
         let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
         if let Some(group) = group {
@@ -272,7 +272,7 @@ impl IppAttributes {
         }
     }
 
-    /// Write attribute list to byte array
+    /// Write the attribute list to a byte array
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 

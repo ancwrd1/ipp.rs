@@ -12,7 +12,7 @@ use crate::{
     value::IppName,
 };
 
-/// convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
+/// Convert `http://username:pwd@host:port/path?query` into `ipp://host:port/path`
 pub fn canonicalize_uri(uri: &Uri) -> Uri {
     let mut builder = Uri::builder().scheme("ipp").path_and_query(uri.path());
     if let Some(authority) = uri.authority() {

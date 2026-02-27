@@ -41,10 +41,10 @@ fn with_document_format(document_format: Option<IppMimeMediaType>, req: &mut Ipp
 
 /// Trait which represents a single IPP operation
 pub trait IppOperation {
-    /// Convert this operation to IPP request which is ready for sending
+    /// Convert this operation to an IPP request which is ready for sending
     fn into_ipp_request(self) -> IppRequestResponse;
 
-    /// Return IPP version for this operation. Default is 1.1
+    /// Return the IPP version for this operation. Default is 1.1
     fn version(&self) -> IppVersion {
         IppVersion::v1_1()
     }
@@ -67,7 +67,7 @@ pub struct PrintJob {
 }
 
 impl PrintJob {
-    /// Create Print-Job operation
+    /// Create a Print-Job operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `payload` - job payload<br/>
@@ -97,7 +97,7 @@ impl PrintJob {
         })
     }
 
-    /// Set extra job attribute for this operation, for example `colormodel=grayscale`
+    /// Set an extra job attribute for this operation, for example `colormodel=grayscale`
     pub fn add_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
@@ -136,7 +136,7 @@ pub struct GetPrinterAttributes {
 }
 
 impl GetPrinterAttributes {
-    /// Create Get-Printer-Attributes operation to return all attributes
+    /// Create a Get-Printer-Attributes operation to return all attributes
     ///
     /// * `printer_uri` - printer URI
     pub fn new(printer_uri: Uri) -> Result<GetPrinterAttributes, IppParseError> {
@@ -146,7 +146,7 @@ impl GetPrinterAttributes {
         })
     }
 
-    /// Create Get-Printer-Attributes operation to get a given list of attributes
+    /// Create a Get-Printer-Attributes operation to get a given list of attributes
     ///
     /// * `printer_uri` - printer URI
     /// * `attributes` - list of attribute names to request from the printer
@@ -193,7 +193,7 @@ pub struct CreateJob {
 }
 
 impl CreateJob {
-    /// Create Create-Job operation
+    /// Create a Create-Job operation
     ///
     /// * `printer_uri` - printer URI
     /// * `job_name` - optional job name (job-name)<br/>
@@ -208,7 +208,7 @@ impl CreateJob {
         })
     }
 
-    /// Set extra job attribute for this operation, for example `colormodel=grayscale`
+    /// Set an extra job attribute for this operation, for example `colormodel=grayscale`
     pub fn add_attribute(&mut self, attribute: IppAttribute) {
         self.attributes.push(attribute);
     }
@@ -246,7 +246,7 @@ pub struct SendDocument {
 }
 
 impl SendDocument {
-    /// Create Send-Document operation
+    /// Create a Send-Document operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `job_id` - job ID returned by Create-Job operation<br/>
@@ -312,7 +312,7 @@ pub struct PurgeJobs {
 }
 
 impl PurgeJobs {
-    /// Create Purge-Jobs operation
+    /// Create a Purge-Jobs operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>
@@ -345,7 +345,7 @@ pub struct CancelJob {
 }
 
 impl CancelJob {
-    /// Create Cancel-Job operation
+    /// Create a Cancel-Job operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `job_id` - job ID<br/>
@@ -374,7 +374,7 @@ impl IppOperation for CancelJob {
     }
 }
 
-/// IPP operation Cancel-Job
+/// IPP operation Get-Job-Attributes
 pub struct GetJobAttributes {
     printer_uri: IppString,
     job_id: i32,
@@ -382,7 +382,7 @@ pub struct GetJobAttributes {
 }
 
 impl GetJobAttributes {
-    /// Create Get-Job-Attributes operation
+    /// Create a Get-Job-Attributes operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `job_id` - job ID<br/>
@@ -419,7 +419,7 @@ pub struct GetJobs {
 }
 
 impl GetJobs {
-    /// Create Get-Jobs operation
+    /// Create a Get-Jobs operation
     ///
     /// * `printer_uri` - printer URI<br/>
     /// * `user_name` - name of the user (requesting-user-name)<br/>

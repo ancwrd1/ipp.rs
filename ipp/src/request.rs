@@ -30,7 +30,7 @@ pub struct IppRequestResponse {
 }
 
 impl IppRequestResponse {
-    /// Create new IPP request for the operation and uri
+    /// Create a new IPP request for the operation and URI
     pub fn new(
         version: IppVersion,
         operation: Operation,
@@ -82,7 +82,7 @@ impl IppRequestResponse {
         }
     }
 
-    /// Create response from status and id
+    /// Create a response from a status and id
     pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> Result<IppRequestResponse, IppParseError> {
         let header = IppHeader::new(version, status as u16, id);
         let mut response = IppRequestResponse {
@@ -109,37 +109,37 @@ impl IppRequestResponse {
         Ok(response)
     }
 
-    /// Get IPP header
+    /// Get the IPP header
     pub fn header(&self) -> &IppHeader {
         &self.header
     }
 
-    /// Get mutable IPP header
+    /// Get the mutable IPP header
     pub fn header_mut(&mut self) -> &mut IppHeader {
         &mut self.header
     }
 
-    /// Get attributes
+    /// Get the attributes
     pub fn attributes(&self) -> &IppAttributes {
         &self.attributes
     }
 
-    /// Get attributes
+    /// Get the mutable attributes
     pub fn attributes_mut(&mut self) -> &mut IppAttributes {
         &mut self.attributes
     }
 
-    /// Get payload
+    /// Get the payload
     pub fn payload(&self) -> &IppPayload {
         &self.payload
     }
 
-    /// Get mutable payload
+    /// Get the mutable payload
     pub fn payload_mut(&mut self) -> &mut IppPayload {
         &mut self.payload
     }
 
-    /// Write request to byte array not including payload
+    /// Write the request to a byte array, not including the payload
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
         buffer.put(self.header.to_bytes());
@@ -148,7 +148,7 @@ impl IppRequestResponse {
     }
 
     #[cfg(feature = "async")]
-    /// Convert request/response into AsyncRead including payload
+    /// Convert the request/response into AsyncRead including the payload
     pub fn into_async_read(self) -> impl AsyncRead + Send + Sync + 'static {
         let header = self.to_bytes();
         trace!("IPP header size: {}", header.len());
@@ -156,7 +156,7 @@ impl IppRequestResponse {
         futures_util::io::Cursor::new(header).chain(self.payload)
     }
 
-    /// Convert request/response into Read including payload
+    /// Convert the request/response into Read including the payload
     pub fn into_read(self) -> impl Read + Send + Sync + 'static {
         let header = self.to_bytes();
         trace!("IPP header size: {}", header.len());
@@ -164,7 +164,7 @@ impl IppRequestResponse {
         io::Cursor::new(header).chain(self.payload)
     }
 
-    /// Consume request/response and return a payload
+    /// Consume the request/response and return the payload
     pub fn into_payload(self) -> IppPayload {
         self.payload
     }

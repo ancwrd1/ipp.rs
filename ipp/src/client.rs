@@ -32,6 +32,7 @@ fn ipp_uri_to_string(uri: &Uri) -> String {
 }
 
 #[cfg(feature = "__tls")]
+/// TLS backend selection for the IPP client
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum TlsBackend {
     #[default]
@@ -99,7 +100,7 @@ impl<T> IppClientBuilder<T> {
         self
     }
 
-    /// Add basic auth header (RFC 7617)
+    /// Add a basic auth header (RFC 7617)
     pub fn basic_auth<U, P>(mut self, username: U, password: P) -> Self
     where
         U: AsRef<str>,
@@ -113,7 +114,7 @@ impl<T> IppClientBuilder<T> {
     }
 
     #[cfg(feature = "__tls")]
-    /// Set TLS backend.
+    /// Set the TLS backend.
     pub fn tls_backend(mut self, backend: TlsBackend) -> Self {
         self.tls_backend = Some(backend);
         self
@@ -155,26 +156,26 @@ pub mod non_blocking {
 
     /// Asynchronous IPP client.
     ///
-    /// IPP client is responsible for sending requests to IPP server.
+    /// IPP client is responsible for sending requests to an IPP server.
     pub struct AsyncIppClient(pub(super) IppClientBuilder<Self>);
 
     impl AsyncIppClient {
-        /// Create IPP client with default options
+        /// Create an IPP client with default options
         pub fn new(uri: Uri) -> Self {
             AsyncIppClient(AsyncIppClient::builder(uri))
         }
 
-        /// Create IPP client builder for setting extra options
+        /// Create an IPP client builder for setting extra options
         pub fn builder(uri: Uri) -> IppClientBuilder<Self> {
             IppClientBuilder::new(uri)
         }
 
-        /// Return client URI
+        /// Return the client URI
         pub fn uri(&self) -> &Uri {
             &self.0.uri
         }
 
-        /// Send IPP request to the server
+        /// Send an IPP request to the server
         pub async fn send<R>(&self, request: R) -> Result<IppRequestResponse, IppError>
         where
             R: Into<IppRequestResponse>,
@@ -251,26 +252,26 @@ pub mod blocking {
 
     /// Blocking IPP client.
     ///
-    /// IPP client is responsible for sending requests to IPP server.
+    /// IPP client is responsible for sending requests to an IPP server.
     pub struct IppClient(pub(super) IppClientBuilder<Self>);
 
     impl IppClient {
-        /// Create IPP client with default options
+        /// Create an IPP client with default options
         pub fn new(uri: Uri) -> Self {
             IppClient(IppClient::builder(uri))
         }
 
-        /// Create IPP client builder for setting extra options
+        /// Create an IPP client builder for setting extra options
         pub fn builder(uri: Uri) -> IppClientBuilder<Self> {
             IppClientBuilder::new(uri)
         }
 
-        /// Return client URI
+        /// Return the client URI
         pub fn uri(&self) -> &Uri {
             &self.0.uri
         }
 
-        /// Send IPP request to the server
+        /// Send an IPP request to the server
         pub fn send<R>(&self, request: R) -> Result<IppRequestResponse, IppError>
         where
             R: Into<IppRequestResponse>,

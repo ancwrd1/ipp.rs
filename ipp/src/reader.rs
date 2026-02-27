@@ -11,7 +11,7 @@ use futures_util::io::{AsyncRead, AsyncReadExt};
 use crate::{IppHeader, model::IppVersion, parser::IppParseError, payload::IppPayload, value::IppName};
 
 #[cfg(feature = "async")]
-/// Asynchronous IPP reader contains a set of methods to read from IPP data stream
+/// Asynchronous IPP reader containing a set of methods to read from an IPP data stream
 pub struct AsyncIppReader<R> {
     inner: R,
 }
@@ -21,7 +21,7 @@ impl<R> AsyncIppReader<R>
 where
     R: AsyncRead + Send + Sync + Unpin,
 {
-    /// Create IppReader from AsyncRead instance
+    /// Create an IppReader from an AsyncRead instance
     pub fn new(inner: R) -> Self {
         AsyncIppReader { inner }
     }
@@ -106,7 +106,7 @@ where
     }
 }
 
-/// Synchronous IPP reader contains a set of methods to read from IPP data stream
+/// Synchronous IPP reader containing a set of methods to read from an IPP data stream
 pub struct IppReader<R> {
     inner: R,
 }
@@ -115,7 +115,7 @@ impl<R> IppReader<R>
 where
     R: Read + Send + Sync,
 {
-    /// Create IppReader from Read instance
+    /// Create an IppReader from a Read instance
     pub fn new(inner: R) -> Self {
         IppReader { inner }
     }

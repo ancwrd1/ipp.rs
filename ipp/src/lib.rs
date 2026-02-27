@@ -122,7 +122,7 @@ pub struct IppHeader {
 }
 
 impl IppHeader {
-    /// Create IPP header
+    /// Create an IPP header
     pub fn new(version: IppVersion, operation_or_status: u16, request_id: u32) -> IppHeader {
         IppHeader {
             version,
@@ -131,7 +131,7 @@ impl IppHeader {
         }
     }
 
-    /// Write header to a given writer
+    /// Write the header to a given writer
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
         buffer.put_u16(self.version.0);
@@ -141,7 +141,7 @@ impl IppHeader {
         buffer.freeze()
     }
 
-    /// Decode and get IPP status code from the header
+    /// Decode and get the IPP status code from the header
     pub fn status_code(&self) -> StatusCode {
         StatusCode::from_u16(self.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
     }

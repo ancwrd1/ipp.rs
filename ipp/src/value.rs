@@ -32,16 +32,23 @@ pub struct BoundedString<const MAX: usize = 1023> {
     inner: String,
 }
 
+/// IPP string value with a maximum length of 1023 bytes
 pub type IppString = BoundedString;
+/// IPP short string value with a maximum length of 127 bytes
 pub type IppShortString = BoundedString<127>;
+/// IPP keyword value with a maximum length of 255 bytes
 pub type IppKeyword = BoundedString<255>;
+/// IPP MIME media type value with a maximum length of 255 bytes
 pub type IppMimeMediaType = BoundedString<255>;
+/// IPP charset value with a maximum length of 63 bytes
 pub type IppCharset = BoundedString<63>;
+/// IPP natural language tag with a maximum length of 63 bytes
 pub type IppLanguage = BoundedString<63>;
+/// IPP name value with a maximum length of 255 bytes
 pub type IppName = BoundedString<255>;
 
 impl<const MAX: usize> BoundedString<MAX> {
-    /// attempts to create a bounded string from the given value returning an error if the strings length exceeds the const generic
+    /// Attempts to create a bounded string from the given value, returning an error if the string's length exceeds the const generic
     /// defined for the type.
     pub fn new(s: impl Into<String>) -> Result<Self, IppParseError> {
         let s = s.into();
@@ -54,22 +61,27 @@ impl<const MAX: usize> BoundedString<MAX> {
         Ok(Self { inner: s })
     }
 
+    /// Return the maximum allowed length in bytes
     pub const fn max() -> usize {
         MAX
     }
 
+    /// Return the string as a `str` reference
     pub fn as_str(&self) -> &str {
         &self.inner
     }
 
+    /// Consume the bounded string and return the inner `String`
     pub fn into_inner(self) -> String {
         self.inner
     }
 
+    /// Return the length of the string in bytes
     pub fn len(&self) -> usize {
         self.inner.len()
     }
 
+    /// Return true if the string is empty
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
@@ -179,6 +191,7 @@ pub enum IppTextValue {
 }
 
 impl IppTextValue {
+    /// Create an `IppTextValue`, selecting the smallest valid encoding tier for the given string
     pub fn new(s: impl Into<String>) -> Result<Self, IppParseError> {
         let string = s.into();
         let len = string.len();
@@ -189,10 +202,13 @@ impl IppTextValue {
             _ => Err(IppParseError::InvalidStringLength { len, max: 1023 }),
         }
     }
+
+    /// Return the length of the string in bytes
     pub fn len(&self) -> usize {
         self.as_ref().len()
     }
 
+    /// Return true if the string is empty
     pub fn is_empty(&self) -> bool {
         self.as_ref().is_empty()
     }
@@ -270,7 +286,7 @@ fn get_len_string(data: &mut Bytes) -> String {
 }
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
-/// the length for TextWithoutLanguage, TextWithLanguage, and OctetString values is heavily attribute dependant
+/// the length for TextWithoutLanguage, TextWithLanguage, and OctetString values is heavily attribute dependent
 /// usual values are 127, 255, and 1023 however as these are attribute dependent, a [`IppTextValue`] is used to allow the calling routine to assert expected text length.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, EnumAsInner)]
@@ -327,7 +343,7 @@ pub enum IppValue {
 }
 
 impl IppValue {
-    /// Convert to binary tag
+    /// Convert to a binary tag
     pub fn to_tag(&self) -> u8 {
         match *self {
             IppValue::Integer(_) => ValueTag::Integer as u8,
@@ -413,7 +429,7 @@ impl IppValue {
         Ok(value)
     }
 
-    /// Write value to byte array, including leading value length field, excluding value tag
+    /// Write the value to a byte array, including the leading value length field, excluding the value tag
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
 
@@ -634,6 +650,7 @@ impl<'a> IntoIterator for &'a IppValue {
     }
 }
 
+/// Iterator over [`IppValue`] items, yielding individual elements from arrays and collections
 pub struct IppValueIterator<'a> {
     value: &'a IppValue,
     index: usize,
