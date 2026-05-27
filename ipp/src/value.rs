@@ -7,11 +7,10 @@ use std::{borrow::Cow, collections::BTreeMap, fmt, ops::Deref, str::FromStr};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 
+use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 use http::Uri;
 #[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
-
-use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
@@ -27,7 +26,6 @@ use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 /// # Errors
 /// Returns [`IppParseError::InvalidStringLength`] if the input exceeds `MAX`.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BoundedString<const MAX: usize = 1023> {
     inner: String,
 }
@@ -171,6 +169,34 @@ impl<const MAX: usize> TryFrom<Uri> for BoundedString<MAX> {
     type Error = IppParseError;
     fn try_from(u: Uri) -> Result<Self, Self::Error> {
         u.to_string().try_into()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<const N: usize> Serialize for BoundedString<N> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.inner.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, const N: usize> Deserialize<'de> for BoundedString<N> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let inner = String::deserialize(deserializer)?;
+        if inner.len() > N {
+            Err(serde::de::Error::invalid_length(
+                inner.len(),
+                &format!("no more than {N} bytes").as_str(),
+            ))
+        } else {
+            Ok(Self { inner })
+        }
     }
 }
 
@@ -705,6 +731,13 @@ mod tests {
         let mut b = value.to_bytes();
         b.advance(2); // skip value size
         assert_eq!(IppValue::parse(value.to_tag(), b).unwrap(), value);
+
+        #[cfg(feature = "serde")]
+        {
+            let json = serde_json::to_string(&value).unwrap();
+            let from_json: IppValue = serde_json::from_str(&json).unwrap();
+            assert_eq!(value, from_json);
+        }
     }
 
     /*
