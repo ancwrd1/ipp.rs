@@ -157,6 +157,7 @@ impl ParserState {
 pub struct AsyncIppParser<R> {
     reader: AsyncIppReader<R>,
     state: ParserState,
+    parsed_header: Option<IppHeader>,
 }
 
 #[cfg(feature = "async")]
@@ -172,6 +173,7 @@ where
         AsyncIppParser {
             reader: reader.into(),
             state: ParserState::new(),
+            parsed_header: None,
         }
     }
 
@@ -184,7 +186,7 @@ where
     }
 
     async fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
-        let header = self.reader.read_header().await?;
+        let header = self.get_or_parse_header().await?;
         trace!("IPP header: {header:?}");
 
         loop {
@@ -223,12 +225,24 @@ where
             payload: self.reader.into_payload(),
         })
     }
+
+    /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
+    pub async fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
+        match self.parsed_header {
+            Some(ref header) => Ok(header.clone()),
+            None => {
+                self.parsed_header = Some(self.reader.read_header().await?);
+                Ok(self.parsed_header.clone().unwrap())
+            }
+        }
+    }
 }
 
 /// Synchronous IPP parser
 pub struct IppParser<R> {
     reader: IppReader<R>,
     state: ParserState,
+    parsed_header: Option<IppHeader>,
 }
 
 impl<R> IppParser<R>
@@ -243,6 +257,7 @@ where
         IppParser {
             reader: reader.into(),
             state: ParserState::new(),
+            parsed_header: None,
         }
     }
 
@@ -255,7 +270,7 @@ where
     }
 
     fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
-        let header = self.reader.read_header()?;
+        let header = self.get_or_parse_header()?;
         trace!("IPP header: {header:?}");
 
         loop {
@@ -293,6 +308,17 @@ where
             attributes: self.state.attributes,
             payload: self.reader.into_payload(),
         })
+    }
+
+    /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
+    pub fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
+        match self.parsed_header {
+            Some(ref header) => Ok(header.clone()),
+            None => {
+                self.parsed_header = Some(self.reader.read_header()?);
+                Ok(self.parsed_header.clone().unwrap())
+            }
+        }
     }
 }
 
@@ -592,5 +618,60 @@ mod tests {
 
         assert_eq!(2, res.attributes().groups()[0].attributes().len());
         assert_eq!(1, res.attributes().groups()[1].attributes().len());
+    }
+
+    #[cfg(feature = "async")]
+    #[tokio::test]
+    async fn test_async_parse_header_only() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 3, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+        ];
+        let mut parser = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)));
+
+        let header = parser.get_or_parse_header().await.unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0);
+        assert_eq!(header.request_id, 3);
+
+        let header2 = parser.get_or_parse_header().await.unwrap();
+        assert_eq!(header, header2);
+
+        let result = parser.parse().await.unwrap();
+
+        let attrs = result
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        let attr = attrs.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
+    }
+
+    #[test]
+    fn test_parse_header_only() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 3, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+        ];
+        let mut parser = IppParser::new(IppReader::new(io::Cursor::new(data)));
+
+        let header = parser.get_or_parse_header().unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0);
+        assert_eq!(header.request_id, 3);
+
+        let header2 = parser.get_or_parse_header().unwrap();
+        assert_eq!(header, header2);
+
+        let result = parser.parse().unwrap();
+
+        let attrs = result
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap()
+            .attributes();
+        let attr = attrs.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 }
