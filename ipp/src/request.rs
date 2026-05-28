@@ -149,7 +149,7 @@ impl IppRequestResponse {
 
     #[cfg(feature = "async")]
     /// Convert the request/response into AsyncRead including the payload
-    pub fn into_async_read(self) -> impl AsyncRead + Send + Sync + 'static {
+    pub fn into_async_read(self) -> impl AsyncRead + Send + 'static {
         let header = self.to_bytes();
         trace!("IPP header size: {}", header.len());
 
@@ -157,7 +157,7 @@ impl IppRequestResponse {
     }
 
     /// Convert the request/response into Read including the payload
-    pub fn into_read(self) -> impl Read + Send + Sync + 'static {
+    pub fn into_read(self) -> impl Read + Send + 'static {
         let header = self.to_bytes();
         trace!("IPP header size: {}", header.len());
 
