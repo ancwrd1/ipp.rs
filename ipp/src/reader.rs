@@ -19,7 +19,7 @@ pub struct AsyncIppReader<R> {
 #[cfg(feature = "async")]
 impl<R> AsyncIppReader<R>
 where
-    R: AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Unpin,
 {
     /// Create an IppReader from an AsyncRead instance
     pub fn new(inner: R) -> Self {
@@ -99,7 +99,7 @@ where
 #[cfg(feature = "async")]
 impl<R> From<R> for AsyncIppReader<R>
 where
-    R: AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Unpin,
 {
     fn from(r: R) -> Self {
         AsyncIppReader::new(r)
@@ -113,7 +113,7 @@ pub struct IppReader<R> {
 
 impl<R> IppReader<R>
 where
-    R: Read + Send + Sync,
+    R: Read + Send,
 {
     /// Create an IppReader from a Read instance
     pub fn new(inner: R) -> Self {
@@ -190,7 +190,7 @@ where
 
 impl<R> From<R> for IppReader<R>
 where
-    R: Read + Send + Sync,
+    R: Read + Send,
 {
     fn from(r: R) -> Self {
         IppReader::new(r)

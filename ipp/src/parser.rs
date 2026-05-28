@@ -162,7 +162,7 @@ pub struct AsyncIppParser<R> {
 #[cfg(feature = "async")]
 impl<R> AsyncIppParser<R>
 where
-    R: AsyncRead + Send + Sync + Unpin,
+    R: AsyncRead + Send + Unpin,
 {
     /// Create an IPP parser from AsyncIppReader
     pub fn new<T>(reader: T) -> AsyncIppParser<R>
@@ -233,7 +233,7 @@ pub struct IppParser<R> {
 
 impl<R> IppParser<R>
 where
-    R: 'static + Read + Send + Sync,
+    R: 'static + Read + Send,
 {
     /// Create an IPP parser from IppReader
     pub fn new<T>(reader: T) -> IppParser<R>
