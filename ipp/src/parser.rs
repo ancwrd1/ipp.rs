@@ -229,10 +229,10 @@ where
     /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
     pub async fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
         match self.parsed_header {
-            Some(ref header) => Ok(header.clone()),
+            Some(header) => Ok(header),
             None => {
                 self.parsed_header = Some(self.reader.read_header().await?);
-                Ok(self.parsed_header.clone().unwrap())
+                Ok(self.parsed_header.unwrap())
             }
         }
     }
@@ -313,10 +313,10 @@ where
     /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
     pub fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
         match self.parsed_header {
-            Some(ref header) => Ok(header.clone()),
+            Some(header) => Ok(header),
             None => {
                 self.parsed_header = Some(self.reader.read_header()?);
-                Ok(self.parsed_header.clone().unwrap())
+                Ok(self.parsed_header.unwrap())
             }
         }
     }
