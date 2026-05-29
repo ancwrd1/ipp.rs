@@ -12,7 +12,6 @@ use std::{
 };
 
 use clap::Parser;
-
 use ipp::{prelude::*, util};
 
 fn new_client(uri: Uri, params: &IppParams) -> io::Result<IppClient> {

@@ -3,10 +3,9 @@
 //!
 use std::fmt;
 
+use enum_primitive_derive::Primitive;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-
-use enum_primitive_derive::Primitive;
 
 /// IPP protocol version
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

@@ -63,7 +63,6 @@
 
 use bytes::{BufMut, Bytes, BytesMut};
 use num_traits::FromPrimitive;
-
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -89,6 +88,11 @@ pub mod prelude {
     pub use http::Uri;
     pub use num_traits::FromPrimitive as _;
 
+    #[cfg(feature = "client")]
+    pub use super::client::blocking::IppClient;
+    #[cfg(feature = "async-client")]
+    pub use super::client::non_blocking::AsyncIppClient;
+    pub use super::{IppHeader, error::IppError};
     pub use crate::{
         attribute::{IppAttribute, IppAttributeGroup, IppAttributes},
         model::*,
@@ -97,16 +101,6 @@ pub mod prelude {
         request::IppRequestResponse,
         value::IppValue,
     };
-
-    pub use super::error::IppError;
-
-    #[cfg(feature = "async-client")]
-    pub use super::client::non_blocking::AsyncIppClient;
-
-    #[cfg(feature = "client")]
-    pub use super::client::blocking::IppClient;
-
-    pub use super::IppHeader;
 }
 
 /// IPP request and response header

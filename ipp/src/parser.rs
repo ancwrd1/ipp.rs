@@ -10,7 +10,6 @@ use std::{
 
 use bytes::Bytes;
 use log::{error, trace};
-
 #[cfg(feature = "async")]
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
 
@@ -324,9 +323,8 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::IppVersion;
-
     use super::*;
+    use crate::prelude::IppVersion;
 
     #[cfg(feature = "async")]
     #[tokio::test]

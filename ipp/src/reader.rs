@@ -4,7 +4,6 @@
 use std::io::{self, Read};
 
 use bytes::Bytes;
-
 #[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
 

@@ -3,14 +3,15 @@
 //!
 use std::collections::HashMap;
 
-use crate::parser::IppParseError;
-use crate::{
-    model::DelimiterTag,
-    value::{IppName, IppValue},
-};
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+
+use crate::{
+    model::DelimiterTag,
+    parser::IppParseError,
+    value::{IppName, IppValue},
+};
 
 macro_rules! define_attributes {
     ($($name:ident => $value:literal),* $(,)?) => {

@@ -6,11 +6,11 @@ use std::{borrow::Cow, collections::BTreeMap, fmt, ops::Deref, str::FromStr};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
-
-use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 use http::Uri;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
@@ -717,15 +717,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
-    use std::io;
-
-    use crate::attribute::IppAttribute;
-    use crate::model::DelimiterTag;
-    use crate::parser::IppParser;
-    use crate::reader::IppReader;
+    use std::{collections::BTreeMap, io};
 
     use super::*;
+    use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
 
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();

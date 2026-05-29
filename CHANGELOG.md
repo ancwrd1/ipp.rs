@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.0.1
+- Fixed BoundedString serialization (#49)
+- Removed unused Sync trait bound from Reader and Parser structs (#50)
+- Added `IppParser::get_or_parse_header` (#52)
+
 ## 6.0.0
 - Allow both TLS backends via the client builder method.
 - Added bounds checking for all IPP string values using a const generic string wrapper `BoundedString<MAX>`
