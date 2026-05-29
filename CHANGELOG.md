@@ -1,9 +1,9 @@
 # Changelog
 
 ## 6.0.1
-- Fixed BoundedString serialization (#49)
-- Removed unused Sync trait bound from Reader and Parser structs (#50)
-- Added `IppParser::get_or_parse_header` (#52)
+- Fixed BoundedString serialization ([#49](https://github.com/ancwrd1/ipp.rs/issues/49))
+- Removed unused Sync trait bound from Reader and Parser structs ([#50](https://github.com/ancwrd1/ipp.rs/issues/50))
+- Added `IppParser::get_or_parse_header` ([#51](https://github.com/ancwrd1/ipp.rs/issues/51))
 
 ## 6.0.0
 - Allow both TLS backends via the client builder method.
