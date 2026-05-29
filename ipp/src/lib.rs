@@ -111,7 +111,7 @@ pub mod prelude {
 
 /// IPP request and response header
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct IppHeader {
     /// IPP protocol version
     pub version: IppVersion,
