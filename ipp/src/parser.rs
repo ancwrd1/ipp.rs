@@ -78,7 +78,7 @@ impl ParserState {
                 && let Some(ref mut group) = self.current_group
             {
                 let attr = IppAttribute::new(last_name.clone(), list_or_value(val_list));
-                group.attributes_mut().insert(last_name, attr);
+                group.add_attribute(attr);
             }
             self.context.push(vec![]);
         }

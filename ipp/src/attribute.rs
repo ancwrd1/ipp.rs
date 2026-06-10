@@ -1,7 +1,6 @@
 //!
 //! Attribute-related structs
 //!
-use std::collections::HashMap;
 
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "serde")]
@@ -133,10 +132,11 @@ impl IppAttribute {
     //    attributes (i.e., the "printer-uri" and "job-id" attributes), the
     //    "printer-uri" attribute MUST be the third attribute and the
     //    "job-id" attribute MUST be the fourth attribute.
-    const HEADER_ATTRS: [&'static str; 3] = [
+    const HEADER_ATTRS: [&'static str; 4] = [
         IppAttribute::ATTRIBUTES_CHARSET,
         IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
         IppAttribute::PRINTER_URI,
+        IppAttribute::JOB_ID,
     ];
 
     /// Create a new instance of the attribute
@@ -193,7 +193,7 @@ impl IppAttribute {
 #[derive(Clone, Debug)]
 pub struct IppAttributeGroup {
     tag: DelimiterTag,
-    attributes: HashMap<IppName, IppAttribute>,
+    attributes: Vec<IppAttribute>,
 }
 
 impl IppAttributeGroup {
@@ -201,7 +201,7 @@ impl IppAttributeGroup {
     pub fn new(tag: DelimiterTag) -> IppAttributeGroup {
         IppAttributeGroup {
             tag,
-            attributes: HashMap::new(),
+            attributes: Vec::new(),
         }
     }
 
@@ -211,18 +211,56 @@ impl IppAttributeGroup {
     }
 
     /// Return the read-only attributes
-    pub fn attributes(&self) -> &HashMap<IppName, IppAttribute> {
-        &self.attributes
-    }
-
-    /// Return the mutable attributes
-    pub fn attributes_mut(&mut self) -> &mut HashMap<IppName, IppAttribute> {
-        &mut self.attributes
+    pub fn attributes(&self) -> Attributes<'_> {
+        Attributes {
+            inner: &self.attributes,
+            index: 0,
+        }
     }
 
     /// Consume this group and return the mutable attributes
-    pub fn into_attributes(self) -> HashMap<IppName, IppAttribute> {
+    pub fn into_attributes(self) -> Vec<IppAttribute> {
         self.attributes
+    }
+
+    /// Add attribute to the group
+    pub fn add_attribute(&mut self, attr: IppAttribute) {
+        self.attributes.push(attr);
+    }
+}
+
+/// Iterator over attributes in a group
+pub struct Attributes<'a> {
+    inner: &'a [IppAttribute],
+    index: usize,
+}
+impl<'a> Iterator for Attributes<'a> {
+    type Item = &'a IppAttribute;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(next) = self.inner.get(self.index) {
+            self.index += 1;
+            Some(next)
+        } else {
+            None
+        }
+    }
+}
+
+impl<'a> Attributes<'a> {
+    /// Get an attribute by name
+    pub fn get(&self, name: &str) -> Option<&'a IppAttribute> {
+        self.inner.iter().find(|attr| attr.name().as_str() == name)
+    }
+
+    /// Return the number of attributes in the group
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
+
+    /// Return `true` if the group is empty
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
     }
 }
 
@@ -263,12 +301,10 @@ impl IppAttributes {
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
         let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
         if let Some(group) = group {
-            group.attributes_mut().insert(attribute.name().to_owned(), attribute);
+            group.add_attribute(attribute);
         } else {
             let mut new_group = IppAttributeGroup::new(tag);
-            new_group
-                .attributes_mut()
-                .insert(attribute.name().to_owned(), attribute);
+            new_group.add_attribute(attribute);
             self.groups_mut().push(new_group);
         }
     }
@@ -281,14 +317,14 @@ impl IppAttributes {
         buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
         if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).next() {
-            for hdr in &IppAttribute::HEADER_ATTRS {
-                if let Some(attr) = group.attributes().get(*hdr) {
+            for hdr in IppAttribute::HEADER_ATTRS {
+                if let Some(attr) = group.attributes().get(hdr) {
                     buffer.put(attr.to_bytes());
                 }
             }
 
             // now the other operation attributes
-            for attr in group.attributes().values() {
+            for attr in group.attributes() {
                 if !is_header_attr(attr.name()) {
                     buffer.put(attr.to_bytes());
                 }
@@ -303,7 +339,7 @@ impl IppAttributes {
         {
             buffer.put_u8(group.tag() as u8);
 
-            for attr in group.attributes().values() {
+            for attr in group.attributes() {
                 buffer.put(attr.to_bytes());
             }
         }

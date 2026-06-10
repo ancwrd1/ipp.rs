@@ -43,7 +43,7 @@ fn new_payload(cmd: &IppPrintCmd) -> io::Result<IppPayload> {
 
 fn dump_attributes(response: &IppRequestResponse, tag: DelimiterTag) {
     for group in response.attributes().groups_of(tag) {
-        let mut values = group.attributes().values().collect::<Vec<_>>();
+        let mut values = group.attributes().collect::<Vec<_>>();
 
         values.sort_by_key(|&a| a.name());
 
