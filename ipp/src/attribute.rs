@@ -223,9 +223,13 @@ impl IppAttributeGroup {
         self.attributes
     }
 
-    /// Add attribute to the group
+    /// Add an attribute to the group. If an attribute with the same name already exists, it will be replaced.
     pub fn add_attribute(&mut self, attr: IppAttribute) {
-        self.attributes.push(attr);
+        if let Some(existing) = self.attributes.iter_mut().find(|a| a.name() == attr.name()) {
+            *existing = attr;
+        } else {
+            self.attributes.push(attr);
+        }
     }
 }
 
