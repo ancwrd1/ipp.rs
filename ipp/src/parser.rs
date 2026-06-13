@@ -78,7 +78,7 @@ impl ParserState {
                 && let Some(ref mut group) = self.current_group
             {
                 let attr = IppAttribute::new(last_name.clone(), list_or_value(val_list));
-                group.add_attribute(attr);
+                group.attributes_mut().push(attr);
             }
             self.context.push(vec![]);
         }
@@ -351,13 +351,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
@@ -374,13 +373,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
@@ -400,13 +398,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
@@ -431,13 +428,12 @@ mod tests {
 
         let res = result.ok().unwrap();
         assert_eq!(res.header.version, IppVersion::v1_1());
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut cursor = futures_util::io::Cursor::new(Vec::new());
@@ -460,12 +456,8 @@ mod tests {
 
         let (header, attributes, reader) = result.ok().unwrap();
         assert_eq!(header.version, IppVersion::v1_1());
-        let attrs = attributes
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+        let group = attributes.groups_of(DelimiterTag::PrinterAttributes).next().unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut payload = reader.into_payload();
@@ -493,13 +485,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
@@ -513,13 +504,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
@@ -536,13 +526,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
@@ -564,13 +553,12 @@ mod tests {
 
         let mut res = result.ok().unwrap();
         assert_eq!(res.header.version, IppVersion::v1_1());
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut cursor = io::Cursor::new(Vec::new());
@@ -590,12 +578,8 @@ mod tests {
 
         let (header, attributes, reader) = result.ok().unwrap();
         assert_eq!(header.version, IppVersion::v1_1());
-        let attrs = attributes
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+        let group = attributes.groups_of(DelimiterTag::PrinterAttributes).next().unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut payload = reader.into_payload();
@@ -636,13 +620,12 @@ mod tests {
 
         let result = parser.parse().await.unwrap();
 
-        let attrs = result
+        let group = result
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
@@ -663,13 +646,12 @@ mod tests {
 
         let result = parser.parse().unwrap();
 
-        let attrs = result
+        let group = result
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 }

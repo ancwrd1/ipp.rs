@@ -18,10 +18,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("IPP status code: {}", response.header().status_code());
 
     for group in response.attributes().groups_of(DelimiterTag::PrinterAttributes) {
-        let name = group.attributes().get("printer-name").unwrap().value();
-        let uri = group.attributes().get("device-uri").unwrap().value();
+        let name = group.get("printer-name").unwrap().value();
+        let uri = group.get("device-uri").unwrap().value();
         let state = group
-            .attributes()
             .get("printer-state")
             .unwrap()
             .value()

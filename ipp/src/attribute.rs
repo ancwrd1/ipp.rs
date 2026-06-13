@@ -210,12 +210,14 @@ impl IppAttributeGroup {
         self.tag
     }
 
-    /// Return the read-only attributes
-    pub fn attributes(&self) -> Attributes<'_> {
-        Attributes {
-            inner: &self.attributes,
-            index: 0,
-        }
+    /// Return the list of attributes
+    pub fn attributes(&self) -> &[IppAttribute] {
+        &self.attributes
+    }
+
+    /// Return the mutable list of attributes
+    pub fn attributes_mut(&mut self) -> &mut Vec<IppAttribute> {
+        &mut self.attributes
     }
 
     /// Consume this group and return the mutable attributes
@@ -223,48 +225,35 @@ impl IppAttributeGroup {
         self.attributes
     }
 
-    /// Add an attribute to the group. If an attribute with the same name already exists, it will be replaced.
-    pub fn add_attribute(&mut self, attr: IppAttribute) {
-        if let Some(existing) = self.attributes.iter_mut().find(|a| a.name() == attr.name()) {
-            *existing = attr;
-        } else {
-            self.attributes.push(attr);
-        }
+    pub fn get(&self, name: &str) -> Option<&IppAttribute> {
+        self.attributes.iter().find(|attr| attr.name().as_str() == name)
     }
 }
 
-/// Iterator over attributes in a group
-pub struct Attributes<'a> {
-    inner: &'a [IppAttribute],
-    index: usize,
+impl IntoIterator for IppAttributeGroup {
+    type Item = IppAttribute;
+    type IntoIter = <Vec<IppAttribute> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.into_iter()
+    }
 }
-impl<'a> Iterator for Attributes<'a> {
+
+impl<'a> IntoIterator for &'a IppAttributeGroup {
     type Item = &'a IppAttribute;
+    type IntoIter = std::slice::Iter<'a, IppAttribute>;
 
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(next) = self.inner.get(self.index) {
-            self.index += 1;
-            Some(next)
-        } else {
-            None
-        }
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.iter()
     }
 }
 
-impl<'a> Attributes<'a> {
-    /// Get an attribute by name
-    pub fn get(&self, name: &str) -> Option<&'a IppAttribute> {
-        self.inner.iter().find(|attr| attr.name().as_str() == name)
-    }
+impl<'a> IntoIterator for &'a mut IppAttributeGroup {
+    type Item = &'a mut IppAttribute;
+    type IntoIter = std::slice::IterMut<'a, IppAttribute>;
 
-    /// Return the number of attributes in the group
-    pub fn len(&self) -> usize {
-        self.inner.len()
-    }
-
-    /// Return `true` if the group is empty
-    pub fn is_empty(&self) -> bool {
-        self.inner.is_empty()
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.iter_mut()
     }
 }
 
@@ -305,10 +294,10 @@ impl IppAttributes {
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
         let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
         if let Some(group) = group {
-            group.add_attribute(attribute);
+            group.attributes.push(attribute);
         } else {
             let mut new_group = IppAttributeGroup::new(tag);
-            new_group.add_attribute(attribute);
+            new_group.attributes.push(attribute);
             self.groups_mut().push(new_group);
         }
     }
@@ -321,14 +310,22 @@ impl IppAttributes {
         buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
         if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).next() {
-            for hdr in IppAttribute::HEADER_ATTRS {
-                if let Some(attr) = group.attributes().get(hdr) {
-                    buffer.put(attr.to_bytes());
+            let mut header_slots: [Option<&IppAttribute>; IppAttribute::HEADER_ATTRS.len()] =
+                [None; IppAttribute::HEADER_ATTRS.len()];
+            for attr in &group.attributes {
+                if let Some(idx) = IppAttribute::HEADER_ATTRS
+                    .iter()
+                    .position(|h| *h == attr.name().as_str())
+                {
+                    header_slots[idx] = Some(attr);
                 }
             }
+            for attr in header_slots.into_iter().flatten() {
+                buffer.put(attr.to_bytes());
+            }
 
-            // now the other operation attributes
-            for attr in group.attributes() {
+            // then everything else, in original order
+            for attr in &group.attributes {
                 if !is_header_attr(attr.name()) {
                     buffer.put(attr.to_bytes());
                 }
