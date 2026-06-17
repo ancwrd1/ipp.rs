@@ -1,16 +1,16 @@
 //!
 //! Attribute-related structs
 //!
-use std::collections::HashMap;
 
-use crate::parser::IppParseError;
-use crate::{
-    model::DelimiterTag,
-    value::{IppName, IppValue},
-};
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+
+use crate::{
+    model::DelimiterTag,
+    parser::IppParseError,
+    value::{IppName, IppValue},
+};
 
 macro_rules! define_attributes {
     ($($name:ident => $value:literal),* $(,)?) => {
@@ -132,10 +132,11 @@ impl IppAttribute {
     //    attributes (i.e., the "printer-uri" and "job-id" attributes), the
     //    "printer-uri" attribute MUST be the third attribute and the
     //    "job-id" attribute MUST be the fourth attribute.
-    const HEADER_ATTRS: [&'static str; 3] = [
+    const HEADER_ATTRS: [&'static str; 4] = [
         IppAttribute::ATTRIBUTES_CHARSET,
         IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
         IppAttribute::PRINTER_URI,
+        IppAttribute::JOB_ID,
     ];
 
     /// Create a new instance of the attribute
@@ -192,7 +193,7 @@ impl IppAttribute {
 #[derive(Clone, Debug)]
 pub struct IppAttributeGroup {
     tag: DelimiterTag,
-    attributes: HashMap<IppName, IppAttribute>,
+    attributes: Vec<IppAttribute>,
 }
 
 impl IppAttributeGroup {
@@ -200,7 +201,7 @@ impl IppAttributeGroup {
     pub fn new(tag: DelimiterTag) -> IppAttributeGroup {
         IppAttributeGroup {
             tag,
-            attributes: HashMap::new(),
+            attributes: Vec::new(),
         }
     }
 
@@ -209,19 +210,50 @@ impl IppAttributeGroup {
         self.tag
     }
 
-    /// Return the read-only attributes
-    pub fn attributes(&self) -> &HashMap<IppName, IppAttribute> {
+    /// Return the list of attributes
+    pub fn attributes(&self) -> &[IppAttribute] {
         &self.attributes
     }
 
-    /// Return the mutable attributes
-    pub fn attributes_mut(&mut self) -> &mut HashMap<IppName, IppAttribute> {
+    /// Return the mutable list of attributes
+    pub fn attributes_mut(&mut self) -> &mut Vec<IppAttribute> {
         &mut self.attributes
     }
 
     /// Consume this group and return the mutable attributes
-    pub fn into_attributes(self) -> HashMap<IppName, IppAttribute> {
+    pub fn into_attributes(self) -> Vec<IppAttribute> {
         self.attributes
+    }
+
+    pub fn get(&self, name: &str) -> Option<&IppAttribute> {
+        self.attributes.iter().find(|attr| attr.name().as_str() == name)
+    }
+}
+
+impl IntoIterator for IppAttributeGroup {
+    type Item = IppAttribute;
+    type IntoIter = <Vec<IppAttribute> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a IppAttributeGroup {
+    type Item = &'a IppAttribute;
+    type IntoIter = std::slice::Iter<'a, IppAttribute>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut IppAttributeGroup {
+    type Item = &'a mut IppAttribute;
+    type IntoIter = std::slice::IterMut<'a, IppAttribute>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.attributes.iter_mut()
     }
 }
 
@@ -262,12 +294,10 @@ impl IppAttributes {
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
         let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
         if let Some(group) = group {
-            group.attributes_mut().insert(attribute.name().to_owned(), attribute);
+            group.attributes.push(attribute);
         } else {
             let mut new_group = IppAttributeGroup::new(tag);
-            new_group
-                .attributes_mut()
-                .insert(attribute.name().to_owned(), attribute);
+            new_group.attributes.push(attribute);
             self.groups_mut().push(new_group);
         }
     }
@@ -280,14 +310,22 @@ impl IppAttributes {
         buffer.put_u8(DelimiterTag::OperationAttributes as u8);
 
         if let Some(group) = self.groups_of(DelimiterTag::OperationAttributes).next() {
-            for hdr in &IppAttribute::HEADER_ATTRS {
-                if let Some(attr) = group.attributes().get(*hdr) {
-                    buffer.put(attr.to_bytes());
+            let mut header_slots: [Option<&IppAttribute>; IppAttribute::HEADER_ATTRS.len()] =
+                [None; IppAttribute::HEADER_ATTRS.len()];
+            for attr in &group.attributes {
+                if let Some(idx) = IppAttribute::HEADER_ATTRS
+                    .iter()
+                    .position(|h| *h == attr.name().as_str())
+                {
+                    header_slots[idx] = Some(attr);
                 }
             }
+            for attr in header_slots.into_iter().flatten() {
+                buffer.put(attr.to_bytes());
+            }
 
-            // now the other operation attributes
-            for attr in group.attributes().values() {
+            // then everything else, in original order
+            for attr in &group.attributes {
                 if !is_header_attr(attr.name()) {
                     buffer.put(attr.to_bytes());
                 }
@@ -302,7 +340,7 @@ impl IppAttributes {
         {
             buffer.put_u8(group.tag() as u8);
 
-            for attr in group.attributes().values() {
+            for attr in group.attributes() {
                 buffer.put(attr.to_bytes());
             }
         }

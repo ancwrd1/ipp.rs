@@ -6,11 +6,11 @@ use std::{borrow::Cow, collections::BTreeMap, fmt, ops::Deref, str::FromStr};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
-
-use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 use http::Uri;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
@@ -717,15 +717,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
-    use std::io;
-
-    use crate::attribute::IppAttribute;
-    use crate::model::DelimiterTag;
-    use crate::parser::IppParser;
-    use crate::reader::IppReader;
+    use std::{collections::BTreeMap, io};
 
     use super::*;
+    use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
 
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();
@@ -859,13 +854,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("list").unwrap();
+            .unwrap();
+        let attr = group.get("list").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)])
@@ -899,13 +893,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(

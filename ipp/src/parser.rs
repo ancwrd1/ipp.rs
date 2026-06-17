@@ -10,7 +10,6 @@ use std::{
 
 use bytes::Bytes;
 use log::{error, trace};
-
 #[cfg(feature = "async")]
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
 
@@ -79,7 +78,7 @@ impl ParserState {
                 && let Some(ref mut group) = self.current_group
             {
                 let attr = IppAttribute::new(last_name.clone(), list_or_value(val_list));
-                group.attributes_mut().insert(last_name, attr);
+                group.attributes_mut().push(attr);
             }
             self.context.push(vec![]);
         }
@@ -157,6 +156,7 @@ impl ParserState {
 pub struct AsyncIppParser<R> {
     reader: AsyncIppReader<R>,
     state: ParserState,
+    parsed_header: Option<IppHeader>,
 }
 
 #[cfg(feature = "async")]
@@ -172,6 +172,7 @@ where
         AsyncIppParser {
             reader: reader.into(),
             state: ParserState::new(),
+            parsed_header: None,
         }
     }
 
@@ -184,7 +185,7 @@ where
     }
 
     async fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
-        let header = self.reader.read_header().await?;
+        let header = self.get_or_parse_header().await?;
         trace!("IPP header: {header:?}");
 
         loop {
@@ -223,12 +224,24 @@ where
             payload: self.reader.into_payload(),
         })
     }
+
+    /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
+    pub async fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
+        match self.parsed_header {
+            Some(header) => Ok(header),
+            None => {
+                self.parsed_header = Some(self.reader.read_header().await?);
+                Ok(self.parsed_header.unwrap())
+            }
+        }
+    }
 }
 
 /// Synchronous IPP parser
 pub struct IppParser<R> {
     reader: IppReader<R>,
     state: ParserState,
+    parsed_header: Option<IppHeader>,
 }
 
 impl<R> IppParser<R>
@@ -243,6 +256,7 @@ where
         IppParser {
             reader: reader.into(),
             state: ParserState::new(),
+            parsed_header: None,
         }
     }
 
@@ -255,7 +269,7 @@ where
     }
 
     fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
-        let header = self.reader.read_header()?;
+        let header = self.get_or_parse_header()?;
         trace!("IPP header: {header:?}");
 
         loop {
@@ -294,13 +308,23 @@ where
             payload: self.reader.into_payload(),
         })
     }
+
+    /// Get the IppHeader if it has already been parsed, otherwise parse and return it.
+    pub fn get_or_parse_header(&mut self) -> Result<IppHeader, IppParseError> {
+        match self.parsed_header {
+            Some(header) => Ok(header),
+            None => {
+                self.parsed_header = Some(self.reader.read_header()?);
+                Ok(self.parsed_header.unwrap())
+            }
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::IppVersion;
-
     use super::*;
+    use crate::prelude::IppVersion;
 
     #[cfg(feature = "async")]
     #[tokio::test]
@@ -327,13 +351,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
@@ -350,13 +373,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
@@ -376,13 +398,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
@@ -407,13 +428,12 @@ mod tests {
 
         let res = result.ok().unwrap();
         assert_eq!(res.header.version, IppVersion::v1_1());
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut cursor = futures_util::io::Cursor::new(Vec::new());
@@ -436,12 +456,8 @@ mod tests {
 
         let (header, attributes, reader) = result.ok().unwrap();
         assert_eq!(header.version, IppVersion::v1_1());
-        let attrs = attributes
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+        let group = attributes.groups_of(DelimiterTag::PrinterAttributes).next().unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut payload = reader.into_payload();
@@ -469,13 +485,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 
@@ -489,13 +504,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1234_5678), IppValue::Integer(0x7765_4321)])
@@ -512,13 +526,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
@@ -540,13 +553,12 @@ mod tests {
 
         let mut res = result.ok().unwrap();
         assert_eq!(res.header.version, IppVersion::v1_1());
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+            .unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut cursor = io::Cursor::new(Vec::new());
@@ -566,12 +578,8 @@ mod tests {
 
         let (header, attributes, reader) = result.ok().unwrap();
         assert_eq!(header.version, IppVersion::v1_1());
-        let attrs = attributes
-            .groups_of(DelimiterTag::PrinterAttributes)
-            .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("test").unwrap();
+        let group = attributes.groups_of(DelimiterTag::PrinterAttributes).next().unwrap();
+        let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
 
         let mut payload = reader.into_payload();
@@ -592,5 +600,58 @@ mod tests {
 
         assert_eq!(2, res.attributes().groups()[0].attributes().len());
         assert_eq!(1, res.attributes().groups()[1].attributes().len());
+    }
+
+    #[cfg(feature = "async")]
+    #[tokio::test]
+    async fn test_async_parse_header_only() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 3, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+        ];
+        let mut parser = AsyncIppParser::new(AsyncIppReader::new(futures_util::io::Cursor::new(data)));
+
+        let header = parser.get_or_parse_header().await.unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0);
+        assert_eq!(header.request_id, 3);
+
+        let header2 = parser.get_or_parse_header().await.unwrap();
+        assert_eq!(header, header2);
+
+        let result = parser.parse().await.unwrap();
+
+        let group = result
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap();
+        let attr = group.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
+    }
+
+    #[test]
+    fn test_parse_header_only() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 3, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x04, 0x12, 0x34, 0x56, 0x78, 3,
+        ];
+        let mut parser = IppParser::new(IppReader::new(io::Cursor::new(data)));
+
+        let header = parser.get_or_parse_header().unwrap();
+        assert_eq!(header.version, IppVersion::v1_1());
+        assert_eq!(header.operation_or_status, 0);
+        assert_eq!(header.request_id, 3);
+
+        let header2 = parser.get_or_parse_header().unwrap();
+        assert_eq!(header, header2);
+
+        let result = parser.parse().unwrap();
+
+        let group = result
+            .attributes
+            .groups_of(DelimiterTag::PrinterAttributes)
+            .next()
+            .unwrap();
+        let attr = group.get("test").unwrap();
+        assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
     }
 }

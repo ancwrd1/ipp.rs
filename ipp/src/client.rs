@@ -146,11 +146,10 @@ pub mod non_blocking {
     use reqwest::{Body, ClientBuilder};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
 
-    use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
-
     #[cfg(feature = "__tls")]
     use super::TlsBackend;
     use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
+    use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -244,9 +243,8 @@ pub mod blocking {
     use http::Uri;
     use ureq::{Agent, SendBody};
 
-    use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
-
     use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
+    use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 
@@ -284,10 +282,12 @@ pub mod blocking {
 
             #[cfg(feature = "__tls")]
             {
-                use super::TlsBackend;
-                use rustls_native_certs::load_native_certs;
                 use std::sync::Arc;
+
+                use rustls_native_certs::load_native_certs;
                 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
+
+                use super::TlsBackend;
 
                 let mut tls_config = TlsConfig::builder();
                 if self.0.ignore_tls_errors {
@@ -347,8 +347,9 @@ pub mod blocking {
 
 #[cfg(test)]
 mod tests {
-    use crate::client::ipp_uri_to_string;
     use http::Uri;
+
+    use crate::client::ipp_uri_to_string;
 
     #[test]
     fn test_ipp_uri_no_port() {

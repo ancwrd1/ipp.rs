@@ -1,8 +1,7 @@
 use std::{env, error::Error, process::exit};
 
-use tokio::fs::File;
-
 use ipp::prelude::*;
+use tokio::fs::File;
 use tokio_util::compat::TokioAsyncReadCompatExt;
 
 #[tokio::main]
@@ -36,7 +35,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let attrs = response
         .attributes()
         .groups_of(DelimiterTag::JobAttributes)
-        .flat_map(|g| g.attributes().values());
+        .flat_map(|g| g.attributes());
 
     for attr in attrs {
         println!("{}: {}", attr.name(), attr.value());
