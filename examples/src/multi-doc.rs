@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
         .next()
-        .and_then(|g| g.attributes().get(IppAttribute::OPERATIONS_SUPPORTED))
+        .and_then(|g| g.get(IppAttribute::OPERATIONS_SUPPORTED))
         .ok_or(IppError::MissingAttribute)?;
 
     if !ops_attr.value().into_iter().any(supports_multi_doc) {
@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .attributes()
         .groups_of(DelimiterTag::JobAttributes)
         .next()
-        .and_then(|g| g.attributes().get(IppAttribute::JOB_ID))
+        .and_then(|g| g.get(IppAttribute::JOB_ID))
         .and_then(|attr| attr.value().as_integer())
         .ok_or(IppError::MissingAttribute)?;
 
@@ -71,7 +71,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let attrs = response
             .attributes()
             .groups_of(DelimiterTag::JobAttributes)
-            .flat_map(|g| g.attributes().values());
+            .flat_map(|g| g.attributes());
 
         for attr in attrs {
             println!("{}: {}", attr.name(), attr.value());

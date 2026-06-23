@@ -18,9 +18,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("IPP status code: {}", response.header().status_code());
 
     for group in response.attributes().groups_of(DelimiterTag::PrinterAttributes) {
-        let name = group.attributes()["printer-name"].value();
-        let uri = group.attributes()["device-uri"].value();
-        let state = group.attributes()["printer-state"]
+        let name = group.get("printer-name").unwrap().value();
+        let uri = group.get("device-uri").unwrap().value();
+        let state = group
+            .get("printer-state")
+            .unwrap()
             .value()
             .as_enum()
             .and_then(|v| PrinterState::from_i32(*v))

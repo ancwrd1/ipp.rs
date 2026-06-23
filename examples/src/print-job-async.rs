@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let attrs = response
         .attributes()
         .groups_of(DelimiterTag::JobAttributes)
-        .flat_map(|g| g.attributes().values());
+        .flat_map(|g| g.attributes());
 
     for attr in attrs {
         println!("{}: {}", attr.name(), attr.value());

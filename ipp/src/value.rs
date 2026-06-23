@@ -854,13 +854,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("list").unwrap();
+            .unwrap();
+        let attr = group.get("list").unwrap();
         assert_eq!(
             attr.value().as_array(),
             Some(&vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)])
@@ -894,13 +893,12 @@ mod tests {
         assert!(result.is_ok());
 
         let res = result.ok().unwrap();
-        let attrs = res
+        let group = res
             .attributes
             .groups_of(DelimiterTag::PrinterAttributes)
             .next()
-            .unwrap()
-            .attributes();
-        let attr = attrs.get("coll").unwrap();
+            .unwrap();
+        let attr = group.get("coll").unwrap();
         assert_eq!(
             attr.value(),
             &IppValue::Collection(BTreeMap::from([(
