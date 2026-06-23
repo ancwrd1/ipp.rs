@@ -812,9 +812,7 @@ mod tests {
     fn test_value_single() {
         value_check(IppValue::Integer(1234));
         value_check(IppValue::Enum(4321));
-        value_check(IppValue::OctetString(
-            "octet-string".into(),
-        ));
+        value_check(IppValue::OctetString("octet-string".into()));
         value_check(IppValue::TextWithoutLanguage(
             "text-without".try_into().expect("failed to create IPP text value"),
         ));
