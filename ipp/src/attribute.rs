@@ -302,6 +302,18 @@ impl IppAttributes {
         }
     }
 
+    /// Replace the contents of the first `IppAttributeGroup` if found, otherwise create it
+    pub fn set_or_replace(&mut self, tag: DelimiterTag, attributes: Vec<IppAttribute>) {
+        let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);
+        if let Some(group) = group {
+            group.attributes = attributes;
+        } else {
+            let mut new_group = IppAttributeGroup::new(tag);
+            new_group.attributes = attributes;
+            self.groups_mut().push(new_group);
+        }
+    }
+
     /// Write the attribute list to a byte array
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
