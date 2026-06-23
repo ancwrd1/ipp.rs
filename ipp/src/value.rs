@@ -255,6 +255,17 @@ impl IppTextValue {
     pub fn is_empty(&self) -> bool {
         self.as_ref().is_empty()
     }
+
+    #[must_use]
+    pub fn shrink(self) -> Self {
+        match self {
+            // Unwrap is OK since we check the size
+            Self::Medium(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
+            Self::Long(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
+            Self::Long(inner) if inner.len() <= 255 => Self::Medium(inner.shrink().unwrap()),
+            _ => self
+        }
+    }
 }
 
 impl From<IppShortString> for IppTextValue {
@@ -456,6 +467,7 @@ impl IppValue {
         } else {
             BoundedString::from_bytes(data)
                 .map(IppTextValue::Long)
+                .map(IppTextValue::shrink)
                 .map(into)
                 .or_else(|data| Ok(IppValue::NonUtf8 { tag, data }))
         }
