@@ -141,7 +141,8 @@ impl IppClientBuilder<blocking::IppClient> {
 pub mod non_blocking {
     use std::io;
 
-    use futures_util::{io::BufReader, stream::TryStreamExt};
+    use futures_util::io::BufReader;
+    use futures_util::stream::TryStreamExt;
     use http::Uri;
     use reqwest::{Body, ClientBuilder};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
@@ -149,7 +150,9 @@ pub mod non_blocking {
     #[cfg(feature = "__tls")]
     use super::TlsBackend;
     use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
-    use crate::{error::IppError, parser::AsyncIppParser, request::IppRequestResponse};
+    use crate::error::IppError;
+    use crate::parser::AsyncIppParser;
+    use crate::request::IppRequestResponse;
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";reqwest");
 
@@ -244,7 +247,10 @@ pub mod blocking {
     use ureq::{Agent, SendBody};
 
     use super::{CONNECT_TIMEOUT, IppClientBuilder, ipp_uri_to_string};
-    use crate::{error::IppError, parser::IppParser, reader::IppReader, request::IppRequestResponse};
+    use crate::error::IppError;
+    use crate::parser::IppParser;
+    use crate::reader::IppReader;
+    use crate::request::IppRequestResponse;
 
     const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"), ";ureq");
 

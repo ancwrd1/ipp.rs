@@ -170,7 +170,7 @@ pub enum DelimiterTag {
 
 /// IPP value tags
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum ValueTag {
     Unsupported = 0x10,
     Unknown = 0x12,
