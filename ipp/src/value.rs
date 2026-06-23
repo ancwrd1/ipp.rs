@@ -783,14 +783,10 @@ impl<'a> Iterator for IppValueIterator<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
-    use std::io;
+    use std::{collections::BTreeMap, io};
 
     use super::*;
-    use crate::attribute::IppAttribute;
-    use crate::model::DelimiterTag;
-    use crate::parser::IppParser;
-    use crate::reader::IppReader;
+    use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
 
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();
