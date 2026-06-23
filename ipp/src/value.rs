@@ -263,7 +263,7 @@ impl IppTextValue {
             Self::Medium(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
             Self::Long(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
             Self::Long(inner) if inner.len() <= 255 => Self::Medium(inner.shrink().unwrap()),
-            _ => self
+            _ => self,
         }
     }
 }
