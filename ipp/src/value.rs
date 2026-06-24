@@ -61,7 +61,7 @@ impl<const MAX: usize> BoundedString<MAX> {
         Ok(Self { inner: s })
     }
 
-    pub fn from_bytes(data: &Bytes) -> Option<Self> {
+    pub fn from_bytes(data: &[u8]) -> Option<Self> {
         if data.len() <= MAX
             && let Ok(s) = str::from_utf8(data)
         {
