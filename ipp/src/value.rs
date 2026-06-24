@@ -61,15 +61,13 @@ impl<const MAX: usize> BoundedString<MAX> {
         Ok(Self { inner: s })
     }
 
-    pub fn from_bytes(data: Bytes) -> Result<Self, Bytes> {
-        // check that the data is valid utf-8 without copying or moving the data first
-        if data.len() <= MAX && str::from_utf8(&data).is_ok() {
-            // safety:
-            // we just checked that it is OK
-            let string = unsafe { String::from_utf8_unchecked(data.to_vec()) };
-            Ok(Self { inner: string })
+    pub fn from_bytes(data: &Bytes) -> Option<Self> {
+        if data.len() <= MAX
+            && let Ok(s) = str::from_utf8(data)
+        {
+            Some(Self { inner: s.to_owned() })
         } else {
-            Err(data)
+            None
         }
     }
 
@@ -257,6 +255,8 @@ impl IppTextValue {
     }
 
     #[must_use]
+    /// Returns the same string with a smaller encoding tier if possible
+    /// Otherwise returns the original value unchanged.
     pub fn shrink(self) -> Self {
         match self {
             // Unwrap is OK since we check the size
@@ -449,9 +449,7 @@ impl IppValue {
                 max: MAX,
             })
         } else {
-            BoundedString::<MAX>::from_bytes(data)
-                .map(into)
-                .or_else(|data| Ok(IppValue::NonUtf8 { tag, data }))
+            Ok(BoundedString::<MAX>::from_bytes(&data).map_or_else(|| IppValue::NonUtf8 { tag, data }, into))
         }
     }
 
@@ -465,11 +463,10 @@ impl IppValue {
                 max: IPP_STRING_MAX_LENGTH,
             })
         } else {
-            BoundedString::from_bytes(data)
+            Ok(BoundedString::from_bytes(&data)
                 .map(IppTextValue::Long)
                 .map(IppTextValue::shrink)
-                .map(into)
-                .or_else(|data| Ok(IppValue::NonUtf8 { tag, data }))
+                .map_or_else(|| IppValue::NonUtf8 { tag, data }, into))
         }
     }
 
