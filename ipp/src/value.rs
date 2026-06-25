@@ -406,6 +406,130 @@ pub enum IppValue {
 }
 
 impl IppValue {
+    pub fn new_integer(value: i32) -> Self {
+        Self::Integer(value)
+    }
+
+    pub fn new_enum(value: i32) -> Self {
+        Self::Enum(value)
+    }
+
+    pub fn new_octet_string(data: Bytes) -> Self {
+        Self::OctetString(data)
+    }
+
+    pub fn new_text_without_language(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppTextValue::new(value).map(Self::TextWithoutLanguage)
+    }
+
+    pub fn new_name_without_language(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppName::new(value).map(Self::NameWithoutLanguage)
+    }
+
+    pub fn new_text_with_language(language: impl Into<String>, text: impl Into<String>) -> Result<Self, IppParseError> {
+        Ok(Self::TextWithLanguage {
+            language: IppLanguage::new(language)?,
+            text: IppTextValue::new(text)?,
+        })
+    }
+
+    pub fn new_name_with_language(language: impl Into<String>, name: impl Into<String>) -> Result<Self, IppParseError> {
+        Ok(Self::NameWithLanguage {
+            language: IppLanguage::new(language)?,
+            name: IppName::new(name)?,
+        })
+    }
+
+    pub fn new_charset(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppCharset::new(value).map(Self::Charset)
+    }
+
+    pub fn new_natural_language(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppLanguage::new(value).map(Self::NaturalLanguage)
+    }
+
+    pub fn new_uri(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppString::new(value).map(Self::Uri)
+    }
+
+    pub fn new_uri_scheme(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppString::new(value).map(Self::UriScheme)
+    }
+
+    pub fn new_range_of_integer(min: i32, max: i32) -> Self {
+        Self::RangeOfInteger { min, max }
+    }
+
+    pub fn new_boolean(value: bool) -> Self {
+        Self::Boolean(value)
+    }
+
+    pub fn new_keyword(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppKeyword::new(value).map(Self::Keyword)
+    }
+
+    pub fn new_array() -> Self {
+        Self::Array(Vec::new())
+    }
+
+    pub fn new_collection() -> Self {
+        Self::Collection(BTreeMap::new())
+    }
+
+    pub fn new_mime_media_type(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppMimeMediaType::new(value).map(Self::MimeMediaType)
+    }
+
+    pub fn new_datetime(
+        year: u16,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minutes: u8,
+        seconds: u8,
+        deci_seconds: u8,
+        utc_dir: char,
+        utc_hours: u8,
+        utc_mins: u8,
+    ) -> Self {
+        Self::DateTime {
+            year,
+            month,
+            day,
+            hour,
+            minutes,
+            seconds,
+            deci_seconds,
+            utc_dir,
+            utc_hours,
+            utc_mins,
+        }
+    }
+
+    pub fn new_member_attr_name(value: impl Into<String>) -> Result<Self, IppParseError> {
+        IppKeyword::new(value).map(Self::MemberAttrName)
+    }
+
+    pub fn new_resolution(cross_feed: i32, feed: i32, units: i8) -> Self {
+        Self::Resolution {
+            cross_feed,
+            feed,
+            units,
+        }
+    }
+
+    pub fn new_no_value() -> Self {
+        Self::NoValue
+    }
+
+    pub fn new_other(tag: u8, data: Bytes) -> Self {
+        Self::Other { tag, data }
+    }
+
+    pub fn new_non_utf8(tag: ValueTag, data: Bytes) -> Self {
+        Self::NonUtf8 { tag, data }
+    }
+
     /// Convert to a binary tag
     pub fn to_tag(&self) -> u8 {
         match *self {
