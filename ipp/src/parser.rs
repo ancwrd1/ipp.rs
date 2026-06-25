@@ -44,6 +44,9 @@ pub enum IppParseError {
 
     #[error("infallible this should never happen")]
     Infallible(#[from] Infallible),
+
+    #[error("Found a non-utf-8 string in a context that currently only supports utf-8")]
+    UnsupportedCharset,
 }
 
 // create a single value from one-element list, list otherwise

@@ -12,6 +12,8 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 
+const IPP_STRING_MAX_LENGTH: usize = 1023;
+
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
 /// This type is primarily used to enforce IPP `text(*)`, `name(*)`,
@@ -26,7 +28,7 @@ use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
 /// # Errors
 /// Returns [`IppParseError::InvalidStringLength`] if the input exceeds `MAX`.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct BoundedString<const MAX: usize = 1023> {
+pub struct BoundedString<const MAX: usize = IPP_STRING_MAX_LENGTH> {
     inner: String,
 }
 
@@ -57,6 +59,16 @@ impl<const MAX: usize> BoundedString<MAX> {
         }
 
         Ok(Self { inner: s })
+    }
+
+    pub fn from_bytes(data: &[u8]) -> Option<Self> {
+        if data.len() <= MAX
+            && let Ok(s) = str::from_utf8(data)
+        {
+            Some(Self { inner: s.to_owned() })
+        } else {
+            None
+        }
     }
 
     /// Return the maximum allowed length in bytes
@@ -224,8 +236,11 @@ impl IppTextValue {
         match len {
             0..=127 => Ok(Self::Short(IppShortString::new(string)?)),
             128..=255 => Ok(Self::Medium(BoundedString::<255>::new(string)?)),
-            256..=1023 => Ok(Self::Long(IppString::new(string)?)),
-            _ => Err(IppParseError::InvalidStringLength { len, max: 1023 }),
+            256..=IPP_STRING_MAX_LENGTH => Ok(Self::Long(IppString::new(string)?)),
+            _ => Err(IppParseError::InvalidStringLength {
+                len,
+                max: IPP_STRING_MAX_LENGTH,
+            }),
         }
     }
 
@@ -237,6 +252,19 @@ impl IppTextValue {
     /// Return true if the string is empty
     pub fn is_empty(&self) -> bool {
         self.as_ref().is_empty()
+    }
+
+    #[must_use]
+    /// Returns the same string with a smaller encoding tier if possible
+    /// Otherwise returns the original value unchanged.
+    pub fn shrink(self) -> Self {
+        match self {
+            // Unwrap is OK since we check the size
+            Self::Medium(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
+            Self::Long(inner) if inner.len() <= 127 => Self::Short(inner.shrink().unwrap()),
+            Self::Long(inner) if inner.len() <= 255 => Self::Medium(inner.shrink().unwrap()),
+            _ => self,
+        }
     }
 }
 
@@ -304,11 +332,15 @@ impl fmt::Display for IppTextValue {
 }
 
 #[inline]
-fn get_len_string(data: &mut Bytes) -> String {
+fn get_len_string(data: &mut Bytes) -> Result<String, IppParseError> {
     let len = data.get_u16() as usize;
-    let s = String::from_utf8_lossy(&data[0..len]).into_owned();
-    data.advance(len);
-    s
+    if let Ok(s) = str::from_utf8(&data[0..len]) {
+        let res = s.to_owned();
+        data.advance(len);
+        Ok(res)
+    } else {
+        Err(IppParseError::UnsupportedCharset)
+    }
 }
 
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
@@ -319,7 +351,7 @@ fn get_len_string(data: &mut Bytes) -> String {
 pub enum IppValue {
     Integer(i32),
     Enum(i32),
-    OctetString(IppTextValue),
+    OctetString(Bytes),
     TextWithoutLanguage(IppTextValue),
     NameWithoutLanguage(IppName),
     TextWithLanguage {
@@ -366,6 +398,11 @@ pub enum IppValue {
         tag: u8,
         data: Bytes,
     },
+    /// Fallback type for string type values that do not contain valid utf-8 data
+    NonUtf8 {
+        tag: ValueTag,
+        data: Bytes,
+    },
 }
 
 impl IppValue {
@@ -394,6 +431,42 @@ impl IppValue {
             IppValue::Resolution { .. } => ValueTag::Resolution as u8,
             IppValue::Other { tag, .. } => tag,
             IppValue::NoValue => ValueTag::NoValue as u8,
+            IppValue::NonUtf8 { tag, .. } => tag as u8,
+        }
+    }
+
+    fn from_bounded_utf8<const MAX: usize, VType>(
+        into: VType,
+        tag: ValueTag,
+        data: Bytes,
+    ) -> Result<Self, IppParseError>
+    where
+        VType: FnOnce(BoundedString<MAX>) -> Self,
+    {
+        if data.len() > MAX {
+            Err(IppParseError::InvalidStringLength {
+                len: data.len(),
+                max: MAX,
+            })
+        } else {
+            Ok(BoundedString::<MAX>::from_bytes(&data).map_or_else(|| IppValue::NonUtf8 { tag, data }, into))
+        }
+    }
+
+    fn from_utf8<VType>(into: VType, tag: ValueTag, data: Bytes) -> Result<Self, IppParseError>
+    where
+        VType: FnOnce(IppTextValue) -> Self,
+    {
+        if data.len() > IPP_STRING_MAX_LENGTH {
+            Err(IppParseError::InvalidStringLength {
+                len: data.len(),
+                max: IPP_STRING_MAX_LENGTH,
+            })
+        } else {
+            Ok(BoundedString::from_bytes(&data)
+                .map(IppTextValue::Long)
+                .map(IppTextValue::shrink)
+                .map_or_else(|| IppValue::NonUtf8 { tag, data }, into))
         }
     }
 
@@ -409,28 +482,28 @@ impl IppValue {
         let value = match ipp_tag {
             ValueTag::Integer => IppValue::Integer(data.get_i32()),
             ValueTag::Enum => IppValue::Enum(data.get_i32()),
-            ValueTag::OctetStringUnspecified => IppValue::OctetString(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::TextWithoutLanguage => IppValue::TextWithoutLanguage(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::NameWithoutLanguage => IppValue::NameWithoutLanguage(String::from_utf8_lossy(&data).try_into()?),
+            ValueTag::OctetStringUnspecified => IppValue::OctetString(data),
+            ValueTag::TextWithoutLanguage => Self::from_utf8(IppValue::TextWithoutLanguage, ipp_tag, data)?,
+            ValueTag::NameWithoutLanguage => Self::from_bounded_utf8(IppValue::NameWithoutLanguage, ipp_tag, data)?,
             ValueTag::TextWithLanguage => IppValue::TextWithLanguage {
-                language: get_len_string(&mut data).try_into()?,
-                text: get_len_string(&mut data).try_into()?,
+                language: get_len_string(&mut data)?.try_into()?,
+                text: get_len_string(&mut data)?.try_into()?,
             },
             ValueTag::NameWithLanguage => IppValue::NameWithLanguage {
-                language: get_len_string(&mut data).try_into()?,
-                name: get_len_string(&mut data).try_into()?,
+                language: get_len_string(&mut data)?.try_into()?,
+                name: get_len_string(&mut data)?.try_into()?,
             },
-            ValueTag::Charset => IppValue::Charset(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::NaturalLanguage => IppValue::NaturalLanguage(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::Uri => IppValue::Uri(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::UriScheme => IppValue::UriScheme(String::from_utf8_lossy(&data).try_into()?),
+            ValueTag::Charset => Self::from_bounded_utf8(IppValue::Charset, ipp_tag, data)?,
+            ValueTag::NaturalLanguage => Self::from_bounded_utf8(IppValue::NaturalLanguage, ipp_tag, data)?,
+            ValueTag::Uri => Self::from_bounded_utf8(IppValue::Uri, ipp_tag, data)?,
+            ValueTag::UriScheme => Self::from_bounded_utf8(IppValue::UriScheme, ipp_tag, data)?,
             ValueTag::RangeOfInteger => IppValue::RangeOfInteger {
                 min: data.get_i32(),
                 max: data.get_i32(),
             },
             ValueTag::Boolean => IppValue::Boolean(data.get_u8() != 0),
-            ValueTag::Keyword => IppValue::Keyword(String::from_utf8_lossy(&data).try_into()?),
-            ValueTag::MimeMediaType => IppValue::MimeMediaType(String::from_utf8_lossy(&data).try_into()?),
+            ValueTag::Keyword => Self::from_bounded_utf8(IppValue::Keyword, ipp_tag, data)?,
+            ValueTag::MimeMediaType => Self::from_bounded_utf8(IppValue::MimeMediaType, ipp_tag, data)?,
             ValueTag::DateTime => IppValue::DateTime {
                 year: data.get_u16(),
                 month: data.get_u8(),
@@ -443,7 +516,7 @@ impl IppValue {
                 utc_hours: data.get_u8(),
                 utc_mins: data.get_u8(),
             },
-            ValueTag::MemberAttrName => IppValue::MemberAttrName(String::from_utf8_lossy(&data).try_into()?),
+            ValueTag::MemberAttrName => Self::from_bounded_utf8(IppValue::MemberAttrName, ipp_tag, data)?,
             ValueTag::Resolution => IppValue::Resolution {
                 cross_feed: data.get_i32(),
                 feed: data.get_i32(),
@@ -479,7 +552,7 @@ impl IppValue {
             }
             IppValue::OctetString(ref s) => {
                 buffer.put_u16(s.len() as u16);
-                buffer.put_slice(s.as_bytes());
+                buffer.put_slice(s);
             }
             IppValue::TextWithoutLanguage(ref s) => {
                 buffer.put_u16(s.len() as u16);
@@ -580,7 +653,7 @@ impl IppValue {
                 buffer.put_u8(units as u8);
             }
             IppValue::NoValue => buffer.put_u16(0),
-            IppValue::Other { ref data, .. } => {
+            IppValue::Other { ref data, .. } | IppValue::NonUtf8 { ref data, .. } => {
                 buffer.put_u16(data.len() as u16);
                 buffer.put_slice(data);
             }
@@ -599,7 +672,7 @@ impl fmt::Display for IppValue {
             IppValue::Keyword(ref s) | IppValue::NameWithoutLanguage(ref s) => {
                 write!(f, "{s}")
             }
-            IppValue::OctetString(ref s) | IppValue::TextWithoutLanguage(ref s) => {
+            IppValue::TextWithoutLanguage(ref s) => {
                 write!(f, "{s}")
             }
             IppValue::Charset(ref s) | IppValue::NaturalLanguage(ref s) => {
@@ -643,7 +716,9 @@ impl fmt::Display for IppValue {
             }
 
             IppValue::NoValue => Ok(()),
+            IppValue::OctetString(ref data) => write!(f, "{:0x}: {data:?}", ValueTag::OctetStringUnspecified as u8),
             IppValue::Other { tag, ref data } => write!(f, "{tag:0x}: {data:?}"),
+            IppValue::NonUtf8 { tag, ref data } => write!(f, "{:0x}: {}", tag as u8, data.escape_ascii()),
         }
     }
 }
@@ -746,9 +821,7 @@ mod tests {
     fn test_value_single() {
         value_check(IppValue::Integer(1234));
         value_check(IppValue::Enum(4321));
-        value_check(IppValue::OctetString(
-            "octet-string".try_into().expect("failed to create IPP text value"),
-        ));
+        value_check(IppValue::OctetString("octet-string".into()));
         value_check(IppValue::TextWithoutLanguage(
             "text-without".try_into().expect("failed to create IPP text value"),
         ));
