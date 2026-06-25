@@ -480,6 +480,7 @@ impl IppValue {
         IppMimeMediaType::new(value).map(Self::MimeMediaType)
     }
 
+    #[expect(clippy::too_many_arguments)]
     pub fn new_datetime(
         year: u16,
         month: u8,
