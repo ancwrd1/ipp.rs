@@ -220,7 +220,7 @@ impl<'de, const N: usize> Deserialize<'de> for BoundedString<N> {
 /// - 256–1023 bytes
 ///
 /// This enum selects the smallest valid representation automatically.
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum IppTextValue {
     Short(IppShortString),
@@ -343,6 +343,60 @@ fn get_len_string(data: &mut Bytes) -> Result<String, IppParseError> {
     }
 }
 
+/// Represents IPP datetime value
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct IppDateTime {
+    pub year: u16,
+    pub month: u8,
+    pub day: u8,
+    pub hour: u8,
+    pub minutes: u8,
+    pub seconds: u8,
+    pub deci_seconds: u8,
+    pub utc_dir: char,
+    pub utc_hours: u8,
+    pub utc_mins: u8,
+}
+
+impl IppDateTime {
+    pub fn to_bytes(&self) -> Bytes {
+        let mut bytes = BytesMut::new();
+        bytes.put_u16(self.year);
+        bytes.put_u8(self.month);
+        bytes.put_u8(self.day);
+        bytes.put_u8(self.hour);
+        bytes.put_u8(self.minutes);
+        bytes.put_u8(self.seconds);
+        bytes.put_u8(self.deci_seconds);
+        bytes.put_u8(self.utc_dir as u8);
+        bytes.put_u8(self.utc_hours);
+        bytes.put_u8(self.utc_mins);
+        bytes.freeze()
+    }
+}
+
+impl fmt::Display for IppDateTime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let Self {
+            year,
+            month,
+            day,
+            hour,
+            minutes,
+            seconds,
+            deci_seconds,
+            utc_dir,
+            utc_hours,
+            ..
+        } = self;
+        write!(
+            f,
+            "{year}-{month}-{day},{hour}:{minutes}:{seconds}.{deci_seconds},{utc_dir}{utc_hours}utc"
+        )
+    }
+}
+
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 /// the length for TextWithoutLanguage, TextWithLanguage, and OctetString values is heavily attribute dependent
 /// usual values are 127, 255, and 1023 however as these are attribute dependent, a [`IppTextValue`] is used to allow the calling routine to assert expected text length.
@@ -375,18 +429,7 @@ pub enum IppValue {
     Array(Vec<IppValue>),
     Collection(BTreeMap<IppName, IppValue>),
     MimeMediaType(IppMimeMediaType),
-    DateTime {
-        year: u16,
-        month: u8,
-        day: u8,
-        hour: u8,
-        minutes: u8,
-        seconds: u8,
-        deci_seconds: u8,
-        utc_dir: char,
-        utc_hours: u8,
-        utc_mins: u8,
-    },
+    DateTime(IppDateTime),
     MemberAttrName(IppKeyword),
     Resolution {
         cross_feed: i32,
@@ -480,31 +523,8 @@ impl IppValue {
         IppMimeMediaType::new(value).map(Self::MimeMediaType)
     }
 
-    #[expect(clippy::too_many_arguments)]
-    pub fn new_datetime(
-        year: u16,
-        month: u8,
-        day: u8,
-        hour: u8,
-        minutes: u8,
-        seconds: u8,
-        deci_seconds: u8,
-        utc_dir: char,
-        utc_hours: u8,
-        utc_mins: u8,
-    ) -> Self {
-        Self::DateTime {
-            year,
-            month,
-            day,
-            hour,
-            minutes,
-            seconds,
-            deci_seconds,
-            utc_dir,
-            utc_hours,
-            utc_mins,
-        }
+    pub fn new_datetime(datetime: IppDateTime) -> Self {
+        Self::DateTime(datetime)
     }
 
     pub fn new_member_attr_name(value: impl Into<String>) -> Result<Self, IppParseError> {
@@ -629,7 +649,7 @@ impl IppValue {
             ValueTag::Boolean => IppValue::Boolean(data.get_u8() != 0),
             ValueTag::Keyword => Self::from_bounded_utf8(IppValue::Keyword, ipp_tag, data)?,
             ValueTag::MimeMediaType => Self::from_bounded_utf8(IppValue::MimeMediaType, ipp_tag, data)?,
-            ValueTag::DateTime => IppValue::DateTime {
+            ValueTag::DateTime => IppValue::DateTime(IppDateTime {
                 year: data.get_u16(),
                 month: data.get_u8(),
                 day: data.get_u8(),
@@ -640,7 +660,7 @@ impl IppValue {
                 utc_dir: data.get_u8() as char,
                 utc_hours: data.get_u8(),
                 utc_mins: data.get_u8(),
-            },
+            }),
             ValueTag::MemberAttrName => Self::from_bounded_utf8(IppValue::MemberAttrName, ipp_tag, data)?,
             ValueTag::Resolution => IppValue::Resolution {
                 cross_feed: data.get_i32(),
@@ -743,29 +763,9 @@ impl IppValue {
                 buffer.put_u8(ValueTag::EndCollection as u8);
                 buffer.put_u32(0);
             }
-            IppValue::DateTime {
-                year,
-                month,
-                day,
-                hour,
-                minutes,
-                seconds,
-                deci_seconds,
-                utc_dir,
-                utc_hours,
-                utc_mins,
-            } => {
+            IppValue::DateTime(ref datetime) => {
                 buffer.put_u16(11);
-                buffer.put_u16(year);
-                buffer.put_u8(month);
-                buffer.put_u8(day);
-                buffer.put_u8(hour);
-                buffer.put_u8(minutes);
-                buffer.put_u8(seconds);
-                buffer.put_u8(deci_seconds);
-                buffer.put_u8(utc_dir as u8);
-                buffer.put_u8(utc_hours);
-                buffer.put_u8(utc_mins);
+                buffer.put(datetime.to_bytes())
             }
             IppValue::Resolution {
                 cross_feed,
@@ -817,21 +817,7 @@ impl fmt::Display for IppValue {
                 let s: Vec<String> = coll.iter().map(|(k, v)| format!("{k}={v}")).collect();
                 write!(f, "<{}>", s.join(", "))
             }
-            IppValue::DateTime {
-                year,
-                month,
-                day,
-                hour,
-                minutes,
-                seconds,
-                deci_seconds,
-                utc_dir,
-                utc_hours,
-                ..
-            } => write!(
-                f,
-                "{year}-{month}-{day},{hour}:{minutes}:{seconds}.{deci_seconds},{utc_dir}{utc_hours}utc"
-            ),
+            IppValue::DateTime(ref datetime) => datetime.fmt(f),
             IppValue::Resolution {
                 cross_feed,
                 feed,
@@ -982,7 +968,7 @@ mod tests {
         value_check(IppValue::MimeMediaType(
             "mime".try_into().expect("failed to create IPP text value"),
         ));
-        value_check(IppValue::DateTime {
+        value_check(IppValue::DateTime(IppDateTime {
             year: 2020,
             month: 2,
             day: 13,
@@ -993,7 +979,7 @@ mod tests {
             utc_dir: 'c',
             utc_hours: 1,
             utc_mins: 30,
-        });
+        }));
         value_check(IppValue::MemberAttrName(
             "member".try_into().expect("failed to create IPP text value"),
         ));
