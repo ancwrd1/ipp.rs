@@ -62,5 +62,8 @@ async-client-rustls = ["async-client", "reqwest/rustls", "__tls"]
 client-rustls = ["client", "rustls-native-certs", "ureq/rustls", "__tls"]
 async-client-tls = ["async-client", "reqwest/native-tls", "__tls"]
 client-tls = ["client", "rustls-native-certs", "ureq/native-tls", "__tls"]
+
+# enable conversions between IppDateTime and chrono::DateTime
 chrono = ["dep:chrono"]
+
 __tls = []
