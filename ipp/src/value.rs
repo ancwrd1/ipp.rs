@@ -431,8 +431,10 @@ impl TryFrom<IppDateTime> for chrono::DateTime<chrono::FixedOffset> {
         let seconds = value.utc_hours as i32 * 3600 + value.utc_mins as i32 * 60;
         let offset = if value.utc_dir == '-' {
             FixedOffset::west_opt(seconds)
-        } else {
+        } else if value.utc_dir == '+' {
             FixedOffset::east_opt(seconds)
+        } else {
+            None
         }
         .ok_or_else(err)?;
 
