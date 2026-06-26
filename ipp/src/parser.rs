@@ -47,6 +47,9 @@ pub enum IppParseError {
 
     #[error("Found a non-utf-8 string in a context that currently only supports utf-8")]
     UnsupportedCharset,
+
+    #[error("Invalid datetime value")]
+    InvalidDateTime,
 }
 
 // create a single value from one-element list, list otherwise
