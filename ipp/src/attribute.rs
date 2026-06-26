@@ -2,6 +2,8 @@
 //! Attribute-related structs
 //!
 
+use std::collections::BTreeMap;
+
 use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -9,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     model::DelimiterTag,
     parser::IppParseError,
-    value::{IppName, IppValue},
+    value::{IppDateTime, IppName, IppValue},
 };
 
 macro_rules! define_attributes {
@@ -359,5 +361,47 @@ impl IppAttributes {
         buffer.put_u8(DelimiterTag::EndOfAttributes as u8);
 
         buffer.freeze()
+    }
+}
+
+/// Util trait to chain `IppAttribute` construction after a faillible or infaillible `IppValue` construction
+/// The trait is also implemented on types which have an unambiguous conversion to `IppValue`
+///
+/// ```
+/// let job_id = IppValue::new_integer(1).with_name(IppAttribute::JOB_ID);
+/// let printer_uri = IppString::new_uri("ipp://localhost").with_name(IppAttribute::PRINTER_URI);
+/// let ipp_array = Vec::new().with_name("some-name");
+/// ```
+pub trait IppAttrWithName {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError>;
+}
+
+impl IppAttrWithName for IppValue {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppName::new(name).map(|name| IppAttribute::new(name, self))
+    }
+}
+
+impl IppAttrWithName for Result<IppValue, IppParseError> {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        self?.with_name(name)
+    }
+}
+
+impl IppAttrWithName for Vec<IppValue> {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppValue::Array(self).with_name(name)
+    }
+}
+
+impl IppAttrWithName for BTreeMap<IppName, IppValue> {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppValue::Collection(self).with_name(name)
+    }
+}
+
+impl IppAttrWithName for IppDateTime {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppValue::DateTime(self).with_name(name)
     }
 }
