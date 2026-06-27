@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.0.0
+- Refactored attribute storage to use an ordered list instead of a `HashMap`, preserving attribute order ([#54](https://github.com/ancwrd1/ipp.rs/issues/54))
+- Added `IppAttributes::set_or_replace`
+- Switched to lossless UTF-8 conversion for IPP string values ([#56](https://github.com/ancwrd1/ipp.rs/issues/56))
+- Added `new_*` methods for constructing `IppValue` without knowing the underlying string representation ([#57](https://github.com/ancwrd1/ipp.rs/issues/57))
+- Added `IppDateTime` struct and an optional `chrono` feature to convert it to/from chrono `DateTime<Tz>`
+
 ## 6.0.1
 - Fixed BoundedString serialization ([#49](https://github.com/ancwrd1/ipp.rs/issues/49))
 - Removed unused Sync trait bound from Reader and Parser structs ([#50](https://github.com/ancwrd1/ipp.rs/issues/50))
