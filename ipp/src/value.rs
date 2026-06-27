@@ -397,6 +397,61 @@ impl fmt::Display for IppDateTime {
     }
 }
 
+#[cfg(feature = "chrono")]
+impl<Tz: chrono::TimeZone> From<chrono::DateTime<Tz>> for IppDateTime {
+    fn from(value: chrono::DateTime<Tz>) -> Self {
+        use chrono::{Datelike, Offset, Timelike};
+
+        let offset = value.offset().fix().local_minus_utc();
+
+        Self {
+            year: value.year() as u16,
+            month: value.month() as u8,
+            day: value.day() as u8,
+            hour: value.hour() as u8,
+            minutes: value.minute() as u8,
+            seconds: value.second() as u8,
+            deci_seconds: (value.nanosecond() / 100_000_000) as u8,
+            utc_dir: if offset < 0 { '-' } else { '+' },
+            utc_hours: (offset.abs() / 3600) as u8,
+            utc_mins: (offset.abs() % 3600 / 60) as u8,
+        }
+    }
+}
+
+#[cfg(feature = "chrono")]
+impl TryFrom<IppDateTime> for chrono::DateTime<chrono::FixedOffset> {
+    type Error = crate::error::IppError;
+
+    fn try_from(value: IppDateTime) -> Result<Self, Self::Error> {
+        use chrono::{FixedOffset, NaiveDate, NaiveDateTime, NaiveTime, TimeZone};
+
+        let err = || IppParseError::InvalidDateTime;
+
+        let seconds = value.utc_hours as i32 * 3600 + value.utc_mins as i32 * 60;
+        let offset = if value.utc_dir == '-' {
+            FixedOffset::west_opt(seconds)
+        } else if value.utc_dir == '+' {
+            FixedOffset::east_opt(seconds)
+        } else {
+            None
+        }
+        .ok_or_else(err)?;
+
+        let datetime = NaiveDateTime::new(
+            NaiveDate::from_ymd_opt(value.year as _, value.month as _, value.day as _).ok_or_else(err)?,
+            NaiveTime::from_hms_milli_opt(
+                value.hour as _,
+                value.minutes as _,
+                value.seconds as _,
+                value.deci_seconds as u32 * 100,
+            )
+            .ok_or_else(err)?,
+        );
+        Ok(offset.from_local_datetime(&datetime).single().ok_or_else(err)?)
+    }
+}
+
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 /// the length for TextWithoutLanguage, TextWithLanguage, and OctetString values is heavily attribute dependent
 /// usual values are 127, 255, and 1023 however as these are attribute dependent, a [`IppTextValue`] is used to allow the calling routine to assert expected text length.
@@ -907,6 +962,56 @@ mod tests {
 
     use super::*;
     use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
+
+    #[cfg(feature = "chrono")]
+    #[test]
+    fn chrono_datetime_roundtrip() {
+        use chrono::{DateTime, FixedOffset};
+
+        let original = IppDateTime {
+            year: 2020,
+            month: 2,
+            day: 13,
+            hour: 12,
+            minutes: 34,
+            seconds: 22,
+            deci_seconds: 9,
+            utc_dir: '+',
+            utc_hours: 5,
+            utc_mins: 30,
+        };
+
+        let dt: DateTime<FixedOffset> = original.clone().try_into().unwrap();
+        assert_eq!(dt.to_string(), "2020-02-13 12:34:22.900 +05:30");
+
+        let back: IppDateTime = dt.into();
+        assert_eq!(back, original);
+    }
+
+    #[cfg(feature = "chrono")]
+    #[test]
+    fn chrono_datetime_negative_offset() {
+        use chrono::{DateTime, FixedOffset};
+
+        let original = IppDateTime {
+            year: 1999,
+            month: 12,
+            day: 31,
+            hour: 23,
+            minutes: 59,
+            seconds: 59,
+            deci_seconds: 8,
+            utc_dir: '-',
+            utc_hours: 8,
+            utc_mins: 0,
+        };
+
+        let dt: DateTime<FixedOffset> = original.clone().try_into().unwrap();
+        assert_eq!(dt.to_string(), "1999-12-31 23:59:59.800 -08:00");
+
+        let back: IppDateTime = dt.into();
+        assert_eq!(back, original);
+    }
 
     fn value_check(value: IppValue) {
         let mut b = value.to_bytes();
