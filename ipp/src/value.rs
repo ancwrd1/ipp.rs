@@ -1000,13 +1000,15 @@ mod tests {
             hour: 23,
             minutes: 59,
             seconds: 59,
-            deci_seconds: 0,
+            deci_seconds: 8,
             utc_dir: '-',
             utc_hours: 8,
             utc_mins: 0,
         };
 
         let dt: DateTime<FixedOffset> = original.clone().try_into().unwrap();
+        assert_eq!(dt.to_string(), "1999-12-31 23:59:59.800 -08:00");
+
         let back: IppDateTime = dt.into();
         assert_eq!(back, original);
     }
