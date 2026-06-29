@@ -405,3 +405,10 @@ impl IppAttrWithName for IppDateTime {
         IppValue::DateTime(self).with_name(name)
     }
 }
+
+#[cfg(feature = "chrono")]
+impl<Tz: chrono::TimeZone> IppAttrWithName for chrono::DateTime<Tz> {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppDateTime::from(self).with_name(name)
+    }
+}
