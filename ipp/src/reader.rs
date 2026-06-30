@@ -43,16 +43,22 @@ where
         Ok(u16::from_be_bytes(buf))
     }
 
+    async fn read_i16(&mut self) -> io::Result<i16> {
+        let mut buf = [0u8; 2];
+        self.inner.read_exact(&mut buf).await?;
+        Ok(i16::from_be_bytes(buf))
+    }
+
     async fn read_u8(&mut self) -> io::Result<u8> {
         let mut buf = [0u8; 1];
         self.inner.read_exact(&mut buf).await?;
         Ok(buf[0])
     }
 
-    async fn read_u32(&mut self) -> io::Result<u32> {
+    async fn read_i32(&mut self) -> io::Result<i32> {
         let mut buf = [0u8; 4];
         self.inner.read_exact(&mut buf).await?;
-        Ok(u32::from_be_bytes(buf))
+        Ok(i32::from_be_bytes(buf))
     }
 
     /// Read tag
@@ -75,8 +81,8 @@ where
     /// Read IPP header
     pub async fn read_header(&mut self) -> io::Result<IppHeader> {
         let version = IppVersion(self.read_u16().await?);
-        let operation_status = self.read_u16().await?;
-        let request_id = self.read_u32().await?;
+        let operation_status = self.read_i16().await?;
+        let request_id = self.read_i32().await?;
 
         Ok(IppHeader::new(version, operation_status, request_id))
     }
@@ -135,16 +141,22 @@ where
         Ok(u16::from_be_bytes(buf))
     }
 
+    fn read_i16(&mut self) -> io::Result<i16> {
+        let mut buf = [0u8; 2];
+        self.inner.read_exact(&mut buf)?;
+        Ok(i16::from_be_bytes(buf))
+    }
+
     fn read_u8(&mut self) -> io::Result<u8> {
         let mut buf = [0u8; 1];
         self.inner.read_exact(&mut buf)?;
         Ok(buf[0])
     }
 
-    fn read_u32(&mut self) -> io::Result<u32> {
+    fn read_i32(&mut self) -> io::Result<i32> {
         let mut buf = [0u8; 4];
         self.inner.read_exact(&mut buf)?;
-        Ok(u32::from_be_bytes(buf))
+        Ok(i32::from_be_bytes(buf))
     }
 
     /// Read tag
@@ -167,8 +179,8 @@ where
     /// Read IPP header
     pub fn read_header(&mut self) -> io::Result<IppHeader> {
         let version = IppVersion(self.read_u16()?);
-        let operation_status = self.read_u16()?;
-        let request_id = self.read_u32()?;
+        let operation_status = self.read_i16()?;
+        let request_id = self.read_i32()?;
 
         Ok(IppHeader::new(version, operation_status, request_id))
     }

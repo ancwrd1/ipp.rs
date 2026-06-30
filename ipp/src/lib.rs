@@ -110,14 +110,14 @@ pub struct IppHeader {
     /// IPP protocol version
     pub version: IppVersion,
     /// Operation tag for requests, status for responses
-    pub operation_or_status: u16,
+    pub operation_or_status: i16,
     /// ID of the request
-    pub request_id: u32,
+    pub request_id: i32,
 }
 
 impl IppHeader {
     /// Create an IPP header
-    pub fn new(version: IppVersion, operation_or_status: u16, request_id: u32) -> IppHeader {
+    pub fn new(version: IppVersion, operation_or_status: i16, request_id: i32) -> IppHeader {
         IppHeader {
             version,
             operation_or_status,
@@ -129,15 +129,15 @@ impl IppHeader {
     pub fn to_bytes(&self) -> Bytes {
         let mut buffer = BytesMut::new();
         buffer.put_u16(self.version.0);
-        buffer.put_u16(self.operation_or_status);
-        buffer.put_u32(self.request_id);
+        buffer.put_i16(self.operation_or_status);
+        buffer.put_i32(self.request_id);
 
         buffer.freeze()
     }
 
     /// Decode and get the IPP status code from the header
     pub fn status_code(&self) -> StatusCode {
-        StatusCode::from_u16(self.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
+        StatusCode::from_i16(self.operation_or_status).unwrap_or(StatusCode::UnknownStatusCode)
     }
 }
 
@@ -147,8 +147,8 @@ mod tests {
 
     #[test]
     fn test_header_to_bytes() {
-        let header = IppHeader::new(IppVersion::v2_1(), 0x1234, 0xaa55_aa55);
+        let header = IppHeader::new(IppVersion::v2_1(), 0x1234, 0x0a55_aa55);
         let buf = header.to_bytes();
-        assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0xaa, 0x55, 0xaa, 0x55]);
+        assert_eq!(buf, vec![0x02, 0x01, 0x12, 0x34, 0x0a, 0x55, 0xaa, 0x55]);
     }
 }

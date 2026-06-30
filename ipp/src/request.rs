@@ -47,7 +47,7 @@ impl IppRequestResponse {
         operation: Operation,
         uri: Option<IppString>,
     ) -> IppRequestResponse {
-        let header = IppHeader::new(version, operation as u16, 1);
+        let header = IppHeader::new(version, operation as i16, 1);
         let mut attributes = IppAttributes::new();
 
         // unwrap is fine because "utf-8" into bounded string is infallible.
@@ -83,8 +83,8 @@ impl IppRequestResponse {
     }
 
     /// Create a response from a status and id
-    pub fn new_response(version: IppVersion, status: StatusCode, id: u32) -> Result<IppRequestResponse, IppParseError> {
-        let header = IppHeader::new(version, status as u16, id);
+    pub fn new_response(version: IppVersion, status: StatusCode, id: i32) -> Result<IppRequestResponse, IppParseError> {
+        let header = IppHeader::new(version, status as i16, id);
         let mut response = IppRequestResponse {
             header,
             attributes: IppAttributes::new(),
