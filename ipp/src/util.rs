@@ -67,14 +67,9 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         .next()
         .and_then(|g| g.get(&printer_state_reasons_name))
     {
-        let keywords = reasons
-            .value()
-            .into_iter()
-            .filter_map(|e| e.as_keyword())
-            .map(ToOwned::to_owned)
-            .collect::<Vec<_>>();
+        let mut keywords = reasons.value().into_iter().filter_map(|e| e.as_keyword());
 
-        if keywords.iter().any(|k| ERROR_STATES.contains(&&k[..])) {
+        if keywords.any(|k| ERROR_STATES.contains(&&k[..])) {
             return Ok(false);
         }
     }
