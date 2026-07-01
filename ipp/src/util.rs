@@ -47,8 +47,8 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         return Err(IppError::StatusError(status));
     }
 
-    let printer_state_attr_name: IppName = IppAttribute::PRINTER_STATE.try_into().unwrap();
-    let printer_state_reasons_name: IppName = IppAttribute::PRINTER_STATE_REASONS.try_into().unwrap();
+    let printer_state_attr_name: IppName = IppAttribute::PRINTER_STATE.try_into()?;
+
     let state = response
         .attributes()
         .groups_of(DelimiterTag::PrinterAttributes)
@@ -60,6 +60,8 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
     if let Some(PrinterState::Stopped) = state {
         return Ok(false);
     }
+
+    let printer_state_reasons_name: IppName = IppAttribute::PRINTER_STATE_REASONS.try_into()?;
 
     if let Some(reasons) = response
         .attributes()
