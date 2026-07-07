@@ -292,6 +292,21 @@ impl IppAttributes {
         self.groups.iter().filter(move |g| g.tag == tag)
     }
 
+    /// Get a list of mutable attribute groups matching a given delimiter tag
+    pub fn groups_of_mut(&mut self, tag: DelimiterTag) -> impl Iterator<Item = &mut IppAttributeGroup> {
+        self.groups.iter_mut().filter(move |g| g.tag == tag)
+    }
+
+    /// Get the first group that matches the delimiter
+    pub fn first_of(&self, tag: DelimiterTag) -> Option<&IppAttributeGroup> {
+        self.groups_of(tag).next()
+    }
+
+    /// Get a mutable access to the first group that matches the delimiter
+    pub fn first_of_mut(&mut self, tag: DelimiterTag) -> Option<&mut IppAttributeGroup> {
+        self.groups_of_mut(tag).next()
+    }
+
     /// Add an attribute to a given group
     pub fn add(&mut self, tag: DelimiterTag, attribute: IppAttribute) {
         let group = self.groups_mut().iter_mut().find(|g| g.tag() == tag);

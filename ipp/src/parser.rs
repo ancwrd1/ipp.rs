@@ -39,10 +39,14 @@ pub enum IppParseError {
     #[error(transparent)]
     InvalidIntValue(#[from] TryFromIntError),
 
+    /// The enum value is out of the allowed range for IPP.
+    #[error("Invalid enum value")]
+    InvalidEnumValue,
+
     #[error(transparent)]
     IoError(#[from] io::Error),
 
-    #[error("infallible this should never happen")]
+    #[error("Infallible this should never happen")]
     Infallible(#[from] Infallible),
 
     #[error("Found a non-utf-8 string in a context that currently only supports utf-8")]
