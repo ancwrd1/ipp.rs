@@ -508,8 +508,11 @@ impl IppValue {
         Self::Integer(value)
     }
 
-    pub fn new_enum(value: i32) -> Self {
-        Self::Enum(value)
+    pub fn new_enum<V: TryInto<i32>>(value: V) -> Result<Self, IppParseError> {
+        value
+            .try_into()
+            .map(Self::Enum)
+            .or(Err(IppParseError::InvalidEnumValue))
     }
 
     pub fn new_octet_string(data: Bytes) -> Self {
