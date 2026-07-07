@@ -7,6 +7,7 @@ use std::{borrow::Cow, collections::BTreeMap, fmt, ops::Deref, str::FromStr};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use enum_as_inner::EnumAsInner;
 use http::Uri;
+use num_traits::ToPrimitive;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -508,11 +509,8 @@ impl IppValue {
         Self::Integer(value)
     }
 
-    pub fn new_enum<V: TryInto<i32>>(value: V) -> Result<Self, IppParseError> {
-        value
-            .try_into()
-            .map(Self::Enum)
-            .or(Err(IppParseError::InvalidEnumValue))
+    pub fn new_enum<V: ToPrimitive>(value: V) -> Result<Self, IppParseError> {
+        value.to_i32().map(Self::Enum).ok_or(IppParseError::InvalidEnumValue)
     }
 
     pub fn new_octet_string(data: Bytes) -> Self {
