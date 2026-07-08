@@ -8,7 +8,7 @@ use std::{
     num::TryFromIntError,
 };
 
-use bytes::Bytes;
+use bytes::{Bytes, TryGetError};
 use log::{error, trace};
 #[cfg(feature = "async")]
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
@@ -54,6 +54,9 @@ pub enum IppParseError {
 
     #[error("Invalid datetime value")]
     InvalidDateTime,
+
+    #[error("Invalid value length")]
+    InvalidValueLength(#[from] TryGetError),
 }
 
 // create a single value from one-element list, list otherwise
@@ -663,5 +666,14 @@ mod tests {
             .unwrap();
         let attr = group.get("test").unwrap();
         assert_eq!(attr.value().as_integer(), Some(&0x1234_5678));
+    }
+
+    #[test]
+    fn test_parse_failed_for_invalid_value() {
+        let data = &[
+            1, 1, 0, 0, 0, 0, 0, 0, 4, 0x21, 0x00, 0x04, b't', b'e', b's', b't', 0x00, 0x00, 3,
+        ];
+        let result = IppParser::new(IppReader::new(io::Cursor::new(data))).parse();
+        assert!(matches!(result, Err(IppParseError::InvalidValueLength(_))));
     }
 }

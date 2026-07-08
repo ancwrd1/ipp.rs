@@ -334,7 +334,7 @@ impl fmt::Display for IppTextValue {
 
 #[inline]
 fn get_len_string(data: &mut Bytes) -> Result<String, IppParseError> {
-    let len = data.get_u16() as usize;
+    let len = data.try_get_u16()? as usize;
     if let Ok(s) = str::from_utf8(&data[0..len]) {
         let res = s.to_owned();
         data.advance(len);
@@ -681,8 +681,8 @@ impl IppValue {
         };
 
         let value = match ipp_tag {
-            ValueTag::Integer => IppValue::Integer(data.get_i32()),
-            ValueTag::Enum => IppValue::Enum(data.get_i32()),
+            ValueTag::Integer => IppValue::Integer(data.try_get_i32()?),
+            ValueTag::Enum => IppValue::Enum(data.try_get_i32()?),
             ValueTag::OctetStringUnspecified => IppValue::OctetString(data),
             ValueTag::TextWithoutLanguage => Self::from_utf8(IppValue::TextWithoutLanguage, ipp_tag, data)?,
             ValueTag::NameWithoutLanguage => Self::from_bounded_utf8(IppValue::NameWithoutLanguage, ipp_tag, data)?,
@@ -699,29 +699,29 @@ impl IppValue {
             ValueTag::Uri => Self::from_bounded_utf8(IppValue::Uri, ipp_tag, data)?,
             ValueTag::UriScheme => Self::from_bounded_utf8(IppValue::UriScheme, ipp_tag, data)?,
             ValueTag::RangeOfInteger => IppValue::RangeOfInteger {
-                min: data.get_i32(),
-                max: data.get_i32(),
+                min: data.try_get_i32()?,
+                max: data.try_get_i32()?,
             },
-            ValueTag::Boolean => IppValue::Boolean(data.get_u8() != 0),
+            ValueTag::Boolean => IppValue::Boolean(data.try_get_u8()? != 0),
             ValueTag::Keyword => Self::from_bounded_utf8(IppValue::Keyword, ipp_tag, data)?,
             ValueTag::MimeMediaType => Self::from_bounded_utf8(IppValue::MimeMediaType, ipp_tag, data)?,
             ValueTag::DateTime => IppValue::DateTime(IppDateTime {
-                year: data.get_u16(),
-                month: data.get_u8(),
-                day: data.get_u8(),
-                hour: data.get_u8(),
-                minutes: data.get_u8(),
-                seconds: data.get_u8(),
-                deci_seconds: data.get_u8(),
-                utc_dir: data.get_u8() as char,
-                utc_hours: data.get_u8(),
-                utc_mins: data.get_u8(),
+                year: data.try_get_u16()?,
+                month: data.try_get_u8()?,
+                day: data.try_get_u8()?,
+                hour: data.try_get_u8()?,
+                minutes: data.try_get_u8()?,
+                seconds: data.try_get_u8()?,
+                deci_seconds: data.try_get_u8()?,
+                utc_dir: data.try_get_u8()? as char,
+                utc_hours: data.try_get_u8()?,
+                utc_mins: data.try_get_u8()?,
             }),
             ValueTag::MemberAttrName => Self::from_bounded_utf8(IppValue::MemberAttrName, ipp_tag, data)?,
             ValueTag::Resolution => IppValue::Resolution {
-                cross_feed: data.get_i32(),
-                feed: data.get_i32(),
-                units: data.get_i8(),
+                cross_feed: data.try_get_i32()?,
+                feed: data.try_get_i32()?,
+                units: data.try_get_i8()?,
             },
             ValueTag::NoValue => IppValue::NoValue,
             _ => IppValue::Other { tag: value_tag, data },
