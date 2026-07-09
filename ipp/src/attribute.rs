@@ -122,6 +122,16 @@ impl IppAttribute {
         URI_SECURITY_SUPPORTED => "uri-security-supported",
     }
 
+    // Special attribute groups defined in 4.2.5 and 4.3.4 of RFC 8011
+    // can be used in "get-printer-attributes" or "get-job-attributes" operations to obtain several
+    // attributes at once
+    define_attributes! {
+        ALL => "all",
+        JOB_DESCRIPTION => "job-description",
+        JOB_TEMPLATE => "job-template",
+        PRINTER_DESCRIPTION => "printer-description",
+    }
+
     // Per section 4.1.4. Character Set and Natural Language Operation Attributes
     // The "attributes-charset" and "attributes-natural-language" attributes MUST be the first two attributes
     // in every IPP request and response, as part of the initial Operation Attributes group of the IPP message
@@ -383,8 +393,10 @@ impl IppAttributes {
 /// The trait is also implemented on types which have an unambiguous conversion to `IppValue`
 ///
 /// ```
+/// use ipp::attribute::*;
+/// use ipp::value::*;
 /// let job_id = IppValue::new_integer(1).with_name(IppAttribute::JOB_ID);
-/// let printer_uri = IppString::new_uri("ipp://localhost").with_name(IppAttribute::PRINTER_URI);
+/// let printer_uri = IppValue::new_uri("ipp://localhost").with_name(IppAttribute::PRINTER_URI);
 /// let ipp_array = Vec::new().with_name("some-name");
 /// ```
 pub trait IppAttrWithName {

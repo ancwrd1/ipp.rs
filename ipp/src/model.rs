@@ -35,6 +35,18 @@ impl IppVersion {
     }
 }
 
+impl fmt::Display for IppVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&format!("IPP v{}.{}", self.0 / 0x0100, self.0 & 0x00FF))
+    }
+}
+
+#[test]
+fn test_version_display() {
+    assert_eq!(&IppVersion::v1_0().to_string(), "IPP v1.0");
+    assert_eq!(&IppVersion(0x0305).to_string(), "IPP v3.5");
+}
+
 /// IPP operation constants
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Primitive, Debug, Copy, Clone, Eq, PartialEq)]
