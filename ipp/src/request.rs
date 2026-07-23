@@ -7,6 +7,7 @@ use bytes::{BufMut, Bytes, BytesMut};
 #[cfg(feature = "async")]
 use futures_util::io::{AsyncRead, AsyncReadExt};
 use http::Uri;
+#[cfg(feature = "log")]
 use log::trace;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -151,6 +152,7 @@ impl IppRequestResponse {
     /// Convert the request/response into AsyncRead including the payload
     pub fn into_async_read(self) -> impl AsyncRead + Send + 'static {
         let header = self.to_bytes();
+        #[cfg(feature = "log")]
         trace!("IPP header size: {}", header.len());
 
         futures_util::io::Cursor::new(header).chain(self.payload)
@@ -159,6 +161,7 @@ impl IppRequestResponse {
     /// Convert the request/response into Read including the payload
     pub fn into_read(self) -> impl Read + Send + 'static {
         let header = self.to_bytes();
+        #[cfg(feature = "log")]
         trace!("IPP header size: {}", header.len());
 
         io::Cursor::new(header).chain(self.payload)
