@@ -20,7 +20,7 @@ name = "ipp"
 enum-as-inner = "0.7"
 enum-primitive-derive = "0.3"
 futures-executor = { version = "0.3", optional = true }
-log = "0.4"
+log = { version = "0.4", optional = true }
 num-traits = "0.2"
 bytes = "1"
 thiserror = "2"
@@ -65,5 +65,8 @@ client-tls = ["client", "rustls-native-certs", "ureq/native-tls", "__tls"]
 
 # enable conversions between IppDateTime and chrono::DateTime
 chrono = ["dep:chrono"]
+
+# enable some logs when parsing
+log = ["dep:log"]
 
 __tls = []

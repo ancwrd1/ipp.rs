@@ -9,6 +9,7 @@ use std::{
 };
 
 use bytes::{Bytes, TryGetError};
+#[cfg(feature = "log")]
 use log::{error, trace};
 #[cfg(feature = "async")]
 use {crate::reader::AsyncIppReader, futures_util::io::AsyncRead};
@@ -98,6 +99,7 @@ impl ParserState {
     }
 
     fn parse_delimiter(&mut self, tag: u8) -> Result<DelimiterTag, IppParseError> {
+        #[cfg(feature = "log")]
         trace!("Delimiter tag: {tag:0x}");
 
         let tag = DelimiterTag::from_u8(tag).ok_or(IppParseError::InvalidTag(tag))?;
@@ -116,6 +118,7 @@ impl ParserState {
     fn parse_value(&mut self, tag: u8, name: IppName, value: Bytes) -> Result<(), IppParseError> {
         let ipp_value = IppValue::parse(tag, value)?;
 
+        #[cfg(feature = "log")]
         trace!("Value tag: {tag:0x}: {name}: {ipp_value}");
 
         if !name.is_empty() {
@@ -126,10 +129,12 @@ impl ParserState {
         }
         if tag == ValueTag::BegCollection as u8 {
             // start new collection in the stack
+            #[cfg(feature = "log")]
             trace!("Begin collection");
             match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
+                    #[cfg(feature = "log")]
                     error!("Invalid begin collection attribute");
                     return Err(IppParseError::InvalidCollection);
                 }
@@ -137,10 +142,12 @@ impl ParserState {
             self.context.push(vec![]);
         } else if tag == ValueTag::EndCollection as u8 {
             // get collection from the stack and add it to the previous element
+            #[cfg(feature = "log")]
             trace!("End collection");
             match ipp_value {
                 IppValue::Other { ref data, .. } if data.is_empty() => {}
                 _ => {
+                    #[cfg(feature = "log")]
                     error!("Invalid end collection attribute");
                     return Err(IppParseError::InvalidCollection);
                 }
@@ -199,6 +206,7 @@ where
 
     async fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.get_or_parse_header().await?;
+        #[cfg(feature = "log")]
         trace!("IPP header: {header:?}");
 
         loop {
@@ -283,6 +291,7 @@ where
 
     fn parse_header_attributes(&mut self) -> Result<IppHeader, IppParseError> {
         let header = self.get_or_parse_header()?;
+        #[cfg(feature = "log")]
         trace!("IPP header: {header:?}");
 
         loop {
