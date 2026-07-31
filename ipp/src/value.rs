@@ -47,6 +47,8 @@ pub type IppCharset = BoundedString<63>;
 pub type IppLanguage = BoundedString<63>;
 /// IPP name value with a maximum length of 255 bytes
 pub type IppName = BoundedString<255>;
+/// IPP status-message with a maximum length of 255 bytes
+pub type IppStatusMessage = BoundedString<255>;
 
 impl<const MAX: usize> BoundedString<MAX> {
     /// Attempts to create a bounded string from the given value, returning an error if the string's length exceeds the const generic
