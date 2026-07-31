@@ -62,6 +62,13 @@ impl<const MAX: usize> BoundedString<MAX> {
         Ok(Self { inner: s })
     }
 
+    /// Creates a bounded string by truncating the input if needed
+    pub fn new_truncated(s: impl Into<String>) -> Self {
+        let mut inner = s.into();
+        inner.truncate(MAX);
+        Self { inner }
+    }
+
     pub fn from_bytes(data: &[u8]) -> Option<Self> {
         if data.len() <= MAX
             && let Ok(s) = str::from_utf8(data)
@@ -1196,5 +1203,14 @@ mod tests {
                 IppValue::Integer(0x2222_2222)
             )]))
         );
+    }
+
+    #[test]
+    fn test_truncated_bounded_string() {
+        let value = IppLanguage::new_truncated("language".repeat(100));
+        assert_eq!(value.len(), IppLanguage::max());
+
+        let value = IppLanguage::new_truncated("en");
+        assert_eq!("en", value.as_str());
     }
 }
