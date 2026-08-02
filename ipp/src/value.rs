@@ -47,6 +47,8 @@ pub type IppCharset = BoundedString<63>;
 pub type IppLanguage = BoundedString<63>;
 /// IPP name value with a maximum length of 255 bytes
 pub type IppName = BoundedString<255>;
+/// IPP status-message with a maximum length of 255 bytes
+pub type IppStatusMessage = BoundedString<255>;
 
 impl<const MAX: usize> BoundedString<MAX> {
     /// Attempts to create a bounded string from the given value, returning an error if the string's length exceeds the const generic
@@ -60,6 +62,13 @@ impl<const MAX: usize> BoundedString<MAX> {
         }
 
         Ok(Self { inner: s })
+    }
+
+    /// Creates a bounded string by truncating the input if needed
+    pub fn new_truncated(s: impl Into<String>) -> Self {
+        let mut inner = s.into();
+        inner.truncate(MAX);
+        Self { inner }
     }
 
     pub fn from_bytes(data: &[u8]) -> Option<Self> {
@@ -1196,5 +1205,14 @@ mod tests {
                 IppValue::Integer(0x2222_2222)
             )]))
         );
+    }
+
+    #[test]
+    fn test_truncated_bounded_string() {
+        let value = IppLanguage::new_truncated("language".repeat(100));
+        assert_eq!(value.len(), IppLanguage::max());
+
+        let value = IppLanguage::new_truncated("en");
+        assert_eq!("en", value.as_str());
     }
 }
