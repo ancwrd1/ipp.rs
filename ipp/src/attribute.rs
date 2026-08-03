@@ -482,3 +482,17 @@ impl<Tz: chrono::TimeZone> IppAttrWithName for chrono::DateTime<Tz> {
         IppDateTime::from(self).with_name(name)
     }
 }
+
+#[cfg(feature = "jiff")]
+impl IppAttrWithName for jiff::Zoned {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppDateTime::from(self).with_name(name)
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl IppAttrWithName for &jiff::Zoned {
+    fn with_name<S: Into<String>>(self, name: S) -> Result<IppAttribute, IppParseError> {
+        IppDateTime::from(self).with_name(name)
+    }
+}

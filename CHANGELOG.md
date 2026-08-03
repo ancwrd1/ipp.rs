@@ -6,6 +6,7 @@
 - Switched to lossless UTF-8 conversion for IPP string values ([#56](https://github.com/ancwrd1/ipp.rs/issues/56))
 - Added `new_*` methods for constructing `IppValue` without knowing the underlying string representation ([#57](https://github.com/ancwrd1/ipp.rs/issues/57))
 - Added `IppDateTime` struct and an optional `chrono` feature to convert it to/from chrono `DateTime<Tz>`
+- Added an optional `jiff` feature to convert `IppDateTime` to/from jiff `Zoned`
 - Added `IppAttrWithName` helper trait
 - Changed `operation_or_status` and `request_id` fields to be signed integers as mandated by RFC 8010 (#55)
 - Added helper functions for creating enums and groups
@@ -14,6 +15,7 @@
 - Added special attribute group constants defined in 4.2.5 and 4.3.4 of RFC 8011
 - Removed non-RFC attribute names and added missing names for compliance with RFC 8011
 - Added `log` feature and made logging optional
+- Added BoundedString::new_truncated() constructor
 
 ## 6.0.1
 - Fixed BoundedString serialization ([#49](https://github.com/ancwrd1/ipp.rs/issues/49))

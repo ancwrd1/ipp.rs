@@ -21,6 +21,7 @@ The following build-time features are supported:
 * `client-rustls` - enables a blocking IPP client with TLS, using `rustls` backend. Implies `client` feature.
 * `client-tls` - enables a blocking IPP client with TLS, using `native-tls` backend. Implies `client` feature.
 * `chrono` - enables a conversion between `IppDateTime` and `chrono::DateTime`.
+* `jiff` - enables a conversion between `IppDateTime` and `jiff::Zoned`.
 * `log` - enables some logs when parsing.
 
 By default, the `async-client-rustls` feature is enabled. Some old printers may not support the latest TLS standards;

@@ -462,6 +462,67 @@ impl TryFrom<IppDateTime> for chrono::DateTime<chrono::FixedOffset> {
     }
 }
 
+#[cfg(feature = "jiff")]
+impl From<&jiff::Zoned> for IppDateTime {
+    fn from(value: &jiff::Zoned) -> Self {
+        let offset = value.offset().seconds();
+
+        Self {
+            year: value.year() as u16,
+            month: value.month() as u8,
+            day: value.day() as u8,
+            hour: value.hour() as u8,
+            minutes: value.minute() as u8,
+            seconds: value.second() as u8,
+            deci_seconds: (value.subsec_nanosecond() / 100_000_000) as u8,
+            utc_dir: if offset < 0 { '-' } else { '+' },
+            utc_hours: (offset.abs() / 3600) as u8,
+            utc_mins: (offset.abs() % 3600 / 60) as u8,
+        }
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl From<jiff::Zoned> for IppDateTime {
+    fn from(value: jiff::Zoned) -> Self {
+        Self::from(&value)
+    }
+}
+
+#[cfg(feature = "jiff")]
+impl TryFrom<IppDateTime> for jiff::Zoned {
+    type Error = crate::error::IppError;
+
+    fn try_from(value: IppDateTime) -> Result<Self, Self::Error> {
+        use jiff::{civil, tz::TimeZone};
+
+        fn err<E>(_: E) -> IppParseError {
+            IppParseError::InvalidDateTime
+        }
+
+        let seconds = value.utc_hours as i32 * 3600 + value.utc_mins as i32 * 60;
+        let seconds = match value.utc_dir {
+            '-' => -seconds,
+            '+' => seconds,
+            _ => return Err(IppParseError::InvalidDateTime.into()),
+        };
+        let offset = jiff::tz::Offset::from_seconds(seconds).map_err(err)?;
+
+        let datetime = civil::DateTime::new(
+            i16::try_from(value.year).map_err(err)?,
+            value.month as _,
+            value.day as _,
+            value.hour as _,
+            value.minutes as _,
+            value.seconds as _,
+            value.deci_seconds as i32 * 100_000_000,
+        )
+        .map_err(err)?;
+
+        Ok(datetime.to_zoned(TimeZone::fixed(offset)).map_err(err)?)
+    }
+}
+
 /// IPP attribute values as defined in [RFC 8010](https://tools.ietf.org/html/rfc8010)
 /// the length for TextWithoutLanguage, TextWithLanguage, and OctetString values is heavily attribute dependent
 /// usual values are 127, 255, and 1023 however as these are attribute dependent, a [`IppTextValue`] is used to allow the calling routine to assert expected text length.
@@ -1021,6 +1082,74 @@ mod tests {
 
         let back: IppDateTime = dt.into();
         assert_eq!(back, original);
+    }
+
+    #[cfg(feature = "jiff")]
+    #[test]
+    fn jiff_datetime_roundtrip() {
+        use jiff::Zoned;
+
+        let original = IppDateTime {
+            year: 2020,
+            month: 2,
+            day: 13,
+            hour: 12,
+            minutes: 34,
+            seconds: 22,
+            deci_seconds: 9,
+            utc_dir: '+',
+            utc_hours: 5,
+            utc_mins: 30,
+        };
+
+        let dt: Zoned = original.clone().try_into().unwrap();
+        assert_eq!(dt.to_string(), "2020-02-13T12:34:22.9+05:30[+05:30]");
+
+        let back: IppDateTime = dt.into();
+        assert_eq!(back, original);
+    }
+
+    #[cfg(feature = "jiff")]
+    #[test]
+    fn jiff_datetime_negative_offset() {
+        use jiff::Zoned;
+
+        let original = IppDateTime {
+            year: 1999,
+            month: 12,
+            day: 31,
+            hour: 23,
+            minutes: 59,
+            seconds: 59,
+            deci_seconds: 8,
+            utc_dir: '-',
+            utc_hours: 8,
+            utc_mins: 0,
+        };
+
+        let dt: Zoned = original.clone().try_into().unwrap();
+        assert_eq!(dt.to_string(), "1999-12-31T23:59:59.8-08:00[-08:00]");
+
+        let back: IppDateTime = (&dt).into();
+        assert_eq!(back, original);
+    }
+
+    #[cfg(feature = "jiff")]
+    #[test]
+    fn jiff_datetime_invalid() {
+        let invalid = IppDateTime {
+            year: 2020,
+            month: 13,
+            day: 32,
+            hour: 12,
+            minutes: 34,
+            seconds: 22,
+            deci_seconds: 9,
+            utc_dir: '*',
+            utc_hours: 5,
+            utc_mins: 30,
+        };
+        assert!(jiff::Zoned::try_from(invalid).is_err());
     }
 
     fn value_check(value: IppValue) {
