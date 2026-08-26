@@ -21,6 +21,9 @@ use crate::{
     value::*,
 };
 
+pub const UTF_8_CHARSET: BoundedStr<63> = BoundedStr::const_new("utf-8");
+pub const EN_LANG: BoundedStr<63> = BoundedStr::const_new("en");
+
 /// IPP request/response struct
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct IppRequestResponse {
@@ -55,16 +58,15 @@ impl IppRequestResponse {
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
                 IppAttribute::ATTRIBUTES_CHARSET,
-                IppValue::Charset(BoundedStr::const_new("utf-8").into()),
+                IppValue::Charset(UTF_8_CHARSET.into()),
             ),
         );
 
-        // unwrap is fine because "en" into bounded string is infallible.
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
                 IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage(BoundedStr::const_new("en").into()),
+                IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
 
@@ -93,13 +95,16 @@ impl IppRequestResponse {
 
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".try_into()?)),
+            IppAttribute::new(
+                IppAttribute::ATTRIBUTES_CHARSET,
+                IppValue::Charset(UTF_8_CHARSET.into()),
+            ),
         );
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
                 IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-                IppValue::NaturalLanguage("en".try_into()?),
+                IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
 
