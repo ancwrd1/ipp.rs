@@ -1,6 +1,6 @@
 use std::{env, error::Error, fs, process::exit};
 
-use ipp::prelude::*;
+use ipp::{prelude::*, value::IppName};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = env::args().collect();
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for arg in &args[3..] {
         if let Some((k, v)) = arg.split_once('=') {
-            builder = builder.attribute(IppAttribute::new(k.try_into()?, v.parse()?));
+            builder = builder.attribute(IppAttribute::new(IppName::try_from(k)?, v.parse()?));
         }
     }
 

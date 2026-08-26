@@ -12,7 +12,7 @@ use std::{
 };
 
 use clap::Parser;
-use ipp::{prelude::*, util};
+use ipp::{prelude::*, util, value::IppName};
 
 fn new_client(uri: Uri, params: &IppParams) -> io::Result<IppClient> {
     let mut builder = IppClient::builder(uri).ignore_tls_errors(params.ignore_tls_errors);
@@ -73,7 +73,7 @@ fn do_print_job(params: &IppParams, cmd: IppPrintCmd) -> Result<(), IppError> {
 
     for arg in cmd.options {
         if let Some((k, v)) = arg.split_once('=') {
-            builder = builder.attribute(IppAttribute::new(k.try_into().unwrap(), v.parse().unwrap()));
+            builder = builder.attribute(IppAttribute::new(IppName::try_from(k).unwrap(), v.parse().unwrap()));
         }
     }
 

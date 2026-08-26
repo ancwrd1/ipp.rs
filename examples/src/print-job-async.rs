@@ -1,6 +1,6 @@
 use std::{env, error::Error, process::exit};
 
-use ipp::prelude::*;
+use ipp::{prelude::*, value::IppName};
 use tokio::fs::File;
 use tokio_util::compat::TokioAsyncReadCompatExt;
 
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     for arg in &args[3..] {
         if let Some((k, v)) = arg.split_once('=') {
-            builder = builder.attribute(IppAttribute::new(k.try_into()?, v.parse()?));
+            builder = builder.attribute(IppAttribute::new(IppName::try_from(k)?, v.parse()?));
         }
     }
 

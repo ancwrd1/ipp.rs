@@ -51,12 +51,11 @@ impl IppRequestResponse {
         let header = IppHeader::new(version, operation as i16, 1);
         let mut attributes = IppAttributes::new();
 
-        // unwrap is fine because "utf-8" into bounded string is infallible.
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
-                IppValue::Charset("utf-8".try_into().unwrap()),
+                IppAttribute::ATTRIBUTES_CHARSET,
+                IppValue::Charset(BoundedStr::const_new("utf-8").into()),
             ),
         );
 
@@ -64,15 +63,15 @@ impl IppRequestResponse {
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
-                IppValue::NaturalLanguage("en".try_into().unwrap()),
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage(BoundedStr::const_new("en").into()),
             ),
         );
 
         if let Some(uri) = uri {
             attributes.add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::PRINTER_URI.try_into().unwrap(), IppValue::Uri(uri)),
+                IppAttribute::new(IppAttribute::PRINTER_URI, IppValue::Uri(uri)),
             );
         }
 
@@ -94,15 +93,12 @@ impl IppRequestResponse {
 
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
-                IppValue::Charset("utf-8".try_into()?),
-            ),
+            IppAttribute::new(IppAttribute::ATTRIBUTES_CHARSET, IppValue::Charset("utf-8".try_into()?)),
         );
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
                 IppValue::NaturalLanguage("en".try_into()?),
             ),
         );

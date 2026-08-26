@@ -11,18 +11,20 @@ use serde::{Deserialize, Serialize};
 use crate::{
     model::DelimiterTag,
     parser::IppParseError,
-    value::{IppDateTime, IppName, IppValue},
+    value::{BoundedStr, IppDateTime, IppName, IppValue},
 };
 
 macro_rules! define_attributes {
     ($($name:ident => $value:literal),* $(,)?) => {
-        $(pub const $name: &'static str = $value;)*
+        $(pub const $name: IppAttributeName = IppAttributeName::const_new($value);)*
     };
 }
 
 fn is_header_attr(attr: &str) -> bool {
     IppAttribute::HEADER_ATTRS.contains(&attr)
 }
+
+pub type IppAttributeName = BoundedStr<255>;
 
 /// `IppAttribute` represents an IPP attribute
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -188,18 +190,21 @@ impl IppAttribute {
     //    "printer-uri" attribute MUST be the third attribute and the
     //    "job-id" attribute MUST be the fourth attribute.
     const HEADER_ATTRS: [&'static str; 4] = [
-        IppAttribute::ATTRIBUTES_CHARSET,
-        IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
-        IppAttribute::PRINTER_URI,
-        IppAttribute::JOB_ID,
+        IppAttribute::ATTRIBUTES_CHARSET.inner,
+        IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.inner,
+        IppAttribute::PRINTER_URI.inner,
+        IppAttribute::JOB_ID.inner,
     ];
 
     /// Create a new instance of the attribute
     ///
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
-    pub fn new(name: IppName, value: IppValue) -> IppAttribute {
-        IppAttribute { name, value }
+    pub fn new(name: impl Into<IppName>, value: IppValue) -> IppAttribute {
+        IppAttribute {
+            name: name.into(),
+            value,
+        }
     }
 
     /// Create a new instance of the attribute

@@ -11,7 +11,7 @@ use num_traits::ToPrimitive;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
+use crate::{FromPrimitive as _, attribute::IppAttribute, model::ValueTag, parser::IppParseError};
 
 const IPP_STRING_MAX_LENGTH: usize = 1023;
 
@@ -31,6 +31,15 @@ const IPP_STRING_MAX_LENGTH: usize = 1023;
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BoundedString<const MAX: usize = IPP_STRING_MAX_LENGTH> {
     inner: String,
+}
+
+/// Const compatible bounded str
+///
+/// This string type can be constructed at compile time, and converted in an infaillible
+/// manner into a `BoundedString`
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct BoundedStr<const MAX: usize = IPP_STRING_MAX_LENGTH> {
+    pub(crate) inner: &'static str,
 }
 
 /// IPP string value with a maximum length of 1023 bytes
@@ -127,6 +136,38 @@ impl<const MAX: usize> BoundedString<MAX> {
     }
 }
 
+impl<const MAX: usize> BoundedStr<MAX> {
+    /// Constructs a `BoundedStr` from the `&str`
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the `MAX` size is exceeded
+    ///
+    /// # Examples
+    ///
+    /// This fails at compile time
+    ///
+    /// ```compile_fail
+    /// const IMPOSSIBLE: ipp::value::BoundedStr<4> = ipp::value::BoundedStr::const_new("Hello world");
+    /// ```
+    pub const fn const_new(value: &'static str) -> Self {
+        assert!(value.len() <= MAX);
+        Self { inner: value }
+    }
+
+    /// Constructs a `BoundedStr` but returns a `Result` rather than panicking,
+    /// making it more appropriate for runtime construction
+    pub fn new(value: &'static str) -> Result<Self, IppParseError> {
+        let len = value.len();
+
+        if len > MAX {
+            return Err(IppParseError::InvalidStringLength { len, max: MAX });
+        }
+
+        Ok(Self { inner: value })
+    }
+}
+
 impl<const MAX: usize> From<BoundedString<MAX>> for String {
     fn from(value: BoundedString<MAX>) -> Self {
         value.inner
@@ -219,6 +260,40 @@ impl<'de, const N: usize> Deserialize<'de> for BoundedString<N> {
         } else {
             Ok(Self { inner })
         }
+    }
+}
+
+impl<const MAX: usize> From<BoundedStr<MAX>> for String {
+    fn from(value: BoundedStr<MAX>) -> Self {
+        value.inner.to_string()
+    }
+}
+
+impl<const MAX: usize> From<BoundedStr<MAX>> for BoundedString<MAX> {
+    fn from(value: BoundedStr<MAX>) -> Self {
+        BoundedString {
+            inner: value.inner.into(),
+        }
+    }
+}
+
+impl<const MAX: usize> std::borrow::Borrow<str> for BoundedStr<MAX> {
+    fn borrow(&self) -> &str {
+        self.inner
+    }
+}
+
+impl<const MAX: usize> AsRef<str> for BoundedStr<MAX> {
+    fn as_ref(&self) -> &str {
+        self.inner
+    }
+}
+
+impl<const MAX: usize> Deref for BoundedStr<MAX> {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.inner
     }
 }
 
@@ -911,6 +986,19 @@ impl IppValue {
         }
         buffer.freeze()
     }
+
+    /// Turns the `IppValue` into a an `IppAttribute` by adding a name
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use ipp::attribute::*;
+    /// use ipp::value::*;
+    /// let job_id = IppValue::new_integer(1).named(IppAttribute::JOB_ID);
+    /// ```
+    pub fn named(self, name: impl Into<IppName>) -> IppAttribute {
+        IppAttribute::new(name.into(), self)
+    }
 }
 
 /// Implement Display trait to print the value
@@ -1032,7 +1120,12 @@ mod tests {
     use std::{collections::BTreeMap, io};
 
     use super::*;
-    use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
+    use crate::{
+        attribute::{IppAttribute, IppAttributeName},
+        model::DelimiterTag,
+        parser::IppParser,
+        reader::IppReader,
+    };
 
     #[cfg(feature = "chrono")]
     #[test]
@@ -1261,7 +1354,7 @@ mod tests {
     #[test]
     fn test_array() {
         let attr = IppAttribute::new(
-            "list".try_into().unwrap(),
+            IppAttributeName::const_new("list"),
             IppValue::Array(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
         );
         let buf = attr.to_bytes().to_vec();
@@ -1297,7 +1390,7 @@ mod tests {
     #[test]
     fn test_collection() {
         let attr = IppAttribute::new(
-            "coll".try_into().unwrap(),
+            IppAttributeName::const_new("coll"),
             IppValue::Collection(BTreeMap::from([(
                 "abcd".try_into().unwrap(),
                 IppValue::Integer(0x2222_2222),
