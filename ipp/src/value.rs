@@ -168,7 +168,7 @@ impl<const MAX: usize> BoundedString<MAX> {
 }
 
 impl<const MAX: usize> BoundedStrLiteral<MAX> {
-    /// Constructs a `BoundedStr` from the `&str`
+    /// Constructs a `BoundedStrLiteral` from the `&str`
     ///
     /// # Panics
     ///
@@ -186,7 +186,7 @@ impl<const MAX: usize> BoundedStrLiteral<MAX> {
         Self { inner: value }
     }
 
-    /// Constructs a `BoundedStr` but returns a `Result` rather than panicking,
+    /// Constructs a `BoundedStrLiteral` but returns a `Result` rather than panicking,
     /// making it more appropriate for runtime construction
     pub fn new(value: &'static str) -> Result<Self, IppParseError> {
         let len = value.len();
