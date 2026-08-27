@@ -21,8 +21,8 @@ use crate::{
     value::*,
 };
 
-pub const UTF_8_CHARSET: BoundedStr<63> = BoundedStr::const_new("utf-8");
-pub const EN_LANG: BoundedStr<63> = BoundedStr::const_new("en");
+pub const UTF_8_CHARSET: BoundedStrLiteral<63> = BoundedStrLiteral::const_new("utf-8");
+pub const EN_LANG: BoundedStrLiteral<63> = BoundedStrLiteral::const_new("en");
 
 /// IPP request/response struct
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

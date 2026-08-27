@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     model::DelimiterTag,
     parser::IppParseError,
-    value::{BoundedStr, IppDateTime, IppName, IppValue},
+    value::{BoundedStrLiteral, IppDateTime, IppName, IppValue},
 };
 
 macro_rules! define_attributes {
@@ -24,7 +24,7 @@ fn is_header_attr(attr: &str) -> bool {
     IppAttribute::HEADER_ATTRS.contains(&attr)
 }
 
-pub type IppAttributeName = BoundedStr<255>;
+pub type IppAttributeName = BoundedStrLiteral<255>;
 
 /// `IppAttribute` represents an IPP attribute
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

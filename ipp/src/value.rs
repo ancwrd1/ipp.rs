@@ -13,7 +13,14 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{FromPrimitive as _, attribute::IppAttribute, model::ValueTag, parser::IppParseError};
 
-const IPP_STRING_MAX_LENGTH: usize = 1023;
+pub const IPP_STRING_MAX_LENGTH: usize = 1023;
+pub const IPP_SHORT_STRING_LENGTH: usize = 127;
+pub const IPP_KEYWORD_LENGTH: usize = 255;
+pub const IPP_MIME_MEDIA_TYPE_LENGTH: usize = 255;
+pub const IPP_CHARSET_LENGTH: usize = 63;
+pub const IPP_LANGUAGE_LENGTH: usize = 63;
+pub const IPP_NAME_LENGTH: usize = 255;
+pub const IPP_STATUS_MESSAGE_LENGTH: usize = 255;
 
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
@@ -35,29 +42,53 @@ pub struct BoundedString<const MAX: usize = IPP_STRING_MAX_LENGTH> {
 
 /// Const compatible bounded str
 ///
-/// This string type can be constructed at compile time, and converted in an infaillible
-/// manner into a `BoundedString`
+/// This string type can be constructed at compile time from a literal str.
+/// Conversion to `BoundedString` is infaillible so there's no need to handle
+/// impossible `Err()` values
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct BoundedStr<const MAX: usize = IPP_STRING_MAX_LENGTH> {
+pub struct BoundedStrLiteral<const MAX: usize = IPP_STRING_MAX_LENGTH> {
     pub(crate) inner: &'static str,
 }
 
 /// IPP string value with a maximum length of 1023 bytes
 pub type IppString = BoundedString;
+/// Literal equivalent of `IppString`
+pub type IppStrLiteral = BoundedStrLiteral;
+
 /// IPP short string value with a maximum length of 127 bytes
-pub type IppShortString = BoundedString<127>;
+pub type IppShortString = BoundedString<IPP_SHORT_STRING_LENGTH>;
+/// Literal equivalent of `IppShortString`
+pub type IppShortStrLiteral = BoundedStrLiteral<IPP_SHORT_STRING_LENGTH>;
+
 /// IPP keyword value with a maximum length of 255 bytes
-pub type IppKeyword = BoundedString<255>;
+pub type IppKeyword = BoundedString<IPP_KEYWORD_LENGTH>;
+/// Literal equivalent of `IppKeyword`
+pub type IppKeywordLiteral = BoundedStrLiteral<IPP_KEYWORD_LENGTH>;
+
 /// IPP MIME media type value with a maximum length of 255 bytes
-pub type IppMimeMediaType = BoundedString<255>;
+pub type IppMimeMediaType = BoundedString<IPP_MIME_MEDIA_TYPE_LENGTH>;
+// Literal equivalent of `IppMimeMediaType`
+pub type IppMimeMediaTypeLiteral = BoundedStrLiteral<IPP_MIME_MEDIA_TYPE_LENGTH>;
+
 /// IPP charset value with a maximum length of 63 bytes
-pub type IppCharset = BoundedString<63>;
+pub type IppCharset = BoundedString<IPP_CHARSET_LENGTH>;
+// Literal equivalent of `IppCharset`
+pub type IppCharsetLiteral = BoundedStrLiteral<IPP_CHARSET_LENGTH>;
+
 /// IPP natural language tag with a maximum length of 63 bytes
-pub type IppLanguage = BoundedString<63>;
+pub type IppLanguage = BoundedString<IPP_LANGUAGE_LENGTH>;
+// Literal equivalent of `IppLanguage`
+pub type IppLanguageLiteral = BoundedStrLiteral<IPP_LANGUAGE_LENGTH>;
+
 /// IPP name value with a maximum length of 255 bytes
-pub type IppName = BoundedString<255>;
+pub type IppName = BoundedString<IPP_NAME_LENGTH>;
+// Literal equivalent of `IppName`
+pub type IppNameLiteral = BoundedStrLiteral<IPP_NAME_LENGTH>;
+
 /// IPP status-message with a maximum length of 255 bytes
-pub type IppStatusMessage = BoundedString<255>;
+pub type IppStatusMessage = BoundedString<IPP_STATUS_MESSAGE_LENGTH>;
+// Literal equivalent of `IppStatusMessage`
+pub type IppStatusMessageLiteral = BoundedStrLiteral<IPP_STATUS_MESSAGE_LENGTH>;
 
 impl<const MAX: usize> BoundedString<MAX> {
     /// Attempts to create a bounded string from the given value, returning an error if the string's length exceeds the const generic
@@ -136,7 +167,7 @@ impl<const MAX: usize> BoundedString<MAX> {
     }
 }
 
-impl<const MAX: usize> BoundedStr<MAX> {
+impl<const MAX: usize> BoundedStrLiteral<MAX> {
     /// Constructs a `BoundedStr` from the `&str`
     ///
     /// # Panics
@@ -263,33 +294,33 @@ impl<'de, const N: usize> Deserialize<'de> for BoundedString<N> {
     }
 }
 
-impl<const MAX: usize> From<BoundedStr<MAX>> for String {
-    fn from(value: BoundedStr<MAX>) -> Self {
+impl<const MAX: usize> From<BoundedStrLiteral<MAX>> for String {
+    fn from(value: BoundedStrLiteral<MAX>) -> Self {
         value.inner.to_string()
     }
 }
 
-impl<const MAX: usize> From<BoundedStr<MAX>> for BoundedString<MAX> {
-    fn from(value: BoundedStr<MAX>) -> Self {
+impl<const MAX: usize> From<BoundedStrLiteral<MAX>> for BoundedString<MAX> {
+    fn from(value: BoundedStrLiteral<MAX>) -> Self {
         BoundedString {
             inner: value.inner.into(),
         }
     }
 }
 
-impl<const MAX: usize> std::borrow::Borrow<str> for BoundedStr<MAX> {
+impl<const MAX: usize> std::borrow::Borrow<str> for BoundedStrLiteral<MAX> {
     fn borrow(&self) -> &str {
         self.inner
     }
 }
 
-impl<const MAX: usize> AsRef<str> for BoundedStr<MAX> {
+impl<const MAX: usize> AsRef<str> for BoundedStrLiteral<MAX> {
     fn as_ref(&self) -> &str {
         self.inner
     }
 }
 
-impl<const MAX: usize> Deref for BoundedStr<MAX> {
+impl<const MAX: usize> Deref for BoundedStrLiteral<MAX> {
     type Target = str;
 
     fn deref(&self) -> &Self::Target {
