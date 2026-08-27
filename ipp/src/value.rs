@@ -328,6 +328,12 @@ impl<const MAX: usize> Deref for BoundedStrLiteral<MAX> {
     }
 }
 
+impl<const MAX: usize> fmt::Display for BoundedStrLiteral<MAX> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.inner)
+    }
+}
+
 /// Represents an IPP `text(*)` value with length-tiered encoding.
 ///
 /// IPP defines multiple text encodings depending on maximum length:
