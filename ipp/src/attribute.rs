@@ -21,7 +21,7 @@ macro_rules! define_attributes {
 }
 
 fn is_header_attr(attr: &str) -> bool {
-    IppAttribute::HEADER_ATTRS.contains(&attr)
+    IppAttribute::HEADER_ATTRS.iter().any(|a| a.inner == attr)
 }
 
 pub type IppAttributeName = BoundedStrLiteral<255>;
@@ -189,11 +189,11 @@ impl IppAttribute {
     //    attributes (i.e., the "printer-uri" and "job-id" attributes), the
     //    "printer-uri" attribute MUST be the third attribute and the
     //    "job-id" attribute MUST be the fourth attribute.
-    const HEADER_ATTRS: [&'static str; 4] = [
-        IppAttribute::ATTRIBUTES_CHARSET.inner,
-        IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.inner,
-        IppAttribute::PRINTER_URI.inner,
-        IppAttribute::JOB_ID.inner,
+    const HEADER_ATTRS: [IppAttributeName; 4] = [
+        IppAttribute::ATTRIBUTES_CHARSET,
+        IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+        IppAttribute::PRINTER_URI,
+        IppAttribute::JOB_ID,
     ];
 
     /// Create a new instance of the attribute
@@ -404,7 +404,7 @@ impl IppAttributes {
             for attr in &group.attributes {
                 if let Some(idx) = IppAttribute::HEADER_ATTRS
                     .iter()
-                    .position(|h| *h == attr.name().as_str())
+                    .position(|h| h.inner == attr.name().as_str())
                 {
                     header_slots[idx] = Some(attr);
                 }
