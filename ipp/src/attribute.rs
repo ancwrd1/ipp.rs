@@ -285,8 +285,10 @@ impl IppAttributeGroup {
         self.attributes
     }
 
-    pub fn get(&self, name: &str) -> Option<&IppAttribute> {
-        self.attributes.iter().find(|attr| attr.name().as_str() == name)
+    pub fn get(&self, name: impl AsRef<str>) -> Option<&IppAttribute> {
+        self.attributes
+            .iter()
+            .find(|attr| attr.name().as_str() == name.as_ref())
     }
 }
 
