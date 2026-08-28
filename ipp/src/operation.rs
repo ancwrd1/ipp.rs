@@ -20,7 +20,7 @@ fn with_user_name(user_name: Option<IppName>, req: &mut IppRequestResponse) {
         req.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::REQUESTING_USER_NAME.try_into().unwrap(),
+                IppAttribute::REQUESTING_USER_NAME,
                 IppValue::NameWithoutLanguage(user_name),
             ),
         );
@@ -31,10 +31,7 @@ fn with_document_format(document_format: Option<IppMimeMediaType>, req: &mut Ipp
     if let Some(document_format) = document_format {
         req.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                IppAttribute::DOCUMENT_FORMAT.try_into().unwrap(),
-                IppValue::MimeMediaType(document_format),
-            ),
+            IppAttribute::new(IppAttribute::DOCUMENT_FORMAT, IppValue::MimeMediaType(document_format)),
         );
     }
 }
@@ -113,10 +110,7 @@ impl IppOperation for PrintJob {
         if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::JOB_NAME.try_into().unwrap(),
-                    IppValue::NameWithoutLanguage(job_name),
-                ),
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
@@ -174,10 +168,7 @@ impl IppOperation for GetPrinterAttributes {
             let vals: Vec<IppValue> = self.attributes.into_iter().map(IppValue::Keyword).collect();
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::REQUESTED_ATTRIBUTES.try_into().unwrap(),
-                    IppValue::Array(vals),
-                ),
+                IppAttribute::new(IppAttribute::REQUESTED_ATTRIBUTES, IppValue::Array(vals)),
             );
         }
 
@@ -221,10 +212,7 @@ impl IppOperation for CreateJob {
         if let Some(job_name) = self.job_name {
             retval.attributes_mut().add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(
-                    IppAttribute::JOB_NAME.try_into().unwrap(),
-                    IppValue::NameWithoutLanguage(job_name),
-                ),
+                IppAttribute::new(IppAttribute::JOB_NAME, IppValue::NameWithoutLanguage(job_name)),
             )
         }
 
@@ -285,15 +273,12 @@ impl IppOperation for SendDocument {
 
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::JOB_ID.try_into().unwrap(), IppValue::Integer(self.job_id)),
+            IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(self.job_id)),
         );
 
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(
-                IppAttribute::LAST_DOCUMENT.try_into().unwrap(),
-                IppValue::Boolean(self.last),
-            ),
+            IppAttribute::new(IppAttribute::LAST_DOCUMENT, IppValue::Boolean(self.last)),
         );
 
         with_user_name(self.user_name, &mut retval);
@@ -367,7 +352,7 @@ impl IppOperation for CancelJob {
         let mut retval = IppRequestResponse::new_internal(self.version(), Operation::CancelJob, Some(self.printer_uri));
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::JOB_ID.try_into().unwrap(), IppValue::Integer(self.job_id)),
+            IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(self.job_id)),
         );
         with_user_name(self.user_name, &mut retval);
         retval
@@ -405,7 +390,7 @@ impl IppOperation for GetJobAttributes {
             IppRequestResponse::new_internal(self.version(), Operation::GetJobAttributes, Some(self.printer_uri));
         retval.attributes_mut().add(
             DelimiterTag::OperationAttributes,
-            IppAttribute::new(IppAttribute::JOB_ID.try_into().unwrap(), IppValue::Integer(self.job_id)),
+            IppAttribute::new(IppAttribute::JOB_ID, IppValue::Integer(self.job_id)),
         );
         with_user_name(self.user_name, &mut retval);
         retval

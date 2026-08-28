@@ -11,18 +11,20 @@ use serde::{Deserialize, Serialize};
 use crate::{
     model::DelimiterTag,
     parser::IppParseError,
-    value::{IppDateTime, IppName, IppValue},
+    value::{BoundedStrLiteral, IppDateTime, IppName, IppValue},
 };
 
 macro_rules! define_attributes {
     ($($name:ident => $value:literal),* $(,)?) => {
-        $(pub const $name: &'static str = $value;)*
+        $(pub const $name: IppAttributeName = IppAttributeName::const_new($value);)*
     };
 }
 
 fn is_header_attr(attr: &str) -> bool {
-    IppAttribute::HEADER_ATTRS.contains(&attr)
+    IppAttribute::HEADER_ATTRS.iter().any(|a| a.inner == attr)
 }
+
+pub type IppAttributeName = BoundedStrLiteral<255>;
 
 /// `IppAttribute` represents an IPP attribute
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -187,7 +189,7 @@ impl IppAttribute {
     //    attributes (i.e., the "printer-uri" and "job-id" attributes), the
     //    "printer-uri" attribute MUST be the third attribute and the
     //    "job-id" attribute MUST be the fourth attribute.
-    const HEADER_ATTRS: [&'static str; 4] = [
+    const HEADER_ATTRS: [IppAttributeName; 4] = [
         IppAttribute::ATTRIBUTES_CHARSET,
         IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
         IppAttribute::PRINTER_URI,
@@ -198,8 +200,11 @@ impl IppAttribute {
     ///
     /// * `name` - Attribute name<br/>
     /// * `value` - Attribute value<br/>
-    pub fn new(name: IppName, value: IppValue) -> IppAttribute {
-        IppAttribute { name, value }
+    pub fn new(name: impl Into<IppName>, value: IppValue) -> IppAttribute {
+        IppAttribute {
+            name: name.into(),
+            value,
+        }
     }
 
     /// Create a new instance of the attribute
@@ -280,8 +285,10 @@ impl IppAttributeGroup {
         self.attributes
     }
 
-    pub fn get(&self, name: &str) -> Option<&IppAttribute> {
-        self.attributes.iter().find(|attr| attr.name().as_str() == name)
+    pub fn get(&self, name: impl AsRef<str>) -> Option<&IppAttribute> {
+        self.attributes
+            .iter()
+            .find(|attr| attr.name().as_str() == name.as_ref())
     }
 }
 
@@ -397,7 +404,7 @@ impl IppAttributes {
             for attr in &group.attributes {
                 if let Some(idx) = IppAttribute::HEADER_ATTRS
                     .iter()
-                    .position(|h| *h == attr.name().as_str())
+                    .position(|h| h.inner == attr.name().as_str())
                 {
                     header_slots[idx] = Some(attr);
                 }

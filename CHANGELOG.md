@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.0.0
+- Added `BoundedStrLiteral`, a static version of `BoundedString` that allows compile-time check of string size.
+- Change the type of all `IppAttribute` constant names from `&'static str` to `BoundedStrLiteral`
+
 ## 7.0.0
 - Refactored attribute storage to use an ordered list instead of a `HashMap`, preserving attribute order ([#54](https://github.com/ancwrd1/ipp.rs/issues/54))
 - Added `IppAttributes::set_or_replace`

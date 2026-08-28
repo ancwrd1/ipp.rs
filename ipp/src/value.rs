@@ -11,9 +11,16 @@ use num_traits::ToPrimitive;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::{FromPrimitive as _, model::ValueTag, parser::IppParseError};
+use crate::{FromPrimitive as _, attribute::IppAttribute, model::ValueTag, parser::IppParseError};
 
-const IPP_STRING_MAX_LENGTH: usize = 1023;
+pub const IPP_STRING_MAX_LENGTH: usize = 1023;
+pub const IPP_SHORT_STRING_LENGTH: usize = 127;
+pub const IPP_KEYWORD_LENGTH: usize = 255;
+pub const IPP_MIME_MEDIA_TYPE_LENGTH: usize = 255;
+pub const IPP_CHARSET_LENGTH: usize = 63;
+pub const IPP_LANGUAGE_LENGTH: usize = 63;
+pub const IPP_NAME_LENGTH: usize = 255;
+pub const IPP_STATUS_MESSAGE_LENGTH: usize = 255;
 
 /// A UTF-8 string whose length is bounded by a compile-time maximum (in bytes).
 ///
@@ -33,22 +40,55 @@ pub struct BoundedString<const MAX: usize = IPP_STRING_MAX_LENGTH> {
     inner: String,
 }
 
+/// Const compatible bounded str
+///
+/// This string type can be constructed at compile time from a literal str.
+/// Conversion to `BoundedString` is infaillible so there's no need to handle
+/// impossible `Err()` values
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct BoundedStrLiteral<const MAX: usize = IPP_STRING_MAX_LENGTH> {
+    pub(crate) inner: &'static str,
+}
+
 /// IPP string value with a maximum length of 1023 bytes
 pub type IppString = BoundedString;
+/// Literal equivalent of `IppString`
+pub type IppStrLiteral = BoundedStrLiteral;
+
 /// IPP short string value with a maximum length of 127 bytes
-pub type IppShortString = BoundedString<127>;
+pub type IppShortString = BoundedString<IPP_SHORT_STRING_LENGTH>;
+/// Literal equivalent of `IppShortString`
+pub type IppShortStrLiteral = BoundedStrLiteral<IPP_SHORT_STRING_LENGTH>;
+
 /// IPP keyword value with a maximum length of 255 bytes
-pub type IppKeyword = BoundedString<255>;
+pub type IppKeyword = BoundedString<IPP_KEYWORD_LENGTH>;
+/// Literal equivalent of `IppKeyword`
+pub type IppKeywordLiteral = BoundedStrLiteral<IPP_KEYWORD_LENGTH>;
+
 /// IPP MIME media type value with a maximum length of 255 bytes
-pub type IppMimeMediaType = BoundedString<255>;
+pub type IppMimeMediaType = BoundedString<IPP_MIME_MEDIA_TYPE_LENGTH>;
+// Literal equivalent of `IppMimeMediaType`
+pub type IppMimeMediaTypeLiteral = BoundedStrLiteral<IPP_MIME_MEDIA_TYPE_LENGTH>;
+
 /// IPP charset value with a maximum length of 63 bytes
-pub type IppCharset = BoundedString<63>;
+pub type IppCharset = BoundedString<IPP_CHARSET_LENGTH>;
+// Literal equivalent of `IppCharset`
+pub type IppCharsetLiteral = BoundedStrLiteral<IPP_CHARSET_LENGTH>;
+
 /// IPP natural language tag with a maximum length of 63 bytes
-pub type IppLanguage = BoundedString<63>;
+pub type IppLanguage = BoundedString<IPP_LANGUAGE_LENGTH>;
+// Literal equivalent of `IppLanguage`
+pub type IppLanguageLiteral = BoundedStrLiteral<IPP_LANGUAGE_LENGTH>;
+
 /// IPP name value with a maximum length of 255 bytes
-pub type IppName = BoundedString<255>;
+pub type IppName = BoundedString<IPP_NAME_LENGTH>;
+// Literal equivalent of `IppName`
+pub type IppNameLiteral = BoundedStrLiteral<IPP_NAME_LENGTH>;
+
 /// IPP status-message with a maximum length of 255 bytes
-pub type IppStatusMessage = BoundedString<255>;
+pub type IppStatusMessage = BoundedString<IPP_STATUS_MESSAGE_LENGTH>;
+// Literal equivalent of `IppStatusMessage`
+pub type IppStatusMessageLiteral = BoundedStrLiteral<IPP_STATUS_MESSAGE_LENGTH>;
 
 impl<const MAX: usize> BoundedString<MAX> {
     /// Attempts to create a bounded string from the given value, returning an error if the string's length exceeds the const generic
@@ -124,6 +164,38 @@ impl<const MAX: usize> BoundedString<MAX> {
             });
         }
         Ok(BoundedString::<MAX2> { inner: self.inner })
+    }
+}
+
+impl<const MAX: usize> BoundedStrLiteral<MAX> {
+    /// Constructs a `BoundedStrLiteral` from the `&str`
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the `MAX` size is exceeded
+    ///
+    /// # Examples
+    ///
+    /// This fails at compile time
+    ///
+    /// ```compile_fail
+    /// const IMPOSSIBLE: ipp::value::BoundedStr<4> = ipp::value::BoundedStr::const_new("Hello world");
+    /// ```
+    pub const fn const_new(value: &'static str) -> Self {
+        assert!(value.len() <= MAX);
+        Self { inner: value }
+    }
+
+    /// Constructs a `BoundedStrLiteral` but returns a `Result` rather than panicking,
+    /// making it more appropriate for runtime construction
+    pub fn new(value: &'static str) -> Result<Self, IppParseError> {
+        let len = value.len();
+
+        if len > MAX {
+            return Err(IppParseError::InvalidStringLength { len, max: MAX });
+        }
+
+        Ok(Self { inner: value })
     }
 }
 
@@ -219,6 +291,46 @@ impl<'de, const N: usize> Deserialize<'de> for BoundedString<N> {
         } else {
             Ok(Self { inner })
         }
+    }
+}
+
+impl<const MAX: usize> From<BoundedStrLiteral<MAX>> for String {
+    fn from(value: BoundedStrLiteral<MAX>) -> Self {
+        value.inner.to_string()
+    }
+}
+
+impl<const MAX: usize> From<BoundedStrLiteral<MAX>> for BoundedString<MAX> {
+    fn from(value: BoundedStrLiteral<MAX>) -> Self {
+        BoundedString {
+            inner: value.inner.into(),
+        }
+    }
+}
+
+impl<const MAX: usize> std::borrow::Borrow<str> for BoundedStrLiteral<MAX> {
+    fn borrow(&self) -> &str {
+        self.inner
+    }
+}
+
+impl<const MAX: usize> AsRef<str> for BoundedStrLiteral<MAX> {
+    fn as_ref(&self) -> &str {
+        self.inner
+    }
+}
+
+impl<const MAX: usize> Deref for BoundedStrLiteral<MAX> {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.inner
+    }
+}
+
+impl<const MAX: usize> fmt::Display for BoundedStrLiteral<MAX> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.inner)
     }
 }
 
@@ -911,6 +1023,19 @@ impl IppValue {
         }
         buffer.freeze()
     }
+
+    /// Turns the `IppValue` into a an `IppAttribute` by adding a name
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use ipp::attribute::*;
+    /// use ipp::value::*;
+    /// let job_id = IppValue::new_integer(1).named(IppAttribute::JOB_ID);
+    /// ```
+    pub fn named(self, name: impl Into<IppName>) -> IppAttribute {
+        IppAttribute::new(name.into(), self)
+    }
 }
 
 /// Implement Display trait to print the value
@@ -1032,7 +1157,12 @@ mod tests {
     use std::{collections::BTreeMap, io};
 
     use super::*;
-    use crate::{attribute::IppAttribute, model::DelimiterTag, parser::IppParser, reader::IppReader};
+    use crate::{
+        attribute::{IppAttribute, IppAttributeName},
+        model::DelimiterTag,
+        parser::IppParser,
+        reader::IppReader,
+    };
 
     #[cfg(feature = "chrono")]
     #[test]
@@ -1261,7 +1391,7 @@ mod tests {
     #[test]
     fn test_array() {
         let attr = IppAttribute::new(
-            "list".try_into().unwrap(),
+            IppAttributeName::const_new("list"),
             IppValue::Array(vec![IppValue::Integer(0x1111_1111), IppValue::Integer(0x2222_2222)]),
         );
         let buf = attr.to_bytes().to_vec();
@@ -1297,7 +1427,7 @@ mod tests {
     #[test]
     fn test_collection() {
         let attr = IppAttribute::new(
-            "coll".try_into().unwrap(),
+            IppAttributeName::const_new("coll"),
             IppValue::Collection(BTreeMap::from([(
                 "abcd".try_into().unwrap(),
                 IppValue::Integer(0x2222_2222),

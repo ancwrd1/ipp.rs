@@ -21,6 +21,9 @@ use crate::{
     value::*,
 };
 
+pub const UTF_8_CHARSET: IppCharsetLiteral = IppCharsetLiteral::const_new("utf-8");
+pub const EN_LANG: IppLanguageLiteral = IppLanguageLiteral::const_new("en");
+
 /// IPP request/response struct
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct IppRequestResponse {
@@ -51,28 +54,26 @@ impl IppRequestResponse {
         let header = IppHeader::new(version, operation as i16, 1);
         let mut attributes = IppAttributes::new();
 
-        // unwrap is fine because "utf-8" into bounded string is infallible.
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
-                IppValue::Charset("utf-8".try_into().unwrap()),
+                IppAttribute::ATTRIBUTES_CHARSET,
+                IppValue::Charset(UTF_8_CHARSET.into()),
             ),
         );
 
-        // unwrap is fine because "en" into bounded string is infallible.
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
-                IppValue::NaturalLanguage("en".try_into().unwrap()),
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
 
         if let Some(uri) = uri {
             attributes.add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::PRINTER_URI.try_into().unwrap(), IppValue::Uri(uri)),
+                IppAttribute::new(IppAttribute::PRINTER_URI, IppValue::Uri(uri)),
             );
         }
 
@@ -95,15 +96,15 @@ impl IppRequestResponse {
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET.try_into().unwrap(),
-                IppValue::Charset("utf-8".try_into()?),
+                IppAttribute::ATTRIBUTES_CHARSET,
+                IppValue::Charset(UTF_8_CHARSET.into()),
             ),
         );
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE.try_into().unwrap(),
-                IppValue::NaturalLanguage("en".try_into()?),
+                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
 
