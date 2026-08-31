@@ -4,6 +4,7 @@
 - Added the missing delimiter tags to `DelimiterTag`, so responses carrying subscription, event notification, resource, document or system groups can be parsed
 - Added the remaining RFC 8011 and IPP 2.x operations: `Set-Printer-Attributes`, `Set-Job-Attributes`, `Get-Printer-Supported-Values`, `Cancel-Jobs`, `Cancel-My-Jobs`, `Resubmit-Job`, `Close-Job` and `Identify-Printer`, each with an `IppOperation` implementation and a builder
 - Added the `identify-actions` attribute name from PWG 5100.13
+- Added `async-client-rustls-no-provider` and `client-rustls-no-provider` features, which enable rustls without selecting a cryptography provider so the caller can choose one
 - Added `BoundedStrLiteral`, a static version of `BoundedString` that allows compile-time check of string size.
 - Change the type of all `IppAttribute` constant names from `&'static str` to `BoundedStrLiteral`
 

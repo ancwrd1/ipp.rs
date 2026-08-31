@@ -28,12 +28,16 @@ jobs:
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client -- -D warnings
       - name: Clippy async-client-rustls feature
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client-rustls -- -D warnings
+      - name: Clippy async-client-rustls-no-provider feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client-rustls-no-provider -- -D warnings
       - name: Clippy async-client-tls feature
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features async-client-tls -- -D warnings
       - name: Clippy client feature
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client -- -D warnings
       - name: Clippy client-rustls feature
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client-rustls -- -D warnings
+      - name: Clippy client-rustls-no-provider feature
+        run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client-rustls-no-provider -- -D warnings
       - name: Clippy client-tls feature
         run: cargo clippy --target ${{ matrix.target }} -p ipp --no-default-features --features client-tls -- -D warnings
       - name: Tests

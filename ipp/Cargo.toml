@@ -59,8 +59,21 @@ serde = ["dep:serde", "bytes/serde"]
 async = ["futures-util", "futures-executor"]
 async-client = ["async", "reqwest", "tokio-util", "base64"]
 client = ["ureq", "base64"]
-async-client-rustls = ["async-client", "reqwest/rustls", "__tls"]
-client-rustls = ["client", "rustls-native-certs", "ureq/rustls", "__tls"]
+async-client-rustls = ["async-client", "reqwest/rustls", "__tls", "__async-rustls"]
+
+# The same, but without selecting a cryptography provider, so the caller can
+# choose one and install it as the process default.
+async-client-rustls-no-provider = ["async-client", "reqwest/rustls-no-provider", "__tls", "__async-rustls"]
+client-rustls = ["client", "rustls-native-certs", "ureq/rustls", "__tls", "__blocking-rustls"]
+
+# The blocking counterpart to async-client-rustls-no-provider.
+client-rustls-no-provider = [
+    "client",
+    "rustls-native-certs",
+    "ureq/rustls-no-provider",
+    "__tls",
+    "__blocking-rustls",
+]
 async-client-tls = ["async-client", "reqwest/native-tls", "__tls"]
 client-tls = ["client", "rustls-native-certs", "ureq/native-tls", "__tls"]
 
@@ -74,3 +87,5 @@ jiff = ["dep:jiff"]
 log = ["dep:log"]
 
 __tls = []
+__async-rustls = []
+__blocking-rustls = []
