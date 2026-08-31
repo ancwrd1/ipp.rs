@@ -199,7 +199,7 @@ pub mod non_blocking {
                 }
             }
 
-            #[cfg(feature = "async-client-rustls")]
+            #[cfg(feature = "__async-rustls")]
             if self.0.tls_backend != Some(TlsBackend::Native) {
                 builder = builder.tls_backend_rustls();
             }
@@ -294,7 +294,7 @@ pub mod blocking {
                     tls_config = tls_config.disable_verification(true);
                 }
 
-                #[cfg(feature = "client-rustls")]
+                #[cfg(feature = "__blocking-rustls")]
                 if self.0.tls_backend != Some(TlsBackend::Native) {
                     tls_config = tls_config.provider(TlsProvider::Rustls);
                 }
