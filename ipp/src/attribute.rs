@@ -167,6 +167,11 @@ impl IppAttribute {
         WHICH_JOBS => "which-jobs"
     }
 
+    // Attributes defined in PWG 5100.13, which adds Identify-Printer
+    define_attributes! {
+        IDENTIFY_ACTIONS => "identify-actions",
+    }
+
     // Special attribute groups defined in 4.2.5 and 4.3.4 of RFC 8011
     // can be used in "get-printer-attributes" or "get-job-attributes" operations to obtain several
     // attributes at once
