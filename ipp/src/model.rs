@@ -178,6 +178,11 @@ pub enum DelimiterTag {
     EndOfAttributes = 0x03,
     PrinterAttributes = 0x04,
     UnsupportedAttributes = 0x05,
+    SubscriptionAttributes = 0x06,
+    EventNotificationAttributes = 0x07,
+    ResourceAttributes = 0x08,
+    DocumentAttributes = 0x09,
+    SystemAttributes = 0x0A,
 }
 
 /// IPP value tags

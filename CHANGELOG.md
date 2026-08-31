@@ -1,6 +1,7 @@
 # Changelog
 
 ## 8.0.0
+- Added the missing delimiter tags to `DelimiterTag`, so responses carrying subscription, event notification, resource, document or system groups can be parsed
 - Added `BoundedStrLiteral`, a static version of `BoundedString` that allows compile-time check of string size.
 - Change the type of all `IppAttribute` constant names from `&'static str` to `BoundedStrLiteral`
 
