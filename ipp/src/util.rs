@@ -5,7 +5,7 @@ use http::Uri;
 use num_traits::FromPrimitive;
 
 use crate::{
-    attribute::IppAttribute,
+    attribute::IppAttributeName,
     error::IppError,
     model::{DelimiterTag, PrinterState},
     prelude::IppRequestResponse,
@@ -47,7 +47,7 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         return Err(IppError::StatusError(status));
     }
 
-    let printer_state_attr_name: IppName = IppAttribute::PRINTER_STATE.into();
+    let printer_state_attr_name: IppName = IppAttributeName::PRINTER_STATE.into();
 
     let state = response
         .attributes()
@@ -61,7 +61,7 @@ pub fn is_printer_ready(response: &IppRequestResponse) -> Result<bool, IppError>
         return Ok(false);
     }
 
-    let printer_state_reasons_name: IppName = IppAttribute::PRINTER_STATE_REASONS.into();
+    let printer_state_reasons_name: IppName = IppAttributeName::PRINTER_STATE_REASONS.into();
 
     if let Some(reasons) = response
         .attributes()
