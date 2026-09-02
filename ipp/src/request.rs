@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     IppHeader,
-    attribute::{IppAttribute, IppAttributes},
+    attribute::{IppAttribute, IppAttributeName, IppAttributes},
     model::{DelimiterTag, IppVersion, Operation, StatusCode},
     parser::IppParseError,
     payload::IppPayload,
@@ -57,7 +57,7 @@ impl IppRequestResponse {
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET,
+                IppAttributeName::ATTRIBUTES_CHARSET,
                 IppValue::Charset(UTF_8_CHARSET.into()),
             ),
         );
@@ -65,7 +65,7 @@ impl IppRequestResponse {
         attributes.add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppAttributeName::ATTRIBUTES_NATURAL_LANGUAGE,
                 IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
@@ -73,7 +73,7 @@ impl IppRequestResponse {
         if let Some(uri) = uri {
             attributes.add(
                 DelimiterTag::OperationAttributes,
-                IppAttribute::new(IppAttribute::PRINTER_URI, IppValue::Uri(uri)),
+                IppAttribute::new(IppAttributeName::PRINTER_URI, IppValue::Uri(uri)),
             );
         }
 
@@ -96,14 +96,14 @@ impl IppRequestResponse {
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_CHARSET,
+                IppAttributeName::ATTRIBUTES_CHARSET,
                 IppValue::Charset(UTF_8_CHARSET.into()),
             ),
         );
         response.attributes_mut().add(
             DelimiterTag::OperationAttributes,
             IppAttribute::new(
-                IppAttribute::ATTRIBUTES_NATURAL_LANGUAGE,
+                IppAttributeName::ATTRIBUTES_NATURAL_LANGUAGE,
                 IppValue::NaturalLanguage(EN_LANG.into()),
             ),
         );
