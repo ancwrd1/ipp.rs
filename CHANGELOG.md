@@ -6,7 +6,7 @@
 - Added the `identify-actions` attribute name from PWG 5100.13
 - Added `async-client-rustls-no-provider` and `client-rustls-no-provider` features, which enable rustls without selecting a cryptography provider so the caller can choose one
 - Added `BoundedStrLiteral`, a static version of `BoundedString` that allows compile-time check of string size.
-- Change the type of all `IppAttribute` constant names from `&'static str` to `BoundedStrLiteral`
+- Add constants in `IppAttributeName` that add compile time checks to the constants in `IppAttribute`
 
 ## 7.0.0
 - Refactored attribute storage to use an ordered list instead of a `HashMap`, preserving attribute order ([#54](https://github.com/ancwrd1/ipp.rs/issues/54))
